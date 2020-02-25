@@ -29,6 +29,7 @@
   padding: 2px;
   text-align: center;
   display: flex;
+  overflow: hidden;
 }
 
 .timetable-program {

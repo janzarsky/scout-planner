@@ -14,8 +14,6 @@ class Timetable extends React.Component {
     super(props);
     this.state = {
       programs: [],
-      width: 16,
-      height: 5,
     }
   }
 
@@ -23,22 +21,45 @@ class Timetable extends React.Component {
     // TODO get this from backend
     this.setState({
       programs: [
-        { id: 'test1', x: 4, y: 4, title: 'Test 1' },
-        { id: 'test2', x: 2, y: 3, title: 'Test 2' },
-        { id: 'test3', x: 3, y: 3, title: 'Test 3' },
+        {
+          id: 'test1',
+          begin: Date.parse('2020-06-12T12:00:00.000+00:00'),
+          duration: 2*60*60*1000,
+          title: 'Test 1'
+        },
+        {
+          id: 'test2',
+          begin: Date.parse('2020-06-14T09:15:00.000+00:00'),
+          duration: 2*60*60*1000,
+          title: 'Test 2'
+        },
+        {
+          id: 'test3',
+          begin: Date.parse('2020-08-18T17:35:00.000+00:00'),
+          duration: 2*60*60*1000,
+          title: 'Test 3'
+        },
+        {
+          id: 'invalid1',
+          begin: Date.parse('2020-03-18T17:00:00.000+00:00'),
+          duration: 2*60*60*1000,
+          title: 'Invalid date'
+        },
       ],
       days: [
-        new Date('2020-06-12').getTime(),
-        new Date('2020-06-13').getTime(),
-        new Date('2020-06-14').getTime(),
-        new Date('2020-08-18').getTime(),
-        new Date('2020-08-19').getTime(),
-        new Date('2020-08-20').getTime(),
-        new Date('2020-08-21').getTime(),
+        Date.UTC(2020, 5, 12),
+        Date.UTC(2020, 5, 13),
+        Date.UTC(2020, 5, 14),
+        Date.UTC(2020, 7, 18),
+        Date.UTC(2020, 7, 19),
+        Date.UTC(2020, 7, 20),
+        Date.UTC(2020, 7, 21),
+        Date.UTC(2020, 7, 22),
+        Date.UTC(2020, 7, 23),
       ],
-      dayStart: new Date('1970-01-01T07:00:00.000+00:00').getTime(),
-      dayEnd: new Date('1970-01-01T23:59:59.000+00:00').getTime(),
-      timeStep: new Date('1970-01-01T00:15:00.000+00:00').getTime(),
+      dayStart: Date.UTC(1970, 0, 1, 7, 0),
+      dayEnd: Date.UTC(1970, 0, 1, 23, 59),
+      timeStep: 15*60*1000,
     });
   }
 
@@ -47,27 +68,31 @@ class Timetable extends React.Component {
     if (programs.length === 0)
       return null;
 
-    const hour = new Date('1970-01-01T01:00:00.000+00:00').getTime();
+    const hour = Date.UTC(1970, 0, 1, 1);
+    console.log(this.state)
     const width = Math.ceil((this.state.dayEnd - this.state.dayStart)/hour);
     const timeHeaders = Array.from(
       {length: width},
       (x,i) => new Date(this.state.dayStart + i*hour)
     );
+    const timeSpan = Math.ceil(hour/this.state.timeStep);
     const days = this.state.days.map((day) => new Date(day));
 
     return (
       <div
         className="timetable"
         style={{
-          gridTemplateRows: "repeat(" + (this.state.height + 1) + ", auto)",
-          gridTemplateColumns: "auto repeat(" + (width + 1) + ", 1fr)",
+          gridTemplateRows: "repeat(" + (this.state.days.length + 1) + ", auto)",
+          gridTemplateColumns: "auto repeat(" + timeSpan*width
+                               + ", minmax(0, 1fr))",
         }}
       >
         {timeHeaders.map((time, idx) =>
           <TimeHeader
             key={time.toString()}
             time={time}
-            pos={idx + 2}
+            pos={idx*timeSpan + 2}
+            span={timeSpan}
           />
         )}
         {days.map((date, idx) =>
@@ -80,13 +105,28 @@ class Timetable extends React.Component {
         {programs.map((program) =>
           <Program
             key={program.id}
-            x={program.x + 1}
-            y={program.y + 1}
-            title={program.title}
+            program={program}
+            rect={this.getRect(program)}
           />
         )}
       </div>
     );
+  }
+
+  getRect(program) {
+    const begin = new Date(program.begin);
+
+    const date = Date.UTC(begin.getUTCFullYear(), begin.getUTCMonth(),
+                          begin.getUTCDate());
+    const y = this.state.days.indexOf(date);
+
+    const time = Date.UTC(1970, 0, 1, begin.getUTCHours(),
+                          begin.getUTCMinutes());
+    const x = Math.ceil((time - this.state.dayStart)/this.state.timeStep);
+
+    const width = Math.ceil(program.duration/this.state.timeStep);
+
+    return {x: x, y: y, width: width, height: 1};
   }
 }
 
@@ -95,10 +135,11 @@ function TimeHeader(props) {
     <div
       className="timetable-time"
       style={{
-        gridColumnStart: props.pos
+        gridColumnStart: props.pos,
+        gridColumnEnd: 'span ' + props.span
       }}
     >
-      {props.time.toLocaleTimeString('cs-CZ', { timeZone: 'UTC' }).split(':', 2)[0]}
+      {props.time.getUTCHours()}
     </div>
   );
 }
@@ -111,24 +152,30 @@ function DateHeader(props) {
         gridRowStart: props.pos
       }}
     >
-      {props.date.toLocaleDateString('cs-CZ', { dateStyle: 'short', timeZone: 'UTC' })
-        .substring(0, 6)}
+      {props.date.getUTCDate()}.{props.date.getUTCMonth()}.
     </div>
   );
 }
 
 class Program extends React.Component {
   render() {
+    const program = this.props.program;
+
+    if (this.props.rect.x < 0 || this.props.rect.y < 0)
+      return null;
+
     return (
       <div
         className="timetable-program-wrapper"
         style={{
-          gridColumnStart: this.props.x,
-          gridRowStart: this.props.y,
+          gridColumnStart: this.props.rect.x + 2,
+          gridRowStart: this.props.rect.y + 2,
+          gridColumnEnd: 'span ' + this.props.rect.width,
+          gridRowEnd: 'span ' + this.props.rect.height,
         }}
       >
         <div className="timetable-program">
-          {this.props.title}
+          {program.title}
         </div>
       </div>
     );
