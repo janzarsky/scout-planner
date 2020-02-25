@@ -31,6 +31,9 @@
   display: flex;
   overflow: hidden;
 }
+.timetable-program-wrapper.dragged {
+  opacity: 0.5;
+}
 
 .timetable-program {
   padding: 5px;

@@ -69,7 +69,6 @@ class Timetable extends React.Component {
       return null;
 
     const hour = Date.UTC(1970, 0, 1, 1);
-    console.log(this.state)
     const width = Math.ceil((this.state.dayEnd - this.state.dayStart)/hour);
     const timeHeaders = Array.from(
       {length: width},
@@ -158,6 +157,17 @@ function DateHeader(props) {
 }
 
 class Program extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dragged: false,
+      offsetX: 0,
+      offsetY: 0,
+      translateX: 0,
+      translateY: 0,
+    };
+  }
+
   render() {
     const program = this.props.program;
 
@@ -166,19 +176,46 @@ class Program extends React.Component {
 
     return (
       <div
-        className="timetable-program-wrapper"
+        className={'timetable-program-wrapper'
+                   + (this.state.dragged ? ' dragged' : '')}
         style={{
           gridColumnStart: this.props.rect.x + 2,
           gridRowStart: this.props.rect.y + 2,
           gridColumnEnd: 'span ' + this.props.rect.width,
           gridRowEnd: 'span ' + this.props.rect.height,
+          transform: `translate(${this.state.translateX}px,`
+                     + `${this.state.translateY}px)`,
         }}
+        draggable
+        onDragStart={(e) => this.onDragStart(e)}
+        onDragEnd={(e) => this.onDragEnd(e)}
       >
         <div className="timetable-program">
           {program.title}
         </div>
       </div>
     );
+  }
+
+  onDragStart(e) {
+    const posX = e.nativeEvent.target.offsetLeft;
+    const posY = e.nativeEvent.target.offsetTop;
+    this.setState({
+      dragged: true,
+      offsetX: e.nativeEvent.offsetX + posX,
+      offsetY: e.nativeEvent.offsetY + posY,
+    });
+  }
+
+  onDragEnd(e) {
+    e.preventDefault();
+    const offsetX = this.state.offsetX;
+    const offsetY = this.state.offsetY;
+    this.setState({
+      dragged: false,
+      translateX: e.nativeEvent.pageX - offsetX,
+      translateY: e.nativeEvent.pageY - offsetY,
+    });
   }
 }
 
