@@ -15,8 +15,8 @@ class Timetable extends React.Component {
     this.state = {
       programs: [],
     }
-    this.startDrag = this.startDrag.bind(this);
-    this.onDrop = this.onDrop.bind(this);
+    this.onProgramDragStart = this.onProgramDragStart.bind(this);
+    this.onDroppableDrop = this.onDroppableDrop.bind(this);
   }
 
   componentDidMount() {
@@ -77,10 +77,6 @@ class Timetable extends React.Component {
       (x,i) => new Date(this.state.dayStart + i*hour)
     );
     const timeSpan = Math.ceil(hour/this.state.timeStep);
-    const times = Array.from(
-      {length: width*timeSpan},
-      (x,i) => new Date(this.state.dayStart + i)
-    );
     const days = this.state.days.map((day) => new Date(day));
 
     return (
@@ -92,14 +88,17 @@ class Timetable extends React.Component {
                                + ", minmax(20px, 1fr))",
         }}
       >
-        {times.map((time, idxTime) =>
-          days.map((date, idxDate) =>
-            <Droppable
-              key={[idxTime, idxDate]}
-              x={idxTime + 2}
-              y={idxDate + 2}
-              onDrop={this.onDrop}
-            />
+        {days.map((date, idxDate) =>
+          timeHeaders.map((time, idxTime) =>
+            Array.from({length: timeSpan}, (x, i) => i*this.state.timeStep).map((span, idxSpan) =>
+              <Droppable
+                key={[idxTime, idxDate, idxSpan]}
+                x={2 + idxTime*timeSpan + idxSpan}
+                y={2 + idxDate}
+                begin={new Date(date.getTime() + time.getTime() + span)}
+                onDrop={this.onDroppableDrop}
+              />
+            )
           )
         )}
         {timeHeaders.map((time, idx) =>
@@ -122,22 +121,22 @@ class Timetable extends React.Component {
             key={program.id}
             program={program}
             rect={this.getRect(program)}
-            startDrag={this.startDrag}
+            onDragStart={this.onProgramDragStart}
           />
         )}
       </div>
     );
   }
 
-  startDrag(id) {
+  onProgramDragStart(id) {
     this.draggedProgram = id;
   }
 
-  onDrop(x, y) {
+  onDroppableDrop(begin) {
     var programs = this.state.programs.slice();
     const idx = programs.findIndex((p) => p.id === this.draggedProgram);
     var newProg = programs[idx];
-    newProg.begin += 60*60*1000;
+    newProg.begin = begin;
     programs[idx] = newProg;
     this.setState({ programs: programs });
   }
@@ -196,7 +195,7 @@ class Droppable extends React.Component {
 
   onDrop(e) {
     e.preventDefault();
-    this.props.onDrop(this.props.x, this.props.y);
+    this.props.onDrop(this.props.begin);
     this.setState({ dragOver: false });
   }
 }
@@ -235,11 +234,10 @@ class Program extends React.Component {
   }
 
   render() {
-    const program = this.props.program;
-
     if (this.props.rect.x < 0 || this.props.rect.y < 0)
       return null;
 
+    const program = this.props.program;
     return (
       <div
         className={'timetable-program-wrapper'
@@ -249,8 +247,6 @@ class Program extends React.Component {
           gridRowStart: this.props.rect.y + 2,
           gridColumnEnd: 'span ' + this.props.rect.width,
           gridRowEnd: 'span ' + this.props.rect.height,
-          transform: `translate(${this.state.translateX}px,`
-                     + `${this.state.translateY}px)`,
         }}
         draggable
         onDragStart={(e) => this.onDragStart(e)}
@@ -264,7 +260,7 @@ class Program extends React.Component {
   }
 
   onDragStart(e) {
-    this.props.startDrag(this.props.program.id);
+    this.props.onDragStart(this.props.program.id);
     this.setState({ dragged: true });
   }
 
