@@ -45,3 +45,7 @@
   align-items: center;
   background-color: #81d4fa;
 }
+
+.drag-over {
+  background-color: red;
+}

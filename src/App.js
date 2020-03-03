@@ -15,6 +15,8 @@ class Timetable extends React.Component {
     this.state = {
       programs: [],
     }
+    this.startDrag = this.startDrag.bind(this);
+    this.onDrop = this.onDrop.bind(this);
   }
 
   componentDidMount() {
@@ -75,6 +77,10 @@ class Timetable extends React.Component {
       (x,i) => new Date(this.state.dayStart + i*hour)
     );
     const timeSpan = Math.ceil(hour/this.state.timeStep);
+    const times = Array.from(
+      {length: width*timeSpan},
+      (x,i) => new Date(this.state.dayStart + i)
+    );
     const days = this.state.days.map((day) => new Date(day));
 
     return (
@@ -83,9 +89,19 @@ class Timetable extends React.Component {
         style={{
           gridTemplateRows: "repeat(" + (this.state.days.length + 1) + ", auto)",
           gridTemplateColumns: "auto repeat(" + timeSpan*width
-                               + ", minmax(0, 1fr))",
+                               + ", minmax(20px, 1fr))",
         }}
       >
+        {times.map((time, idxTime) =>
+          days.map((date, idxDate) =>
+            <Droppable
+              key={[idxTime, idxDate]}
+              x={idxTime + 2}
+              y={idxDate + 2}
+              onDrop={this.onDrop}
+            />
+          )
+        )}
         {timeHeaders.map((time, idx) =>
           <TimeHeader
             key={time.toString()}
@@ -106,10 +122,24 @@ class Timetable extends React.Component {
             key={program.id}
             program={program}
             rect={this.getRect(program)}
+            startDrag={this.startDrag}
           />
         )}
       </div>
     );
+  }
+
+  startDrag(id) {
+    this.draggedProgram = id;
+  }
+
+  onDrop(x, y) {
+    var programs = this.state.programs.slice();
+    const idx = programs.findIndex((p) => p.id === this.draggedProgram);
+    var newProg = programs[idx];
+    newProg.begin += 60*60*1000;
+    programs[idx] = newProg;
+    this.setState({ programs: programs });
   }
 
   getRect(program) {
@@ -126,6 +156,48 @@ class Timetable extends React.Component {
     const width = Math.ceil(program.duration/this.state.timeStep);
 
     return {x: x, y: y, width: width, height: 1};
+  }
+}
+
+class Droppable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { dragOver: false };
+  }
+
+  render() {
+    return (
+      <div
+        className={(this.state.dragOver) ? 'drag-over' : ''}
+        style={{
+          gridColumnStart: this.props.x,
+          gridRowStart: this.props.y,
+        }}
+        onDrop={(e) => this.onDrop(e)}
+        onDragEnter={(e) => this.onDragEnter(e)}
+        onDragOver={(e) => this.onDragOver(e)}
+        onDragLeave={(e) => this.onDragLeave(e)}
+      >
+      </div>
+    );
+  }
+
+  onDragEnter(e) {
+    this.setState({ dragOver: true });
+  }
+
+  onDragOver(e) {
+    e.preventDefault();
+  }
+
+  onDragLeave(e) {
+    this.setState({ dragOver: false });
+  }
+
+  onDrop(e) {
+    e.preventDefault();
+    this.props.onDrop(this.props.x, this.props.y);
+    this.setState({ dragOver: false });
   }
 }
 
@@ -159,13 +231,7 @@ function DateHeader(props) {
 class Program extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      dragged: false,
-      offsetX: 0,
-      offsetY: 0,
-      translateX: 0,
-      translateY: 0,
-    };
+    this.state = { dragged: false };
   }
 
   render() {
@@ -198,24 +264,13 @@ class Program extends React.Component {
   }
 
   onDragStart(e) {
-    const posX = e.nativeEvent.target.offsetLeft;
-    const posY = e.nativeEvent.target.offsetTop;
-    this.setState({
-      dragged: true,
-      offsetX: e.nativeEvent.offsetX + posX,
-      offsetY: e.nativeEvent.offsetY + posY,
-    });
+    this.props.startDrag(this.props.program.id);
+    this.setState({ dragged: true });
   }
 
   onDragEnd(e) {
     e.preventDefault();
-    const offsetX = this.state.offsetX;
-    const offsetY = this.state.offsetY;
-    this.setState({
-      dragged: false,
-      translateX: e.nativeEvent.pageX - offsetX,
-      translateY: e.nativeEvent.pageY - offsetY,
-    });
+    this.setState({ dragged: false });
   }
 }
 
