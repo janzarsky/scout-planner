@@ -22,30 +22,47 @@ class Timetable extends React.Component {
   componentDidMount() {
     // TODO get this from backend
     this.setState({
+      people: {
+        'walker': 'Walker',
+        'gabca': 'Gabča',
+        'verca': 'Verča',
+        'woody': 'Woody',
+      },
+      pkgs: {
+        'or': 'Oddílové rady',
+        'hosp': 'Hospodaření',
+        'psy': 'Psychologie',
+      },
       programs: [
         {
           id: 'test1',
           begin: Date.parse('2020-06-12T12:00:00.000+00:00'),
           duration: 2*60*60*1000,
-          title: 'Test 1'
+          title: 'Test 1',
+          pkg: 'or',
+          people: ['walker', 'gabca'],
         },
         {
           id: 'test2',
           begin: Date.parse('2020-06-14T09:15:00.000+00:00'),
           duration: 2*60*60*1000,
-          title: 'Test 2'
+          title: 'Test 2',
+          pkg: 'psy',
+          people: [],
         },
         {
           id: 'test3',
           begin: Date.parse('2020-08-18T17:35:00.000+00:00'),
           duration: 2*60*60*1000,
-          title: 'Test 3'
+          title: 'Test 3',
+          pkg: 'hosp',
+          people: ['verca'],
         },
         {
           id: 'invalid1',
           begin: Date.parse('2020-03-18T17:00:00.000+00:00'),
           duration: 2*60*60*1000,
-          title: 'Invalid date'
+          title: 'Invalid date',
         },
       ],
       days: [
@@ -122,6 +139,8 @@ class Timetable extends React.Component {
             program={program}
             rect={this.getRect(program)}
             onDragStart={this.onProgramDragStart}
+            people={this.state.people}
+            pkgs={this.state.pkgs}
           />
         )}
       </div>
@@ -253,7 +272,21 @@ class Program extends React.Component {
         onDragEnd={(e) => this.onDragEnd(e)}
       >
         <div className="timetable-program">
-          {program.title}
+          <div className="program-text">
+            <h3>{program.title}</h3>
+            <p className="program-package">
+              {this.props.pkgs[program.pkg]}
+            </p>
+            <p className="program-people">
+              {program.people.map((p) => this.props.people[p]).join(', ')}
+            </p>
+            <p className="program-time">
+              {new Date(program.begin).getUTCHours()}:
+              {new Date(program.begin).getUTCMinutes().toString().padStart(2, 0)}&ndash;
+              {new Date(program.begin + program.duration).getUTCHours()}:
+              {new Date(program.begin + program.duration).getUTCMinutes().toString().padStart(2, 0)}
+            </p>
+          </div>
         </div>
       </div>
     );

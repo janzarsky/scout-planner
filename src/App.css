@@ -34,7 +34,6 @@
 .timetable-program-wrapper.dragged {
   opacity: 0.5;
 }
-
 .timetable-program {
   padding: 5px;
   border-radius: .25rem;
@@ -44,6 +43,22 @@
   display: flex;
   align-items: center;
   background-color: #81d4fa;
+  line-height: 1.5;
+}
+.program-text {
+  flex: 1;
+  width: 100%;
+  word-wrap: break-word;
+}
+.program-text h3 {
+  margin: 0.5em 0 0 0;
+  font-size: 1em;
+  text-transform: uppercase;
+}
+.program-text p {
+  font-size: 0.9em;
+  margin-bottom: 0;
+  color: #455a64;
 }
 
 .drag-over {
