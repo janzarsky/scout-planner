@@ -85,6 +85,9 @@
   display: block;
 }
 
+.placeholder:hover {
+  background-color: blue;
+}
 .drag-over {
   background-color: red;
 }

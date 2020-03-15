@@ -136,7 +136,7 @@ class Droppable extends React.Component {
   render() {
     return (
       <div
-        className={(this.state.dragOver) ? 'drag-over' : ''}
+        className={'placeholder ' + ((this.state.dragOver) ? 'drag-over' : '')}
         style={{
           gridColumnStart: this.props.x,
           gridRowStart: this.props.y,
