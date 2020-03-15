@@ -78,7 +78,7 @@ class Program extends React.Component {
   }
 
   onDragStart(e) {
-    this.props.onDragStart(this.props.program.id);
+    this.props.onDragStart(this.props.program._id);
     this.setState({ dragged: true });
   }
 

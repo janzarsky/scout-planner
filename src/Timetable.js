@@ -5,7 +5,6 @@ class Timetable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      programs: [],
       programModal: false,
       people: {
         'walker': 'Walker',
@@ -37,14 +36,8 @@ class Timetable extends React.Component {
     this.onDroppableDrop = this.onDroppableDrop.bind(this);
   }
 
-  componentDidMount() {
-    fetch('http://localhost:4000/programs')
-      .then(resp => resp.json())
-      .then(data => this.setState({ programs: data }));
-  }
-
   render() {
-    const programs = this.state.programs;
+    const programs = this.props.programs;
 
     const hour = Date.UTC(1970, 0, 1, 1);
     const width = Math.ceil((this.state.dayEnd - this.state.dayStart)/hour);
@@ -92,11 +85,11 @@ class Timetable extends React.Component {
             pos={idx + 2}
           />
         )}
-        {programs.map((program) =>
+        {Object.keys(programs).map((key) =>
           <Program
-            key={program._id}
-            program={program}
-            rect={this.getRect(program)}
+            key={key}
+            program={programs[key]}
+            rect={this.getRect(programs[key])}
             onDragStart={this.onProgramDragStart}
             people={this.state.people}
             pkgs={this.state.pkgs}
@@ -111,12 +104,9 @@ class Timetable extends React.Component {
   }
 
   onDroppableDrop(begin) {
-    var programs = this.state.programs.slice();
-    const idx = programs.findIndex((p) => p.id === this.draggedProgram);
-    var newProg = programs[idx];
-    newProg.begin = begin;
-    programs[idx] = newProg;
-    this.setState({ programs: programs });
+    var prog = this.props.programs[this.draggedProgram];
+    prog.begin = begin;
+    this.props.updateProgram(prog);
   }
 
   getRect(program) {
