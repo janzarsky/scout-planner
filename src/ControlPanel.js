@@ -66,14 +66,10 @@ class ControlPanel extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    fetch('http://localhost:4000/programs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        begin: Date.parse(this.date.current.value + 'T' + this.time.current.value + ':00.000+00:00'),
-        duration: Date.parse('1970-01-01T' + this.duration.current.value + ':00.000+00:00'),
-        title: this.title.current.value,
-      }),
+    this.props.addProgram({
+      begin: Date.parse(this.date.current.value + 'T' + this.time.current.value + ':00.000+00:00'),
+      duration: Date.parse('1970-01-01T' + this.duration.current.value + ':00.000+00:00'),
+      title: this.title.current.value,
     });
 
     this.setState({addProgram: false});

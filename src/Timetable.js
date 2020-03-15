@@ -64,7 +64,7 @@ class Timetable extends React.Component {
                 key={[idxTime, idxDate, idxSpan]}
                 x={2 + idxTime*timeSpan + idxSpan}
                 y={2 + idxDate}
-                begin={new Date(date.getTime() + time.getTime() + span)}
+                begin={date.getTime() + time.getTime() + span}
                 onDrop={this.onDroppableDrop}
               />
             )

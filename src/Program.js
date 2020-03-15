@@ -38,7 +38,7 @@ class Program extends React.Component {
               {this.props.pkgs[program.pkg]}
             </p>
             <p className="program-people">
-              {program.people.map((p) => this.props.people[p]).join(', ')}
+              {(program.people) ? program.people.map((p) => this.props.people[p]).join(', ') : ''}
             </p>
             <p className="program-time">
               {new Date(program.begin).getUTCHours()}:

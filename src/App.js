@@ -10,6 +10,7 @@ class App extends React.Component {
       programs: {},
     };
     this.updateProgram = this.updateProgram.bind(this);
+    this.addProgram = this.addProgram.bind(this);
   }
 
   componentDidMount() {
@@ -25,7 +26,9 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <ControlPanel />
+        <ControlPanel
+          addProgram={this.addProgram}
+        />
         <Timetable
           programs={this.state.programs}
           updateProgram={this.updateProgram}
@@ -34,11 +37,31 @@ class App extends React.Component {
     );
   }
 
+  addProgram(program) {
+    fetch('http://localhost:4000/programs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(program),
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      let programs = this.state.programs;
+      programs[program._id] = data;
+      this.setState({ programs: programs });
+    });
+  }
+
   updateProgram(program) {
-    let programs = this.state.programs;
-    programs[program._id] = program;
-    this.setState({
-      programs: programs,
+    fetch('http://localhost:4000/programs/' + program._id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(program),
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      let programs = this.state.programs;
+      programs[program._id] = data;
+      this.setState({ programs: programs });
     });
   }
 }
