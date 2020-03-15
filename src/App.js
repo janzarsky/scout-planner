@@ -1,5 +1,5 @@
 import React from 'react';
-import ControlPanel from './ControlPanel';
+import AddProgramModal from './AddProgramModal';
 import Timetable from './Timetable';
 import './App.css';
 
@@ -8,6 +8,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       programs: {},
+      addProgram: false,
+      addProgramOptions: {},
     };
     this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
@@ -26,12 +28,20 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <ControlPanel
-          addProgram={this.addProgram}
-        />
+        {(this.state.addProgram) ?
+          <AddProgramModal
+            addProgram={this.addProgram}
+            options={this.state.addProgramOptions}
+            handleClose={() => this.setState({addProgram: false})}
+          />
+          : ''
+        }
         <Timetable
           programs={this.state.programs}
           updateProgram={this.updateProgram}
+          addProgramModal={(options) =>
+            this.setState({addProgram: true, addProgramOptions: options})
+          }
         />
       </div>
     );

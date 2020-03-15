@@ -66,6 +66,7 @@ class Timetable extends React.Component {
                 y={2 + idxDate}
                 begin={date.getTime() + time.getTime() + span}
                 onDrop={this.onDroppableDrop}
+                addProgramModal={this.props.addProgramModal}
               />
             )
           )
@@ -140,6 +141,7 @@ class Droppable extends React.Component {
           gridColumnStart: this.props.x,
           gridRowStart: this.props.y,
         }}
+        onClick={(_) => this.props.addProgramModal({begin: this.props.begin})}
         onDrop={(e) => this.onDrop(e)}
         onDragEnter={(e) => this.onDragEnter(e)}
         onDragOver={(e) => this.onDragOver(e)}
