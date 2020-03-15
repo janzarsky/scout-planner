@@ -1,12 +1,97 @@
 import React from 'react';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
+      <ControlPanel />
       <Timetable />
     </div>
   );
+}
+
+class ControlPanel extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      addProgram: false,
+    };
+    ['title', 'date', 'time', 'duration'].forEach((field) => this[field] = React.createRef());
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  render() {
+    return (
+      <div className="control-panel">
+        <Button
+          variant="primary"
+          onClick={(_) => this.addProgram()}
+        >
+          Přidat
+        </Button>
+        {(this.state.addProgram) ? this.getAddProgram() : ''}
+      </div>
+    );
+  }
+
+  getAddProgram() {
+    const handleClose = () => this.setState({addProgram: false});
+    return (
+      <Modal show={true} onHide={handleClose}>
+        <Form onSubmit={this.handleSubmit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Title</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group>
+              <Form.Label>Název</Form.Label>
+              <Form.Control type="text" ref={this.title} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Začátek</Form.Label>
+              <Form.Control type="text" ref={this.date} placeholder="YYYY-MM-DD" />
+              <Form.Control type="text" ref={this.time} placeholder="MM:HH" />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Délka</Form.Label>
+              <Form.Control type="text" ref={this.duration} placeholder="MM:HH" />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="link" onClick={handleClose}>
+              Zrušit
+            </Button>
+            <Button variant="primary" type="submit">
+              Přidat
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    );
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    fetch('http://localhost:4000/programs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        begin: Date.parse(this.date.current.value + 'T' + this.time.current.value + ':00.000+00:00'),
+        duration: Date.parse('1970-01-01T' + this.duration.current.value + ':00.000+00:00'),
+        title: this.title.current.value,
+      }),
+    });
+
+    this.setState({addProgram: false});
+  }
+
+  addProgram() {
+    this.setState({addProgram: true});
+  }
 }
 
 class Timetable extends React.Component {
@@ -14,14 +99,7 @@ class Timetable extends React.Component {
     super(props);
     this.state = {
       programs: [],
-    }
-    this.onProgramDragStart = this.onProgramDragStart.bind(this);
-    this.onDroppableDrop = this.onDroppableDrop.bind(this);
-  }
-
-  componentDidMount() {
-    // TODO get this from backend
-    this.setState({
+      programModal: false,
       people: {
         'walker': 'Walker',
         'gabca': 'Gabča',
@@ -33,38 +111,6 @@ class Timetable extends React.Component {
         'hosp': 'Hospodaření',
         'psy': 'Psychologie',
       },
-      programs: [
-        {
-          id: 'test1',
-          begin: Date.parse('2020-06-12T12:00:00.000+00:00'),
-          duration: 2*60*60*1000,
-          title: 'Test 1',
-          pkg: 'or',
-          people: ['walker', 'gabca'],
-        },
-        {
-          id: 'test2',
-          begin: Date.parse('2020-06-14T09:15:00.000+00:00'),
-          duration: 2*60*60*1000,
-          title: 'Test 2',
-          pkg: 'psy',
-          people: [],
-        },
-        {
-          id: 'test3',
-          begin: Date.parse('2020-08-18T17:35:00.000+00:00'),
-          duration: 2*60*60*1000,
-          title: 'Test 3',
-          pkg: 'hosp',
-          people: ['verca'],
-        },
-        {
-          id: 'invalid1',
-          begin: Date.parse('2020-03-18T17:00:00.000+00:00'),
-          duration: 2*60*60*1000,
-          title: 'Invalid date',
-        },
-      ],
       days: [
         Date.UTC(2020, 5, 12),
         Date.UTC(2020, 5, 13),
@@ -79,13 +125,19 @@ class Timetable extends React.Component {
       dayStart: Date.UTC(1970, 0, 1, 7, 0),
       dayEnd: Date.UTC(1970, 0, 1, 23, 59),
       timeStep: 15*60*1000,
-    });
+    };
+    this.onProgramDragStart = this.onProgramDragStart.bind(this);
+    this.onDroppableDrop = this.onDroppableDrop.bind(this);
+  }
+
+  componentDidMount() {
+    fetch('http://localhost:4000/programs')
+      .then(resp => resp.json())
+      .then(data => this.setState({ programs: data }));
   }
 
   render() {
     const programs = this.state.programs;
-    if (programs.length === 0)
-      return null;
 
     const hour = Date.UTC(1970, 0, 1, 1);
     const width = Math.ceil((this.state.dayEnd - this.state.dayStart)/hour);
@@ -135,7 +187,7 @@ class Timetable extends React.Component {
         )}
         {programs.map((program) =>
           <Program
-            key={program.id}
+            key={program._id}
             program={program}
             rect={this.getRect(program)}
             onDragStart={this.onProgramDragStart}
@@ -241,7 +293,7 @@ function DateHeader(props) {
         gridRowStart: props.pos
       }}
     >
-      {props.date.getUTCDate()}.{props.date.getUTCMonth()}.
+      {props.date.getUTCDate()}.{props.date.getUTCMonth() + 1}.
     </div>
   );
 }
@@ -249,7 +301,10 @@ function DateHeader(props) {
 class Program extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { dragged: false };
+    this.state = {
+      dragged: false,
+      modal: false,
+    };
   }
 
   render() {
@@ -271,6 +326,7 @@ class Program extends React.Component {
         onDragStart={(e) => this.onDragStart(e)}
         onDragEnd={(e) => this.onDragEnd(e)}
       >
+        {(this.state.modal) ? this.getModal() : ''}
         <div className="timetable-program">
           <div className="program-text">
             <h3>{program.title}</h3>
@@ -288,7 +344,32 @@ class Program extends React.Component {
             </p>
           </div>
         </div>
+        <div
+          className="program-modal"
+          onClick={(_) => this.setState({modal: true}) }
+        >
+          <i className="fa fa-info-circle"></i>
+        </div>
       </div>
+    );
+  }
+
+  getModal() {
+    const handleClose = () => this.setState({modal: false});
+    return (
+      <Modal show={true} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Title</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {JSON.stringify(this.props.program)}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleClose}>
+            Uložit
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
