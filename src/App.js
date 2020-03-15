@@ -1,5 +1,6 @@
 import React from 'react';
 import AddProgramModal from './AddProgramModal';
+import EditProgramModal from './EditProgramModal';
 import Timetable from './Timetable';
 import './App.css';
 
@@ -10,6 +11,8 @@ class App extends React.Component {
       programs: {},
       addProgram: false,
       addProgramOptions: {},
+      editProgram: false,
+      editProgramData: {},
     };
     this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
@@ -36,11 +39,22 @@ class App extends React.Component {
           />
           : ''
         }
+        {(this.state.editProgram) ?
+          <EditProgramModal
+            updateProgram={this.updateProgram}
+            program={this.state.editProgramData}
+            handleClose={() => this.setState({editProgram: false})}
+          />
+          : ''
+        }
         <Timetable
           programs={this.state.programs}
           updateProgram={this.updateProgram}
           addProgramModal={(options) =>
             this.setState({addProgram: true, addProgramOptions: options})
+          }
+          editProgramModal={(program) =>
+            this.setState({editProgram: true, editProgramData: program})
           }
         />
       </div>

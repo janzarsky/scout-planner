@@ -1,13 +1,10 @@
 import React from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 
 class Program extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dragged: false,
-      modal: false,
     };
   }
 
@@ -30,7 +27,6 @@ class Program extends React.Component {
         onDragStart={(e) => this.onDragStart(e)}
         onDragEnd={(e) => this.onDragEnd(e)}
       >
-        {(this.state.modal) ? this.getModal() : ''}
         <div className="timetable-program">
           <div className="program-text">
             <h3>{program.title}</h3>
@@ -50,30 +46,11 @@ class Program extends React.Component {
         </div>
         <div
           className="program-modal"
-          onClick={(_) => this.setState({modal: true}) }
+          onClick={(_) => this.props.editProgramModal(program)}
         >
           <i className="fa fa-info-circle"></i>
         </div>
       </div>
-    );
-  }
-
-  getModal() {
-    const handleClose = () => this.setState({modal: false});
-    return (
-      <Modal show={true} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Title</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {JSON.stringify(this.props.program)}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleClose}>
-            Uložit
-          </Button>
-        </Modal.Footer>
-      </Modal>
     );
   }
 

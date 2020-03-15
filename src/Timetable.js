@@ -94,6 +94,7 @@ class Timetable extends React.Component {
             onDragStart={this.onProgramDragStart}
             people={this.state.people}
             pkgs={this.state.pkgs}
+            editProgramModal={this.props.editProgramModal}
           />
         )}
       </div>
