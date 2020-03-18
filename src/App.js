@@ -10,9 +10,9 @@ class App extends React.Component {
     this.state = {
       programs: {},
       pkgs: {
-        'or': { _id:'or', name:'Oddílové rady', color:'#ff0000' },
-        'hosp': { _id:'hosp', name:'Hospodaření', color:'#0ff000' },
-        'psy': { _id:'psy', name:'Psychologie', color:'#000ff0' },
+        'or': { _id:'or', name:'Oddílové rady', color:'#ffe082' },
+        'hosp': { _id:'hosp', name:'Hospodaření', color:'#c5e1a5' },
+        'psy': { _id:'psy', name:'Psychologie', color:'#80cbc4' },
       },
       addProgram: false,
       addProgramOptions: {},

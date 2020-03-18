@@ -13,6 +13,9 @@ class Program extends React.Component {
       return null;
 
     const program = this.props.program;
+    const pkgName = (this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].name : '';
+    const color = (this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].color : null;
+
     return (
       <div
         className={'timetable-program-wrapper'
@@ -27,12 +30,13 @@ class Program extends React.Component {
         onDragStart={(e) => this.onDragStart(e)}
         onDragEnd={(e) => this.onDragEnd(e)}
       >
-        <div className="timetable-program">
+        <div
+          className="timetable-program"
+          style={(color) ? {backgroundColor: color} : {}}
+        >
           <div className="program-text">
             <h3>{program.title}</h3>
-            <p className="program-package">
-              {(this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].name : ''}
-            </p>
+            <p className="program-package">{pkgName}</p>
             <p className="program-people">
               {(program.people) ? program.people.map((p) => this.props.people[p]).join(', ') : ''}
             </p>
