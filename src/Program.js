@@ -31,7 +31,7 @@ class Program extends React.Component {
           <div className="program-text">
             <h3>{program.title}</h3>
             <p className="program-package">
-              {this.props.pkgs[program.pkg]}
+              {(this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].name : ''}
             </p>
             <p className="program-people">
               {(program.people) ? program.people.map((p) => this.props.people[p]).join(', ') : ''}

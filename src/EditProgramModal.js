@@ -70,7 +70,7 @@ class EditProgramModal extends React.Component {
                 <Form.Control as="select" defaultValue={this.props.program.pkg} ref={this.pkg}>
                   <option>žádný</option>
                   {Object.keys(this.props.pkgs).map((key) =>
-                    <option key={key} value={key}>{this.props.pkgs[key]}</option>
+                    <option key={key} value={key}>{this.props.pkgs[key].name}</option>
                   )}
                 </Form.Control>
               </Col>
