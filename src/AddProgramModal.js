@@ -2,6 +2,8 @@ import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 class AddProgramModal extends React.Component {
   constructor(props) {
@@ -18,6 +20,10 @@ class AddProgramModal extends React.Component {
       time = begin.getUTCHours() + ':' + ((begin.getUTCMinutes() < 10) ? '0' : '') + begin.getUTCMinutes();
     }
 
+    const setDuration = ((duration) => {
+      this.duration.current.value = duration;
+    });
+
     return (
       <Modal show={true} onHide={this.props.handleClose}>
         <Form onSubmit={this.handleSubmit}>
@@ -25,19 +31,37 @@ class AddProgramModal extends React.Component {
             <Modal.Title>Nový program</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form.Group>
-              <Form.Label>Název</Form.Label>
-              <Form.Control type="text" ref={this.title} />
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Název</Form.Label>
+              <Col>
+                <Form.Control type="text" ref={this.title} />
+              </Col>
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Začátek</Form.Label>
-              <Form.Control type="text" defaultValue={date} ref={this.date} placeholder="YYYY-MM-DD" />
-              <Form.Control type="text" defaultValue={time} ref={this.time} placeholder="MM:HH" />
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Začátek</Form.Label>
+              <Col>
+                <Form.Control type="text" defaultValue={time} ref={this.time} placeholder="MM:HH" />
+              </Col>
+              <Col>
+                <Form.Control type="text" defaultValue={date} ref={this.date} placeholder="YYYY-MM-DD" />
+              </Col>
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Délka</Form.Label>
-              <Form.Control type="text" defaultValue={duration} ref={this.duration} placeholder="MM:HH" />
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Délka</Form.Label>
+              <Col>
+                <Form.Control type="text" defaultValue={duration} ref={this.duration} placeholder="MM:HH" />
+              </Col>
             </Form.Group>
+            {[["00:15", "15 min"], ["00:30", "30 min"], ["00:45", "45 min"], ["01:00", "1 hod"],
+              ["01:30", "1,5 hod"], ["02:00", "2 hod"]].map((button) =>
+              <Button
+                variant={'outline-secondary'}
+                key={button[0]}
+                onClick={() => setDuration(button[0])}
+              >
+                {button[1]}
+              </Button>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="link" onClick={this.props.handleClose}>
