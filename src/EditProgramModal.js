@@ -2,11 +2,13 @@ import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 class EditProgramModal extends React.Component {
   constructor(props) {
     super(props);
-    ['title', 'date', 'time', 'duration'].forEach((field) => this[field] = React.createRef());
+    ['title', 'date', 'time', 'duration', 'pkg'].forEach((field) => this[field] = React.createRef());
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -15,7 +17,12 @@ class EditProgramModal extends React.Component {
     const date = begin.getUTCDate() + '.' + (begin.getUTCMonth() + 1) + '.' + begin.getUTCFullYear();
     const time = begin.getUTCHours() + ':' + ((begin.getUTCMinutes() < 10) ? '0' : '') + begin.getUTCMinutes();
     const dur = this.props.program.duration;
-    const duration = Math.floor(dur/(1000*60*60)) + ':' + ((dur % (1000*60) < 10) ? '0' : '') + dur % (1000*60);
+    const duration = Math.floor(dur/(1000*60*60)) + ':' +
+      (((dur % (1000*60*60) < 10)/(1000*60)) ? '0' : '') + (dur % (1000*60*60)/(1000*60));
+
+    const setDuration = ((duration) => {
+      this.duration.current.value = duration;
+    });
 
     return (
       <Modal show={true} onHide={this.props.handleClose}>
@@ -24,18 +31,49 @@ class EditProgramModal extends React.Component {
             <Modal.Title>Upravit program</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form.Group>
-              <Form.Label>Název</Form.Label>
-              <Form.Control type="text" defaultValue={this.props.program.title} ref={this.title} />
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Název</Form.Label>
+              <Col>
+                <Form.Control type="text" defaultValue={this.props.program.title} ref={this.title} />
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Začátek</Form.Label>
+              <Col>
+                <Form.Control type="text" defaultValue={time} ref={this.time} placeholder="MM:HH" />
+              </Col>
+              <Col>
+                <Form.Control type="text" defaultValue={date} ref={this.date} placeholder="YYYY-MM-DD" />
+              </Col>
+            </Form.Group>
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Délka</Form.Label>
+              <Col>
+                <Form.Control type="text" defaultValue={duration} ref={this.duration} placeholder="MM:HH" />
+              </Col>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Začátek</Form.Label>
-              <Form.Control type="text" defaultValue={date} ref={this.date} placeholder="YYYY-MM-DD" />
-              <Form.Control type="text" defaultValue={time} ref={this.time} placeholder="MM:HH" />
+            {[["0:15", "15 min"], ["0:30", "30 min"], ["0:45", "45 min"], ["1:00", "1 hod"],
+              ["1:30", "1,5 hod"], ["2:00", "2 hod"]].map((button) =>
+              <Button
+                variant={'outline-secondary'}
+                key={button[0]}
+                onClick={() => setDuration(button[0])}
+              >
+                {button[1]}
+              </Button>
+            )}
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Délka</Form.Label>
-              <Form.Control type="text" defaultValue={duration} ref={this.duration} placeholder="MM:HH" />
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Balíček</Form.Label>
+              <Col>
+                <Form.Control as="select" defaultValue={this.props.program.pkg} ref={this.pkg}>
+                  <option>žádný</option>
+                  {Object.keys(this.props.pkgs).map((key) =>
+                    <option key={key} value={key}>{this.props.pkgs[key]}</option>
+                  )}
+                </Form.Control>
+              </Col>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
@@ -65,6 +103,7 @@ class EditProgramModal extends React.Component {
     program.begin = date + time;
     program.duration = duration;
     program.title = this.title.current.value;
+    program.pkg = this.pkg.current.value;
     this.props.updateProgram(program);
 
     this.props.handleClose();

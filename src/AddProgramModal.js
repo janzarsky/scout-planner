@@ -8,12 +8,12 @@ import Row from 'react-bootstrap/Row';
 class AddProgramModal extends React.Component {
   constructor(props) {
     super(props);
-    ['title', 'date', 'time', 'duration'].forEach((field) => this[field] = React.createRef());
+    ['title', 'date', 'time', 'duration', 'pkg'].forEach((field) => this[field] = React.createRef());
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   render() {
-    let date = '', time = '', duration = '01:00';
+    let date = '', time = '', duration = '1:00';
     if (this.props.options.hasOwnProperty('begin')) {
       const begin = new Date(this.props.options.begin);
       date = begin.getUTCDate() + '.' + (begin.getUTCMonth() + 1) + '.' + begin.getUTCFullYear();
@@ -52,8 +52,9 @@ class AddProgramModal extends React.Component {
                 <Form.Control type="text" defaultValue={duration} ref={this.duration} placeholder="MM:HH" />
               </Col>
             </Form.Group>
-            {[["00:15", "15 min"], ["00:30", "30 min"], ["00:45", "45 min"], ["01:00", "1 hod"],
-              ["01:30", "1,5 hod"], ["02:00", "2 hod"]].map((button) =>
+            <Form.Group>
+            {[["0:15", "15 min"], ["0:30", "30 min"], ["0:45", "45 min"], ["1:00", "1 hod"],
+              ["1:30", "1,5 hod"], ["2:00", "2 hod"]].map((button) =>
               <Button
                 variant={'outline-secondary'}
                 key={button[0]}
@@ -62,6 +63,18 @@ class AddProgramModal extends React.Component {
                 {button[1]}
               </Button>
             )}
+            </Form.Group>
+            <Form.Group as={Row}>
+              <Form.Label column sm="2">Balíček</Form.Label>
+              <Col>
+                <Form.Control as="select" defaultValue="žádný" ref={this.pkg}>
+                  <option>žádný</option>
+                  {Object.keys(this.props.pkgs).map((key) =>
+                    <option key={key} value={key}>{this.props.pkgs[key]}</option>
+                  )}
+                </Form.Control>
+              </Col>
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="link" onClick={this.props.handleClose}>
@@ -88,6 +101,7 @@ class AddProgramModal extends React.Component {
       begin: date + time,
       duration: Date.parse('1970-01-01T' + this.duration.current.value + ':00.000+00:00'),
       title: this.title.current.value,
+      pkg: this.pkg.current.value,
     });
 
     this.props.handleClose();

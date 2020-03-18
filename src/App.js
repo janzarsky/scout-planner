@@ -9,6 +9,11 @@ class App extends React.Component {
     super(props);
     this.state = {
       programs: {},
+      pkgs: {
+        'or': 'Oddílové rady',
+        'hosp': 'Hospodaření',
+        'psy': 'Psychologie',
+      },
       addProgram: false,
       addProgramOptions: {},
       editProgram: false,
@@ -35,6 +40,7 @@ class App extends React.Component {
           <AddProgramModal
             addProgram={this.addProgram}
             options={this.state.addProgramOptions}
+            pkgs={this.state.pkgs}
             handleClose={() => this.setState({addProgram: false})}
           />
           : ''
@@ -43,12 +49,14 @@ class App extends React.Component {
           <EditProgramModal
             updateProgram={this.updateProgram}
             program={this.state.editProgramData}
+            pkgs={this.state.pkgs}
             handleClose={() => this.setState({editProgram: false})}
           />
           : ''
         }
         <Timetable
           programs={this.state.programs}
+          pkgs={this.state.pkgs}
           updateProgram={this.updateProgram}
           addProgramModal={(options) =>
             this.setState({addProgram: true, addProgramOptions: options})

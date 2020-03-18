@@ -12,11 +12,6 @@ class Timetable extends React.Component {
         'verca': 'Verča',
         'woody': 'Woody',
       },
-      pkgs: {
-        'or': 'Oddílové rady',
-        'hosp': 'Hospodaření',
-        'psy': 'Psychologie',
-      },
       days: [
         Date.UTC(2020, 5, 12),
         Date.UTC(2020, 5, 13),
@@ -93,7 +88,7 @@ class Timetable extends React.Component {
             rect={this.getRect(programs[key])}
             onDragStart={this.onProgramDragStart}
             people={this.state.people}
-            pkgs={this.state.pkgs}
+            pkgs={this.props.pkgs}
             editProgramModal={this.props.editProgramModal}
           />
         )}
