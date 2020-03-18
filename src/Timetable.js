@@ -107,8 +107,10 @@ class Timetable extends React.Component {
 
   onDroppableDrop(begin) {
     var prog = this.props.programs[this.draggedProgram];
-    prog.begin = begin;
-    this.props.updateProgram(prog);
+    if (prog) {
+      prog.begin = begin;
+      this.props.updateProgram(prog);
+    }
   }
 
   getRect(program) {

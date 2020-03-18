@@ -22,7 +22,7 @@ class AddProgramModal extends React.Component {
       <Modal show={true} onHide={this.props.handleClose}>
         <Form onSubmit={this.handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Title</Modal.Title>
+            <Modal.Title>Nový program</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form.Group>
