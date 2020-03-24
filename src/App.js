@@ -9,11 +9,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       programs: {},
-      pkgs: {
-        'or': { _id:'or', name:'Oddílové rady', color:'#ffe082' },
-        'hosp': { _id:'hosp', name:'Hospodaření', color:'#c5e1a5' },
-        'psy': { _id:'psy', name:'Psychologie', color:'#80cbc4' },
-      },
+      pkgs: {},
       addProgram: false,
       addProgramOptions: {},
       editProgram: false,
@@ -21,6 +17,7 @@ class App extends React.Component {
     };
     this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
+    this.addPkg = this.addPkg.bind(this);
   }
 
   componentDidMount() {
@@ -31,9 +28,18 @@ class App extends React.Component {
           programs: data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {}),
         });
       });
+
+    fetch('http://localhost:4000/pkgs')
+      .then(resp => resp.json())
+      .then(data => {
+        this.setState({
+          pkgs: data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {}),
+        });
+      });
   }
 
   render() {
+    console.log(this.state.pkgs);
     return (
       <div className="App">
         {(this.state.addProgram) ?
@@ -94,6 +100,20 @@ class App extends React.Component {
       let programs = this.state.programs;
       programs[program._id] = data;
       this.setState({ programs: programs });
+    });
+  }
+
+  addPkg(pkg) {
+    fetch('http://localhost:4000/pkgs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pkg),
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      let pkgs = this.state.pkgs;
+      pkgs[pkg._id] = data;
+      this.setState({ pkgs: pkgs });
     });
   }
 }
