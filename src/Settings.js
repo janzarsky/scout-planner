@@ -14,9 +14,11 @@ class Settings extends React.Component {
     return (
       <Table striped bordered hover responsive>
         <thead>
-          <th>Balíček</th>
-          <th>Barva</th>
-          <th><Button variant="success"><i className="fa fa-plus"></i> Přidat</Button></th>
+          <tr>
+            <th>Balíček</th>
+            <th>Barva</th>
+            <th><Button variant="success"><i className="fa fa-plus"></i> Přidat</Button></th>
+          </tr>
         </thead>
         <tbody>
           {Object.keys(pkgs).map((key) =>
