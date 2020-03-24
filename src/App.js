@@ -3,6 +3,7 @@ import AddProgramModal from './AddProgramModal';
 import EditProgramModal from './EditProgramModal';
 import Timetable from './Timetable';
 import Settings from './Settings';
+import Rules from './Rules';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Container from 'react-bootstrap/Container';
@@ -14,11 +15,12 @@ class App extends React.Component {
     this.state = {
       programs: {},
       pkgs: {},
+      rules: {},
       addProgram: false,
       addProgramOptions: {},
       editProgram: false,
       editProgramData: {},
-      activeTab: 'settings',
+      activeTab: 'timetable',
     };
     this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
@@ -39,6 +41,14 @@ class App extends React.Component {
       .then(data => {
         this.setState({
           pkgs: data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {}),
+        });
+      });
+
+    fetch('http://localhost:4000/rules')
+      .then(resp => resp.json())
+      .then(data => {
+        this.setState({
+          rules: data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {}),
         });
       });
   }
@@ -80,6 +90,14 @@ class App extends React.Component {
                 this.setState({editProgram: true, editProgramData: program})
               }
             />
+          </Tab>
+          <Tab eventKey="rules" title="Pravidla">
+            <Container fluid>
+              <Rules
+                programs={this.state.programs}
+                rules={this.state.rules}
+              />
+            </Container>
           </Tab>
           <Tab eventKey="settings" title="Nastavení">
             <Container fluid>
