@@ -2,6 +2,10 @@ import React from 'react';
 import AddProgramModal from './AddProgramModal';
 import EditProgramModal from './EditProgramModal';
 import Timetable from './Timetable';
+import Settings from './Settings';
+import Tabs from 'react-bootstrap/Tabs';
+import Tab from 'react-bootstrap/Tab';
+import Container from 'react-bootstrap/Container';
 import './App.css';
 
 class App extends React.Component {
@@ -14,6 +18,7 @@ class App extends React.Component {
       addProgramOptions: {},
       editProgram: false,
       editProgramData: {},
+      activeTab: 'settings',
     };
     this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
@@ -39,7 +44,6 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state.pkgs);
     return (
       <div className="App">
         {(this.state.addProgram) ?
@@ -60,17 +64,31 @@ class App extends React.Component {
           />
           : ''
         }
-        <Timetable
-          programs={this.state.programs}
-          pkgs={this.state.pkgs}
-          updateProgram={this.updateProgram}
-          addProgramModal={(options) =>
-            this.setState({addProgram: true, addProgramOptions: options})
-          }
-          editProgramModal={(program) =>
-            this.setState({editProgram: true, editProgramData: program})
-          }
-        />
+        <Tabs
+          activeKey={this.state.activeTab}
+          onSelect={(k) => this.setState({ activeTab: k })}
+        >
+          <Tab eventKey="timetable" title="Harmonogram">
+            <Timetable
+              programs={this.state.programs}
+              pkgs={this.state.pkgs}
+              updateProgram={this.updateProgram}
+              addProgramModal={(options) =>
+                this.setState({addProgram: true, addProgramOptions: options})
+              }
+              editProgramModal={(program) =>
+                this.setState({editProgram: true, editProgramData: program})
+              }
+            />
+          </Tab>
+          <Tab eventKey="settings" title="Nastavení">
+            <Container fluid>
+              <Settings
+                pkgs={this.state.pkgs}
+              />
+            </Container>
+          </Tab>
+        </Tabs>
       </div>
     );
   }

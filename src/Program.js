@@ -49,10 +49,13 @@ class Program extends React.Component {
           </div>
         </div>
         <div
-          className="program-modal"
+          className="program-modal-right"
           onClick={(_) => this.props.editProgramModal(program)}
         >
           <i className="fa fa-pencil"></i>
+        </div>
+        <div className="program-modal-left">
+          <i className="fa fa-arrows"></i>
         </div>
       </div>
     );
