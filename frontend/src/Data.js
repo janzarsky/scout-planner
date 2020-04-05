@@ -69,6 +69,6 @@ function remove(path, id) {
   exports[`get${name}s`] = () => getAll(`/${entity}s`);
   exports[`get${name}`] = (id) => get(`/${entity}s`, id);
   exports[`add${name}`] = (data) => post(`/${entity}s`, data);
-  exports[`update${name}`] = (data) => post(`/${entity}s`, data);
+  exports[`update${name}`] = (data) => put(`/${entity}s`, data);
   exports[`delete${name}`] = (id) => remove(`/${entity}s`, id);
 });
