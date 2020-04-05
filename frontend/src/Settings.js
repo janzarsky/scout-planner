@@ -7,8 +7,11 @@ import Button from 'react-bootstrap/Button';
 class Settings extends React.Component {
   constructor(props) {
     super(props);
-    ['name', 'color'].forEach((field) => this[field] = React.createRef());
+    ['name', 'color', 'nameEdit', 'colorEdit'].forEach((field) => this[field] = React.createRef());
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.state = {
+      edit: undefined,
+    };
   }
 
   render() {
@@ -30,24 +33,39 @@ class Settings extends React.Component {
             {Object.keys(pkgs).map((key) =>
               <tr key={key}>
                 <td>{cnt += 1}</td>
-                <td>{pkgs[key].name}</td>
                 <td>
-                  <span
-                    className="color-sample"
-                    style={{ backgroundColor: pkgs[key].color }}
-                  >&nbsp;</span>
-                  {pkgs[key].color}
+                  {(this.state.edit === key) ? (
+                      <Form.Control ref={this.nameEdit} defaultValue={pkgs[key].name} />
+                  ): pkgs[key].name}
                 </td>
                 <td>
-                  <Button variant="outline-primary">
-                    <i className="fa fa-pencil"></i> Upravit
-                  </Button>&nbsp;
-                  <Button variant="outline-danger"
-                    onClick={() => {
-                      this.props.deletePkg(pkgs[key]._id);
-                    }}>
-                    <i className="fa fa-times"></i> Smazat
-                  </Button>
+                  {(this.state.edit === key) ? (
+                    <Form.Control ref={this.colorEdit} defaultValue={pkgs[key].color} />
+                  ) : (
+                    <span>
+                      <span className="color-sample"
+                        style={{ backgroundColor: pkgs[key].color }}>&nbsp;</span>
+                      {pkgs[key].color}
+                    </span>
+                  )}
+                </td>
+                <td>
+                  {(this.state.edit === key) ? (
+                    <Button variant="primary" type="submit">
+                      <i className="fa fa-check"></i> Uložit
+                    </Button>
+                  ) : (
+                    <span>
+                      <Button variant="outline-primary"
+                        onClick={() => this.setState({ edit: key })}>
+                        <i className="fa fa-pencil"></i> Upravit
+                      </Button>&nbsp;
+                      <Button variant="outline-danger"
+                        onClick={() => this.props.deletePkg(pkgs[key]._id)}>
+                        <i className="fa fa-times"></i> Smazat
+                      </Button>
+                    </span>
+                  )}
                 </td>
               </tr>
             )}
@@ -74,10 +92,19 @@ class Settings extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    this.props.addPkg({
-      name: this.name.current.value,
-      color: this.color.current.value,
-    });
+    if (this.state.edit) {
+      this.props.updatePkg({
+        _id: this.state.edit,
+        name: this.nameEdit.current.value,
+        color: this.colorEdit.current.value,
+      })
+      .then(() => this.setState({ edit: undefined }));
+    } else {
+      this.props.addPkg({
+        name: this.name.current.value,
+        color: this.color.current.value,
+      });
+    }
   }
 }
 
