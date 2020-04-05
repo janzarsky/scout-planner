@@ -13,26 +13,28 @@ class Settings extends React.Component {
 
   render() {
     const rules = this.props.rules;
+    var cnt = 0;
 
     return (
       <Form onSubmit={this.handleSubmit}>
         <Table bordered hover responsive>
           <thead>
             <tr>
+              <th>#</th>
               <th>Pravidlo</th>
-              <th></th>
+              <th>Akce</th>
             </tr>
           </thead>
           <tbody>
             {Object.keys(rules).map((key) =>
               <tr key={key}>
                 <td>
+                  {cnt += 1}
+                </td>
+                <td>
                   {this.formatRule(rules[key])}
                 </td>
                 <td>
-                  <Button variant="outline-primary">
-                    <i className="fa fa-pencil"></i> Upravit
-                  </Button>&nbsp;
                   <Button
                     variant="outline-danger"
                     onClick={() => {
@@ -44,6 +46,7 @@ class Settings extends React.Component {
               </tr>
             )}
             <tr key="new_rule">
+              <td></td>
               <td>
                 <Form.Row>
                   <Col>
@@ -80,8 +83,11 @@ class Settings extends React.Component {
   }
 
   formatRule(rule) {
-    const prog_title = (this.props.programs[rule.program])
+    var prog_title = (this.props.programs[rule.program])
       ? this.props.programs[rule.program].title : '(program nenalezen)';
+
+    if (prog_title === '')
+      prog_title = '(bez názvu)';
 
     switch (rule.condition) {
       case "is_before_date":
@@ -93,8 +99,11 @@ class Settings extends React.Component {
       default:
     }
 
-    const prog2_title = (this.props.programs[rule.value])
+    var prog2_title = (this.props.programs[rule.value])
       ? this.props.programs[rule.value].title : '(program nenalezen)';
+
+    if (prog2_title === '')
+      prog2_title = '(bez názvu)';
 
     switch (rule.condition) {
       case "is_before_program":
