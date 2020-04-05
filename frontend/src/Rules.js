@@ -8,7 +8,9 @@ import DateUtils from './DateUtils.js'
 class Settings extends React.Component {
   constructor(props) {
     super(props);
-    ['program', 'condition', 'value'].forEach((field) => this[field] = React.createRef());
+    ['program', 'condition', 'time', 'date', 'program2'].forEach((field) =>
+      this[field] = React.createRef()
+    );
     this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
       condition: 'is_before_date',
@@ -53,7 +55,7 @@ class Settings extends React.Component {
               <td></td>
               <td>
                 <Form.Row>
-                  <Col>
+                  <Col sm="3">
                     <Form.Control as="select" defaultValue="Žádný program" ref={this.program}>
                       <option>Žádný program</option>
                       {Object.keys(this.props.programs).map((key) =>
@@ -70,32 +72,38 @@ class Settings extends React.Component {
                       <option value="is_after_program">musí proběhnout po programu </option>
                     </Form.Control>
                   </Col>
-                  <Col>
-                    {(() => {
-                      switch (this.state.condition) {
-                        case 'is_before_date':
-                        case 'is_after_date':
-                          return (
-                            <Form.Control
-                              ref={this.value}
+                  {(() => {
+                    switch (this.state.condition) {
+                      case 'is_before_date':
+                      case 'is_after_date':
+                        return (<>
+                          <Col sm="2">
+                            <Form.Control ref={this.time}
+                              defaultValue={DateUtils.formatTime(Date.now())}
+                            />
+                          </Col>
+                          <Col sm="2">
+                            <Form.Control ref={this.date}
                               defaultValue={DateUtils.formatDate(Date.now())}
                             />
-                          );
-                        case 'is_before_program':
-                        case 'is_after_program':
-                          return (
-                            <Form.Control as="select" defaultValue="Žádný program" ref={this.value}>
+                          </Col>
+                        </>);
+                      case 'is_before_program':
+                      case 'is_after_program':
+                        return (
+                          <Col>
+                            <Form.Control as="select" defaultValue="Žádný program" ref={this.program2}>
                               <option>Žádný program</option>
                               {Object.keys(this.props.programs).map((key) =>
                                 <option key={key} value={key}>{this.props.programs[key].title}</option>
                               )}
                             </Form.Control>
-                          );
-                        default:
-                          return null;
-                      }
-                    })()}
-                  </Col>
+                          </Col>
+                        );
+                      default:
+                        return null;
+                    }
+                  })()}
                 </Form.Row>
               </td>
               <td>
@@ -120,10 +128,10 @@ class Settings extends React.Component {
     switch (rule.condition) {
       case "is_before_date":
         return (<span><mark>{prog_title}</mark> musí proběhnout před
-          <mark>{DateUtils.formatDate(rule.value)}</mark></span>);
+          <mark>{DateUtils.formatDateTime(rule.value)}</mark></span>);
       case "is_after_date":
         return (<span><mark>{prog_title}</mark> musí proběhnout po
-          <mark>{DateUtils.formatDate(rule.value)}</mark></span>);
+          <mark>{DateUtils.formatDateTime(rule.value)}</mark></span>);
       default:
     }
 
@@ -145,21 +153,25 @@ class Settings extends React.Component {
     }
   }
 
-  parseDate(str) {
-    // TODO create universal date and time parsers
-
-    return Date.now();
-  }
-
   handleSubmit(event) {
     event.preventDefault();
 
     const condition = this.condition.current.value;
 
-    var value = this.value.current.value;
-
-    if (condition === 'is_before_date' || condition === 'is_after_date')
-      value = this.parseDate(value);
+    var value;
+    switch (condition) {
+      case 'is_before_date':
+      case 'is_after_date':
+        value = DateUtils.parseDate(this.date.current.value)
+          + DateUtils.parseTime(this.time.current.value);
+        break;
+      case 'is_before_program':
+      case 'is_after_program':
+        value = this.program2.current.value;
+        break;
+      default:
+        value = null;
+    }
 
     this.props.addRule({
       program: this.program.current.value,
