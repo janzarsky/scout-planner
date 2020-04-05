@@ -25,7 +25,6 @@ class App extends React.Component {
     };
     this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
-    this.addPkg = this.addPkg.bind(this);
   }
 
   componentDidMount() {
@@ -94,6 +93,16 @@ class App extends React.Component {
             <Container fluid>
               <Settings
                 pkgs={this.state.pkgs}
+                addPkg={(pkg) => Data.addPkg(pkg).then(pkg =>
+                  this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
+                )}
+                updatePkg={(pkg) => Data.updatePkg(pkg).then(pkg =>
+                  this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
+                )}
+                deletePkg={(id) => Data.deletePkg(id).then(msg => {
+                  const { [id]: _, ...pkgs } = this.state.pkgs;
+                  this.setState({ pkgs: pkgs });
+                })}
               />
             </Container>
           </Tab>
@@ -111,12 +120,6 @@ class App extends React.Component {
   updateProgram(program) {
     Data.updateProgram(program).then(program => {
       this.setState({ programs: { ...this.state.programs, [program._id]: program } });
-    });
-  }
-
-  addPkg(pkg) {
-    Data.addPkg(pkg).then(pkg => {
-      this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } });
     });
   }
 }
