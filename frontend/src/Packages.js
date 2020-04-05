@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
-class Settings extends React.Component {
+class Packages extends React.Component {
   constructor(props) {
     super(props);
     ['name', 'color', 'nameEdit', 'colorEdit'].forEach((field) => this[field] = React.createRef());
@@ -108,4 +108,4 @@ class Settings extends React.Component {
   }
 }
 
-export default Settings;
+export default Packages;

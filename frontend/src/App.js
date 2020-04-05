@@ -2,7 +2,7 @@ import React from 'react';
 import AddProgramModal from './AddProgramModal';
 import EditProgramModal from './EditProgramModal';
 import Timetable from './Timetable';
-import Settings from './Settings';
+import Packages from './Packages';
 import Rules from './Rules';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
@@ -89,9 +89,9 @@ class App extends React.Component {
               />
             </Container>
           </Tab>
-          <Tab eventKey="settings" title="Nastavení">
+          <Tab eventKey="packages" title="Balíčky">
             <Container fluid>
-              <Settings
+              <Packages
                 pkgs={this.state.pkgs}
                 addPkg={(pkg) => Data.addPkg(pkg).then(pkg =>
                   this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
