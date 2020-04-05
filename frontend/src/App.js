@@ -7,6 +7,7 @@ import Rules from './Rules';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Container from 'react-bootstrap/Container';
+import Data from './Data.js';
 import './App.css';
 
 class App extends React.Component {
@@ -28,29 +29,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:4000/programs')
-      .then(resp => resp.json())
-      .then(data => {
-        this.setState({
-          programs: data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {}),
-        });
-      });
-
-    fetch('http://localhost:4000/pkgs')
-      .then(resp => resp.json())
-      .then(data => {
-        this.setState({
-          pkgs: data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {}),
-        });
-      });
-
-    fetch('http://localhost:4000/rules')
-      .then(resp => resp.json())
-      .then(data => {
-        this.setState({
-          rules: data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {}),
-        });
-      });
+    Data.getPrograms().then(programs => this.setState({programs: programs}));
+    Data.getPkgs().then(pkgs => this.setState({pkgs: pkgs}));
+    Data.getRules().then(rules => this.setState({rules: rules}));
   }
 
   render() {
@@ -112,43 +93,31 @@ class App extends React.Component {
   }
 
   addProgram(program) {
-    fetch('http://localhost:4000/programs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(program),
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      let programs = this.state.programs;
-      programs[program._id] = data;
+    Data.addProgram(program).then(program => {
+      const programs = {
+        ...this.state.programs,
+        [program._id]: program,
+      };
       this.setState({ programs: programs });
     });
   }
 
   updateProgram(program) {
-    fetch('http://localhost:4000/programs/' + program._id, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(program),
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      let programs = this.state.programs;
-      programs[program._id] = data;
+    Data.updateProgram(program).then(program => {
+      const programs = {
+        ...this.state.programs,
+        [program._id]: program,
+      };
       this.setState({ programs: programs });
     });
   }
 
   addPkg(pkg) {
-    fetch('http://localhost:4000/pkgs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(pkg),
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      let pkgs = this.state.pkgs;
-      pkgs[pkg._id] = data;
+    Data.addPkg(pkg).then(pkg => {
+      const pkgs = {
+        ...this.state.pkgs,
+        [pkg._id]: pkg,
+      };
       this.setState({ pkgs: pkgs });
     });
   }
