@@ -6,12 +6,6 @@ class Timetable extends React.Component {
     super(props);
     this.state = {
       programModal: false,
-      people: {
-        'walker': 'Walker',
-        'gabca': 'Gabča',
-        'verca': 'Verča',
-        'woody': 'Woody',
-      },
       days: [
         Date.UTC(2020, 5, 12),
         Date.UTC(2020, 5, 13),
@@ -87,7 +81,6 @@ class Timetable extends React.Component {
             program={programs[key]}
             rect={this.getRect(programs[key])}
             onDragStart={this.onProgramDragStart}
-            people={this.state.people}
             pkgs={this.props.pkgs}
             editProgramModal={this.props.editProgramModal}
           />

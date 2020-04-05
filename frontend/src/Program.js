@@ -37,9 +37,6 @@ class Program extends React.Component {
           <div className="program-text">
             <h3>{program.title}</h3>
             <p className="program-package">{pkgName}</p>
-            <p className="program-people">
-              {(program.people) ? program.people.map((p) => this.props.people[p]).join(', ') : ''}
-            </p>
             <p className="program-time">
               {new Date(program.begin).getUTCHours()}:
               {new Date(program.begin).getUTCMinutes().toString().padStart(2, 0)}&ndash;
