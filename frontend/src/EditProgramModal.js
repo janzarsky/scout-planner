@@ -90,16 +90,10 @@ class EditProgramModal extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const dateVals = this.date.current.value.split('.');
-    const date = Date.UTC(parseInt(dateVals[2], 10), parseInt(dateVals[1], 10) - 1, parseInt(dateVals[0], 10));
-    const timeVals = this.time.current.value.split(':');
-    const time = Date.UTC(1970, 0, 1, parseInt(timeVals[0], 10), parseInt(timeVals[1], 10));
-    const durVals = this.duration.current.value.split(':');
-    const duration = (parseInt(durVals[0], 10)*60 + parseInt(durVals[1], 10))*60*1000;
-
     let program = this.props.program;
-    program.begin = date + time;
-    program.duration = duration;
+    program.begin = DateUtils.parseDate(this.date.current.value)
+      + DateUtils.parseTime(this.time.current.value);
+    program.duration = DateUtils.parseDuration(this.duration.current.value);
     program.title = this.title.current.value;
     program.pkg = this.pkg.current.value;
     this.props.updateProgram(program);

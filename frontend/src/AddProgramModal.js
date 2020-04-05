@@ -92,16 +92,10 @@ class AddProgramModal extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const dateVals = this.date.current.value.split('.');
-    const date = Date.UTC(parseInt(dateVals[2], 10), parseInt(dateVals[1], 10) - 1, parseInt(dateVals[0], 10));
-    const timeVals = this.time.current.value.split(':');
-    const time = Date.UTC(1970, 0, 1, parseInt(timeVals[0], 10), parseInt(timeVals[1], 10));
-    const durVals = this.duration.current.value.split(':');
-    const duration = (parseInt(durVals[0], 10)*60 + parseInt(durVals[1], 10))*60*1000;
-
     this.props.addProgram({
-      begin: date + time,
-      duration: duration,
+      begin: DateUtils.parseDate(this.date.current.value)
+        + DateUtils.parseTime(this.time.current.value),
+      duration: DateUtils.parseDuration(this.duration.current.value),
       title: this.title.current.value,
       pkg: this.pkg.current.value,
     });
