@@ -9,6 +9,9 @@ class Settings extends React.Component {
     super(props);
     ['program', 'condition', 'value'].forEach((field) => this[field] = React.createRef());
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.state = {
+      condition: 'is_before_date',
+    };
   }
 
   render() {
@@ -58,7 +61,8 @@ class Settings extends React.Component {
                     </Form.Control>
                   </Col>
                   <Col>
-                    <Form.Control as="select" ref={this.condition}>
+                    <Form.Control as="select" ref={this.condition}
+                      onChange={(ev) => this.setState({ condition: ev.target.value })}>
                       <option value="is_before_date">musí proběhnout před</option>
                       <option value="is_after_date">musí proběhnout po</option>
                       <option value="is_before_program">musí proběhnout před programem</option>
@@ -66,7 +70,30 @@ class Settings extends React.Component {
                     </Form.Control>
                   </Col>
                   <Col>
-                    <Form.Control ref={this.value} defaultValue="asdf" />
+                    {(() => {
+                      switch (this.state.condition) {
+                        case 'is_before_date':
+                        case 'is_after_date':
+                          return (
+                            <Form.Control
+                              ref={this.value}
+                              defaultValue={this.formatDate(Date.now())}
+                            />
+                          );
+                        case 'is_before_program':
+                        case 'is_after_program':
+                          return (
+                            <Form.Control as="select" defaultValue="Žádný program" ref={this.value}>
+                              <option>Žádný program</option>
+                              {Object.keys(this.props.programs).map((key) =>
+                                <option key={key} value={key}>{this.props.programs[key].title}</option>
+                              )}
+                            </Form.Control>
+                          );
+                        default:
+                          return null;
+                      }
+                    })()}
                   </Col>
                 </Form.Row>
               </td>
@@ -128,13 +155,26 @@ class Settings extends React.Component {
       + date.getUTCFullYear();
   }
 
+  parseDate(str) {
+    // TODO create universal date and time parsers
+
+    return Date.now();
+  }
+
   handleSubmit(event) {
     event.preventDefault();
 
+    const condition = this.condition.current.value;
+
+    var value = this.value.current.value;
+
+    if (condition === 'is_before_date' || condition === 'is_after_date')
+      value = this.parseDate(value);
+
     this.props.addRule({
       program: this.program.current.value,
-      condition: this.condition.current.value,
-      value: this.value.current.value,
+      condition: condition,
+      value: value,
     });
   }
 }
