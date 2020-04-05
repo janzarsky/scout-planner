@@ -1,4 +1,5 @@
 import React from 'react';
+import DateUtils from './DateUtils.js';
 
 class Program extends React.Component {
   constructor(props) {
@@ -38,10 +39,8 @@ class Program extends React.Component {
             <h3>{program.title}</h3>
             <p className="program-package">{pkgName}</p>
             <p className="program-time">
-              {new Date(program.begin).getUTCHours()}:
-              {new Date(program.begin).getUTCMinutes().toString().padStart(2, 0)}&ndash;
-              {new Date(program.begin + program.duration).getUTCHours()}:
-              {new Date(program.begin + program.duration).getUTCMinutes().toString().padStart(2, 0)}
+              {DateUtils.formatTime(program.begin)}&ndash;
+              {DateUtils.formatTime(program.begin + program.duration)}
             </p>
           </div>
         </div>

@@ -3,6 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import DateUtils from './DateUtils.js'
 
 class Settings extends React.Component {
   constructor(props) {
@@ -77,7 +78,7 @@ class Settings extends React.Component {
                           return (
                             <Form.Control
                               ref={this.value}
-                              defaultValue={this.formatDate(Date.now())}
+                              defaultValue={DateUtils.formatDate(Date.now())}
                             />
                           );
                         case 'is_before_program':
@@ -119,10 +120,10 @@ class Settings extends React.Component {
     switch (rule.condition) {
       case "is_before_date":
         return (<span><mark>{prog_title}</mark> musí proběhnout před
-          <mark>{this.formatDate(rule.value)}</mark></span>);
+          <mark>{DateUtils.formatDate(rule.value)}</mark></span>);
       case "is_after_date":
         return (<span><mark>{prog_title}</mark> musí proběhnout po
-          <mark>{this.formatDate(rule.value)}</mark></span>);
+          <mark>{DateUtils.formatDate(rule.value)}</mark></span>);
       default:
     }
 
@@ -142,17 +143,6 @@ class Settings extends React.Component {
       default:
         return;
     }
-  }
-
-  formatDate(ms) {
-    const date = new Date(parseInt(ms));
-
-    if (isNaN(date.getTime()))
-      return '(chybné datum)';
-
-    return date.getUTCHours() + ':' + ((date.getUTCMinutes() < 10) ? '0' : '')
-      + date.getUTCMinutes() + ' ' + date.getUTCDate() + '.' + (date.getUTCMonth() + 1) + '.'
-      + date.getUTCFullYear();
   }
 
   parseDate(str) {
