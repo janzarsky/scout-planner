@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import DateUtils from './DateUtils.js';
 
 class AddProgramModal extends React.Component {
   constructor(props) {
@@ -15,9 +16,8 @@ class AddProgramModal extends React.Component {
   render() {
     let date = '', time = '', duration = '1:00';
     if (this.props.options.hasOwnProperty('begin')) {
-      const begin = new Date(this.props.options.begin);
-      date = begin.getUTCDate() + '.' + (begin.getUTCMonth() + 1) + '.' + begin.getUTCFullYear();
-      time = begin.getUTCHours() + ':' + ((begin.getUTCMinutes() < 10) ? '0' : '') + begin.getUTCMinutes();
+      date = DateUtils.formatDate(this.props.options.begin);
+      time = DateUtils.formatTime(this.props.options.begin);
     }
 
     const setDuration = ((duration) => {

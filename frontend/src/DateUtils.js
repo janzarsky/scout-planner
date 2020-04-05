@@ -26,3 +26,12 @@ exports.formatDateTime = function(ms) {
     + date.getUTCMinutes() + ' ' + date.getUTCDate() + '.' + (date.getUTCMonth() + 1)
     + '.' + date.getUTCFullYear();
 }
+
+exports.formatDuration = function(ms) {
+  const date = new Date(parseInt(ms));
+
+  if (isNaN(date.getTime()))
+    return '(chybná délka)';
+
+  return date.getUTCHours() + ':' + ((date.getUTCMinutes() < 10) ? '0' : '') + date.getUTCMinutes();
+}

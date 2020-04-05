@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import DateUtils from './DateUtils.js';
 
 class EditProgramModal extends React.Component {
   constructor(props) {
@@ -13,12 +14,9 @@ class EditProgramModal extends React.Component {
   }
 
   render() {
-    const begin = new Date(this.props.program.begin);
-    const date = begin.getUTCDate() + '.' + (begin.getUTCMonth() + 1) + '.' + begin.getUTCFullYear();
-    const time = begin.getUTCHours() + ':' + ((begin.getUTCMinutes() < 10) ? '0' : '') + begin.getUTCMinutes();
-    const dur = this.props.program.duration;
-    const duration = Math.floor(dur/(1000*60*60)) + ':' +
-      (((dur % (1000*60*60) < 10)/(1000*60)) ? '0' : '') + (dur % (1000*60*60)/(1000*60));
+    const date = DateUtils.formatDate(this.props.program.begin);
+    const time = DateUtils.formatTime(this.props.program.begin);
+    const duration = DateUtils.formatDuration(this.props.program.duration);
 
     const setDuration = ((duration) => {
       this.duration.current.value = duration;
