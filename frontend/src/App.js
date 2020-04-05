@@ -77,6 +77,16 @@ class App extends React.Component {
               <Rules
                 programs={this.state.programs}
                 rules={this.state.rules}
+                addRule={(rule) => Data.addRule(rule).then(rule =>
+                  this.setState({ rules: { ...this.state.rules, [rule._id]: rule } })
+                )}
+                updateRule={(rule) => Data.updateRule(rule).then(rule =>
+                  this.setState({ rules: { ...this.state.rules, [rule._id]: rule } })
+                )}
+                deleteRule={(id) => Data.deleteRule(id).then(msg => {
+                  const { [id]: _, ...rules } = this.state.rules;
+                  this.setState({ rules: rules });
+                })}
               />
             </Container>
           </Tab>
@@ -94,31 +104,19 @@ class App extends React.Component {
 
   addProgram(program) {
     Data.addProgram(program).then(program => {
-      const programs = {
-        ...this.state.programs,
-        [program._id]: program,
-      };
-      this.setState({ programs: programs });
+      this.setState({ programs: { ...this.state.programs, [program._id]: program } });
     });
   }
 
   updateProgram(program) {
     Data.updateProgram(program).then(program => {
-      const programs = {
-        ...this.state.programs,
-        [program._id]: program,
-      };
-      this.setState({ programs: programs });
+      this.setState({ programs: { ...this.state.programs, [program._id]: program } });
     });
   }
 
   addPkg(pkg) {
     Data.addPkg(pkg).then(pkg => {
-      const pkgs = {
-        ...this.state.pkgs,
-        [pkg._id]: pkg,
-      };
-      this.setState({ pkgs: pkgs });
+      this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } });
     });
   }
 }
