@@ -68,7 +68,7 @@ class AddProgramModal extends React.Component {
               <Form.Label column sm="2">Balíček</Form.Label>
               <Col>
                 <Form.Control as="select" defaultValue="žádný" ref={this.pkg}>
-                  <option>žádný</option>
+                  <option value="">žádný</option>
                   {Object.keys(this.props.pkgs).map((key) =>
                     <option key={key} value={key}>{this.props.pkgs[key].name}</option>
                   )}
