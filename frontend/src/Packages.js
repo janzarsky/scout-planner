@@ -61,7 +61,7 @@ class Packages extends React.Component {
                       </Button>&nbsp;
                       <Button variant="outline-danger"
                         onClick={() => this.props.deletePkg(pkgs[key]._id)}>
-                        <i className="fa fa-times"></i> Smazat
+                        <i className="fa fa-trash"></i> Smazat
                       </Button>
                     </span>
                   )}
