@@ -19,6 +19,7 @@ class Settings extends React.Component {
 
   render() {
     const rules = this.props.rules;
+    const violations = this.props.violations;
     var cnt = 0;
 
     return (
@@ -28,6 +29,7 @@ class Settings extends React.Component {
             <tr>
               <th>#</th>
               <th>Pravidlo</th>
+              <th>Splněno</th>
               <th>Akce</th>
             </tr>
           </thead>
@@ -41,12 +43,20 @@ class Settings extends React.Component {
                   {this.formatRule(rules[key])}
                 </td>
                 <td>
+                  {violations[key] && (violations[key].satisfied
+                    ? <span className="text-success"><i className="fa fa-check" /> ano</span>
+                    : <span className="text-danger">
+                        <i className="fa fa-times" /> {violations[key].msg}
+                      </span>
+                  )}
+                </td>
+                <td>
                   <Button
                     variant="outline-danger"
                     onClick={() => {
                       this.props.deleteRule(rules[key]._id);
                     }}>
-                    <i className="fa fa-times"></i> Smazat
+                    <i className="fa fa-trash"></i> Smazat
                   </Button>
                 </td>
               </tr>
@@ -106,6 +116,7 @@ class Settings extends React.Component {
                   })()}
                 </Form.Row>
               </td>
+              <td></td>
               <td>
                 <Button variant="success" type="submit">
                   <i className="fa fa-plus"></i> Přidat

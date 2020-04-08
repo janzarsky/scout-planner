@@ -8,6 +8,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Container from 'react-bootstrap/Container';
 import Data from './Data.js';
+import Checker from './Checker.js';
 import './App.css';
 
 class App extends React.Component {
@@ -17,6 +18,8 @@ class App extends React.Component {
       programs: {},
       pkgs: {},
       rules: {},
+      violations: {},
+      satisfied: true,
       addProgram: false,
       addProgramOptions: {},
       editProgram: false,
@@ -28,12 +31,30 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    Data.getPrograms().then(programs => this.setState({programs: programs}));
+    Data.getPrograms().then(programs => this.setState({programs: programs}, this.checkRules));
     Data.getPkgs().then(pkgs => this.setState({pkgs: pkgs}));
-    Data.getRules().then(rules => this.setState({rules: rules}));
+    Data.getRules().then(rules => this.setState({rules: rules}, this.checkRules));
+  }
+
+  checkRules() {
+    Checker.checkRules(this.state.rules, this.state.programs).then(violations => {
+      this.setState({
+        violations: violations,
+        satisfied: Object.values(violations).reduce((acc, curr) => (acc && curr.satisfied), true),
+      });
+    });
   }
 
   render() {
+    var violationsPerProgram = {};
+    Object.values(this.state.violations).filter((val) => !val.satisfied)
+      .map((val) => [val.program, val.msg])
+      .forEach(([programId, msg]) => {
+        if (!violationsPerProgram[programId])
+          violationsPerProgram[programId] = [];
+        violationsPerProgram[programId].push(msg);
+      });
+
     return (
       <div className="App">
         {(this.state.addProgram) ?
@@ -62,6 +83,7 @@ class App extends React.Component {
             <Timetable
               programs={this.state.programs}
               pkgs={this.state.pkgs}
+              violations={violationsPerProgram}
               updateProgram={this.updateProgram}
               addProgramModal={(options) =>
                 this.setState({addProgram: true, addProgramOptions: options})
@@ -71,20 +93,31 @@ class App extends React.Component {
               }
             />
           </Tab>
-          <Tab eventKey="rules" title="Pravidla">
+          <Tab eventKey="rules" title={
+            <>Pravidla {this.state.satisfied
+                ? <i className="fa fa-check" />
+                : <i className="fa fa-times" />}</>
+          }>
             <Container fluid>
               <Rules
                 programs={this.state.programs}
                 rules={this.state.rules}
+                violations={this.state.violations}
                 addRule={(rule) => Data.addRule(rule).then(rule =>
-                  this.setState({ rules: { ...this.state.rules, [rule._id]: rule } })
+                  this.setState(
+                    { rules: { ...this.state.rules, [rule._id]: rule } },
+                    this.checkRules
+                  )
                 )}
                 updateRule={(rule) => Data.updateRule(rule).then(rule =>
-                  this.setState({ rules: { ...this.state.rules, [rule._id]: rule } })
+                  this.setState(
+                    { rules: { ...this.state.rules, [rule._id]: rule } },
+                    this.checkRules
+                  )
                 )}
                 deleteRule={(id) => Data.deleteRule(id).then(msg => {
                   const { [id]: _, ...rules } = this.state.rules;
-                  this.setState({ rules: rules });
+                  this.setState({ rules: rules }, this.checkRules);
                 })}
               />
             </Container>
@@ -113,13 +146,13 @@ class App extends React.Component {
 
   addProgram(program) {
     Data.addProgram(program).then(program => {
-      this.setState({ programs: { ...this.state.programs, [program._id]: program } });
+      this.setState({ programs: { ...this.state.programs, [program._id]: program } }, this.checkRules);
     });
   }
 
   updateProgram(program) {
     Data.updateProgram(program).then(program => {
-      this.setState({ programs: { ...this.state.programs, [program._id]: program } });
+      this.setState({ programs: { ...this.state.programs, [program._id]: program } }, this.checkRules);
     });
   }
 }

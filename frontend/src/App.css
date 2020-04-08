@@ -54,6 +54,15 @@
   background-color: #81d4fa;
   line-height: 1.5;
 }
+.timetable-program.violation {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(0,0,0,0),
+    rgba(0,0,0,0) 20px,
+    #ffab91 20px,
+    #ffab91 40px
+  );
+}
 .program-text {
   flex: 1;
   width: 100%;

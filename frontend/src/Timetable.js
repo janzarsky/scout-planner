@@ -79,6 +79,7 @@ class Timetable extends React.Component {
           <Program
             key={key}
             program={programs[key]}
+            violations={this.props.violations[key]}
             rect={this.getRect(programs[key])}
             onDragStart={this.onProgramDragStart}
             pkgs={this.props.pkgs}

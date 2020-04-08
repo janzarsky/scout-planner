@@ -19,8 +19,7 @@ class Program extends React.Component {
 
     return (
       <div
-        className={'timetable-program-wrapper'
-                   + (this.state.dragged ? ' dragged' : '')}
+        className={'timetable-program-wrapper' + (this.state.dragged ? ' dragged' : '')}
         style={{
           gridColumnStart: this.props.rect.x + 2,
           gridRowStart: this.props.rect.y + 2,
@@ -32,8 +31,9 @@ class Program extends React.Component {
         onDragEnd={(e) => this.onDragEnd(e)}
       >
         <div
-          className="timetable-program"
+          className={'timetable-program' + (this.props.violations ? ' violation' : '')}
           style={(color) ? {backgroundColor: color} : {}}
+          title={this.props.violations && this.props.violations.join(', ')}
         >
           <div className="program-text">
             <h3>{program.title}</h3>
