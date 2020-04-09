@@ -46,4 +46,9 @@ exports.parseTime = function(str) {
   return Date.UTC(1970, 0, 1, parseInt(vals[0], 10), parseInt(vals[1], 10));
 };
 
+exports.parseDateTime = function(str) {
+  const [time, date] = str.split(' ');
+  return exports.parseDate(date) + exports.parseTime(time);
+};
+
 exports.parseDuration = exports.parseTime;
