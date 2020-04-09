@@ -6,11 +6,13 @@ async function clear() {
     Data.getPrograms(),
     Data.getPkgs(),
     Data.getRules(),
-  ]).then(([programs, pkgs, rules]) => {
-    Object.values(programs).map((it) => Data.deleteProgram(it._id));
-    Object.values(pkgs).map((it) => Data.deletePkg(it._id));
-    Object.values(rules).map((it) => Data.deleteRule(it._id));
-  });
+  ]).then(([programs, pkgs, rules]) =>
+    Promise.all([
+      ...Object.values(programs).map((it) => Data.deleteProgram(it._id)),
+      ...Object.values(pkgs).map((it) => Data.deletePkg(it._id)),
+      ...Object.values(rules).map((it) => Data.deleteRule(it._id)),
+    ])
+  );
 }
 
 async function load() {

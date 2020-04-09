@@ -7,8 +7,11 @@ import Rules from './Rules';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
+import Nav from 'react-bootstrap/Nav';
 import Data from './Data.js';
 import Checker from './Checker.js';
+import Example from './Example.js';
 import './App.css';
 
 class App extends React.Component {
@@ -28,6 +31,18 @@ class App extends React.Component {
     };
     this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
+    this.loadTestData = this.loadTestData.bind(this);
+    this.removeAll = this.removeAll.bind(this);
+  }
+
+  loadTestData() {
+    Example.clear()
+      .then(_ => Example.load())
+      .then(_ => this.componentDidMount());
+  }
+
+  removeAll() {
+    Example.clear().then(_ => this.componentDidMount());
   }
 
   componentDidMount() {
@@ -75,71 +90,79 @@ class App extends React.Component {
           />
           : ''
         }
-        <Tabs
-          activeKey={this.state.activeTab}
-          onSelect={(k) => this.setState({ activeTab: k })}
+        <Tab.Container
+          defaultActiveKey={this.state.activeTab}
         >
-          <Tab eventKey="timetable" title="Harmonogram">
-            <Timetable
-              programs={this.state.programs}
-              pkgs={this.state.pkgs}
-              violations={violationsPerProgram}
-              updateProgram={this.updateProgram}
-              addProgramModal={(options) =>
-                this.setState({addProgram: true, addProgramOptions: options})
-              }
-              editProgramModal={(program) =>
-                this.setState({editProgram: true, editProgramData: program})
-              }
-            />
-          </Tab>
-          <Tab eventKey="rules" title={
-            <>Pravidla {this.state.satisfied
-                ? <i className="fa fa-check" />
-                : <i className="fa fa-times" />}</>
-          }>
-            <Container fluid>
-              <Rules
+          <Nav variant="pills">
+            <Nav.Item><Nav.Link eventKey="timetable">Harmonogram</Nav.Link></Nav.Item>
+            <Nav.Item><Nav.Link eventKey="rules">Pravidla {this.state.satisfied
+                  ? <i className="fa fa-check" />
+                  : <i className="fa fa-times" />}</Nav.Link></Nav.Item>
+            <Nav.Item><Nav.Link eventKey="packages">Balíčky</Nav.Link></Nav.Item>
+            <Nav.Item style={{marginLeft: 'auto'}}>
+              <Button onClick={this.loadTestData}>Nahrát příklad</Button>
+            </Nav.Item>
+            <Nav.Item><Button onClick={this.removeAll}>Smazat vše</Button></Nav.Item>
+          </Nav>
+          <Tab.Content>
+            <Tab.Pane eventKey="timetable">
+              <Timetable
                 programs={this.state.programs}
-                rules={this.state.rules}
-                violations={this.state.violations}
-                addRule={(rule) => Data.addRule(rule).then(rule =>
-                  this.setState(
-                    { rules: { ...this.state.rules, [rule._id]: rule } },
-                    this.checkRules
-                  )
-                )}
-                updateRule={(rule) => Data.updateRule(rule).then(rule =>
-                  this.setState(
-                    { rules: { ...this.state.rules, [rule._id]: rule } },
-                    this.checkRules
-                  )
-                )}
-                deleteRule={(id) => Data.deleteRule(id).then(msg => {
-                  const { [id]: _, ...rules } = this.state.rules;
-                  this.setState({ rules: rules }, this.checkRules);
-                })}
-              />
-            </Container>
-          </Tab>
-          <Tab eventKey="packages" title="Balíčky">
-            <Container fluid>
-              <Packages
                 pkgs={this.state.pkgs}
-                addPkg={(pkg) => Data.addPkg(pkg).then(pkg =>
-                  this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
-                )}
-                updatePkg={(pkg) => Data.updatePkg(pkg).then(pkg =>
-                  this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
-                )}
-                deletePkg={(id) => Data.deletePkg(id).then(msg => {
-                  const { [id]: _, ...pkgs } = this.state.pkgs;
-                  this.setState({ pkgs: pkgs });
-                })}
+                violations={violationsPerProgram}
+                updateProgram={this.updateProgram}
+                addProgramModal={(options) =>
+                  this.setState({addProgram: true, addProgramOptions: options})
+                }
+                editProgramModal={(program) =>
+                  this.setState({editProgram: true, editProgramData: program})
+                }
               />
-            </Container>
-          </Tab>
-        </Tabs>
+            </Tab.Pane>
+            <Tab.Pane eventKey="rules">
+              <Container fluid>
+                <Rules
+                  programs={this.state.programs}
+                  rules={this.state.rules}
+                  violations={this.state.violations}
+                  addRule={(rule) => Data.addRule(rule).then(rule =>
+                    this.setState(
+                      { rules: { ...this.state.rules, [rule._id]: rule } },
+                      this.checkRules
+                    )
+                  )}
+                  updateRule={(rule) => Data.updateRule(rule).then(rule =>
+                    this.setState(
+                      { rules: { ...this.state.rules, [rule._id]: rule } },
+                      this.checkRules
+                    )
+                  )}
+                  deleteRule={(id) => Data.deleteRule(id).then(msg => {
+                    const { [id]: _, ...rules } = this.state.rules;
+                    this.setState({ rules: rules }, this.checkRules);
+                  })}
+                />
+              </Container>
+            </Tab.Pane>
+            <Tab.Pane eventKey="packages" title="Balíčky">
+              <Container fluid>
+                <Packages
+                  pkgs={this.state.pkgs}
+                  addPkg={(pkg) => Data.addPkg(pkg).then(pkg =>
+                    this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
+                  )}
+                  updatePkg={(pkg) => Data.updatePkg(pkg).then(pkg =>
+                    this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
+                  )}
+                  deletePkg={(id) => Data.deletePkg(id).then(msg => {
+                    const { [id]: _, ...pkgs } = this.state.pkgs;
+                    this.setState({ pkgs: pkgs });
+                  })}
+                />
+              </Container>
+            </Tab.Pane>
+          </Tab.Content>
+        </Tab.Container>
       </div>
     );
   }
