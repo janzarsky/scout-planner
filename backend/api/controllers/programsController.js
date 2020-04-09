@@ -21,7 +21,7 @@ exports.create_program = function(req, res) {
 };
 
 exports.delete_program = function(req, res) {
-  Program.remove({ _id: req.params.id }, function(err, program) {
+  Program.findByIdAndRemove({ _id: req.params.id }, function(err, program) {
     if (err)
       res.send(err);
     res.json({ message: 'Program successfully deleted' });

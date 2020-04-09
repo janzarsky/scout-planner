@@ -21,7 +21,7 @@ exports.create_pkg = function(req, res) {
 };
 
 exports.delete_pkg = function(req, res) {
-  Pkg.remove({ _id: req.params.id }, function(err, pkg) {
+  Pkg.findByIdAndRemove({ _id: req.params.id }, function(err, pkg) {
     if (err)
       res.send(err);
     res.json({ message: 'Package successfully deleted' });

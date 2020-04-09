@@ -21,7 +21,7 @@ exports.create_rule = function(req, res) {
 };
 
 exports.delete_rule = function(req, res) {
-  Rule.remove({ _id: req.params.id }, function(err, rule) {
+  Rule.findByIdAndRemove({ _id: req.params.id }, function(err, rule) {
     if (err)
       res.send(err);
     res.json({ message: 'Package successfully deleted' });
