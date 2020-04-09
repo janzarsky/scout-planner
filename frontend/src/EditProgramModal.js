@@ -11,6 +11,7 @@ class EditProgramModal extends React.Component {
     super(props);
     ['title', 'date', 'time', 'duration', 'pkg'].forEach((field) => this[field] = React.createRef());
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   render() {
@@ -75,6 +76,9 @@ class EditProgramModal extends React.Component {
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
+            <Button variant="link text-danger" onClick={this.handleDelete} style={{marginRight: 'auto'}}>
+              Smazat
+            </Button>
             <Button variant="link" onClick={this.props.handleClose}>
               Zrušit
             </Button>
@@ -85,6 +89,12 @@ class EditProgramModal extends React.Component {
         </Form>
       </Modal>
     );
+  }
+
+  handleDelete(event) {
+    event.preventDefault();
+    this.props.deleteProgram(this.props.program._id);
+    this.props.handleClose();
   }
 
   handleSubmit(event) {

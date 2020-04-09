@@ -29,8 +29,9 @@ class App extends React.Component {
       editProgramData: {},
       activeTab: 'timetable',
     };
-    this.updateProgram = this.updateProgram.bind(this);
     this.addProgram = this.addProgram.bind(this);
+    this.updateProgram = this.updateProgram.bind(this);
+    this.deleteProgram = this.deleteProgram.bind(this);
     this.loadTestData = this.loadTestData.bind(this);
     this.removeAll = this.removeAll.bind(this);
   }
@@ -84,6 +85,7 @@ class App extends React.Component {
         {(this.state.editProgram) ?
           <EditProgramModal
             updateProgram={this.updateProgram}
+            deleteProgram={this.deleteProgram}
             program={this.state.editProgramData}
             pkgs={this.state.pkgs}
             handleClose={() => this.setState({editProgram: false})}
@@ -176,6 +178,13 @@ class App extends React.Component {
   updateProgram(program) {
     Data.updateProgram(program).then(program => {
       this.setState({ programs: { ...this.state.programs, [program._id]: program } }, this.checkRules);
+    });
+  }
+
+  deleteProgram(id) {
+    Data.deleteProgram(id).then(msg => {
+      const { [id]: _, ...programs } = this.state.programs;
+      this.setState({ programs: programs });
     });
   }
 }
