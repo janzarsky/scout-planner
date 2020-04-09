@@ -27,11 +27,11 @@ async function checkRules(rules, programs) {
 
         if (rule.condition === 'is_before_program')
           return (program.begin + program.duration <= program2.begin) ? success() :
-            failure(`Program by měl proběhnout před programem ${program2.title})`);
+            failure(`Program by měl proběhnout před programem ${program2.title}`);
 
         if (rule.condition === 'is_after_program')
           return (program.begin >= program2.begin + program2.duration) ? success() :
-            failure(`Program by měl proběhnout po programu ${program2.title})`);
+            failure(`Program by měl proběhnout po programu ${program2.title}`);
       }
 
       return failure('Neznámé pravidlo');
