@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import DateUtils from './DateUtils.js'
+import DateUtils from './DateUtils'
 
 class Settings extends React.Component {
   constructor(props) {
@@ -12,9 +12,7 @@ class Settings extends React.Component {
       this[field] = React.createRef()
     );
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = {
-      condition: 'is_before_date',
-    };
+    this.state = { condition: 'is_before_date' };
   }
 
   render() {
@@ -22,111 +20,109 @@ class Settings extends React.Component {
     const violations = this.props.violations;
     var cnt = 0;
 
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Table bordered hover responsive>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Pravidlo</th>
-              <th>Splněno</th>
-              <th>Akce</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.keys(rules).map((key) =>
-              <tr key={key}>
-                <td>
-                  {cnt += 1}
-                </td>
-                <td>
-                  {this.formatRule(rules[key])}
-                </td>
-                <td>
-                  {violations[key] && (violations[key].satisfied
-                    ? <span className="text-success"><i className="fa fa-check" /> ano</span>
-                    : <span className="text-danger">
-                        <i className="fa fa-times" /> {violations[key].msg}
-                      </span>
-                  )}
-                </td>
-                <td>
-                  <Button
-                    variant="outline-danger"
-                    onClick={() => {
-                      this.props.deleteRule(rules[key]._id);
-                    }}>
-                    <i className="fa fa-trash"></i> Smazat
-                  </Button>
-                </td>
-              </tr>
-            )}
-            <tr key="new_rule">
-              <td></td>
+    return <Form onSubmit={this.handleSubmit}>
+      <Table bordered hover responsive>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Pravidlo</th>
+            <th>Splněno</th>
+            <th>Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(rules).map(([key, rule]) =>
+            <tr key={key}>
               <td>
-                <Form.Row>
-                  <Col sm="3">
-                    <Form.Control as="select" defaultValue="Žádný program" ref={this.program}>
-                      <option>Žádný program</option>
-                      {Object.keys(this.props.programs).map((key) =>
-                        <option key={key} value={key}>{this.props.programs[key].title}</option>
-                      )}
-                    </Form.Control>
-                  </Col>
-                  <Col>
-                    <Form.Control as="select" ref={this.condition}
-                      onChange={(ev) => this.setState({ condition: ev.target.value })}>
-                      <option value="is_before_date">musí proběhnout před</option>
-                      <option value="is_after_date">musí proběhnout po</option>
-                      <option value="is_before_program">musí proběhnout před programem</option>
-                      <option value="is_after_program">musí proběhnout po programu </option>
-                    </Form.Control>
-                  </Col>
-                  {(() => {
-                    switch (this.state.condition) {
-                      case 'is_before_date':
-                      case 'is_after_date':
-                        return (<>
-                          <Col sm="2">
-                            <Form.Control ref={this.time}
-                              defaultValue={DateUtils.formatTime(Date.now())}
-                            />
-                          </Col>
-                          <Col sm="2">
-                            <Form.Control ref={this.date}
-                              defaultValue={DateUtils.formatDate(Date.now())}
-                            />
-                          </Col>
-                        </>);
-                      case 'is_before_program':
-                      case 'is_after_program':
-                        return (
-                          <Col>
-                            <Form.Control as="select" defaultValue="Žádný program" ref={this.program2}>
-                              <option>Žádný program</option>
-                              {Object.keys(this.props.programs).map((key) =>
-                                <option key={key} value={key}>{this.props.programs[key].title}</option>
-                              )}
-                            </Form.Control>
-                          </Col>
-                        );
-                      default:
-                        return null;
-                    }
-                  })()}
-                </Form.Row>
+                {cnt += 1}
               </td>
-              <td></td>
               <td>
-                <Button variant="success" type="submit">
-                  <i className="fa fa-plus"></i> Přidat
+                {this.formatRule(rule)}
+              </td>
+              <td>
+                {violations[key] && (violations[key].satisfied
+                  ? <span className="text-success"><i className="fa fa-check" /> ano</span>
+                  : <span className="text-danger">
+                      <i className="fa fa-times" /> {violations[key].msg}
+                    </span>
+                )}
+              </td>
+              <td>
+                <Button
+                  variant="outline-danger"
+                  onClick={() => {
+                    this.props.deleteRule(rule._id);
+                  }}>
+                  <i className="fa fa-trash"></i> Smazat
                 </Button>
               </td>
             </tr>
-          </tbody>
-        </Table>
-      </Form>
-    );
+          )}
+          <tr key="new_rule">
+            <td></td>
+            <td>
+              <Form.Row>
+                <Col sm="3">
+                  <Form.Control as="select" defaultValue="Žádný program" ref={this.program}>
+                    <option>Žádný program</option>
+                    {Object.keys(this.props.programs).map((key) =>
+                      <option key={key} value={key}>{this.props.programs[key].title}</option>
+                    )}
+                  </Form.Control>
+                </Col>
+                <Col>
+                  <Form.Control as="select" ref={this.condition}
+                    onChange={(ev) => this.setState({ condition: ev.target.value })}>
+                    <option value="is_before_date">musí proběhnout před</option>
+                    <option value="is_after_date">musí proběhnout po</option>
+                    <option value="is_before_program">musí proběhnout před programem</option>
+                    <option value="is_after_program">musí proběhnout po programu </option>
+                  </Form.Control>
+                </Col>
+                {(() => {
+                  switch (this.state.condition) {
+                    case 'is_before_date':
+                    case 'is_after_date':
+                      return (<>
+                        <Col sm="2">
+                          <Form.Control ref={this.time}
+                            defaultValue={DateUtils.formatTime(Date.now())}
+                          />
+                        </Col>
+                        <Col sm="2">
+                          <Form.Control ref={this.date}
+                            defaultValue={DateUtils.formatDate(Date.now())}
+                          />
+                        </Col>
+                      </>);
+                    case 'is_before_program':
+                    case 'is_after_program':
+                      return (
+                        <Col>
+                          <Form.Control as="select" defaultValue="Žádný program" ref={this.program2}>
+                            <option>Žádný program</option>
+                            {Object.keys(this.props.programs).map((key) =>
+                              <option key={key} value={key}>{this.props.programs[key].title}</option>
+                            )}
+                          </Form.Control>
+                        </Col>
+                      );
+                    default:
+                      return null;
+                  }
+                })()}
+              </Form.Row>
+            </td>
+            <td></td>
+            <td>
+              <Button variant="success" type="submit">
+                <i className="fa fa-plus"></i> Přidat
+              </Button>
+            </td>
+          </tr>
+        </tbody>
+      </Table>
+    </Form>;
   }
 
   formatRule(rule) {
