@@ -54,12 +54,12 @@ class EditProgramModal extends React.Component {
           </Form.Group>
           <Form.Group>
           {[["0:15", "15 min"], ["0:30", "30 min"], ["0:45", "45 min"], ["1:00", "1 hod"],
-            ["1:30", "1,5 hod"], ["2:00", "2 hod"]].map((button) =>
+            ["1:30", "1,5 hod"], ["2:00", "2 hod"]].map(([value, text]) =>
             <Button
               variant={'outline-secondary'}
-              key={button[0]}
-              onClick={() => setDuration(button[0])}
-            >{button[1]}</Button>
+              key={value}
+              onClick={() => setDuration(value)}
+            >{text}</Button>
           )}
           </Form.Group>
           <Form.Group as={Row}>
@@ -67,8 +67,8 @@ class EditProgramModal extends React.Component {
             <Col>
               <Form.Control as="select" defaultValue={this.props.program.pkg} ref={this.pkg}>
                 <option>žádný</option>
-                {Object.keys(this.props.pkgs).map((key) =>
-                  <option key={key} value={key}>{this.props.pkgs[key].name}</option>
+                {Object.entries(this.props.pkgs).map(([key, pkg]) =>
+                  <option key={key} value={key}>{pkg.name}</option>
                 )}
               </Form.Control>
             </Col>
