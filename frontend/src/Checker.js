@@ -1,4 +1,4 @@
-import DateUtils from './DateUtils.js'
+import DateUtils from './DateUtils'
 
 async function checkRules(rules, programs) {
   return Object.fromEntries(
@@ -9,7 +9,7 @@ async function checkRules(rules, programs) {
         return [id, { program: null, satisfied: false, msg: 'Program neexistuje' }];
 
       const success = () => [id, { program: program._id, satisfied: true, msg: null }];
-      const failure = (msg) => [id, { program: program._id, satisfied: false, msg: msg }];
+      const failure = msg => [id, { program: program._id, satisfied: false, msg: msg }];
 
       if (rule.condition === 'is_before_date')
         return (program.begin + program.duration <= rule.value) ? success() :
