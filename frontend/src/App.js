@@ -7,9 +7,9 @@ import Rules from './Rules';
 import Tab from 'react-bootstrap/Tab';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
-import Data from './Data.js';
-import Checker from './Checker.js';
-import Example from './Example.js';
+import Data from './Data';
+import Checker from './Checker';
+import Example from './Example';
 import './App.css';
 
 class App extends React.Component {

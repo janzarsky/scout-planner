@@ -1,5 +1,5 @@
-import Data from './Data.js';
-import DateUtils from './DateUtils.js';
+import Data from './Data';
+import DateUtils from './DateUtils';
 
 async function clear() {
   return Promise.all([
@@ -8,9 +8,9 @@ async function clear() {
     Data.getRules(),
   ]).then(([programs, pkgs, rules]) =>
     Promise.all([
-      ...Object.values(programs).map((it) => Data.deleteProgram(it._id)),
-      ...Object.values(pkgs).map((it) => Data.deletePkg(it._id)),
-      ...Object.values(rules).map((it) => Data.deleteRule(it._id)),
+      ...Object.values(programs).map(it => Data.deleteProgram(it._id)),
+      ...Object.values(pkgs).map(it => Data.deletePkg(it._id)),
+      ...Object.values(rules).map(it => Data.deleteRule(it._id)),
     ])
   );
 }
@@ -79,11 +79,11 @@ async function load() {
   ];
 
   return Promise.all([
-    ...pkgs.map((pkg) => Data.addPkg(pkg))
+    ...pkgs.map(pkg => Data.addPkg(pkg))
   ])
-  .then((pkgs) => new Map(pkgs.map((pkg) => [pkg.name, pkg._id])))
-  .then((pkgs) =>
-    programs.map((prog) => {
+  .then(pkgs => new Map(pkgs.map(pkg => [pkg.name, pkg._id])))
+  .then(pkgs =>
+    programs.map(prog => {
       return {
         ...prog,
         begin: DateUtils.parseDateTime(prog.begin),
@@ -92,10 +92,10 @@ async function load() {
       }
     })
   )
-  .then((programs) => Promise.all(programs.map((prog) => Data.addProgram(prog))))
-  .then((programs) => new Map(programs.map((prog) => [prog.title, prog._id])))
-  .then((programs) =>
-    rules.map((rule) => {
+  .then(programs => Promise.all(programs.map(prog => Data.addProgram(prog))))
+  .then(programs => new Map(programs.map(prog => [prog.title, prog._id])))
+  .then(programs =>
+    rules.map(rule => {
       var value;
       if (rule.condition === 'is_before_date' || rule.condition === 'is_after_date')
         value = DateUtils.parseDateTime(rule.value);
@@ -108,7 +108,7 @@ async function load() {
       };
     })
   )
-  .then((rules) => Promise.all(rules.map((rule) => Data.addRule(rule))));
+  .then(rules => Promise.all(rules.map(rule => Data.addRule(rule))));
 }
 
 export default {clear, load};
