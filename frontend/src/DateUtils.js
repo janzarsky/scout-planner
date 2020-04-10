@@ -52,3 +52,13 @@ exports.parseDateTime = function(str) {
 };
 
 exports.parseDuration = exports.parseTime;
+
+exports.getOnlyTime = function(ms) {
+  const d = new Date(ms);
+  return Date.UTC(1970, 0, 1, d.getUTCHours(), d.getUTCMinutes());
+}
+
+exports.getOnlyDate = function(ms) {
+  const d = new Date(ms);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
