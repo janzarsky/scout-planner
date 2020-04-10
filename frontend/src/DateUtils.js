@@ -4,7 +4,7 @@ exports.formatDate = function(ms) {
   if (isNaN(date.getTime()))
     return '(chybné datum)';
 
-  return date.getUTCDate() + '.' + (date.getUTCMonth() + 1) + '.' + date.getUTCFullYear();
+  return `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
 };
 
 exports.formatTime = function(ms) {
@@ -13,7 +13,7 @@ exports.formatTime = function(ms) {
   if (isNaN(date.getTime()))
     return '(chybný čas)';
 
-  return date.getUTCHours() + ':' + ((date.getUTCMinutes() < 10) ? '0' : '') + date.getUTCMinutes();
+  return `${date.getUTCHours()}:${(date.getUTCMinutes() < 10) ? '0' : ''}${date.getUTCMinutes()}`;
 };
 
 exports.formatDateTime = function(ms) {
@@ -22,9 +22,8 @@ exports.formatDateTime = function(ms) {
   if (isNaN(date.getTime()))
     return '(chybné datum)';
 
-  return date.getUTCHours() + ':' + ((date.getUTCMinutes() < 10) ? '0' : '')
-    + date.getUTCMinutes() + ' ' + date.getUTCDate() + '.' + (date.getUTCMonth() + 1)
-    + '.' + date.getUTCFullYear();
+  return `${date.getUTCHours()}:${(date.getUTCMinutes() < 10) ? '0' : ''}${date.getUTCMinutes()} ` +
+    `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
 };
 
 exports.formatDuration = function(ms) {
@@ -33,7 +32,7 @@ exports.formatDuration = function(ms) {
   if (isNaN(date.getTime()))
     return '(chybná délka)';
 
-  return date.getUTCHours() + ':' + ((date.getUTCMinutes() < 10) ? '0' : '') + date.getUTCMinutes();
+  return `${date.getUTCHours()}:${(date.getUTCMinutes() < 10) ? '0' : ''}${date.getUTCMinutes()}`;
 };
 
 exports.parseDate = function(str) {
