@@ -67,7 +67,7 @@ class AddProgramModal extends React.Component {
             <Col>
               <Form.Control as="select" defaultValue="žádný" ref={this.pkg}>
                 <option value="">žádný</option>
-                {Object.entries(this.props.pkgs).map(([key, pkg]) =>
+                {[...this.props.pkgs.entries()].map(([key, pkg]) =>
                   <option key={key} value={key}>{pkg.name}</option>
                 )}
               </Form.Control>

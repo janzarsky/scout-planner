@@ -8,9 +8,9 @@ async function clear() {
     Data.getRules(),
   ]).then(([programs, pkgs, rules]) =>
     Promise.all([
-      ...Object.values(programs).map(it => Data.deleteProgram(it._id)),
-      ...Object.values(pkgs).map(it => Data.deletePkg(it._id)),
-      ...Object.values(rules).map(it => Data.deleteRule(it._id)),
+      ...[...programs.values()].map(it => Data.deleteProgram(it._id)),
+      ...[...pkgs.values()].map(it => Data.deletePkg(it._id)),
+      ...[...rules.values()].map(it => Data.deleteRule(it._id)),
     ])
   );
 }

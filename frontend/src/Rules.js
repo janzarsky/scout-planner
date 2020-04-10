@@ -31,7 +31,7 @@ class Settings extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(rules).map(([key, rule]) =>
+          {[...rules.entries()].map(([key, rule]) =>
             <tr key={key}>
               <td>
                 {cnt += 1}
@@ -40,10 +40,10 @@ class Settings extends React.Component {
                 {this.formatRule(rule)}
               </td>
               <td>
-                {violations[key] && (violations[key].satisfied
+                {violations.get(key) && (violations.get(key).satisfied
                   ? <span className="text-success"><i className="fa fa-check" /> ano</span>
                   : <span className="text-danger">
-                      <i className="fa fa-times" /> {violations[key].msg}
+                      <i className="fa fa-times" /> {violations.get(key).msg}
                     </span>
                 )}
               </td>
@@ -65,8 +65,8 @@ class Settings extends React.Component {
                 <Col sm="3">
                   <Form.Control as="select" defaultValue="Žádný program" ref={this.program}>
                     <option>Žádný program</option>
-                    {Object.keys(this.props.programs).map((key) =>
-                      <option key={key} value={key}>{this.props.programs[key].title}</option>
+                    {[...this.props.programs.entries()].map(([key, prog]) =>
+                      <option key={key} value={key}>{prog.title}</option>
                     )}
                   </Form.Control>
                 </Col>
@@ -101,8 +101,8 @@ class Settings extends React.Component {
                         <Col>
                           <Form.Control as="select" defaultValue="Žádný program" ref={this.program2}>
                             <option>Žádný program</option>
-                            {Object.keys(this.props.programs).map((key) =>
-                              <option key={key} value={key}>{this.props.programs[key].title}</option>
+                            {[...this.props.programs.entries()].map(([key, prog]) =>
+                              <option key={key} value={key}>{prog.title}</option>
                             )}
                           </Form.Control>
                         </Col>
@@ -126,8 +126,8 @@ class Settings extends React.Component {
   }
 
   formatRule(rule) {
-    var prog_title = (this.props.programs[rule.program])
-      ? this.props.programs[rule.program].title : '(program nenalezen)';
+    var prog_title = (this.props.programs.get(rule.program))
+      ? this.props.programs.get(rule.program).title : '(program nenalezen)';
 
     if (prog_title === '')
       prog_title = '(bez názvu)';
@@ -142,8 +142,8 @@ class Settings extends React.Component {
       default:
     }
 
-    var prog2_title = (this.props.programs[rule.value])
-      ? this.props.programs[rule.value].title : '(program nenalezen)';
+    var prog2_title = (this.props.programs.get(rule.value))
+      ? this.props.programs.get(rule.value).title : '(program nenalezen)';
 
     if (prog2_title === '')
       prog2_title = '(bez názvu)';

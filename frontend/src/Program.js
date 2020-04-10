@@ -48,8 +48,8 @@ class Program extends React.Component {
 }
 
 function ProgramBody(props) {
-  const pkgName = (props.pkgs[props.program.pkg]) ? props.pkgs[props.program.pkg].name : '';
-  const color = (props.pkgs[props.program.pkg]) ? props.pkgs[props.program.pkg].color : null;
+  const pkgName = (props.pkgs.get(props.program.pkg)) ? props.pkgs.get(props.program.pkg).name : '';
+  const color = (props.pkgs.get(props.program.pkg)) ? props.pkgs.get(props.program.pkg).color : null;
 
   return <div
     className={'timetable-program' + (props.violations ? ' violation' : '')}

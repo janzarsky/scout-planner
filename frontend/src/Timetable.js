@@ -13,8 +13,7 @@ class Timetable extends React.Component {
   }
 
   render() {
-    const programs = this.props.programs;
-    const settings = this.getSettings(programs);
+    const settings = this.getSettings(this.props.programs);
 
     return (
       <div
@@ -25,98 +24,104 @@ class Timetable extends React.Component {
                                + ", minmax(20px, 1fr))",
         }}
       >
-        {this.getDroppables(settings)}
-        {this.getTimeHeaders(settings)}
-        {this.getDateHeaders(settings)}
-        {this.getPrograms(programs, settings)}
+        {[...this.getDroppables(settings)]}
+        {[...this.getTimeHeaders(settings)]}
+        {[...this.getDateHeaders(settings)]}
+        {[...this.getPrograms(this.props.programs, settings)]}
       </div>
     );
   }
 
   getSettings(programs) {
     const hour = DateUtils.parseDuration('1:00');
-    var progs = Object.values(programs);
 
-    if (progs.length === 0)
-      progs = [{ begin: Date.now(), duration: hour }]
+    if (programs.size === 0)
+      programs = new Map([[1, { begin: Date.now(), duration: hour }]]);
 
-    const settings = {
-      days: Array.from(new Set(
-          progs.map(prog => DateUtils.getOnlyDate(prog.begin))
-        )).sort(),
-      dayStart: progs
-        .map(prog => DateUtils.getOnlyTime(prog.begin))
-        .reduce((acc, curr) => (acc < curr) ? acc : curr, DateUtils.parseTime('10:00')),
-      dayEnd: progs
-        .map(prog => {
-          const endTime = DateUtils.getOnlyTime(prog.begin + prog.duration);
-          return (endTime === 0) ? DateUtils.parseTime('23:59') : endTime;
-        })
-        .reduce((acc, curr) => (acc > curr) ? acc : curr, DateUtils.parseTime('16:00')),
-    };
+    var settings = {};
 
-    return {
-      ...settings,
-      timeHeaders: Array.from(
-        {length: Math.ceil((settings.dayEnd - settings.dayStart)/hour)},
-        (_, idx) => settings.dayStart + idx*hour
-      ),
-      timeStep: 15*60*1000,
-      timeSpan: Math.ceil(hour/(15*60*1000)),
-    };
+    settings.days = [];
+    for (const prog of programs.values()) {
+      settings.days.push(DateUtils.getOnlyDate(prog.begin));
+    }
+    settings.days = [...new Set(settings.days)].sort();
+
+    settings.dayStart = DateUtils.parseTime('10:00');
+    for (const prog of programs.values()) {
+      const time = DateUtils.getOnlyTime(prog.begin)
+      if (time < settings.dayStart)
+        settings.dayStart = time;
+    }
+
+    settings.dayEnd = DateUtils.parseTime('16:00');
+    for (const prog of programs.values()) {
+      let time = DateUtils.getOnlyTime(prog.begin + prog.duration)
+      if (time === 0)
+        time = DateUtils.parseTime('23:59');
+      if (time > settings.dayEnd)
+        settings.dayEnd = time;
+    }
+
+    settings.timeHeaders = Array.from(
+      {length: Math.ceil((settings.dayEnd - settings.dayStart)/hour)},
+      (_, idx) => settings.dayStart + idx*hour
+    );
+    settings.timeStep = 15*60*1000;
+    settings.timeSpan = Math.ceil(hour/(15*60*1000));
+
+    return settings;
   }
 
-  getDroppables(settings) {
-    return settings.days.map((date, idxDate) =>
-      settings.timeHeaders.map((time, idxTime) =>
-        Array.from({length: settings.timeSpan}, (x, i) => i*settings.timeStep)
-          .map((span, idxSpan) =>
-          <Droppable
+  *getDroppables(settings) {
+    for (const [idxDate, date] of settings.days.entries()) {
+      for (const [idxTime, time] of settings.timeHeaders.entries()) {
+        for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
+          yield <Droppable
             key={[idxTime, idxDate, idxSpan]}
             x={2 + idxTime*settings.timeSpan + idxSpan}
             y={2 + idxDate}
-            begin={date + time + span}
+            begin={date + time + idxSpan*settings.timeStep}
             onDrop={this.onDroppableDrop}
             addProgramModal={this.props.addProgramModal}
-          />
-        )
-      )
-    );
+          />;
+        }
+      }
+    }
   }
 
-  getTimeHeaders(settings) {
-    return settings.timeHeaders.map((time, idx) =>
-      <TimeHeader
+  *getTimeHeaders(settings) {
+    for (const [idx, time] of settings.timeHeaders.entries()) {
+      yield <TimeHeader
         key={time}
         time={new Date(time)}
         pos={idx*settings.timeSpan + 2}
         span={settings.timeSpan}
-      />
-    );
+      />;
+    }
   }
 
-  getDateHeaders(settings) {
-    return settings.days.map((date, idx) =>
-      <DateHeader
+  *getDateHeaders(settings) {
+    for (const [idx, date] of settings.days.entries()) {
+      yield <DateHeader
         key={date}
         date={new Date(date)}
         pos={idx + 2}
-      />
-    );
+      />;
+    }
   }
 
-  getPrograms(programs, settings) {
-    return Object.entries(programs).map(([key, prog]) =>
-      <Program
+  *getPrograms(programs, settings) {
+    for (const [key, prog] of programs) {
+      yield <Program
         key={key}
         program={prog}
-        violations={this.props.violations[key]}
+        violations={this.props.violations.get(key)}
         rect={this.getRect(prog, settings)}
         onDragStart={this.onProgramDragStart}
         pkgs={this.props.pkgs}
         editProgramModal={this.props.editProgramModal}
-      />
-    );
+      />;
+    }
   }
 
   getRect(program, settings) {
@@ -136,7 +141,7 @@ class Timetable extends React.Component {
   }
 
   onDroppableDrop(begin) {
-    var prog = this.props.programs[this.draggedProgram];
+    var prog = this.props.programs.get(this.draggedProgram);
     if (prog) {
       prog.begin = begin;
       this.props.updateProgram(prog);

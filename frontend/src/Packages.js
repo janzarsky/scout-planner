@@ -26,7 +26,7 @@ class Packages extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(pkgs).map(([key, pkg]) =>
+          {[...pkgs.entries()].map(([key, pkg]) =>
             <tr key={key}>
               <td>{cnt += 1}</td>
               <td>

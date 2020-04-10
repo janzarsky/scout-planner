@@ -18,9 +18,7 @@ function getAll(path) {
       }
       return resp.json();
     })
-    .then(data =>
-      data.reduce((acc, cur) => ({ ...acc, [cur._id]: cur}), {})
-    );
+    .then(data => new Map(data.map((elem) => [elem._id, elem])));
 }
 
 function post(path, data) {
