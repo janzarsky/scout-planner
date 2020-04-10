@@ -50,7 +50,6 @@ class App extends React.Component {
     Data.getPrograms().then(programs => this.setState({programs: programs}, this.checkRules));
     Data.getPkgs().then(pkgs => this.setState({pkgs: pkgs}));
     Data.getRules().then(rules => this.setState({rules: rules}, this.checkRules));
-    Data.getSettings().then(settings => this.setState({settings: settings}));
   }
 
   checkRules() {

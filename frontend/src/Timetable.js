@@ -1,41 +1,42 @@
 import React from 'react';
 import Program from './Program';
+import DateUtils from './DateUtils';
 
 class Timetable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { programModal: false };
+    this.state = {
+      programModal: false
+    };
     this.onProgramDragStart = this.onProgramDragStart.bind(this);
     this.onDroppableDrop = this.onDroppableDrop.bind(this);
   }
 
   render() {
     const programs = this.props.programs;
-
-    if (!this.props.settings.days)
-      return null;
+    const settings = this.getSettings(programs);
 
     const hour = Date.UTC(1970, 0, 1, 1);
-    const width = Math.ceil((this.props.settings.dayEnd - this.props.settings.dayStart)/hour);
+    const width = Math.ceil((settings.dayEnd - settings.dayStart)/hour);
     const timeHeaders = Array.from(
       {length: width},
-      (x,i) => new Date(this.props.settings.dayStart + i*hour)
+      (x,i) => new Date(settings.dayStart + i*hour)
     );
-    const timeSpan = Math.ceil(hour/this.props.settings.timeStep);
-    const days = this.props.settings.days.map((day) => new Date(day));
+    const timeSpan = Math.ceil(hour/settings.timeStep);
+    const days = settings.days.map((day) => new Date(day));
 
     return (
       <div
         className="timetable"
         style={{
-          gridTemplateRows: "repeat(" + (this.props.settings.days.length + 1) + ", auto)",
+          gridTemplateRows: "repeat(" + (settings.days.length + 1) + ", auto)",
           gridTemplateColumns: "auto repeat(" + timeSpan*width
                                + ", minmax(20px, 1fr))",
         }}
       >
         {days.map((date, idxDate) =>
           timeHeaders.map((time, idxTime) =>
-            Array.from({length: timeSpan}, (x, i) => i*this.props.settings.timeStep).map((span, idxSpan) =>
+            Array.from({length: timeSpan}, (x, i) => i*settings.timeStep).map((span, idxSpan) =>
               <Droppable
                 key={[idxTime, idxDate, idxSpan]}
                 x={2 + idxTime*timeSpan + idxSpan}
@@ -67,7 +68,7 @@ class Timetable extends React.Component {
             key={key}
             program={programs[key]}
             violations={this.props.violations[key]}
-            rect={this.getRect(programs[key])}
+            rect={this.getRect(programs[key], settings)}
             onDragStart={this.onProgramDragStart}
             pkgs={this.props.pkgs}
             editProgramModal={this.props.editProgramModal}
@@ -75,6 +76,40 @@ class Timetable extends React.Component {
         )}
       </div>
     );
+  }
+
+  getSettings(programs) {
+    if (Object.values(programs).length === 0) {
+      const now = new Date(Date.now());
+      return {
+        days: [Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())],
+        dayStart: DateUtils.parseTime('10:00'),
+        dayEnd: DateUtils.parseTime('16:00'),
+        timeStep: 15*60*1000,
+      };
+    }
+
+    return {
+      days: Array.from(new Set(Object.values(programs).map(prog => {
+          const begin = new Date(prog.begin);
+          return Date.UTC(begin.getUTCFullYear(), begin.getUTCMonth(), begin.getUTCDate());
+        })))
+        .sort(),
+      dayStart: Object.values(programs)
+        .map(prog => {
+          const begin = new Date(prog.begin);
+          return Date.UTC(1970, 0, 1, begin.getUTCHours(), begin.getUTCMinutes());
+        })
+        .reduce((acc, curr) => (acc < curr) ? acc : curr, DateUtils.parseTime('10:00')),
+      dayEnd: Object.values(programs)
+        .map(prog => {
+          const end = new Date(prog.begin + prog.duration);
+          const endTime = Date.UTC(1970, 0, 1, end.getUTCHours(), end.getUTCMinutes());
+          return (endTime === 0) ? DateUtils.parseTime('23:59') : endTime;
+        })
+        .reduce((acc, curr) => (acc > curr) ? acc : curr, DateUtils.parseTime('16:00')),
+      timeStep: 15*60*1000,
+    };
   }
 
   onProgramDragStart(id) {
@@ -89,18 +124,18 @@ class Timetable extends React.Component {
     }
   }
 
-  getRect(program) {
+  getRect(program, settings) {
     const begin = new Date(program.begin);
 
     const date = Date.UTC(begin.getUTCFullYear(), begin.getUTCMonth(),
                           begin.getUTCDate());
-    const y = this.props.settings.days.indexOf(date);
+    const y = settings.days.indexOf(date);
 
     const time = Date.UTC(1970, 0, 1, begin.getUTCHours(),
                           begin.getUTCMinutes());
-    const x = Math.ceil((time - this.props.settings.dayStart)/this.props.settings.timeStep);
+    const x = Math.ceil((time - settings.dayStart)/settings.timeStep);
 
-    const width = Math.ceil(program.duration/this.props.settings.timeStep);
+    const width = Math.ceil(program.duration/settings.timeStep);
 
     return {x: x, y: y, width: width, height: 1};
   }
