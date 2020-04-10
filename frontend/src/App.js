@@ -37,12 +37,12 @@ class App extends React.Component {
 
   loadTestData() {
     Example.clear()
-      .then(_ => Example.load())
-      .then(_ => this.componentDidMount());
+      .then(() => Example.load())
+      .then(() => this.componentDidMount());
   }
 
   removeAll() {
-    Example.clear().then(_ => this.componentDidMount());
+    Example.clear().then(() => this.componentDidMount());
   }
 
   componentDidMount() {
@@ -72,28 +72,24 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        {(this.state.addProgram) ?
+        {this.state.addProgram &&
           <AddProgramModal
             addProgram={this.addProgram}
             options={this.state.addProgramOptions}
             pkgs={this.state.pkgs}
-            handleClose={() => this.setState({addProgram: false})}
+            handleClose={() => this.setState({ addProgram: false })}
           />
-          : ''
         }
-        {(this.state.editProgram) ?
+        {this.state.editProgram &&
           <EditProgramModal
             updateProgram={this.updateProgram}
             deleteProgram={this.deleteProgram}
             program={this.state.editProgramData}
             pkgs={this.state.pkgs}
-            handleClose={() => this.setState({editProgram: false})}
+            handleClose={() => this.setState({ editProgram: false })}
           />
-          : ''
         }
-        <Tab.Container
-          defaultActiveKey={this.state.activeTab}
-        >
+        <Tab.Container defaultActiveKey={this.state.activeTab}>
           <Nav variant="pills">
             <Nav.Item><Nav.Link eventKey="timetable">Harmonogram</Nav.Link></Nav.Item>
             <Nav.Item><Nav.Link eventKey="rules">Pravidla {this.state.satisfied
@@ -113,11 +109,11 @@ class App extends React.Component {
                 settings={this.state.settings}
                 violations={violationsPerProgram}
                 updateProgram={this.updateProgram}
-                addProgramModal={(options) =>
-                  this.setState({addProgram: true, addProgramOptions: options})
+                addProgramModal={options =>
+                  this.setState({ addProgram: true, addProgramOptions: options })
                 }
-                editProgramModal={(program) =>
-                  this.setState({editProgram: true, editProgramData: program})
+                editProgramModal={program =>
+                  this.setState({ editProgram: true, editProgramData: program })
                 }
               />
             </Tab.Pane>
@@ -126,19 +122,19 @@ class App extends React.Component {
                 programs={this.state.programs}
                 rules={this.state.rules}
                 violations={this.state.violations}
-                addRule={(rule) => Data.addRule(rule).then(rule =>
+                addRule={rule => Data.addRule(rule).then(rule =>
                   this.setState(
                     { rules: { ...this.state.rules, [rule._id]: rule } },
                     this.checkRules
                   )
                 )}
-                updateRule={(rule) => Data.updateRule(rule).then(rule =>
+                updateRule={rule => Data.updateRule(rule).then(rule =>
                   this.setState(
                     { rules: { ...this.state.rules, [rule._id]: rule } },
                     this.checkRules
                   )
                 )}
-                deleteRule={(id) => Data.deleteRule(id).then(msg => {
+                deleteRule={id => Data.deleteRule(id).then(msg => {
                   const { [id]: _, ...rules } = this.state.rules;
                   this.setState({ rules: rules }, this.checkRules);
                 })}
@@ -147,13 +143,13 @@ class App extends React.Component {
             <Tab.Pane eventKey="packages" title="Balíčky">
               <Packages
                 pkgs={this.state.pkgs}
-                addPkg={(pkg) => Data.addPkg(pkg).then(pkg =>
+                addPkg={pkg => Data.addPkg(pkg).then(pkg =>
                   this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
                 )}
-                updatePkg={(pkg) => Data.updatePkg(pkg).then(pkg =>
+                updatePkg={pkg => Data.updatePkg(pkg).then(pkg =>
                   this.setState({ pkgs: { ...this.state.pkgs, [pkg._id]: pkg } })
                 )}
-                deletePkg={(id) => Data.deletePkg(id).then(msg => {
+                deletePkg={id => Data.deletePkg(id).then(msg => {
                   const { [id]: _, ...pkgs } = this.state.pkgs;
                   this.setState({ pkgs: pkgs });
                 })}
