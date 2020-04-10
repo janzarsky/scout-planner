@@ -5,7 +5,6 @@ var express = require('express'),
   Program = require('./api/models/programModel'),
   Pkg = require('./api/models/pkgModel'),
   Rule = require('./api/models/ruleModel'),
-  Settings = require('./api/models/settingsModel'),
   bodyParser = require('body-parser'),
   cors = require('cors');
 
