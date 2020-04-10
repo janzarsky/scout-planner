@@ -1,12 +1,10 @@
 import React from 'react';
-import DateUtils from './DateUtils.js';
+import DateUtils from './DateUtils';
 
 class Program extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      dragged: false,
-    };
+    this.state = { dragged: false };
   }
 
   render() {
@@ -17,8 +15,7 @@ class Program extends React.Component {
     const pkgName = (this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].name : '';
     const color = (this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].color : null;
 
-    return (
-      <div
+    return <div
         className={'timetable-program-wrapper' + (this.state.dragged ? ' dragged' : '')}
         style={{
           gridColumnStart: this.props.rect.x + 2,
@@ -27,8 +24,8 @@ class Program extends React.Component {
           gridRowEnd: 'span ' + this.props.rect.height,
         }}
         draggable
-        onDragStart={(e) => this.onDragStart(e)}
-        onDragEnd={(e) => this.onDragEnd(e)}
+        onDragStart={e => this.onDragStart(e)}
+        onDragEnd={e => this.onDragEnd(e)}
       >
         <div
           className={'timetable-program' + (this.props.violations ? ' violation' : '')}
@@ -44,17 +41,13 @@ class Program extends React.Component {
             </p>
           </div>
         </div>
-        <div
-          className="program-modal-right"
-          onClick={(_) => this.props.editProgramModal(program)}
-        >
-          <i className="fa fa-pencil"></i>
+        <div className="program-modal-right" onClick={_ => this.props.editProgramModal(program)}>
+          <i className="fa fa-pencil"/>
         </div>
         <div className="program-modal-left">
-          <i className="fa fa-arrows"></i>
+          <i className="fa fa-arrows"/>
         </div>
-      </div>
-    );
+      </div>;
   }
 
   onDragStart(e) {
