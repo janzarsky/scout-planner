@@ -11,10 +11,6 @@ class Program extends React.Component {
     if (this.props.rect.x < 0 || this.props.rect.y < 0)
       return null;
 
-    const program = this.props.program;
-    const pkgName = (this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].name : '';
-    const color = (this.props.pkgs[program.pkg]) ? this.props.pkgs[program.pkg].color : null;
-
     return <div
         className={'timetable-program-wrapper' + (this.state.dragged ? ' dragged' : '')}
         style={{
@@ -27,26 +23,16 @@ class Program extends React.Component {
         onDragStart={e => this.onDragStart(e)}
         onDragEnd={e => this.onDragEnd(e)}
       >
-        <div
-          className={'timetable-program' + (this.props.violations ? ' violation' : '')}
-          style={(color) ? {backgroundColor: color} : {}}
-          title={this.props.violations && this.props.violations.join(', ')}
-        >
-          <div className="program-text">
-            <h3>{program.title}</h3>
-            <p className="program-package">{pkgName}</p>
-            <p className="program-time">
-              {DateUtils.formatTime(program.begin)}&ndash;
-              {DateUtils.formatTime(program.begin + program.duration)}
-            </p>
-          </div>
-        </div>
-        <div className="program-modal-right" onClick={_ => this.props.editProgramModal(program)}>
-          <i className="fa fa-pencil"/>
-        </div>
-        <div className="program-modal-left">
-          <i className="fa fa-arrows"/>
-        </div>
+        <ProgramBody
+          program={this.props.program}
+          violations={this.props.violations}
+          pkgs={this.props.pkgs}
+        />
+        <ProgramEdit
+          program={this.props.program}
+          editProgramModal={this.props.editProgramModal}
+        />
+        <ProgramMove/>
       </div>;
   }
 
@@ -59,6 +45,44 @@ class Program extends React.Component {
     e.preventDefault();
     this.setState({ dragged: false });
   }
+}
+
+function ProgramBody(props) {
+  const pkgName = (props.pkgs[props.program.pkg]) ? props.pkgs[props.program.pkg].name : '';
+  const color = (props.pkgs[props.program.pkg]) ? props.pkgs[props.program.pkg].color : null;
+
+  return <div
+    className={'timetable-program' + (props.violations ? ' violation' : '')}
+    style={(color) ? {backgroundColor: color} : {}}
+    title={props.violations && props.violations.join(', ')}
+  >
+    <ProgramText program={props.program} pkgName={pkgName}/>
+  </div>;
+}
+
+function ProgramText(props) {
+  return <div className="program-text">
+    <h3>{props.program.title}</h3>
+    <p className="program-package">{props.pkgName}</p>
+    <p className="program-time">
+      {DateUtils.formatTime(props.program.begin)}&ndash;
+      {DateUtils.formatTime(props.program.begin + props.program.duration)}
+    </p>
+  </div>;
+}
+
+function ProgramEdit(props) {
+  return <div
+    className="program-modal-right"
+    onClick={_ => props.editProgramModal(props.program)}>
+    <i className="fa fa-pencil"/>
+  </div>;
+}
+
+function ProgramMove() {
+  return <div className="program-modal-left">
+    <i className="fa fa-arrows"/>
+  </div>;
 }
 
 export default Program;
