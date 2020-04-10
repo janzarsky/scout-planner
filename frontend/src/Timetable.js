@@ -4,18 +4,7 @@ import Program from './Program';
 class Timetable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      programModal: false,
-      days: [
-        Date.UTC(2020, 5, 12),
-        Date.UTC(2020, 5, 13),
-        Date.UTC(2020, 5, 14),
-        Date.UTC(2020, 5, 15),
-      ],
-      dayStart: Date.UTC(1970, 0, 1, 7, 0),
-      dayEnd: Date.UTC(1970, 0, 1, 23, 59),
-      timeStep: 15*60*1000,
-    };
+    this.state = { programModal: false };
     this.onProgramDragStart = this.onProgramDragStart.bind(this);
     this.onDroppableDrop = this.onDroppableDrop.bind(this);
   }
@@ -23,27 +12,30 @@ class Timetable extends React.Component {
   render() {
     const programs = this.props.programs;
 
+    if (!this.props.settings.days)
+      return null;
+
     const hour = Date.UTC(1970, 0, 1, 1);
-    const width = Math.ceil((this.state.dayEnd - this.state.dayStart)/hour);
+    const width = Math.ceil((this.props.settings.dayEnd - this.props.settings.dayStart)/hour);
     const timeHeaders = Array.from(
       {length: width},
-      (x,i) => new Date(this.state.dayStart + i*hour)
+      (x,i) => new Date(this.props.settings.dayStart + i*hour)
     );
-    const timeSpan = Math.ceil(hour/this.state.timeStep);
-    const days = this.state.days.map((day) => new Date(day));
+    const timeSpan = Math.ceil(hour/this.props.settings.timeStep);
+    const days = this.props.settings.days.map((day) => new Date(day));
 
     return (
       <div
         className="timetable"
         style={{
-          gridTemplateRows: "repeat(" + (this.state.days.length + 1) + ", auto)",
+          gridTemplateRows: "repeat(" + (this.props.settings.days.length + 1) + ", auto)",
           gridTemplateColumns: "auto repeat(" + timeSpan*width
                                + ", minmax(20px, 1fr))",
         }}
       >
         {days.map((date, idxDate) =>
           timeHeaders.map((time, idxTime) =>
-            Array.from({length: timeSpan}, (x, i) => i*this.state.timeStep).map((span, idxSpan) =>
+            Array.from({length: timeSpan}, (x, i) => i*this.props.settings.timeStep).map((span, idxSpan) =>
               <Droppable
                 key={[idxTime, idxDate, idxSpan]}
                 x={2 + idxTime*timeSpan + idxSpan}
@@ -102,13 +94,13 @@ class Timetable extends React.Component {
 
     const date = Date.UTC(begin.getUTCFullYear(), begin.getUTCMonth(),
                           begin.getUTCDate());
-    const y = this.state.days.indexOf(date);
+    const y = this.props.settings.days.indexOf(date);
 
     const time = Date.UTC(1970, 0, 1, begin.getUTCHours(),
                           begin.getUTCMinutes());
-    const x = Math.ceil((time - this.state.dayStart)/this.state.timeStep);
+    const x = Math.ceil((time - this.props.settings.dayStart)/this.props.settings.timeStep);
 
-    const width = Math.ceil(program.duration/this.state.timeStep);
+    const width = Math.ceil(program.duration/this.props.settings.timeStep);
 
     return {x: x, y: y, width: width, height: 1};
   }

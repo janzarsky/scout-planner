@@ -72,3 +72,39 @@ function remove(path, id) {
   exports[`update${name}`] = (data) => put(`/${entity}s`, data);
   exports[`delete${name}`] = (id) => remove(`/${entity}s`, id);
 });
+
+exports.getSettings = function() {
+  return fetch(`${host}/settings`)
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(`HTTP error: ${resp.status}`);
+      }
+      return resp.json();
+    })
+}
+
+exports.updateSettings = function(settings) {
+  return fetch(`${host}/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings),
+    })
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(`HTTP error: ${resp.status}`);
+      }
+      return resp.json();
+    })
+}
+
+exports.deleteSettings = function() {
+  return fetch(`${host}/settings`, {
+      method: 'DELETE',
+    })
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(`HTTP error: ${resp.status}`);
+      }
+      return resp.json();
+    });
+}

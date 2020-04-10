@@ -4,7 +4,6 @@ import EditProgramModal from './EditProgramModal';
 import Timetable from './Timetable';
 import Packages from './Packages';
 import Rules from './Rules';
-import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -21,6 +20,7 @@ class App extends React.Component {
       programs: {},
       pkgs: {},
       rules: {},
+      settings: {},
       violations: {},
       satisfied: true,
       addProgram: false,
@@ -50,6 +50,7 @@ class App extends React.Component {
     Data.getPrograms().then(programs => this.setState({programs: programs}, this.checkRules));
     Data.getPkgs().then(pkgs => this.setState({pkgs: pkgs}));
     Data.getRules().then(rules => this.setState({rules: rules}, this.checkRules));
+    Data.getSettings().then(settings => this.setState({settings: settings}));
   }
 
   checkRules() {
@@ -111,6 +112,7 @@ class App extends React.Component {
               <Timetable
                 programs={this.state.programs}
                 pkgs={this.state.pkgs}
+                settings={this.state.settings}
                 violations={violationsPerProgram}
                 updateProgram={this.updateProgram}
                 addProgramModal={(options) =>
