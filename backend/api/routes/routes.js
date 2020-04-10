@@ -33,4 +33,11 @@ module.exports = function(app) {
     .get(rules.get_rule)
     .put(rules.update_rule)
     .delete(rules.delete_rule);
+
+  var settings = require('../controllers/settingsController.js');
+
+	app.route('/settings')
+		.get(settings.get_settings)
+    .put(settings.update_settings)
+    .delete(settings.delete_settings);
 };
