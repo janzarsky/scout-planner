@@ -26,6 +26,8 @@ class App extends React.Component {
       editProgram: false,
       editProgramData: {},
       activeTab: 'timetable',
+      filterActive: false,
+      filterPkgs: [],
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -95,6 +97,7 @@ class App extends React.Component {
                   ? <i className="fa fa-check" />
                   : <i className="fa fa-times" />}</Nav.Link></Nav.Item>
             <Nav.Item><Nav.Link eventKey="packages">Balíčky</Nav.Link></Nav.Item>
+            {this.getFilters()}
             <Nav.Item style={{marginLeft: 'auto'}}>
               <Button onClick={this.loadTestData}>Nahrát příklad</Button>
             </Nav.Item>
@@ -107,6 +110,7 @@ class App extends React.Component {
                 pkgs={this.state.pkgs}
                 settings={this.state.settings}
                 violations={violationsPerProgram}
+                filterPkgs={this.state.filterActive ? this.state.filterPkgs : []}
                 updateProgram={this.updateProgram}
                 addProgramModal={options =>
                   this.setState({ addProgram: true, addProgramOptions: options })
@@ -162,6 +166,35 @@ class App extends React.Component {
         </Tab.Container>
       </div>
     );
+  }
+
+  getFilters() {
+    const toggle = (id) => {
+      let filterPkgs = this.state.filterPkgs;
+      if (filterPkgs.indexOf(id) === -1)
+        filterPkgs.push(id);
+      else
+        filterPkgs.splice(filterPkgs.indexOf(id), 1);
+      this.setState({ filterPkgs: filterPkgs });
+    };
+
+    return <>
+      <Nav.Item>
+        <Button
+          variant={this.state.filterActive ? 'primary' : 'link'}
+          onClick={() => this.setState({ filterActive: this.state.filterActive ? false : true })}
+        ><i className="fa fa-filter"/></Button>
+      </Nav.Item>
+      {this.state.filterActive && [...this.state.pkgs.entries()].map(([key, pkg]) =>
+        <Nav.Item key={key}>
+          <Button
+            variant={(this.state.filterPkgs.indexOf(pkg._id) === -1) ? 'light' : 'dark'}
+            style={(this.state.filterPkgs.indexOf(pkg._id) === -1) ? { backgroundColor: pkg.color } : {}}
+            onClick={() => toggle(pkg._id)}
+          >{pkg.name}</Button>
+        </Nav.Item>
+      )}
+    </>;
   }
 
   addProgram(program) {

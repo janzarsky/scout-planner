@@ -27,6 +27,7 @@ class Program extends React.Component {
           program={this.props.program}
           violations={this.props.violations}
           pkgs={this.props.pkgs}
+          filtered={this.props.filtered}
         />
         <ProgramEdit
           program={this.props.program}
@@ -52,8 +53,8 @@ function ProgramBody(props) {
   const color = (props.pkgs.get(props.program.pkg)) ? props.pkgs.get(props.program.pkg).color : null;
 
   return <div
-    className={'timetable-program' + (props.violations ? ' violation' : '')}
-    style={(color) ? {backgroundColor: color} : {}}
+    className={'timetable-program' + (props.violations ? ' violation' : '') + (props.filtered ? ' filtered' : '')}
+    style={(color && !props.filtered) ? {backgroundColor: color} : {}}
     title={props.violations && props.violations.join(', ')}
   >
     <ProgramText program={props.program} pkgName={pkgName}/>

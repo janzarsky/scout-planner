@@ -63,6 +63,9 @@
     #ef9a9a 40px
   );
 }
+.timetable-program.filtered {
+  background-color: #343a40;
+}
 .program-text {
   flex: 1;
   width: 100%;
@@ -77,6 +80,12 @@
   font-size: 0.9em;
   margin-bottom: 0;
   color: #455a64;
+}
+.timetable-program.filtered .program-text h3 {
+  color: #ffffff;
+}
+.timetable-program.filtered .program-text p {
+  color: #b0bec5;
 }
 
 .program-modal-right,

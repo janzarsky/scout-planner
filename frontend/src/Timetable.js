@@ -115,6 +115,7 @@ class Timetable extends React.Component {
       yield <Program
         key={key}
         program={prog}
+        filtered={(this.props.filterPkgs.indexOf(prog.pkg) !== -1)}
         violations={this.props.violations.get(key)}
         rect={this.getRect(prog, settings)}
         onDragStart={this.onProgramDragStart}
