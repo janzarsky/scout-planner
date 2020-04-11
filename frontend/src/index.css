@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap&subset=latin-ext');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap&subset=latin-ext');
 @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
 body {
@@ -6,14 +6,14 @@ body {
   font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-weight: 300;
 }
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 500;
+h1, h2, h3, h4, h5, h6, th {
+  font-weight: 400;
 }
 p {
   margin-top: 0;
 }
-
 
 .control-panel {
   margin-bottom: 4px;
@@ -23,53 +23,54 @@ p {
   display: grid;
 }
 
-.timetable-time {
+.timeheader,
+.dateheader {
+  padding: 2px 6px;
+  color: #455a64;
+  background-color: #cfd8dc;
+  z-index: 999;
+  font-weight: 400;
+}
+.timeheader {
   grid-row-start: 1;
   position: sticky;
   top: 0;
   margin: 0 2px 2px 2px;
-  padding: 2px 5px;
   border-radius: 0 0 4px 4px;
-  color: #455a64;
-  background-color: #cfd8dc;
-  z-index: 999;
 }
-
-.timetable-date {
+.dateheader {
   grid-column-start: 1;
   display: flex;
   align-items: center;
   margin: 2px 2px 2px 0;
-  padding: 2px 6px;
   border-radius: 0 4px 4px 0;
-  color: #455a64;
-  background-color: #cfd8dc;
-  z-index: 999;
   min-height: 5rem;
 }
 
-.timetable-program-wrapper {
+.program-wrapper {
   padding: 2px;
   text-align: center;
   display: flex;
   overflow: hidden;
   position: relative;
+  z-index: 200;
 }
-.timetable-program-wrapper.dragged {
-  opacity: 0.5;
+.program-wrapper.dragged {
+  transform: translateX(-9999px);
 }
-.timetable-program {
+
+.program {
   padding: 5px;
   border-radius: 4px;
   flex: 1;
   width: 100%;
-  min-height: 3rem;
   display: flex;
   align-items: center;
   background-color: #81d4fa;
   line-height: 1.5;
+  /*z-index: 200;*/
 }
-.timetable-program.violation {
+.program.violation {
   background-image: repeating-linear-gradient(
     135deg,
     rgba(0,0,0,0),
@@ -78,9 +79,10 @@ p {
     #ef9a9a 40px
   );
 }
-.timetable-program.filtered {
+.program.filtered {
   background-color: #343a40;
 }
+
 .program-text {
   flex: 1;
   width: 100%;
@@ -96,18 +98,18 @@ p {
   margin-bottom: 0;
   color: #37474f;
 }
-.timetable-program.filtered .program-text h3 {
+.program.filtered .program-text h3 {
   color: #ffffff;
 }
-.timetable-program.filtered .program-text p {
+.program.filtered .program-text p {
   color: #b0bec5;
 }
 
-.program-modal-right,
-.program-modal-left {
+.program-edit,
+.program-move {
   display: none;
-  width: 3rem;
-  height: 3rem;
+  width: 2rem;
+  height: 2rem;
   position: absolute;
   top: 0;
   line-height: 1;
@@ -115,30 +117,34 @@ p {
   cursor: pointer;
   color: #455a64;
 }
-.program-modal-right {
+.program-edit {
   right: 0;
   text-align: right;
+  /*z-index: 202;*/
 }
-.program-modal-left {
+.program-move {
   left: 0;
   text-align: left;
+  /*z-index: 201;*/
+  cursor: move;
 }
-.timetable-program-wrapper:hover .program-modal-right,
-.timetable-program-wrapper:hover .program-modal-left {
+.program-wrapper:hover .program-edit,
+.program-wrapper:hover .program-move {
   display: block;
 }
 
-.placeholder {
+.droppable {
   margin: 2px;
   border-radius: 4px;
+  z-index: 100;
 }
-.placeholder:hover {
+.droppable:hover {
   background-color: #dcedc8;
 }
-.placeholder.selected {
+.droppable.selected {
   background-color: #9ccc65;
 }
-.placeholder.drag-over {
+.droppable.drag-over {
   background-color: #29b6f6;
 }
 

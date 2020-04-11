@@ -158,7 +158,7 @@ class Droppable extends React.Component {
 
   render() {
     return <div
-        className={'placeholder ' + ((this.state.dragOver) ? 'drag-over' : '')}
+        className={'droppable ' + ((this.state.dragOver) ? 'drag-over' : '')}
         style={{
           gridColumnStart: this.props.x,
           gridRowStart: this.props.y,
@@ -192,7 +192,7 @@ class Droppable extends React.Component {
 
 function TimeHeader(props) {
   return <div
-      className="timetable-time"
+      className="timeheader"
       style={{
         gridColumnStart: props.pos,
         gridColumnEnd: 'span ' + props.span
@@ -204,7 +204,7 @@ function TimeHeader(props) {
 
 function DateHeader(props) {
   return <div
-      className="timetable-date"
+      className="dateheader"
       style={{
         gridRowStart: props.pos
       }}

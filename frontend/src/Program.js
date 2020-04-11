@@ -12,7 +12,7 @@ class Program extends React.Component {
       return null;
 
     return <div
-        className={'timetable-program-wrapper' + (this.state.dragged ? ' dragged' : '')}
+        className={'program-wrapper' + (this.state.dragged ? ' dragged' : '')}
         style={{
           gridColumnStart: this.props.rect.x + 2,
           gridRowStart: this.props.rect.y + 2,
@@ -39,7 +39,7 @@ class Program extends React.Component {
 
   onDragStart(e) {
     this.props.onDragStart(this.props.program._id);
-    this.setState({ dragged: true });
+    setTimeout(() => this.setState({ dragged: true }));
   }
 
   onDragEnd(e) {
@@ -53,7 +53,7 @@ function ProgramBody(props) {
   const color = (props.pkgs.get(props.program.pkg)) ? props.pkgs.get(props.program.pkg).color : null;
 
   return <div
-    className={'timetable-program' + (props.violations ? ' violation' : '') + (props.filtered ? ' filtered' : '')}
+    className={'program' + (props.violations ? ' violation' : '') + (props.filtered ? ' filtered' : '')}
     style={(color && !props.filtered) ? {backgroundColor: color} : {}}
     title={props.violations && props.violations.join(', ')}
   >
@@ -74,14 +74,14 @@ function ProgramText(props) {
 
 function ProgramEdit(props) {
   return <div
-    className="program-modal-right"
+    className="program-edit"
     onClick={_ => props.editProgramModal(props.program)}>
     <i className="fa fa-pencil"/>
   </div>;
 }
 
 function ProgramMove() {
-  return <div className="program-modal-left">
+  return <div className="program-move">
     <i className="fa fa-arrows"/>
   </div>;
 }
