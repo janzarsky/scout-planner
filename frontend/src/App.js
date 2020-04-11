@@ -10,7 +10,6 @@ import Nav from 'react-bootstrap/Nav';
 import Data from './Data';
 import Checker from './Checker';
 import Example from './Example';
-import './App.css';
 
 class App extends React.Component {
   constructor(props) {
