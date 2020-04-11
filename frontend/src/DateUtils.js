@@ -5,7 +5,7 @@
  * Note that the app uses UTC times to avoid problems with timezones.
  */
 
-exports.formatDate = function(ms) {
+function formatDate(ms) {
   const date = new Date(parseInt(ms));
 
   if (isNaN(date.getTime()))
@@ -14,7 +14,7 @@ exports.formatDate = function(ms) {
   return `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
 };
 
-exports.formatTime = function(ms) {
+function formatTime(ms) {
   const date = new Date(parseInt(ms));
 
   if (isNaN(date.getTime()))
@@ -23,7 +23,7 @@ exports.formatTime = function(ms) {
   return `${date.getUTCHours()}:${(date.getUTCMinutes() < 10) ? '0' : ''}${date.getUTCMinutes()}`;
 };
 
-exports.formatDateTime = function(ms) {
+function formatDateTime(ms) {
   const date = new Date(parseInt(ms));
 
   if (isNaN(date.getTime()))
@@ -33,7 +33,7 @@ exports.formatDateTime = function(ms) {
     `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
 };
 
-exports.formatDuration = function(ms) {
+function formatDuration(ms) {
   const date = new Date(parseInt(ms));
 
   if (isNaN(date.getTime()))
@@ -42,29 +42,42 @@ exports.formatDuration = function(ms) {
   return `${date.getUTCHours()}:${(date.getUTCMinutes() < 10) ? '0' : ''}${date.getUTCMinutes()}`;
 };
 
-exports.parseDate = function(str) {
+function parseDate(str) {
   const vals = str.split('.');
   return Date.UTC(parseInt(vals[2], 10), parseInt(vals[1], 10) - 1, parseInt(vals[0], 10));
 };
 
-exports.parseTime = function(str) {
+function parseTime(str) {
   const vals = str.split(':');
   return Date.UTC(1970, 0, 1, parseInt(vals[0], 10), parseInt(vals[1], 10));
 };
 
-exports.parseDateTime = function(str) {
+function parseDateTime(str) {
   const [time, date] = str.split(' ');
-  return exports.parseDate(date) + exports.parseTime(time);
+  return parseDate(date) + parseTime(time);
 };
 
-exports.parseDuration = exports.parseTime;
+const parseDuration = parseTime;
 
-exports.getOnlyTime = function(ms) {
+function getOnlyTime(ms) {
   const d = new Date(ms);
   return Date.UTC(1970, 0, 1, d.getUTCHours(), d.getUTCMinutes());
 }
 
-exports.getOnlyDate = function(ms) {
+function getOnlyDate(ms) {
   const d = new Date(ms);
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
+
+export default {
+  formatDate,
+  formatTime,
+  formatDateTime,
+  formatDuration,
+  parseDate,
+  parseTime,
+  parseDateTime,
+  parseDuration,
+  getOnlyTime,
+  getOnlyDate,
+};
