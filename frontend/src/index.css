@@ -51,24 +51,25 @@ p {
   padding: 2px;
   text-align: center;
   display: flex;
+  align-items: stretch;
+  align-content: stretch;
   overflow: hidden;
   position: relative;
-  z-index: 200;
 }
 .program-wrapper.dragged {
   transform: translateX(-9999px);
 }
 
 .program {
-  padding: 5px;
-  border-radius: 4px;
   flex: 1;
-  width: 100%;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   align-items: center;
+  padding: 5px;
+  border-radius: 4px;
   background-color: #81d4fa;
   line-height: 1.5;
-  /*z-index: 200;*/
 }
 .program.violation {
   background-image: repeating-linear-gradient(
@@ -85,7 +86,8 @@ p {
 
 .program-text {
   flex: 1;
-  width: 100%;
+  min-width: 0;
+  min-height: 0;
   word-wrap: break-word;
 }
 .program-text h3 {
@@ -120,12 +122,12 @@ p {
 .program-edit {
   right: 0;
   text-align: right;
-  /*z-index: 202;*/
+  z-index: 2;
 }
 .program-move {
   left: 0;
   text-align: left;
-  /*z-index: 201;*/
+  z-index: 1;
   cursor: move;
 }
 .program-wrapper:hover .program-edit,
@@ -136,7 +138,6 @@ p {
 .droppable {
   margin: 2px;
   border-radius: 4px;
-  z-index: 100;
 }
 .droppable:hover {
   background-color: #dcedc8;
