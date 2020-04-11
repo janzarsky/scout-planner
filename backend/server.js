@@ -1,3 +1,5 @@
+var config = require('./config.json');
+
 var express = require('express'),
   app = express(),
   port = process.env.PORT || 4000,
@@ -9,7 +11,7 @@ var express = require('express'),
   cors = require('cors');
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://mongo:27017', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(config.host, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(cors());
 app.options('*', cors());

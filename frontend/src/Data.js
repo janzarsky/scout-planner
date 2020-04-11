@@ -3,10 +3,10 @@
  * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
  */
 
-const host = 'http://localhost:4000';
+const config = require('./config.json');
 
 function get(path, id) {
-  return fetch(`${host}${path}/${id}`)
+  return fetch(`${config.host}${path}/${id}`)
     .then(resp => {
       if (!resp.ok) {
         throw new Error(`HTTP error: ${resp.status}`);
@@ -16,7 +16,7 @@ function get(path, id) {
 }
 
 function getAll(path) {
-  return fetch(`${host}${path}`)
+  return fetch(`${config.host}${path}`)
     .then(resp => {
       if (!resp.ok) {
         throw new Error(`HTTP error: ${resp.status}`);
@@ -27,7 +27,7 @@ function getAll(path) {
 }
 
 function post(path, data) {
-  return fetch(`${host}${path}`, {
+  return fetch(`${config.host}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -41,7 +41,7 @@ function post(path, data) {
 }
 
 function put(path, data) {
-  return fetch(`${host}${path}/${data._id}`, {
+  return fetch(`${config.host}${path}/${data._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -55,7 +55,7 @@ function put(path, data) {
 }
 
 function remove(path, id) {
-  return fetch(`${host}${path}/${id}`, {
+  return fetch(`${config.host}${path}/${id}`, {
       method: 'DELETE',
     })
     .then(resp => {
