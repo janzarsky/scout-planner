@@ -1,3 +1,8 @@
+/**
+ * @file Main application
+ * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
+ */
+
 import React from 'react';
 import AddProgramModal from './AddProgramModal';
 import EditProgramModal from './EditProgramModal';

@@ -1,3 +1,8 @@
+/**
+ * @file Function for checking rules on programs
+ * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
+ */
+
 import DateUtils from './DateUtils'
 
 async function checkRules(rules, programs) {

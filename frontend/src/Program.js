@@ -1,3 +1,8 @@
+/**
+ * @file Program component
+ * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
+ */
+
 import React from 'react';
 import DateUtils from './DateUtils';
 

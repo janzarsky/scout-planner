@@ -1,3 +1,8 @@
+/**
+ * @file Functions for communicating with backend
+ * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
+ */
+
 const host = 'http://localhost:4000';
 
 function get(path, id) {

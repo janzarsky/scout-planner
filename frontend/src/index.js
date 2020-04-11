@@ -1,3 +1,8 @@
+/**
+ * @file Entrypoint
+ * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
+ */
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';

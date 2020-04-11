@@ -1,3 +1,10 @@
+/**
+ * @file Testing set of programs
+ * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
+ *
+ * These functions add testing set of programs, packages and rules.
+ */
+
 import Data from './Data';
 import DateUtils from './DateUtils';
 

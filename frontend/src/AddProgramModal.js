@@ -1,3 +1,8 @@
+/**
+ * @file Modal for adding programs
+ * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
+ */
+
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
