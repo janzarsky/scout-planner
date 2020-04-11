@@ -91,17 +91,27 @@ class App extends React.Component {
           />
         }
         <Tab.Container defaultActiveKey={this.state.activeTab}>
-          <Nav variant="pills">
-            <Nav.Item><Nav.Link eventKey="timetable">Harmonogram</Nav.Link></Nav.Item>
-            <Nav.Item><Nav.Link eventKey="rules">Pravidla {this.state.satisfied
-                  ? <i className="fa fa-check" />
-                  : <i className="fa fa-times" />}</Nav.Link></Nav.Item>
-            <Nav.Item><Nav.Link eventKey="packages">Balíčky</Nav.Link></Nav.Item>
+          <Nav variant="pills" className="control-panel">
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="timetable">Harmonogram</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="rules">Pravidla {this.state.satisfied
+                ? <i className="fa fa-check" />
+                : <i className="fa fa-times" />}</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="packages">Balíčky</Nav.Link>
+            </Nav.Item>
             {this.getFilters()}
             <Nav.Item style={{marginLeft: 'auto'}}>
-              <Button onClick={this.loadTestData}>Nahrát příklad</Button>
+              <Nav.Link as={Button} variant="light" onClick={this.loadTestData}>
+                Nahrát příklad
+              </Nav.Link>
             </Nav.Item>
-            <Nav.Item><Button onClick={this.removeAll}>Smazat vše</Button></Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" onClick={this.removeAll}>Smazat vše</Nav.Link>
+            </Nav.Item>
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="timetable">
@@ -180,18 +190,20 @@ class App extends React.Component {
 
     return <>
       <Nav.Item>
-        <Button
-          variant={this.state.filterActive ? 'primary' : 'link'}
+        <Nav.Link
+          as={Button}
+          variant={this.state.filterActive ? 'dark' : 'light'}
           onClick={() => this.setState({ filterActive: this.state.filterActive ? false : true })}
-        ><i className="fa fa-filter"/></Button>
+        ><i className="fa fa-filter"/></Nav.Link>
       </Nav.Item>
       {this.state.filterActive && [...this.state.pkgs.entries()].map(([key, pkg]) =>
         <Nav.Item key={key}>
-          <Button
+          <Nav.Link
+            as={Button}
             variant={(this.state.filterPkgs.indexOf(pkg._id) === -1) ? 'light' : 'dark'}
             style={(this.state.filterPkgs.indexOf(pkg._id) === -1) ? { backgroundColor: pkg.color } : {}}
             onClick={() => toggle(pkg._id)}
-          >{pkg.name}</Button>
+          >{pkg.name}</Nav.Link>
         </Nav.Item>
       )}
     </>;
