@@ -49,7 +49,7 @@ class Settings extends React.Component {
               </td>
               <td>
                 <Button
-                  variant="outline-danger"
+                  variant="link text-danger"
                   onClick={() => {
                     this.props.deleteRule(rule._id);
                   }}>

@@ -97,8 +97,8 @@ class App extends React.Component {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="rules">Pravidla {this.state.satisfied
-                ? <i className="fa fa-check" />
-                : <i className="fa fa-times" />}</Nav.Link>
+                ? <i className="fa fa-check text-success" />
+                : <i className="fa fa-times text-danger" />}</Nav.Link>
             </Nav.Item>
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="packages">Balíčky</Nav.Link>

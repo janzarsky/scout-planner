@@ -48,11 +48,11 @@ class Packages extends React.Component {
                       <i className="fa fa-check"/> Uložit
                     </Button>
                   : <span>
-                      <Button variant="outline-primary"
+                      <Button variant="link"
                         onClick={() => this.setState({ edit: key })}>
                         <i className="fa fa-pencil"/> Upravit
                       </Button>&nbsp;
-                      <Button variant="outline-danger"
+                      <Button variant="link text-danger"
                         onClick={() => this.props.deletePkg(pkg._id)}>
                         <i className="fa fa-trash"/> Smazat
                       </Button>
