@@ -9,5 +9,5 @@ Run `docker-compose up` and visit http://localhost:3000.
 ```
 docker run -ti --rm -p 27017:27019 mongo
 cd frontend && npm run start
-cd backend && npm run start
+cd backend && npm run startDev
 ```
