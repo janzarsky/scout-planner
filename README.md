@@ -64,8 +64,8 @@ framework a balíček Mongoose pro připojení k databázi. Databáze je MongoDB
 
 Tyto technologie jsem vybral proto, že umožňují velmi snadné vytvoření rozhraní
 pro aplikaci. Aplikace používá jen tři typy objektů: programy, balíčky a
-pravidla. Ke každému typu objektů potřebuje pouze jednoduché CRUD operace,
-nevyžaduje žádnou validaci.
+pravidla. Ke každému typu objektů potřebuje pouze jednoduché CRUD operace bez
+složité validace.
 
 ### Frontend
 
@@ -109,8 +109,9 @@ použitím React Bootstrap komponent.
 Implementace backendu probíhala bez problémů, framework Express je velmi
 jednoduchý, bylo potřeba pouze přidat balíček *cors* na ošetření CORS.
 
-Při práci na frontendu jsem se musel naučit React od základů. Nebylo vždy
-jednoduché určit, kam umístit stav aplikace.
+Při práci na frontendu jsem se musel naučit React od základů. Při implementaci
+mi největší potíže dělalo správné rozdělení aplikace na komponenty a umisťování
+stavů. Technicky nejobtížnější byla implementace drag-and-drop funkcionality.
 
 ## Zdroje informací
 
@@ -119,6 +120,7 @@ jednoduché určit, kam umístit stav aplikace.
   (https://www.codementor.io/@olatundegaruba/nodejs-restful-apis-in-10-minutes-q0sgsfhbd)
 * React Docs (https://reactjs.org/docs/getting-started.html)
 * React Bootstrap (https://react-bootstrap.github.io/)
+* MDN Web Docs (https://developer.mozilla.org/en-US/)
 * A Complete Guide to Grid
   (https://css-tricks.com/snippets/css/complete-guide-grid/)
 * A Complete Guide to Flexbox
