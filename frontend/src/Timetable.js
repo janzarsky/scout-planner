@@ -18,13 +18,13 @@ class Timetable extends React.Component {
   }
 
   render() {
-    const settings = this.getSettings(this.props.programs);
+    const settings = this.getSettings(this.props.programs, this.props.groups);
 
     return (
       <div
         className="timetable"
         style={{
-          gridTemplateRows: "repeat(" + (settings.days.length + 1) + ", auto)",
+          gridTemplateRows: "repeat(" + (settings.days.length*settings.groupCnt + 1) + ", auto)",
           gridTemplateColumns: "auto repeat(" + settings.timeSpan*settings.timeHeaders.length
                                + ", minmax(20px, 1fr))",
         }}
@@ -37,7 +37,7 @@ class Timetable extends React.Component {
     );
   }
 
-  getSettings(programs) {
+  getSettings(programs, groups) {
     const hour = DateUtils.parseDuration('1:00');
 
     if (programs.size === 0)
@@ -73,22 +73,26 @@ class Timetable extends React.Component {
     );
     settings.timeStep = 15*60*1000;
     settings.timeSpan = Math.ceil(hour/(15*60*1000));
+    settings.groups = [...groups.keys()];
+    settings.groupCnt = groups.size;
 
     return settings;
   }
 
   *getDroppables(settings) {
     for (const [idxDate, date] of settings.days.entries()) {
-      for (const [idxTime, time] of settings.timeHeaders.entries()) {
-        for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
-          yield <Droppable
-            key={[idxTime, idxDate, idxSpan]}
-            x={2 + idxTime*settings.timeSpan + idxSpan}
-            y={2 + idxDate}
-            begin={date + time + idxSpan*settings.timeStep}
-            onDrop={this.onDroppableDrop}
-            addProgramModal={this.props.addProgramModal}
-          />;
+      for (let idxGroup = 0; idxGroup < settings.groupCnt; idxGroup++) {
+        for (const [idxTime, time] of settings.timeHeaders.entries()) {
+          for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
+            yield <Droppable
+              key={[idxTime, idxDate, idxGroup, idxSpan]}
+              x={2 + idxTime*settings.timeSpan + idxSpan}
+              y={2 + idxDate*settings.groupCnt + idxGroup}
+              begin={date + time + idxSpan*settings.timeStep}
+              onDrop={this.onDroppableDrop}
+              addProgramModal={this.props.addProgramModal}
+            />;
+          }
         }
       }
     }
@@ -110,7 +114,8 @@ class Timetable extends React.Component {
       yield <DateHeader
         key={date}
         date={new Date(date)}
-        pos={idx + 2}
+        pos={idx*settings.groupCnt + 2}
+        span={settings.groupCnt}
       />;
     }
   }
@@ -134,11 +139,20 @@ class Timetable extends React.Component {
     const date = DateUtils.getOnlyDate(program.begin);
     const time = DateUtils.getOnlyTime(program.begin);
 
+    var [first, last] = [0, settings.groupCnt - 1];
+
+    if (program.groups && program.groups.length > 0) {
+      const groupMap = settings.groups.map(group => (program.groups.indexOf(group) !== -1))
+      first = groupMap.reduce((acc, cur, idx) => (cur && idx < acc) ? idx : acc,
+        settings.groupCnt - 1);
+      last = groupMap.reduce((acc, cur, idx) => (cur && idx > acc) ? idx : acc, 0);
+    }
+
     return {
       x: Math.ceil((time - settings.dayStart)/settings.timeStep),
-      y: settings.days.indexOf(date),
+      y: settings.days.indexOf(date)*settings.groupCnt + first,
       width: Math.ceil(program.duration/settings.timeStep),
-      height: 1
+      height: last - first + 1,
     };
   }
 
@@ -211,7 +225,8 @@ function DateHeader(props) {
   return <div
       className="dateheader"
       style={{
-        gridRowStart: props.pos
+        gridRowStart: props.pos,
+        gridRowEnd: 'span ' + props.span,
       }}
     >
       {props.date.getUTCDate()}.{props.date.getUTCMonth() + 1}.

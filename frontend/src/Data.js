@@ -75,3 +75,12 @@ function remove(path, id) {
   exports[`update${name}`] = (data) => put(`/${entity}s`, data);
   exports[`delete${name}`] = (id) => remove(`/${entity}s`, id);
 });
+
+// TODO
+exports.getGroups = async function() {
+  return new Map([
+    ['clk1', { name: 'ČLK 1' }],
+    ['clk2', { name: 'ČLK 2' }],
+    ['clk3', { name: 'ČLK 3' }],
+  ]);
+};

@@ -8,6 +8,7 @@ var ProgramSchema = new Schema({
   begin: Number,
   duration: Number,
   pkg: String,
+  groups: [String],
   people: [String],
 });
 

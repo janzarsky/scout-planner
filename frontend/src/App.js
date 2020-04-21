@@ -22,6 +22,7 @@ class App extends React.Component {
     this.state = {
       programs: new Map(),
       pkgs: new Map(),
+      groups: new Map(),
       rules: new Map(),
       violations: new Map(),
       satisfied: true,
@@ -54,6 +55,7 @@ class App extends React.Component {
     Data.getPrograms().then(programs => this.setState({programs: programs}, this.checkRules));
     Data.getPkgs().then(pkgs => this.setState({pkgs: pkgs}));
     Data.getRules().then(rules => this.setState({rules: rules}, this.checkRules));
+    Data.getGroups().then(groups => this.setState({groups: groups}, this.checkRules));
   }
 
   checkRules() {
@@ -122,6 +124,7 @@ class App extends React.Component {
               <Timetable
                 programs={this.state.programs}
                 pkgs={this.state.pkgs}
+                groups={this.state.groups}
                 settings={this.state.settings}
                 violations={violationsPerProgram}
                 filterPkgs={this.state.filterActive ? this.state.filterPkgs : []}
