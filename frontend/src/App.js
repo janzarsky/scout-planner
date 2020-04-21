@@ -15,6 +15,7 @@ import Nav from 'react-bootstrap/Nav';
 import Data from './Data';
 import Checker from './Checker';
 import Example from './Example';
+import ImportExport from './ImportExport';
 
 class App extends React.Component {
   constructor(props) {
@@ -109,6 +110,9 @@ class App extends React.Component {
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="packages">Balíčky</Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="importexport">Import/Export</Nav.Link>
+            </Nav.Item>
             {this.getFilters()}
             <Nav.Item style={{marginLeft: 'auto'}}>
               <Nav.Link as={Button} variant="light" onClick={this.loadTestData}>
@@ -177,6 +181,14 @@ class App extends React.Component {
                   pkgs.delete(id);
                   this.setState({ pkgs: pkgs });
                 })}
+              />
+            </Tab.Pane>
+            <Tab.Pane eventKey="importexport" title="Import/Export">
+              <ImportExport
+                programs={this.state.programs}
+                pkgs={this.state.pkgs}
+                groups={this.state.groups}
+                rules={this.state.rules}
               />
             </Tab.Pane>
           </Tab.Content>
