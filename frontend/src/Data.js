@@ -66,21 +66,25 @@ function remove(path, id) {
     });
 }
 
+var toExport = {};
+
 ['program', 'pkg', 'rule'].forEach((entity) => {
   const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
-  exports[`get${name}s`] = () => getAll(`/${entity}s`);
-  exports[`get${name}`] = (id) => get(`/${entity}s`, id);
-  exports[`add${name}`] = (data) => post(`/${entity}s`, data);
-  exports[`update${name}`] = (data) => put(`/${entity}s`, data);
-  exports[`delete${name}`] = (id) => remove(`/${entity}s`, id);
+  toExport[`get${name}s`] = () => getAll(`/${entity}s`);
+  toExport[`get${name}`] = (id) => get(`/${entity}s`, id);
+  toExport[`add${name}`] = (data) => post(`/${entity}s`, data);
+  toExport[`update${name}`] = (data) => put(`/${entity}s`, data);
+  toExport[`delete${name}`] = (id) => remove(`/${entity}s`, id);
 });
 
 // TODO
-exports.getGroups = async function() {
+toExport.getGroups = async function() {
   return new Map([
     ['clk1', { name: 'ČLK 1' }],
     ['clk2', { name: 'ČLK 2' }],
     ['clk3', { name: 'ČLK 3' }],
   ]);
 };
+
+export default toExport;
