@@ -81,18 +81,17 @@ class Timetable extends React.Component {
 
   *getDroppables(settings) {
     for (const [idxDate, date] of settings.days.entries()) {
-      for (let idxGroup = 0; idxGroup < settings.groupCnt; idxGroup++) {
-        for (const [idxTime, time] of settings.timeHeaders.entries()) {
-          for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
-            yield <Droppable
-              key={[idxTime, idxDate, idxGroup, idxSpan]}
-              x={2 + idxTime*settings.timeSpan + idxSpan}
-              y={2 + idxDate*settings.groupCnt + idxGroup}
-              begin={date + time + idxSpan*settings.timeStep}
-              onDrop={this.onDroppableDrop}
-              addProgramModal={this.props.addProgramModal}
-            />;
-          }
+      for (const [idxTime, time] of settings.timeHeaders.entries()) {
+        for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
+          yield <Droppable
+            key={[idxTime, idxDate, idxSpan]}
+            x={2 + idxTime*settings.timeSpan + idxSpan}
+            y={2 + idxDate*settings.groupCnt}
+            height={settings.groupCnt}
+            begin={date + time + idxSpan*settings.timeStep}
+            onDrop={this.onDroppableDrop}
+            addProgramModal={this.props.addProgramModal}
+          />;
         }
       }
     }
@@ -181,6 +180,7 @@ class Droppable extends React.Component {
         style={{
           gridColumnStart: this.props.x,
           gridRowStart: this.props.y,
+          gridRowEnd: 'span ' + this.props.height,
         }}
         onClick={_ => this.props.addProgramModal({begin: this.props.begin})}
         onDrop={e => this.onDrop(e)}
