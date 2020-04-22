@@ -102,7 +102,7 @@ class AddProgramModal extends React.Component {
       duration: DateUtils.parseDuration(this.duration.current.value),
       title: this.title.current.value,
       pkg: this.pkg.current.value,
-      groups: this.groups.current.value.split(',').filter(a => (a != "")),
+      groups: this.groups.current.value.split(',').filter(a => (a !== "")),
     });
 
     this.props.handleClose();
