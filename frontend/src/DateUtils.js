@@ -42,6 +42,15 @@ function formatDuration(ms) {
   return `${date.getUTCHours()}:${(date.getUTCMinutes() < 10) ? '0' : ''}${date.getUTCMinutes()}`;
 };
 
+function formatDay(ms) {
+  const date = new Date(parseInt(ms));
+
+  if (isNaN(date.getTime()))
+    return '(chybný den)';
+
+  return ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'][(date.getUTCDay() + 6) % 7];
+}
+
 function parseDate(str) {
   const vals = str.split('.');
   return Date.UTC(parseInt(vals[2], 10), parseInt(vals[1], 10) - 1, parseInt(vals[0], 10));
@@ -74,6 +83,7 @@ export default {
   formatTime,
   formatDateTime,
   formatDuration,
+  formatDay,
   parseDate,
   parseTime,
   parseDateTime,

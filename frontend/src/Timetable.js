@@ -229,7 +229,7 @@ function DateHeader(props) {
         gridRowEnd: 'span ' + props.span,
       }}
     >
-      {props.date.getUTCDate()}.{props.date.getUTCMonth() + 1}.
+      {DateUtils.formatDay(props.date.getTime())}<br/>{props.date.getUTCDate()}.{props.date.getUTCMonth() + 1}.
     </div>;
 }
 
