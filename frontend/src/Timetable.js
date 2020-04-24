@@ -25,7 +25,7 @@ class Timetable extends React.Component {
         className="timetable"
         style={{
           gridTemplateRows: "repeat(" + (settings.days.length*settings.groupCnt + 1) + ", auto)",
-          gridTemplateColumns: "auto repeat(" + settings.timeSpan*settings.timeHeaders.length
+          gridTemplateColumns: "auto auto repeat(" + settings.timeSpan*settings.timeHeaders.length
                                + ", minmax(20px, 1fr))",
         }}
       >
@@ -85,7 +85,7 @@ class Timetable extends React.Component {
         for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
           yield <Droppable
             key={[idxTime, idxDate, idxSpan]}
-            x={2 + idxTime*settings.timeSpan + idxSpan}
+            x={3 + idxTime*settings.timeSpan + idxSpan}
             y={2 + idxDate*settings.groupCnt}
             height={settings.groupCnt}
             begin={date + time + idxSpan*settings.timeStep}
@@ -102,7 +102,7 @@ class Timetable extends React.Component {
       yield <TimeHeader
         key={time}
         time={new Date(time)}
-        pos={idx*settings.timeSpan + 2}
+        pos={idx*settings.timeSpan + 3}
         span={settings.timeSpan}
       />;
     }
@@ -110,12 +110,24 @@ class Timetable extends React.Component {
 
   *getDateHeaders(settings) {
     for (const [idx, date] of settings.days.entries()) {
-      yield <DateHeader
-        key={date}
-        date={new Date(date)}
-        pos={idx*settings.groupCnt + 2}
-        span={settings.groupCnt}
-      />;
+      yield <>
+        <DateHeader
+          key={date}
+          date={new Date(date)}
+          pos={idx*settings.groupCnt + 2}
+          span={settings.groupCnt}
+        />
+        {settings.groups.map((group, groupIdx) =>
+          <div
+            className="groupheader"
+            style={{
+              gridRowStart: idx*settings.groupCnt + groupIdx + 2,
+            }}
+          >
+            {this.props.groups.get(group).name}
+          </div>
+        )}
+      </>;
     }
   }
 
@@ -229,7 +241,7 @@ function DateHeader(props) {
         gridRowEnd: 'span ' + props.span,
       }}
     >
-      {DateUtils.formatDay(props.date.getTime())}<br/>{props.date.getUTCDate()}.{props.date.getUTCMonth() + 1}.
+      {DateUtils.formatDay(props.date.getTime())}<br/>{props.date.getUTCDate()}.<br/>{props.date.getUTCMonth() + 1}.
     </div>;
 }
 

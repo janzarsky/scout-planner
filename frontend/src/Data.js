@@ -81,12 +81,12 @@ var toExport = {};
 // TODO
 toExport.getGroups = async function() {
   return new Map([
-    ['clk1', { name: 'ČLK 1' }],
-    ['clk2', { name: 'ČLK 2' }],
-    ['clk3', { name: 'ČLK 3' }],
-    ['clk4', { name: 'ČLK 4' }],
-    ['clk5', { name: 'ČLK 5' }],
-    ['clk6', { name: 'ČLK 6' }],
+    ['clk1', { name: '1' }],
+    ['clk2', { name: '2' }],
+    ['clk3', { name: '3' }],
+    ['clk4', { name: '4' }],
+    ['clk5', { name: '5' }],
+    ['clk6', { name: '6' }],
     ['in', { name: 'IN' }],
   ]);
 };
