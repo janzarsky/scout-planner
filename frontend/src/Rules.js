@@ -159,7 +159,7 @@ class Settings extends React.Component {
 
   formatProgram(prog) {
     if (prog) {
-      return `${(prog.title == '') ? '(bez názvu)' : prog.title} (${DateUtils.formatDateTime(prog.begin)}) ${(prog.groups.length > 0) ? ` (skupiny: ${prog.groups.join(', ')})` : ' (všechny skupiny)'}`;
+      return `${(prog.title === '') ? '(bez názvu)' : prog.title} (${DateUtils.formatDateTime(prog.begin)}) ${(prog.groups.length > 0) ? ` (skupiny: ${prog.groups.join(', ')})` : ' (všechny skupiny)'}`;
     }
 
     return '(program nenalezen)';
