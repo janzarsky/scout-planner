@@ -97,7 +97,7 @@ function ProgramMove() {
 
 function ProgramUrl(props) {
   return <div className="program-url">
-    <a href={props.url} target="_blank">
+    <a href={props.url} rel="noopener noreferrer" target="_blank">
       <i className="fa fa-link"/>
     </a>
   </div>;
