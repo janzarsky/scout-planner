@@ -71,7 +71,7 @@ class Settings extends React.Component {
                   <Form.Control as="select" defaultValue="Žádný program" ref={this.program}>
                     <option>Žádný program</option>
                     {[...this.props.programs.entries()].map(([key, prog]) =>
-                      <option key={key} value={key}>{prog.title}</option>
+                      <option key={key} value={key}>{this.formatProgram(prog)}</option>
                     )}
                   </Form.Control>
                 </Col>
@@ -107,7 +107,7 @@ class Settings extends React.Component {
                           <Form.Control as="select" defaultValue="Žádný program" ref={this.program2}>
                             <option>Žádný program</option>
                             {[...this.props.programs.entries()].map(([key, prog]) =>
-                              <option key={key} value={key}>{prog.title}</option>
+                            <option key={key} value={key}>{this.formatProgram(prog)}</option>
                             )}
                           </Form.Control>
                         </Col>
@@ -131,11 +131,7 @@ class Settings extends React.Component {
   }
 
   formatRule(rule) {
-    var prog_title = (this.props.programs.get(rule.program))
-      ? this.props.programs.get(rule.program).title : '(program nenalezen)';
-
-    if (prog_title === '')
-      prog_title = '(bez názvu)';
+    const prog_title = this.formatProgram(this.props.programs.get(rule.program));
 
     switch (rule.condition) {
       case "is_before_date":
@@ -147,11 +143,7 @@ class Settings extends React.Component {
       default:
     }
 
-    var prog2_title = (this.props.programs.get(rule.value))
-      ? this.props.programs.get(rule.value).title : '(program nenalezen)';
-
-    if (prog2_title === '')
-      prog2_title = '(bez názvu)';
+    var prog2_title = this.formatProgram(this.props.programs.get(rule.value));
 
     switch (rule.condition) {
       case "is_before_program":
@@ -163,6 +155,14 @@ class Settings extends React.Component {
       default:
         return;
     }
+  }
+
+  formatProgram(prog) {
+    if (prog) {
+      return `${(prog.title == '') ? '(bez názvu)' : prog.title} (${DateUtils.formatDateTime(prog.begin)}) ${(prog.groups.length > 0) ? ` (skupiny: ${prog.groups.join(', ')})` : ' (všechny skupiny)'}`;
+    }
+
+    return '(program nenalezen)';
   }
 
   handleSubmit(event) {
