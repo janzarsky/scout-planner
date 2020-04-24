@@ -55,7 +55,16 @@ class ImportExport extends React.Component {
     )))
     .then(programs => new Map(programs))
     .then(programs =>
-      data.rules.map(rule => { return { ...rule, program: programs.get(rule.program) }; })
+      data.rules.map(rule => {
+        var value = rule.value;
+        if (rule.condition === 'is_before_program' || rule.condition === 'is_after_program')
+          value = programs.get(rule.value);
+        return {
+          ...rule,
+          program: programs.get(rule.program),
+          value: value,
+        };
+      })
     )
     .then(rules => Promise.all(rules.map(rule => Data.addRule(rule))))
     .then(() => window.location.reload());
