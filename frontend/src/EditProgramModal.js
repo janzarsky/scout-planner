@@ -14,7 +14,7 @@ import DateUtils from './DateUtils';
 class EditProgramModal extends React.Component {
   constructor(props) {
     super(props);
-    ['title', 'date', 'time', 'duration', 'pkg', 'groups'].forEach(
+    ['title', 'date', 'time', 'duration', 'pkg', 'groups', 'url', 'notes'].forEach(
       (field) => this[field] = React.createRef()
     );
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,6 +27,8 @@ class EditProgramModal extends React.Component {
     const duration = DateUtils.formatDuration(this.props.program.duration);
 
     const groups = this.props.program.groups.join(',');
+    const url = this.props.program.url;
+    const notes = this.props.program.notes;
 
     const setDuration = duration => { this.duration.current.value = duration; };
 
@@ -86,6 +88,18 @@ class EditProgramModal extends React.Component {
               <Form.Control type="text" defaultValue={groups} ref={this.groups} />
             </Col>
           </Form.Group>
+          <Form.Group as={Row}>
+            <Form.Label column sm="2">URL</Form.Label>
+            <Col>
+              <Form.Control type="text" defaultValue={url} ref={this.url} />
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row}>
+            <Form.Label column sm="2">Poznámky</Form.Label>
+            <Col>
+              <Form.Control as="textarea" defaultValue={notes} ref={this.notes} />
+            </Col>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="link text-danger" onClick={this.handleDelete}
@@ -116,6 +130,8 @@ class EditProgramModal extends React.Component {
       title: this.title.current.value,
       pkg: this.pkg.current.value,
       groups: this.groups.current.value.split(',').filter(a => (a !== "")),
+      url: this.url.current.value,
+      notes: this.notes.current.value,
     });
 
     this.props.handleClose();

@@ -39,6 +39,10 @@ class Program extends React.Component {
           editProgramModal={this.props.editProgramModal}
         />
         <ProgramMove/>
+        {this.props.program.url
+          ? <ProgramUrl url={this.props.program.url}/>
+          : null
+        }
       </div>;
   }
 
@@ -88,6 +92,14 @@ function ProgramEdit(props) {
 function ProgramMove() {
   return <div className="program-move">
     <i className="fa fa-arrows"/>
+  </div>;
+}
+
+function ProgramUrl(props) {
+  return <div className="program-url">
+    <a href={props.url} target="_blank">
+      <i className="fa fa-link"/>
+    </a>
   </div>;
 }
 
