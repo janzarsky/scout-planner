@@ -10,6 +10,8 @@ var ProgramSchema = new Schema({
   pkg: String,
   groups: [String],
   people: [String],
+  url: String,
+  notes: String,
 });
 
 module.exports = mongoose.model('Programs', ProgramSchema);
