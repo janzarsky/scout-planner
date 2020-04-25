@@ -13,10 +13,11 @@ async function checkRules(rules, programs) {
   }
 
   const overlaps = checkOverlaps(programs);
+  const people = checkPeople(programs);
 
   return {
     violations: violations,
-    other: overlaps,
+    other: [...overlaps, ...people],
   };
 }
 
@@ -67,10 +68,30 @@ function checkOverlaps(programs) {
         break;
 
       if (prog1.groups.length === 0 || prog2.groups.length === 0) {
-        overlaps.push({ program: prog1._id, msg: 'Programy se překrývají'});
+        overlaps.push({ program: prog1._id, msg: 'Programy se překrývají (více programů pro jednu skupinu)'});
       }
       else if (prog1.groups.filter(group => prog2.groups.indexOf(group) !== -1).length > 0) {
-        overlaps.push({ program: prog1._id, msg: 'Programy se překrývají'});
+        overlaps.push({ program: prog1._id, msg: 'Programy se překrývají (více programů pro jednu skupinu)'});
+      }
+    }
+  });
+
+  return overlaps;
+}
+
+function checkPeople(programs) {
+  var overlaps = [];
+  const sorted = [...programs.values()].sort((a, b) => (a.begin < b.begin) ? -1 : 1);
+
+  sorted.forEach((prog1, idx1) => {
+    for (let idx2 = idx1 + 1; idx2 < sorted.length; idx2++) {
+      const prog2 = sorted[idx2];
+
+      if (prog2.begin >= prog1.begin + prog1.duration)
+        break;
+
+      if (prog1.people.filter(person => prog2.people.indexOf(person) !== -1).length > 0) {
+        overlaps.push({ program: prog1._id, msg: 'Programy se překrývají (jeden člověk na více programech)'});
       }
     }
   });
