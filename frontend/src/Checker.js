@@ -12,7 +12,12 @@ async function checkRules(rules, programs) {
     violations.set(id, checkRule(rule, programs));
   }
 
-  return violations
+  const overlaps = checkOverlaps(programs);
+
+  return {
+    violations: violations,
+    other: overlaps,
+  };
 }
 
 function checkRule(rule, programs) {
@@ -48,6 +53,29 @@ function checkRule(rule, programs) {
   }
 
   return failure('Neznámé pravidlo');
+}
+
+function checkOverlaps(programs) {
+  var overlaps = [];
+  const sorted = [...programs.values()].sort((a, b) => (a.begin < b.begin) ? -1 : 1);
+
+  sorted.forEach((prog1, idx1) => {
+    for (let idx2 = idx1 + 1; idx2 < sorted.length; idx2++) {
+      const prog2 = sorted[idx2];
+
+      if (prog2.begin >= prog1.begin + prog1.duration)
+        break;
+
+      if (prog1.groups.length === 0 || prog2.groups.length === 0) {
+        overlaps.push({ program: prog1._id, msg: 'Programy se překrývají'});
+      }
+      else if (prog1.groups.filter(group => prog2.groups.indexOf(group) !== -1).length > 0) {
+        overlaps.push({ program: prog1._id, msg: 'Programy se překrývají'});
+      }
+    }
+  });
+
+  return overlaps;
 }
 
 export default {checkRules};

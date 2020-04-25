@@ -26,6 +26,7 @@ class App extends React.Component {
       groups: new Map(),
       rules: new Map(),
       violations: new Map(),
+      otherProblems: [],
       satisfied: true,
       addProgram: false,
       addProgramOptions: {},
@@ -57,10 +58,13 @@ class App extends React.Component {
   }
 
   checkRules() {
-    Checker.checkRules(this.state.rules, this.state.programs).then(violations => {
+    Checker.checkRules(this.state.rules, this.state.programs).then(problems => {
       this.setState({
-        violations: violations,
-        satisfied: [...violations.values()].reduce((acc, curr) => (acc && curr.satisfied), true),
+        violations: problems.violations,
+        otherProblems: problems.other,
+        satisfied:
+          [...problems.violations.values()].reduce((acc, curr) => (acc && curr.satisfied), true)
+          && (problems.other.length === 0),
       });
     });
   }
@@ -74,6 +78,11 @@ class App extends React.Component {
           violationsPerProgram.set(programId, []);
         violationsPerProgram.get(programId).push(msg);
       });
+    this.state.otherProblems.forEach(problem => {
+      if (!violationsPerProgram.get(problem.program))
+        violationsPerProgram.set(problem.program, []);
+      violationsPerProgram.get(problem.program).push(problem.msg);
+    });
 
     return (
       <div className="App">
