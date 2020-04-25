@@ -34,18 +34,15 @@ class App extends React.Component {
       activeTab: 'timetable',
       filterActive: false,
       filterPkgs: [],
+      viewSettingsActive: false,
+      viewPkg: true,
+      viewTime: false,
+      viewPeople: false,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
     this.deleteProgram = this.deleteProgram.bind(this);
-    this.loadTestData = this.loadTestData.bind(this);
     this.removeAll = this.removeAll.bind(this);
-  }
-
-  loadTestData() {
-    Example.clear()
-      .then(() => Example.load())
-      .then(() => this.componentDidMount());
   }
 
   removeAll() {
@@ -114,12 +111,8 @@ class App extends React.Component {
               <Nav.Link as={Button} variant="light" eventKey="importexport">Import/Export</Nav.Link>
             </Nav.Item>
             {this.getFilters()}
+            {this.getViewSettings()}
             <Nav.Item style={{marginLeft: 'auto'}}>
-              <Nav.Link as={Button} variant="light" onClick={this.loadTestData}>
-                Nahrát příklad
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
               <Nav.Link as={Button} variant="light" onClick={this.removeAll}>Smazat vše</Nav.Link>
             </Nav.Item>
           </Nav>
@@ -139,6 +132,11 @@ class App extends React.Component {
                 editProgramModal={program =>
                   this.setState({ editProgram: true, editProgramData: program })
                 }
+                viewSettings={{
+                  viewPkg: this.state.viewPkg,
+                  viewTime: this.state.viewTime,
+                  viewPeople: this.state.viewPeople,
+                }}
               />
             </Tab.Pane>
             <Tab.Pane eventKey="rules">
@@ -225,6 +223,41 @@ class App extends React.Component {
           >{pkg.name}</Nav.Link>
         </Nav.Item>
       )}
+    </>;
+  }
+
+  getViewSettings() {
+    return <>
+      <Nav.Item>
+        <Nav.Link
+          as={Button}
+          variant={this.state.viewSettingsActive ? 'dark' : 'light'}
+          onClick={() => this.setState({ viewSettingsActive: this.state.viewSettingsActive ? false : true })}
+        ><i className="fa fa-eye"/></Nav.Link>
+      </Nav.Item>
+      {this.state.viewSettingsActive && <>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.viewPkg ? 'dark' : 'light'}
+            onClick={() => this.setState({ viewPkg: !this.state.viewPkg})}
+          >Balíček</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.viewTime ? 'dark' : 'light'}
+            onClick={() => this.setState({ viewTime: !this.state.viewTime})}
+          >Čas</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.viewPeople ? 'dark' : 'light'}
+            onClick={() => this.setState({ viewPeople: !this.state.viewPeople})}
+          >Lidi</Nav.Link>
+        </Nav.Item>
+      </>}
     </>;
   }
 

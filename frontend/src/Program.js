@@ -33,6 +33,7 @@ class Program extends React.Component {
           violations={this.props.violations}
           pkgs={this.props.pkgs}
           filtered={this.props.filtered}
+          viewSettings={this.props.viewSettings}
         />
         <ProgramEdit
           program={this.props.program}
@@ -66,18 +67,29 @@ function ProgramBody(props) {
     style={(color && !props.filtered) ? {backgroundColor: color} : {}}
     title={props.violations && props.violations.join(', ')}
   >
-    <ProgramText program={props.program} pkgName={pkgName}/>
+    <ProgramText
+      program={props.program}
+      pkgName={pkgName}
+      viewSettings={props.viewSettings}
+    />
   </div>;
 }
 
 function ProgramText(props) {
   return <div className="program-text">
     <h3>{props.program.title}</h3>
-    <p className="program-package">{props.pkgName}</p>
-    <p className="program-time">
-      {DateUtils.formatTime(props.program.begin)}&ndash;
-      {DateUtils.formatTime(props.program.begin + props.program.duration)}
-    </p>
+    {props.viewSettings.viewPkg &&
+      <p className="program-package">{props.pkgName}</p>
+    }
+    {props.viewSettings.viewTime &&
+      <p className="program-time">
+        {DateUtils.formatTime(props.program.begin)}&ndash;
+        {DateUtils.formatTime(props.program.begin + props.program.duration)}
+      </p>
+    }
+    {props.viewSettings.viewPeople &&
+      <p className="program-people">{props.program.people.join(', ')}</p>
+    }
   </div>;
 }
 

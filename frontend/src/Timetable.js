@@ -32,7 +32,7 @@ class Timetable extends React.Component {
         {[...this.getDroppables(settings)]}
         {[...this.getTimeHeaders(settings)]}
         {[...this.getDateHeaders(settings)]}
-        {[...this.getPrograms(this.props.programs, settings)]}
+        {[...this.getPrograms(this.props.programs, settings, this.props.viewSettings)]}
       </div>
     );
   }
@@ -131,7 +131,7 @@ class Timetable extends React.Component {
     }
   }
 
-  *getPrograms(programs, settings) {
+  *getPrograms(programs, settings, viewSettings) {
     for (const [key, prog] of programs) {
       yield <Program
         key={key}
@@ -142,6 +142,7 @@ class Timetable extends React.Component {
         onDragStart={this.onProgramDragStart}
         pkgs={this.props.pkgs}
         editProgramModal={this.props.editProgramModal}
+        viewSettings={viewSettings}
       />;
     }
   }
