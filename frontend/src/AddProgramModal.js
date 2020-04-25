@@ -14,7 +14,7 @@ import DateUtils from './DateUtils';
 class AddProgramModal extends React.Component {
   constructor(props) {
     super(props);
-    ['title', 'date', 'time', 'duration', 'pkg', 'groups', 'url', 'notes'].forEach((field) =>
+    ['title', 'date', 'time', 'duration', 'pkg', 'groups', 'people', 'url', 'notes'].forEach((field) =>
       this[field] = React.createRef()
     );
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -85,6 +85,12 @@ class AddProgramModal extends React.Component {
             </Col>
           </Form.Group>
           <Form.Group as={Row}>
+            <Form.Label column sm="2">Lidi</Form.Label>
+            <Col>
+              <Form.Control type="text" ref={this.people} />
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row}>
             <Form.Label column sm="2">URL</Form.Label>
             <Col>
               <Form.Control type="text" ref={this.url} />
@@ -115,6 +121,7 @@ class AddProgramModal extends React.Component {
       title: this.title.current.value,
       pkg: this.pkg.current.value,
       groups: this.groups.current.value.split(',').filter(a => (a !== "")),
+      people: this.groups.current.value.split(',').filter(a => (a !== "")),
       url: this.url.current.value,
       notes: this.notes.current.value,
     });
