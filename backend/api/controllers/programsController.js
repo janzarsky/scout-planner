@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
   Program = mongoose.model('Programs');
 
 exports.get_all_programs = function(req, res) {
-  Program.find({}, function(err, programs) {
+  Program.find({ table: req.params.table }, function(err, programs) {
     if (err)
       res.send(err);
     res.json(programs);
@@ -13,6 +13,7 @@ exports.get_all_programs = function(req, res) {
 
 exports.create_program = function(req, res) {
   var new_prog = new Program(req.body);
+  new_prog.table = req.params.table;
   new_prog.save(function(err, program) {
     if (err)
       res.send(err);
@@ -21,7 +22,7 @@ exports.create_program = function(req, res) {
 };
 
 exports.delete_program = function(req, res) {
-  Program.findByIdAndRemove({ _id: req.params.id }, function(err, program) {
+  Program.findOneAndDelete({ _id: req.params.id, table: req.params.table }, function(err, program) {
     if (err)
       res.send(err);
     res.json({ message: 'Program successfully deleted' });
@@ -29,7 +30,7 @@ exports.delete_program = function(req, res) {
 };
 
 exports.get_program = function(req, res) {
-  Program.findById(req.params.id, function(err, program) {
+  Program.findOne({ _id: req.params.id, table: req.params.table }, function(err, program) {
     if (err)
       res.send(err);
     res.json(program);
@@ -37,7 +38,7 @@ exports.get_program = function(req, res) {
 };
 
 exports.update_program = function(req, res) {
-  Program.findOneAndUpdate({_id: req.params.id}, req.body, {new: true}, function(err, program) {
+  Program.findOneAndUpdate({ _id: req.params.id, table: req.params.table }, req.body, {new: true}, function(err, program) {
     if (err)
       res.send(err);
     res.json(program);

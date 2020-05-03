@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
   Pkg = mongoose.model('Pkg');
 
 exports.get_all_pkgs = function(req, res) {
-  Pkg.find({}, function(err, pkgs) {
+  Pkg.find({ table: req.params.table }, function(err, pkgs) {
     if (err)
       res.send(err);
     res.json(pkgs);
@@ -13,6 +13,7 @@ exports.get_all_pkgs = function(req, res) {
 
 exports.create_pkg = function(req, res) {
   var new_pkg = new Pkg(req.body);
+  new_pkg.table = req.params.table;
   new_pkg.save(function(err, pkg) {
     if (err)
       res.send(err);
@@ -21,7 +22,7 @@ exports.create_pkg = function(req, res) {
 };
 
 exports.delete_pkg = function(req, res) {
-  Pkg.findByIdAndRemove({ _id: req.params.id }, function(err, pkg) {
+  Pkg.findOneAndDelete({ _id: req.params.id, table: req.params.table }, function(err, pkg) {
     if (err)
       res.send(err);
     res.json({ message: 'Package successfully deleted' });
@@ -29,7 +30,7 @@ exports.delete_pkg = function(req, res) {
 };
 
 exports.get_pkg = function(req, res) {
-  Pkg.findById(req.params.id, function(err, pkg) {
+  Pkg.findOne({ _id: req.params.id, table: req.params.table }, function(err, pkg) {
     if (err)
       res.send(err);
     res.json(pkg);
@@ -37,7 +38,7 @@ exports.get_pkg = function(req, res) {
 };
 
 exports.update_pkg = function(req, res) {
-  Pkg.findOneAndUpdate({_id: req.params.id}, req.body, {new: true}, function(err, pkg) {
+  Pkg.findOneAndUpdate({ _id: req.params.id, table: req.params.table }, req.body, {new: true}, function(err, pkg) {
     if (err)
       res.send(err);
     res.json(pkg);

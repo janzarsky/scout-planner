@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
   Rule = mongoose.model('Rule');
 
 exports.get_all_rules = function(req, res) {
-  Rule.find({}, function(err, rules) {
+  Rule.find({ table: req.params.table }, function(err, rules) {
     if (err)
       res.send(err);
     res.json(rules);
@@ -13,6 +13,7 @@ exports.get_all_rules = function(req, res) {
 
 exports.create_rule = function(req, res) {
   var new_rule = new Rule(req.body);
+  new_rule.table = req.params.table;
   new_rule.save(function(err, rule) {
     if (err)
       res.send(err);
@@ -21,7 +22,7 @@ exports.create_rule = function(req, res) {
 };
 
 exports.delete_rule = function(req, res) {
-  Rule.findByIdAndRemove({ _id: req.params.id }, function(err, rule) {
+  Rule.findOneAndDelete({ _id: req.params.id, table: req.params.table }, function(err, rule) {
     if (err)
       res.send(err);
     res.json({ message: 'Package successfully deleted' });
@@ -29,7 +30,7 @@ exports.delete_rule = function(req, res) {
 };
 
 exports.get_rule = function(req, res) {
-  Rule.findById(req.params.id, function(err, rule) {
+  Rule.findOne({ _id: req.params.id, table: req.params.table }, function(err, rule) {
     if (err)
       res.send(err);
     res.json(rule);
@@ -37,7 +38,7 @@ exports.get_rule = function(req, res) {
 };
 
 exports.update_rule = function(req, res) {
-  Rule.findOneAndUpdate({_id: req.params.id}, req.body, {new: true}, function(err, rule) {
+  Rule.findOneAndUpdate({ _id: req.params.id, table: req.params.table }, req.body, {new: true}, function(err, rule) {
     if (err)
       res.send(err);
     res.json(rule);
