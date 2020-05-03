@@ -5,8 +5,8 @@
 
 const config = require('./config.json');
 
-function get(path, id) {
-  return fetch(`${config.host}${path}/${id}`)
+function get(table, path, id) {
+  return fetch(`${config.host}/${table}/${path}/${id}`)
     .then(resp => {
       if (!resp.ok) {
         throw new Error(`HTTP error: ${resp.status}`);
@@ -15,8 +15,8 @@ function get(path, id) {
     })
 }
 
-function getAll(path) {
-  return fetch(`${config.host}${path}`)
+function getAll(table, path) {
+  return fetch(`${config.host}/${table}/${path}`)
     .then(resp => {
       if (!resp.ok) {
         throw new Error(`HTTP error: ${resp.status}`);
@@ -26,8 +26,8 @@ function getAll(path) {
     .then(data => new Map(data.map((elem) => [elem._id, elem])));
 }
 
-function post(path, data) {
-  return fetch(`${config.host}${path}`, {
+function post(table, path, data) {
+  return fetch(`${config.host}/${table}/${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -40,8 +40,8 @@ function post(path, data) {
     });
 }
 
-function put(path, data) {
-  return fetch(`${config.host}${path}/${data._id}`, {
+function put(table, path, data) {
+  return fetch(`${config.host}/${table}/${path}/${data._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -54,8 +54,8 @@ function put(path, data) {
     });
 }
 
-function remove(path, id) {
-  return fetch(`${config.host}${path}/${id}`, {
+function remove(table, path, id) {
+  return fetch(`${config.host}/${table}/${path}/${id}`, {
       method: 'DELETE',
     })
     .then(resp => {
@@ -71,11 +71,11 @@ var toExport = {};
 ['program', 'pkg', 'rule'].forEach((entity) => {
   const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
-  toExport[`get${name}s`] = () => getAll(`/${entity}s`);
-  toExport[`get${name}`] = (id) => get(`/${entity}s`, id);
-  toExport[`add${name}`] = (data) => post(`/${entity}s`, data);
-  toExport[`update${name}`] = (data) => put(`/${entity}s`, data);
-  toExport[`delete${name}`] = (id) => remove(`/${entity}s`, id);
+  toExport[`get${name}s`] = (table) => getAll(table, `${entity}s`);
+  toExport[`get${name}`] = (table, id) => get(table, `${entity}s`, id);
+  toExport[`add${name}`] = (table, data) => post(table, `${entity}s`, data);
+  toExport[`update${name}`] = (table, data) => put(table, `${entity}s`, data);
+  toExport[`delete${name}`] = (table, id) => remove(table, `${entity}s`, id);
 });
 
 // TODO

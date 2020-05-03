@@ -47,14 +47,14 @@ class App extends React.Component {
   }
 
   removeAll() {
-    Example.clear().then(() => this.componentDidMount());
+    Example.clear(this.props.table).then(() => this.componentDidMount());
   }
 
   componentDidMount() {
-    Data.getPrograms().then(programs => this.setState({programs: programs}, this.checkRules));
-    Data.getPkgs().then(pkgs => this.setState({pkgs: pkgs}));
-    Data.getRules().then(rules => this.setState({rules: rules}, this.checkRules));
-    Data.getGroups().then(groups => this.setState({groups: groups}, this.checkRules));
+    Data.getPrograms(this.props.table).then(programs => this.setState({programs: programs}, this.checkRules));
+    Data.getPkgs(this.props.table).then(pkgs => this.setState({pkgs: pkgs}));
+    Data.getRules(this.props.table).then(rules => this.setState({rules: rules}, this.checkRules));
+    Data.getGroups(this.props.table).then(groups => this.setState({groups: groups}, this.checkRules));
   }
 
   checkRules() {
@@ -153,17 +153,17 @@ class App extends React.Component {
                 programs={this.state.programs}
                 rules={this.state.rules}
                 violations={this.state.violations}
-                addRule={rule => Data.addRule(rule).then(rule => {
+                addRule={rule => Data.addRule(this.props.table, rule).then(rule => {
                   const rules = new Map(this.state.rules);
                   rules.set(rule._id, rule);
                   this.setState({ rules: rules }, this.checkRules);
                 })}
-                updateRule={rule => Data.updateRule(rule).then(rule => {
+                updateRule={rule => Data.updateRule(this.props.table, rule).then(rule => {
                   const rules = new Map(this.state.rules);
                   rules.set(rule._id, rule);
                   this.setState({ rules: rules }, this.checkRules);
                 })}
-                deleteRule={id => Data.deleteRule(id).then(msg => {
+                deleteRule={id => Data.deleteRule(this.props.table, id).then(msg => {
                   const rules = new Map(this.state.rules);
                   rules.delete(id);
                   this.setState({ rules: rules }, this.checkRules);
@@ -173,17 +173,17 @@ class App extends React.Component {
             <Tab.Pane eventKey="packages" title="Balíčky">
               <Packages
                 pkgs={this.state.pkgs}
-                addPkg={pkg => Data.addPkg(pkg).then(pkg => {
+                addPkg={pkg => Data.addPkg(this.props.table, pkg).then(pkg => {
                   const pkgs = new Map(this.state.pkgs);
                   pkgs.set(pkg._id, pkg);
                   this.setState({ pkgs: pkgs });
                 })}
-                updatePkg={pkg => Data.updatePkg(pkg).then(pkg => {
+                updatePkg={pkg => Data.updatePkg(this.props.table, pkg).then(pkg => {
                   const pkgs = new Map(this.state.pkgs);
                   pkgs.set(pkg._id, pkg);
                   this.setState({ pkgs: pkgs });
                 })}
-                deletePkg={id => Data.deletePkg(id).then(msg => {
+                deletePkg={id => Data.deletePkg(this.props.table, id).then(msg => {
                   const pkgs = new Map(this.state.pkgs);
                   pkgs.delete(id);
                   this.setState({ pkgs: pkgs });
@@ -196,6 +196,7 @@ class App extends React.Component {
                 pkgs={this.state.pkgs}
                 groups={this.state.groups}
                 rules={this.state.rules}
+                table={this.props.table}
               />
             </Tab.Pane>
           </Tab.Content>
@@ -271,7 +272,7 @@ class App extends React.Component {
   }
 
   addProgram(program) {
-    Data.addProgram(program).then(program => {
+    Data.addProgram(this.props.table, program).then(program => {
       const programs = new Map(this.state.programs);
       programs.set(program._id, program);
       this.setState({ programs: programs }, this.checkRules);
@@ -279,7 +280,7 @@ class App extends React.Component {
   }
 
   updateProgram(program) {
-    Data.updateProgram(program).then(program => {
+    Data.updateProgram(this.props.table, program).then(program => {
       const programs = new Map(this.state.programs);
       programs.set(program._id, program);
       this.setState({ programs: programs }, this.checkRules);
@@ -287,7 +288,7 @@ class App extends React.Component {
   }
 
   deleteProgram(id) {
-    Data.deleteProgram(id).then(msg => {
+    Data.deleteProgram(this.props.table, id).then(msg => {
       const programs = this.state.programs;
       programs.delete(id);
       this.setState({ programs: programs });

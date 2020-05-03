@@ -43,7 +43,7 @@ class ImportExport extends React.Component {
 
     Promise.all([
       ...data.pkgs.map(pkg =>
-        Data.addPkg({...pkg, _id: undefined}).then(newPkg => [pkg._id, newPkg._id])
+        Data.addPkg(this.props.table, {...pkg, _id: undefined}).then(newPkg => [pkg._id, newPkg._id])
       )
     ])
     .then(pkgs => new Map(pkgs))
@@ -51,7 +51,7 @@ class ImportExport extends React.Component {
       data.programs.map(prog => { return { ...prog, pkg: pkgs.get(prog.pkg), }; })
     )
     .then(programs => Promise.all(programs.map(prog =>
-      Data.addProgram({ ...prog, _id: undefined }).then(newProg => [prog._id, newProg._id])
+      Data.addProgram(this.props.table, { ...prog, _id: undefined }).then(newProg => [prog._id, newProg._id])
     )))
     .then(programs => new Map(programs))
     .then(programs =>
@@ -66,7 +66,7 @@ class ImportExport extends React.Component {
         };
       })
     )
-    .then(rules => Promise.all(rules.map(rule => Data.addRule(rule))))
+    .then(rules => Promise.all(rules.map(rule => Data.addRule(this.props.table, rule))))
     .then(() => window.location.reload());
   }
 }
