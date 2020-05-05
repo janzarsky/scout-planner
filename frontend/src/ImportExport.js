@@ -66,7 +66,7 @@ class ImportExport extends React.Component {
         };
       })
     )
-    .then(rules => Promise.all(rules.map(rule => Data.addRule(this.props.table, rule))))
+    .then(rules => Promise.all(rules.map(rule => Data.addRule(this.props.table, { ...rule, _id: undefined }))))
     .then(() => window.location.reload());
   }
 }
