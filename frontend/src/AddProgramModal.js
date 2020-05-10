@@ -121,7 +121,7 @@ class AddProgramModal extends React.Component {
       title: this.title.current.value,
       pkg: this.pkg.current.value,
       groups: this.groups.current.value.split(',').filter(a => (a !== "")),
-      people: this.groups.current.value.split(',').filter(a => (a !== "")),
+      people: this.people.current.value.split(',').filter(a => (a !== "")),
       url: this.url.current.value,
       notes: this.notes.current.value,
     });
