@@ -84,6 +84,8 @@ class App extends React.Component {
       violationsPerProgram.get(problem.program).push(problem.msg);
     });
 
+    const people = new Set(Array.from(this.state.programs.values()).flatMap(({people}) => people))
+
     return (
       <div className="App">
         {this.state.addProgram &&
@@ -91,6 +93,7 @@ class App extends React.Component {
             addProgram={this.addProgram}
             options={this.state.addProgramOptions}
             pkgs={this.state.pkgs}
+            people={people}
             handleClose={() => this.setState({ addProgram: false })}
             groups={this.state.groups}
           />
@@ -102,6 +105,7 @@ class App extends React.Component {
             program={this.state.editProgramData}
             pkgs={this.state.pkgs}
             groups={this.state.groups}
+            people={people}
             handleClose={() => this.setState({ editProgram: false })}
           />
         }
