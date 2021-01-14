@@ -27,16 +27,22 @@ const Homepage = () => {
     }, [history, state])
     const valid = state.match(/^[\w-]+$/)
 
+    const random = React.useCallback(() => {
+        history.push(`/${Math.floor(Math.random()*10e13).toString(16)}`)
+    }, [history])
+
     return <Jumbotron className="text-center min-vh-100">
         <div class="container">
-        <h1 className="mb-5">Skautský plánovač</h1>
+            <h1 className="mb-5">Skautský plánovač</h1>
 
-        <InputGroup className="mt-3">
-            <Form.Control value={state} onChange={e => setState(e.target.value)} placeholder="Kód" />
-            <InputGroup.Append>
-                <Button disabled={!valid} variant="primary" onClick={submit}>Otevřít</Button>
-            </InputGroup.Append>
-        </InputGroup>
+            <InputGroup className="mb-4">
+                <Form.Control value={state} onChange={e => setState(e.target.value)} placeholder="Kód" />
+                <InputGroup.Append>
+                    <Button disabled={!valid} variant="primary" onClick={submit}>Otevřít</Button>
+                </InputGroup.Append>
+            </InputGroup>
+
+            <Button variant="primary" onClick={random}>Nový harmonogram</Button>
         </div>
 
     </Jumbotron>
