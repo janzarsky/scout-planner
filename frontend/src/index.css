@@ -183,3 +183,7 @@ p {
   width: 1.5em;
   margin-right: 5px;
 }
+
+.jumbotron .container {
+  max-width: 40em;
+}
