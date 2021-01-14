@@ -92,6 +92,7 @@ class App extends React.Component {
             options={this.state.addProgramOptions}
             pkgs={this.state.pkgs}
             handleClose={() => this.setState({ addProgram: false })}
+            groups={this.state.groups}
           />
         }
         {this.state.editProgram &&
@@ -100,6 +101,7 @@ class App extends React.Component {
             deleteProgram={this.deleteProgram}
             program={this.state.editProgramData}
             pkgs={this.state.pkgs}
+            groups={this.state.groups}
             handleClose={() => this.setState({ editProgram: false })}
           />
         }

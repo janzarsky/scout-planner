@@ -14,7 +14,8 @@ import DateUtils from './DateUtils';
 class AddProgramModal extends React.Component {
   constructor(props) {
     super(props);
-    ['title', 'date', 'time', 'duration', 'pkg', 'groups', 'people', 'url', 'notes'].forEach((field) =>
+    this.state = { groups: [] };
+    ['title', 'date', 'time', 'duration', 'pkg', 'people', 'url', 'notes'].forEach((field) =>
       this[field] = React.createRef()
     );
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -81,7 +82,17 @@ class AddProgramModal extends React.Component {
           <Form.Group as={Row}>
             <Form.Label column sm="2">Skupiny</Form.Label>
             <Col>
-              <Form.Control type="text" ref={this.groups} />
+              <Row>
+                {[...this.props.groups.entries()].map(([key, { name }]) => <Col>
+                  <Form.Check type="checkbox" label={name} key={key} checked={this.state.groups.includes(key)} onClick={e => {
+                    if (e.target.checked) {
+                      this.setState(prev => ({...prev, groups: [...prev.groups, key]}))
+                    } else {
+                      this.setState(prev => ({...prev, groups: prev.groups.filter(g => g !== key)}))
+                    }
+                  }} />
+                </Col>)}
+              </Row>
             </Col>
           </Form.Group>
           <Form.Group as={Row}>
@@ -120,7 +131,7 @@ class AddProgramModal extends React.Component {
       duration: DateUtils.parseDuration(this.duration.current.value),
       title: this.title.current.value,
       pkg: this.pkg.current.value,
-      groups: this.groups.current.value.split(',').filter(a => (a !== "")),
+      groups: this.state.groups,
       people: this.people.current.value.split(',').filter(a => (a !== "")),
       url: this.url.current.value,
       notes: this.notes.current.value,
