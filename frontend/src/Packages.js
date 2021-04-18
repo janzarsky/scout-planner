@@ -42,7 +42,7 @@ class Packages extends React.Component {
               </td>
               <td>
                 {(this.state.edit === key)
-                  ? <Form.Control ref={this.colorEdit} defaultValue={pkg.color} />
+                  ? <Form.Control type="color" ref={this.colorEdit} defaultValue={pkg.color} />
                   : <><span className="color-sample"
                       style={{ backgroundColor: pkg.color }}>&nbsp;</span> {pkg.color}</>
                 }
@@ -69,7 +69,7 @@ class Packages extends React.Component {
           <tr key="new_pkg">
             <td></td>
             <td><Form.Control ref={this.name} defaultValue="Nový balíček"/></td>
-            <td><Form.Control ref={this.color} defaultValue="#81d4fa"/></td>
+            <td><Form.Control type="color" ref={this.color} defaultValue="#81d4fa"/></td>
             <td>
               <Button variant="success" type="submit">
                 <i className="fa fa-plus"/> Přidat
