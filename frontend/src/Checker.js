@@ -69,9 +69,11 @@ function checkOverlaps(programs) {
 
       if (prog1.groups.length === 0 || prog2.groups.length === 0) {
         overlaps.push({ program: prog1._id, msg: 'Programy se překrývají (více programů pro jednu skupinu)'});
+        overlaps.push({ program: prog2._id, msg: 'Programy se překrývají (více programů pro jednu skupinu)'});
       }
       else if (prog1.groups.filter(group => prog2.groups.indexOf(group) !== -1).length > 0) {
         overlaps.push({ program: prog1._id, msg: 'Programy se překrývají (více programů pro jednu skupinu)'});
+        overlaps.push({ program: prog2._id, msg: 'Programy se překrývají (více programů pro jednu skupinu)'});
       }
     }
   });
@@ -92,6 +94,7 @@ function checkPeople(programs) {
 
       if (prog1.people.filter(person => prog2.people.indexOf(person) !== -1).length > 0) {
         overlaps.push({ program: prog1._id, msg: 'Programy se překrývají (jeden člověk na více programech)'});
+        overlaps.push({ program: prog2._id, msg: 'Programy se překrývají (jeden člověk na více programech)'});
       }
     }
   });
