@@ -85,7 +85,8 @@ class AddProgramModal extends React.Component {
             <Col>
               <Row>
                 {[...this.props.groups.entries()].map(([key, { name }]) => <Col>
-                  <Form.Check type="checkbox" label={name} key={key} defaultChecked={this.state.groups.includes(key)} onClick={e => {
+                  <Form.Check type="checkbox" label={name} key={key} id={`groups-${key}`}
+                    defaultChecked={this.state.groups.includes(key)} onClick={e => {
                     if (e.target.checked) {
                       this.setState(prev => ({...prev, groups: [...prev.groups, key]}))
                     } else {
@@ -101,7 +102,8 @@ class AddProgramModal extends React.Component {
             <Col>
               <Row>
                 {[...new Set([...this.props.people, ...this.state.people])].sort((a,b) => a.localeCompare(b)).map((person) => <Col>
-                  <Form.Check type="checkbox" label={person} key={person} defaultChecked={this.state.people.includes(person)} onClick={e => {
+                  <Form.Check type="checkbox" label={person} key={person} id={`people-${person}`}
+                    defaultChecked={this.state.people.includes(person)} onClick={e => {
                     if (e.target.checked) {
                       this.setState(prev => ({...prev, people: [...prev.people, person]}))
                     } else {
