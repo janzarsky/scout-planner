@@ -43,11 +43,6 @@ class App extends React.Component {
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
     this.deleteProgram = this.deleteProgram.bind(this);
-    this.removeAll = this.removeAll.bind(this);
-  }
-
-  removeAll() {
-    Example.clear(this.props.table).then(() => this.componentDidMount());
   }
 
   componentDidMount() {
@@ -127,9 +122,6 @@ class App extends React.Component {
             </Nav.Item>
             {this.getFilters()}
             {this.getViewSettings()}
-            <Nav.Item style={{marginLeft: 'auto'}}>
-              <Nav.Link as={Button} variant="light" onClick={this.removeAll}>Smazat vše</Nav.Link>
-            </Nav.Item>
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="timetable">
