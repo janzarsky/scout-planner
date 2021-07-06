@@ -69,8 +69,10 @@ class Settings extends React.Component {
               <Form.Row>
                 <Col sm="3">
                   <Form.Control as="select" defaultValue="Žádný program" ref={this.program}>
-                    <option>Žádný program</option>
-                    {[...this.props.programs.entries()].map(([key, prog]) =>
+                    <option>(žádný program)</option>
+                    {[...this.props.programs.entries()]
+                      .sort((a, b) => this.formatProgram(a[1]).localeCompare(this.formatProgram(b[1])))
+                      .map(([key, prog]) =>
                       <option key={key} value={key}>{this.formatProgram(prog)}</option>
                     )}
                   </Form.Control>
@@ -105,8 +107,10 @@ class Settings extends React.Component {
                       return (
                         <Col>
                           <Form.Control as="select" defaultValue="Žádný program" ref={this.program2}>
-                            <option>Žádný program</option>
-                            {[...this.props.programs.entries()].map(([key, prog]) =>
+                            <option>(žádný program)</option>
+                            {[...this.props.programs.entries()]
+                              .sort((a, b) => this.formatProgram(a[1]).localeCompare(this.formatProgram(b[1])))
+                              .map(([key, prog]) =>
                             <option key={key} value={key}>{this.formatProgram(prog)}</option>
                             )}
                           </Form.Control>
