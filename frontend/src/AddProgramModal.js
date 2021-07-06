@@ -72,8 +72,9 @@ class AddProgramModal extends React.Component {
             <Form.Label column sm="2">Balíček</Form.Label>
             <Col>
               <Form.Control as="select" defaultValue="žádný" ref={this.pkg}>
-                <option value="">žádný</option>
-                {[...this.props.pkgs.entries()].map(([key, pkg]) =>
+                <option value="">(žádný)</option>
+                {[...this.props.pkgs.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name))
+                  .map(([key, pkg]) =>
                   <option key={key} value={key}>{pkg.name}</option>
                 )}
               </Form.Control>

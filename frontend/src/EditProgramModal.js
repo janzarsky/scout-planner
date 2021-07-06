@@ -77,8 +77,9 @@ class EditProgramModal extends React.Component {
             <Form.Label column sm="2">Balíček</Form.Label>
             <Col>
               <Form.Control as="select" defaultValue={this.props.program.pkg} ref={this.pkg}>
-                <option>žádný</option>
-                {[...this.props.pkgs.entries()].map(([key, pkg]) =>
+                <option>(žádný)</option>
+                {[...this.props.pkgs.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name))
+                  .map(([key, pkg]) =>
                   <option key={key} value={key}>{pkg.name}</option>
                 )}
               </Form.Control>
