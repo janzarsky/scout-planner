@@ -99,7 +99,7 @@ class AddProgramModal extends React.Component {
             <Form.Label column sm="2">Lidi</Form.Label>
             <Col>
               <Row>
-                {[...new Set([...this.props.people, ...this.state.people])].map((person) => <Col>
+                {[...new Set([...this.props.people, ...this.state.people])].sort((a,b) => a.localeCompare(b)).map((person) => <Col>
                   <Form.Check type="checkbox" label={person} key={person} defaultChecked={this.state.people.includes(person)} onClick={e => {
                     if (e.target.checked) {
                       this.setState(prev => ({...prev, people: [...prev.people, person]}))
