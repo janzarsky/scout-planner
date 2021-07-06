@@ -31,7 +31,7 @@ class Packages extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {[...pkgs.entries()].map(([key, pkg]) =>
+          {[...pkgs.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([key, pkg]) =>
             <tr key={key}>
               <td>{cnt += 1}</td>
               <td>
