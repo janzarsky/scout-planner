@@ -6,6 +6,7 @@
 import React from 'react';
 import Program from './Program';
 import DateUtils from './DateUtils';
+import TimeIndicator from './TimeIndicator';
 
 class Timetable extends React.Component {
   constructor(props) {
@@ -33,6 +34,7 @@ class Timetable extends React.Component {
         {[...this.getTimeHeaders(settings)]}
         {[...this.getDateHeaders(settings)]}
         {[...this.getPrograms(this.props.programs, settings, this.props.viewSettings)]}
+        {this.getTimeIndicator(settings)}
       </div>
     );
   }
@@ -166,6 +168,27 @@ class Timetable extends React.Component {
       width: Math.ceil(program.duration/settings.timeStep),
       height: last - first + 1,
     };
+  }
+
+  getTimeIndicator(settings) {
+    const now = Date.now();
+
+    const currTime = DateUtils.getOnlyTime(now);
+    if (currTime < settings.dayStart || currTime > settings.dayEnd)
+      return <div />;
+
+    const currDate = DateUtils.getOnlyDate(now);
+    if (settings.days.indexOf(currDate) === -1)
+      return <div />;
+
+    return <TimeIndicator
+      rect={{
+        x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
+        y: settings.days.indexOf(currDate) * settings.groupCnt,
+        width: 1,
+        height: settings.groupCnt,
+      }}
+    />;
   }
 
   onProgramDragStart(id) {
