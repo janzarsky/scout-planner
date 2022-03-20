@@ -5,7 +5,7 @@
  * These functions add testing set of programs, packages and rules.
  */
 
-import Data from "./Data";
+import Data from "./Client";
 
 export default async function clear(table) {
   return Promise.all([
