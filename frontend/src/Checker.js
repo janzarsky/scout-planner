@@ -5,7 +5,7 @@
 
 import { formatDateTime } from "./DateUtils";
 
-export default async function checkRules(rules, programs) {
+export async function checkRules(rules, programs) {
   const violations = new Map();
 
   for (const [id, rule] of rules) {
