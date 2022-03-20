@@ -5,61 +5,55 @@
 
 const config = require("./config.json");
 
-function get(table, path, id) {
-  return fetch(`${config.host}/${table}/${path}/${id}`).then((resp) => {
-    if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
-    }
-    return resp.json();
-  });
+async function get(table, path, id) {
+  const resp = await fetch(`${config.host}/${table}/${path}/${id}`);
+  if (!resp.ok) {
+    throw new Error(`HTTP error: ${resp.status}`);
+  }
+  return await resp.json();
 }
 
-function getAll(table, path) {
-  return fetch(`${config.host}/${table}/${path}`)
-    .then((resp) => {
-      if (!resp.ok) {
-        throw new Error(`HTTP error: ${resp.status}`);
-      }
-      return resp.json();
-    })
-    .then((data) => new Map(data.map((elem) => [elem._id, elem])));
+async function getAll(table, path) {
+  const resp = await fetch(`${config.host}/${table}/${path}`);
+  if (!resp.ok) {
+    throw new Error(`HTTP error: ${resp.status}`);
+  }
+  const data = await resp.json();
+  return new Map(data.map((elem) => [elem._id, elem]));
 }
 
-function post(table, path, data) {
-  return fetch(`${config.host}/${table}/${path}`, {
+async function post(table, path, data) {
+  const resp = await fetch(`${config.host}/${table}/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
-  }).then((resp) => {
-    if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
-    }
-    return resp.json();
   });
+  if (!resp.ok) {
+    throw new Error(`HTTP error: ${resp.status}`);
+  }
+  return await resp.json();
 }
 
-function put(table, path, data) {
-  return fetch(`${config.host}/${table}/${path}/${data._id}`, {
+async function put(table, path, data) {
+  const resp = await fetch(`${config.host}/${table}/${path}/${data._id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
-  }).then((resp) => {
-    if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
-    }
-    return resp.json();
   });
+  if (!resp.ok) {
+    throw new Error(`HTTP error: ${resp.status}`);
+  }
+  return await resp.json();
 }
 
-function remove(table, path, id) {
-  return fetch(`${config.host}/${table}/${path}/${id}`, {
+async function remove(table, path, id) {
+  const resp = await fetch(`${config.host}/${table}/${path}/${id}`, {
     method: "DELETE",
-  }).then((resp) => {
-    if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
-    }
-    return resp.json();
   });
+  if (!resp.ok) {
+    throw new Error(`HTTP error: ${resp.status}`);
+  }
+  return await resp.json();
 }
 
 var toExport = {};
