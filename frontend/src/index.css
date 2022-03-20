@@ -3,17 +3,23 @@
  * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap&subset=latin-ext');
-@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap&subset=latin-ext");
+@import url("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 300;
 }
-h1, h2, h3, h4, h5, h6, th {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+th {
   font-weight: 400;
 }
 p {
@@ -91,8 +97,8 @@ p {
 .program.violation {
   background-image: repeating-linear-gradient(
     135deg,
-    rgba(0,0,0,0),
-    rgba(0,0,0,0) 20px,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0) 20px,
     #ef9a9a 20px,
     #ef9a9a 40px
   );
