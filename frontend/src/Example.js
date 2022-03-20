@@ -7,7 +7,7 @@
 
 import Data from "./Data";
 
-async function clear(table) {
+export default async function clear(table) {
   return Promise.all([
     Data.getPrograms(table),
     Data.getPkgs(table),
@@ -20,5 +20,3 @@ async function clear(table) {
     ])
   );
 }
-
-export default { clear };
