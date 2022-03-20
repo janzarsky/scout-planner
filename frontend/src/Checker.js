@@ -5,7 +5,7 @@
 
 import DateUtils from "./DateUtils";
 
-async function checkRules(rules, programs) {
+export default async function checkRules(rules, programs) {
   const violations = new Map();
 
   for (const [id, rule] of rules) {
@@ -132,5 +132,3 @@ function checkPeople(programs) {
 
   return overlaps;
 }
-
-export default { checkRules };
