@@ -9,7 +9,14 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import DateUtils from "./DateUtils";
+import {
+  formatDate,
+  formatDuration,
+  formatTime,
+  parseDate,
+  parseDuration,
+  parseTime,
+} from "./DateUtils";
 
 class EditProgramModal extends React.Component {
   constructor(props) {
@@ -34,12 +41,10 @@ class EditProgramModal extends React.Component {
   }
 
   render() {
-    const date = DateUtils.formatDate(this.props.program.begin);
-    const time = DateUtils.formatTime(this.props.program.begin);
-    const duration = DateUtils.formatDuration(this.props.program.duration);
+    const date = formatDate(this.props.program.begin);
+    const time = formatTime(this.props.program.begin);
+    const duration = formatDuration(this.props.program.duration);
 
-    const groups = this.props.program.groups.join(",");
-    const people = this.props.program.people.join(",");
     const url = this.props.program.url;
     const notes = this.props.program.notes;
 
@@ -270,9 +275,8 @@ class EditProgramModal extends React.Component {
     this.props.updateProgram({
       ...this.props.program,
       begin:
-        DateUtils.parseDate(this.date.current.value) +
-        DateUtils.parseTime(this.time.current.value),
-      duration: DateUtils.parseDuration(this.duration.current.value),
+        parseDate(this.date.current.value) + parseTime(this.time.current.value),
+      duration: parseDuration(this.duration.current.value),
       title: this.title.current.value,
       pkg: this.pkg.current.value,
       groups: this.state.groups,

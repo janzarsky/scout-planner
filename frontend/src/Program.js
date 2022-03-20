@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import DateUtils from "./DateUtils";
+import { formatTime } from "./DateUtils";
 
 class Program extends React.Component {
   constructor(props) {
@@ -94,8 +94,8 @@ function ProgramText(props) {
       )}
       {props.viewSettings.viewTime && (
         <p className="program-time">
-          {DateUtils.formatTime(props.program.begin)}&ndash;
-          {DateUtils.formatTime(props.program.begin + props.program.duration)}
+          {formatTime(props.program.begin)}&ndash;
+          {formatTime(props.program.begin + props.program.duration)}
         </p>
       )}
       {props.viewSettings.viewPeople && (

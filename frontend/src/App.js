@@ -13,7 +13,7 @@ import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Data from "./Data";
-import Checker from "./Checker";
+import { checkRules } from "./Checker";
 import Example from "./Example";
 import ImportExport from "./ImportExport";
 
@@ -52,33 +52,31 @@ class App extends React.Component {
 
   componentDidMount() {
     Data.getPrograms(this.props.table).then((programs) =>
-      this.setState({ programs: programs }, this.checkRules)
+      this.setState({ programs: programs }, this.runChecker)
     );
     Data.getPkgs(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
     );
     Data.getRules(this.props.table).then((rules) =>
-      this.setState({ rules: rules }, this.checkRules)
+      this.setState({ rules: rules }, this.runChecker)
     );
     Data.getGroups(this.props.table).then((groups) =>
-      this.setState({ groups: groups }, this.checkRules)
+      this.setState({ groups: groups }, this.runChecker)
     );
   }
 
-  checkRules() {
-    Checker.checkRules(this.state.rules, this.state.programs).then(
-      (problems) => {
-        this.setState({
-          violations: problems.violations,
-          otherProblems: problems.other,
-          satisfied:
-            [...problems.violations.values()].reduce(
-              (acc, curr) => acc && curr.satisfied,
-              true
-            ) && problems.other.length === 0,
-        });
-      }
-    );
+  runChecker() {
+    checkRules(this.state.rules, this.state.programs).then((problems) => {
+      this.setState({
+        violations: problems.violations,
+        otherProblems: problems.other,
+        satisfied:
+          [...problems.violations.values()].reduce(
+            (acc, curr) => acc && curr.satisfied,
+            true
+          ) && problems.other.length === 0,
+      });
+    });
   }
 
   render() {
@@ -196,21 +194,21 @@ class App extends React.Component {
                   Data.addRule(this.props.table, rule).then((rule) => {
                     const rules = new Map(this.state.rules);
                     rules.set(rule._id, rule);
-                    this.setState({ rules: rules }, this.checkRules);
+                    this.setState({ rules: rules }, this.runChecker);
                   })
                 }
                 updateRule={(rule) =>
                   Data.updateRule(this.props.table, rule).then((rule) => {
                     const rules = new Map(this.state.rules);
                     rules.set(rule._id, rule);
-                    this.setState({ rules: rules }, this.checkRules);
+                    this.setState({ rules: rules }, this.runChecker);
                   })
                 }
                 deleteRule={(id) =>
                   Data.deleteRule(this.props.table, id).then((msg) => {
                     const rules = new Map(this.state.rules);
                     rules.delete(id);
-                    this.setState({ rules: rules }, this.checkRules);
+                    this.setState({ rules: rules }, this.runChecker);
                   })
                 }
               />
@@ -365,7 +363,7 @@ class App extends React.Component {
     Data.addProgram(this.props.table, program).then((program) => {
       const programs = new Map(this.state.programs);
       programs.set(program._id, program);
-      this.setState({ programs: programs }, this.checkRules);
+      this.setState({ programs: programs }, this.runChecker);
     });
   }
 
@@ -373,7 +371,7 @@ class App extends React.Component {
     Data.updateProgram(this.props.table, program).then((program) => {
       const programs = new Map(this.state.programs);
       programs.set(program._id, program);
-      this.setState({ programs: programs }, this.checkRules);
+      this.setState({ programs: programs }, this.runChecker);
     });
   }
 

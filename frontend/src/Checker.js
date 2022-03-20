@@ -3,9 +3,9 @@
  * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
  */
 
-import DateUtils from "./DateUtils";
+import { formatDateTime } from "./DateUtils";
 
-async function checkRules(rules, programs) {
+export async function checkRules(rules, programs) {
   const violations = new Map();
 
   for (const [id, rule] of rules) {
@@ -38,18 +38,14 @@ function checkRule(rule, programs) {
     return program.begin + program.duration <= rule.value
       ? success()
       : failure(
-          `Program by měl skončit nejpozději v ${DateUtils.formatDateTime(
-            rule.value
-          )}`
+          `Program by měl skončit nejpozději v ${formatDateTime(rule.value)}`
         );
 
   if (rule.condition === "is_after_date")
     return program.begin >= rule.value
       ? success()
       : failure(
-          `Program by měl začínat nejdříve v ${DateUtils.formatDateTime(
-            rule.value
-          )}`
+          `Program by měl začínat nejdříve v ${formatDateTime(rule.value)}`
         );
 
   if (
@@ -132,5 +128,3 @@ function checkPeople(programs) {
 
   return overlaps;
 }
-
-export default { checkRules };
