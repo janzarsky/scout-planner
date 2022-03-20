@@ -1,0 +1,21 @@
+runtime: nodejs12
+env: standard
+instance_class: F1
+automatic_scaling:
+  min_instances: 0
+  max_idle_instances: 1
+handlers:
+- url: /static
+  static_dir: build/static
+  redirect_http_response_code: 301
+  secure: always
+- url: /(.*\..+)$
+  static_files: build/\1
+  upload: build/(.*\..+)$
+  redirect_http_response_code: 301
+  secure: always
+- url: /.*
+  static_files: build/index.html
+  upload: build/index.html
+  redirect_http_response_code: 301
+  secure: always
