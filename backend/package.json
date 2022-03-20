@@ -8,12 +8,12 @@
     "startDev": "nodemon server.js"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "@google-cloud/firestore": "^5.0.2",
+    "body-parser": "^1.19.2",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "mongoose": "^6.0.8"
+    "express": "^4.17.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.15"
   }
 }
