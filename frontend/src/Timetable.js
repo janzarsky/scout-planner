@@ -3,16 +3,16 @@
  * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
  */
 
-import React from 'react';
-import Program from './Program';
-import DateUtils from './DateUtils';
-import TimeIndicator from './TimeIndicator';
+import React from "react";
+import Program from "./Program";
+import DateUtils from "./DateUtils";
+import TimeIndicator from "./TimeIndicator";
 
 class Timetable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      programModal: false
+      programModal: false,
     };
     this.onProgramDragStart = this.onProgramDragStart.bind(this);
     this.onDroppableDrop = this.onDroppableDrop.bind(this);
@@ -25,22 +25,33 @@ class Timetable extends React.Component {
       <div
         className="timetable"
         style={{
-          gridTemplateRows: "repeat(" + (settings.days.length*settings.groupCnt + 1) + ", auto)",
-          gridTemplateColumns: "auto auto repeat(" + settings.timeSpan*settings.timeHeaders.length
-                               + ", minmax(20px, 1fr))",
+          gridTemplateRows:
+            "repeat(" +
+            (settings.days.length * settings.groupCnt + 1) +
+            ", auto)",
+          gridTemplateColumns:
+            "auto auto repeat(" +
+            settings.timeSpan * settings.timeHeaders.length +
+            ", minmax(20px, 1fr))",
         }}
       >
         {[...this.getDroppables(settings)]}
         {[...this.getTimeHeaders(settings)]}
         {[...this.getDateHeaders(settings)]}
-        {[...this.getPrograms(this.props.programs, settings, this.props.viewSettings)]}
+        {[
+          ...this.getPrograms(
+            this.props.programs,
+            settings,
+            this.props.viewSettings
+          ),
+        ]}
         {this.getTimeIndicator(settings)}
       </div>
     );
   }
 
   getSettings(programs, groups) {
-    const hour = DateUtils.parseDuration('1:00');
+    const hour = DateUtils.parseDuration("1:00");
 
     if (programs.size === 0)
       programs = new Map([[1, { begin: Date.now(), duration: hour }]]);
@@ -53,28 +64,25 @@ class Timetable extends React.Component {
     }
     settings.days = [...new Set(settings.days)].sort();
 
-    settings.dayStart = DateUtils.parseTime('10:00');
+    settings.dayStart = DateUtils.parseTime("10:00");
     for (const prog of programs.values()) {
-      const time = DateUtils.getOnlyTime(prog.begin)
-      if (time < settings.dayStart)
-        settings.dayStart = time;
+      const time = DateUtils.getOnlyTime(prog.begin);
+      if (time < settings.dayStart) settings.dayStart = time;
     }
 
-    settings.dayEnd = DateUtils.parseTime('16:00');
+    settings.dayEnd = DateUtils.parseTime("16:00");
     for (const prog of programs.values()) {
-      let time = DateUtils.getOnlyTime(prog.begin + prog.duration)
-      if (time === 0)
-        time = DateUtils.parseTime('23:59');
-      if (time > settings.dayEnd)
-        settings.dayEnd = time;
+      let time = DateUtils.getOnlyTime(prog.begin + prog.duration);
+      if (time === 0) time = DateUtils.parseTime("23:59");
+      if (time > settings.dayEnd) settings.dayEnd = time;
     }
 
     settings.timeHeaders = Array.from(
-      {length: Math.ceil((settings.dayEnd - settings.dayStart)/hour)},
-      (_, idx) => settings.dayStart + idx*hour
+      { length: Math.ceil((settings.dayEnd - settings.dayStart) / hour) },
+      (_, idx) => settings.dayStart + idx * hour
     );
-    settings.timeStep = 15*60*1000;
-    settings.timeSpan = Math.ceil(hour/(15*60*1000));
+    settings.timeStep = 15 * 60 * 1000;
+    settings.timeSpan = Math.ceil(hour / (15 * 60 * 1000));
     settings.groups = [...groups.keys()];
     settings.groupCnt = groups.size;
 
@@ -85,15 +93,17 @@ class Timetable extends React.Component {
     for (const [idxDate, date] of settings.days.entries()) {
       for (const [idxTime, time] of settings.timeHeaders.entries()) {
         for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
-          yield <Droppable
-            key={[idxTime, idxDate, idxSpan]}
-            x={3 + idxTime*settings.timeSpan + idxSpan}
-            y={2 + idxDate*settings.groupCnt}
-            height={settings.groupCnt}
-            begin={date + time + idxSpan*settings.timeStep}
-            onDrop={this.onDroppableDrop}
-            addProgramModal={this.props.addProgramModal}
-          />;
+          yield (
+            <Droppable
+              key={[idxTime, idxDate, idxSpan]}
+              x={3 + idxTime * settings.timeSpan + idxSpan}
+              y={2 + idxDate * settings.groupCnt}
+              height={settings.groupCnt}
+              begin={date + time + idxSpan * settings.timeStep}
+              onDrop={this.onDroppableDrop}
+              addProgramModal={this.props.addProgramModal}
+            />
+          );
         }
       }
     }
@@ -101,51 +111,57 @@ class Timetable extends React.Component {
 
   *getTimeHeaders(settings) {
     for (const [idx, time] of settings.timeHeaders.entries()) {
-      yield <TimeHeader
-        key={time}
-        time={new Date(time)}
-        pos={idx*settings.timeSpan + 3}
-        span={settings.timeSpan}
-      />;
+      yield (
+        <TimeHeader
+          key={time}
+          time={new Date(time)}
+          pos={idx * settings.timeSpan + 3}
+          span={settings.timeSpan}
+        />
+      );
     }
   }
 
   *getDateHeaders(settings) {
     for (const [idx, date] of settings.days.entries()) {
-      yield <>
-        <DateHeader
-          key={date}
-          date={new Date(date)}
-          pos={idx*settings.groupCnt + 2}
-          span={settings.groupCnt}
-        />
-        {settings.groups.map((group, groupIdx) =>
-          <div
-            className="groupheader"
-            style={{
-              gridRowStart: idx*settings.groupCnt + groupIdx + 2,
-            }}
-          >
-            {this.props.groups.get(group).name}
-          </div>
-        )}
-      </>;
+      yield (
+        <>
+          <DateHeader
+            key={date}
+            date={new Date(date)}
+            pos={idx * settings.groupCnt + 2}
+            span={settings.groupCnt}
+          />
+          {settings.groups.map((group, groupIdx) => (
+            <div
+              className="groupheader"
+              style={{
+                gridRowStart: idx * settings.groupCnt + groupIdx + 2,
+              }}
+            >
+              {this.props.groups.get(group).name}
+            </div>
+          ))}
+        </>
+      );
     }
   }
 
   *getPrograms(programs, settings, viewSettings) {
     for (const [key, prog] of programs) {
-      yield <Program
-        key={key}
-        program={prog}
-        filtered={(this.props.filterPkgs.indexOf(prog.pkg) !== -1)}
-        violations={this.props.violations.get(key)}
-        rect={this.getRect(prog, settings)}
-        onDragStart={this.onProgramDragStart}
-        pkgs={this.props.pkgs}
-        editProgramModal={this.props.editProgramModal}
-        viewSettings={viewSettings}
-      />;
+      yield (
+        <Program
+          key={key}
+          program={prog}
+          filtered={this.props.filterPkgs.indexOf(prog.pkg) !== -1}
+          violations={this.props.violations.get(key)}
+          rect={this.getRect(prog, settings)}
+          onDragStart={this.onProgramDragStart}
+          pkgs={this.props.pkgs}
+          editProgramModal={this.props.editProgramModal}
+          viewSettings={viewSettings}
+        />
+      );
     }
   }
 
@@ -156,16 +172,23 @@ class Timetable extends React.Component {
     var [first, last] = [0, settings.groupCnt - 1];
 
     if (program.groups && program.groups.length > 0) {
-      const groupMap = settings.groups.map(group => (program.groups.indexOf(group) !== -1))
-      first = groupMap.reduce((acc, cur, idx) => (cur && idx < acc) ? idx : acc,
-        settings.groupCnt - 1);
-      last = groupMap.reduce((acc, cur, idx) => (cur && idx > acc) ? idx : acc, 0);
+      const groupMap = settings.groups.map(
+        (group) => program.groups.indexOf(group) !== -1
+      );
+      first = groupMap.reduce(
+        (acc, cur, idx) => (cur && idx < acc ? idx : acc),
+        settings.groupCnt - 1
+      );
+      last = groupMap.reduce(
+        (acc, cur, idx) => (cur && idx > acc ? idx : acc),
+        0
+      );
     }
 
     return {
-      x: Math.ceil((time - settings.dayStart)/settings.timeStep),
-      y: settings.days.indexOf(date)*settings.groupCnt + first,
-      width: Math.ceil(program.duration/settings.timeStep),
+      x: Math.ceil((time - settings.dayStart) / settings.timeStep),
+      y: settings.days.indexOf(date) * settings.groupCnt + first,
+      width: Math.ceil(program.duration / settings.timeStep),
       height: last - first + 1,
     };
   }
@@ -178,17 +201,18 @@ class Timetable extends React.Component {
       return <div />;
 
     const currDate = DateUtils.getOnlyDate(now);
-    if (settings.days.indexOf(currDate) === -1)
-      return <div />;
+    if (settings.days.indexOf(currDate) === -1) return <div />;
 
-    return <TimeIndicator
-      rect={{
-        x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
-        y: settings.days.indexOf(currDate) * settings.groupCnt,
-        width: 1,
-        height: settings.groupCnt,
-      }}
-    />;
+    return (
+      <TimeIndicator
+        rect={{
+          x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
+          y: settings.days.indexOf(currDate) * settings.groupCnt,
+          width: 1,
+          height: settings.groupCnt,
+        }}
+      />
+    );
   }
 
   onProgramDragStart(id) {
@@ -211,19 +235,21 @@ class Droppable extends React.Component {
   }
 
   render() {
-    return <div
-        className={'droppable ' + ((this.state.dragOver) ? 'drag-over' : '')}
+    return (
+      <div
+        className={"droppable " + (this.state.dragOver ? "drag-over" : "")}
         style={{
           gridColumnStart: this.props.x,
           gridRowStart: this.props.y,
-          gridRowEnd: 'span ' + this.props.height,
+          gridRowEnd: "span " + this.props.height,
         }}
-        onClick={_ => this.props.addProgramModal({begin: this.props.begin})}
-        onDrop={e => this.onDrop(e)}
-        onDragEnter={e => this.onDragEnter(e)}
-        onDragOver={e => this.onDragOver(e)}
-        onDragLeave={e => this.onDragLeave(e)}
-      />;
+        onClick={(_) => this.props.addProgramModal({ begin: this.props.begin })}
+        onDrop={(e) => this.onDrop(e)}
+        onDragEnter={(e) => this.onDragEnter(e)}
+        onDragOver={(e) => this.onDragOver(e)}
+        onDragLeave={(e) => this.onDragLeave(e)}
+      />
+    );
   }
 
   onDragEnter(e) {
@@ -246,27 +272,34 @@ class Droppable extends React.Component {
 }
 
 function TimeHeader(props) {
-  return <div
+  return (
+    <div
       className="timeheader"
       style={{
         gridColumnStart: props.pos,
-        gridColumnEnd: 'span ' + props.span
+        gridColumnEnd: "span " + props.span,
       }}
     >
       {props.time.getUTCHours()}
-    </div>;
+    </div>
+  );
 }
 
 function DateHeader(props) {
-  return <div
+  return (
+    <div
       className="dateheader"
       style={{
         gridRowStart: props.pos,
-        gridRowEnd: 'span ' + props.span,
+        gridRowEnd: "span " + props.span,
       }}
     >
-      {DateUtils.formatDay(props.date.getTime())}<br/>{props.date.getUTCDate()}.<br/>{props.date.getUTCMonth() + 1}.
-    </div>;
+      {DateUtils.formatDay(props.date.getTime())}
+      <br />
+      {props.date.getUTCDate()}.<br />
+      {props.date.getUTCMonth() + 1}.
+    </div>
+  );
 }
 
 export default Timetable;
