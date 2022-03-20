@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Data from "./Data";
 
-class ImportExport extends React.Component {
+export default class ImportExport extends React.Component {
   constructor(props) {
     super(props);
     ["importData"].forEach((field) => (this[field] = React.createRef()));
@@ -91,5 +91,3 @@ class ImportExport extends React.Component {
       .then(() => window.location.reload());
   }
 }
-
-export default ImportExport;

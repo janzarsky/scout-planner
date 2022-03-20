@@ -8,7 +8,7 @@ import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-class Packages extends React.Component {
+export default class Packages extends React.Component {
   constructor(props) {
     super(props);
     ["name", "color", "nameEdit", "colorEdit"].forEach(
@@ -131,5 +131,3 @@ class Packages extends React.Component {
     }
   }
 }
-
-export default Packages;

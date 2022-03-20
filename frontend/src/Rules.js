@@ -16,7 +16,7 @@ import {
   parseTime,
 } from "./DateUtils";
 
-class Settings extends React.Component {
+export default class Settings extends React.Component {
   constructor(props) {
     super(props);
     ["program", "condition", "time", "date", "program2"].forEach(
@@ -255,5 +255,3 @@ class Settings extends React.Component {
     });
   }
 }
-
-export default Settings;

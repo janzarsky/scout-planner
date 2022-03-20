@@ -1,6 +1,6 @@
 import React from "react";
 
-class TimeIndicator extends React.Component {
+export default class TimeIndicator extends React.Component {
   render() {
     return (
       <div
@@ -15,5 +15,3 @@ class TimeIndicator extends React.Component {
     );
   }
 }
-
-export default TimeIndicator;
