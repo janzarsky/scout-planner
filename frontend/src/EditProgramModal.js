@@ -45,8 +45,6 @@ class EditProgramModal extends React.Component {
     const time = formatTime(this.props.program.begin);
     const duration = formatDuration(this.props.program.duration);
 
-    const groups = this.props.program.groups.join(",");
-    const people = this.props.program.people.join(",");
     const url = this.props.program.url;
     const notes = this.props.program.notes;
 
