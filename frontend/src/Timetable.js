@@ -4,8 +4,14 @@
  */
 
 import React from "react";
+import {
+  formatDay,
+  getOnlyDate,
+  getOnlyTime,
+  parseDuration,
+  parseTime,
+} from "./DateUtils";
 import Program from "./Program";
-import DateUtils from "./DateUtils";
 import TimeIndicator from "./TimeIndicator";
 
 class Timetable extends React.Component {
@@ -51,7 +57,7 @@ class Timetable extends React.Component {
   }
 
   getSettings(programs, groups) {
-    const hour = DateUtils.parseDuration("1:00");
+    const hour = parseDuration("1:00");
 
     if (programs.size === 0)
       programs = new Map([[1, { begin: Date.now(), duration: hour }]]);
@@ -60,20 +66,20 @@ class Timetable extends React.Component {
 
     settings.days = [];
     for (const prog of programs.values()) {
-      settings.days.push(DateUtils.getOnlyDate(prog.begin));
+      settings.days.push(getOnlyDate(prog.begin));
     }
     settings.days = [...new Set(settings.days)].sort();
 
-    settings.dayStart = DateUtils.parseTime("10:00");
+    settings.dayStart = parseTime("10:00");
     for (const prog of programs.values()) {
-      const time = DateUtils.getOnlyTime(prog.begin);
+      const time = getOnlyTime(prog.begin);
       if (time < settings.dayStart) settings.dayStart = time;
     }
 
-    settings.dayEnd = DateUtils.parseTime("16:00");
+    settings.dayEnd = parseTime("16:00");
     for (const prog of programs.values()) {
-      let time = DateUtils.getOnlyTime(prog.begin + prog.duration);
-      if (time === 0) time = DateUtils.parseTime("23:59");
+      let time = getOnlyTime(prog.begin + prog.duration);
+      if (time === 0) time = parseTime("23:59");
       if (time > settings.dayEnd) settings.dayEnd = time;
     }
 
@@ -166,8 +172,8 @@ class Timetable extends React.Component {
   }
 
   getRect(program, settings) {
-    const date = DateUtils.getOnlyDate(program.begin);
-    const time = DateUtils.getOnlyTime(program.begin);
+    const date = getOnlyDate(program.begin);
+    const time = getOnlyTime(program.begin);
 
     var [first, last] = [0, settings.groupCnt - 1];
 
@@ -196,11 +202,11 @@ class Timetable extends React.Component {
   getTimeIndicator(settings) {
     const now = Date.now();
 
-    const currTime = DateUtils.getOnlyTime(now);
+    const currTime = getOnlyTime(now);
     if (currTime < settings.dayStart || currTime > settings.dayEnd)
       return <div />;
 
-    const currDate = DateUtils.getOnlyDate(now);
+    const currDate = getOnlyDate(now);
     if (settings.days.indexOf(currDate) === -1) return <div />;
 
     return (
@@ -294,7 +300,7 @@ function DateHeader(props) {
         gridRowEnd: "span " + props.span,
       }}
     >
-      {DateUtils.formatDay(props.date.getTime())}
+      {formatDay(props.date.getTime())}
       <br />
       {props.date.getUTCDate()}.<br />
       {props.date.getUTCMonth() + 1}.

@@ -8,7 +8,13 @@ import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import DateUtils from "./DateUtils";
+import {
+  formatDate,
+  formatDateTime,
+  formatTime,
+  parseDate,
+  parseTime,
+} from "./DateUtils";
 
 class Settings extends React.Component {
   constructor(props) {
@@ -112,13 +118,13 @@ class Settings extends React.Component {
                             <Col sm="2">
                               <Form.Control
                                 ref={this.time}
-                                defaultValue={DateUtils.formatTime(Date.now())}
+                                defaultValue={formatTime(Date.now())}
                               />
                             </Col>
                             <Col sm="2">
                               <Form.Control
                                 ref={this.date}
-                                defaultValue={DateUtils.formatDate(Date.now())}
+                                defaultValue={formatDate(Date.now())}
                               />
                             </Col>
                           </>
@@ -172,14 +178,14 @@ class Settings extends React.Component {
         return (
           <span>
             <mark>{prog_title}</mark> musí proběhnout před
-            <mark>{DateUtils.formatDateTime(rule.value)}</mark>
+            <mark>{formatDateTime(rule.value)}</mark>
           </span>
         );
       case "is_after_date":
         return (
           <span>
             <mark>{prog_title}</mark> musí proběhnout po
-            <mark>{DateUtils.formatDateTime(rule.value)}</mark>
+            <mark>{formatDateTime(rule.value)}</mark>
           </span>
         );
       default:
@@ -211,7 +217,7 @@ class Settings extends React.Component {
     if (prog) {
       return `${
         prog.title === "" ? "(bez názvu)" : prog.title
-      } (${DateUtils.formatDateTime(prog.begin)}) ${
+      } (${formatDateTime(prog.begin)}) ${
         prog.groups.length > 0
           ? ` (skupiny: ${prog.groups.join(", ")})`
           : " (všechny skupiny)"
@@ -231,8 +237,8 @@ class Settings extends React.Component {
       case "is_before_date":
       case "is_after_date":
         value =
-          DateUtils.parseDate(this.date.current.value) +
-          DateUtils.parseTime(this.time.current.value);
+          parseDate(this.date.current.value) +
+          parseTime(this.time.current.value);
         break;
       case "is_before_program":
       case "is_after_program":

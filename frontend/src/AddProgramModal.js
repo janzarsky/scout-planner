@@ -9,7 +9,13 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import DateUtils from "./DateUtils";
+import {
+  parseDate,
+  formatDate,
+  formatTime,
+  parseTime,
+  parseDuration,
+} from "./DateUtils";
 
 class AddProgramModal extends React.Component {
   constructor(props) {
@@ -34,8 +40,8 @@ class AddProgramModal extends React.Component {
       duration = "1:00";
 
     if (this.props.options.hasOwnProperty("begin")) {
-      date = DateUtils.formatDate(this.props.options.begin);
-      time = DateUtils.formatTime(this.props.options.begin);
+      date = formatDate(this.props.options.begin);
+      time = formatTime(this.props.options.begin);
     }
 
     const setDuration = (duration) => {
@@ -239,9 +245,8 @@ class AddProgramModal extends React.Component {
 
     this.props.addProgram({
       begin:
-        DateUtils.parseDate(this.date.current.value) +
-        DateUtils.parseTime(this.time.current.value),
-      duration: DateUtils.parseDuration(this.duration.current.value),
+        parseDate(this.date.current.value) + parseTime(this.time.current.value),
+      duration: parseDuration(this.duration.current.value),
       title: this.title.current.value,
       pkg: this.pkg.current.value,
       groups: this.state.groups,
