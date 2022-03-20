@@ -12,7 +12,6 @@ import {
   BrowserRouter,
   Route,
   Switch,
-  Redirect,
   useParams,
   useHistory,
 } from "react-router-dom";
