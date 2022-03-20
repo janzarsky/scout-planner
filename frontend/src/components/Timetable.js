@@ -10,7 +10,7 @@ import {
   getOnlyTime,
   parseDuration,
   parseTime,
-} from "./DateUtils";
+} from "../helpers/DateUtils";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 

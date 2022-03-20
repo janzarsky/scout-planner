@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { formatTime } from "./DateUtils";
+import { formatTime } from "../helpers/DateUtils";
 
 export default class Program extends React.Component {
   constructor(props) {

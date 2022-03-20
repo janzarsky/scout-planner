@@ -12,10 +12,10 @@ import Rules from "./Rules";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
-import Data from "./Data";
-import { checkRules } from "./Checker";
-import Example from "./Example";
-import ImportExport from "./ImportExport";
+import Data from "../Data";
+import { checkRules } from "../Checker";
+import Example from "../Example";
+import ImportExport from "../ImportExport";
 
 export default class App extends React.Component {
   constructor(props) {

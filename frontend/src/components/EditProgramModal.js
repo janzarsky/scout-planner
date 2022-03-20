@@ -16,7 +16,7 @@ import {
   parseDate,
   parseDuration,
   parseTime,
-} from "./DateUtils";
+} from "../helpers/DateUtils";
 
 export default class EditProgramModal extends React.Component {
   constructor(props) {

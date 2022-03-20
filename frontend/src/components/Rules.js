@@ -14,7 +14,7 @@ import {
   formatTime,
   parseDate,
   parseTime,
-} from "./DateUtils";
+} from "../helpers/DateUtils";
 
 export default class Settings extends React.Component {
   constructor(props) {

@@ -3,7 +3,7 @@
  * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
  */
 
-import { formatDateTime } from "./DateUtils";
+import { formatDateTime } from "./helpers/DateUtils";
 
 export async function checkRules(rules, programs) {
   const violations = new Map();

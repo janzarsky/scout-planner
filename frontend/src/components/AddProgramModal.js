@@ -15,7 +15,7 @@ import {
   formatTime,
   parseTime,
   parseDuration,
-} from "./DateUtils";
+} from "../helpers/DateUtils";
 
 export default class AddProgramModal extends React.Component {
   constructor(props) {
