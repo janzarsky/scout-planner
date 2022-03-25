@@ -1,8 +1,3 @@
-/**
- * @file Functions for communicating with backend
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 const config = require("./config.json");
 
 async function get(table, path, id) {

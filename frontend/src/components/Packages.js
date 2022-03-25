@@ -1,8 +1,3 @@
-/**
- * @file Table of packages
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";

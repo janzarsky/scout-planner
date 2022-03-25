@@ -1,8 +1,3 @@
-/**
- * @file Timetable component
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
 import {
   formatDay,

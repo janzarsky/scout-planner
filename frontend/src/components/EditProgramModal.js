@@ -1,8 +1,3 @@
-/**
- * @file Modal for program editing
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";

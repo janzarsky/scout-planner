@@ -1,10 +1,3 @@
-/**
- * @file Custom functions for parsing and formatting of time and date
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- *
- * Note that the app uses UTC times to avoid problems with timezones.
- */
-
 export function formatDate(ms) {
   const date = new Date(parseInt(ms));
 

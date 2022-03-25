@@ -1,8 +1,3 @@
-/**
- * @file Program component
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
 import { formatTime } from "../helpers/DateUtils";
 
