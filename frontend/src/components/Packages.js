@@ -6,101 +6,39 @@ import Button from "react-bootstrap/Button";
 export default class Packages extends React.Component {
   constructor(props) {
     super(props);
-    ["name", "color", "nameEdit", "colorEdit"].forEach(
+    ["nameAddRef", "colorAddRef", "nameEditRef", "colorEditRef"].forEach(
       (field) => (this[field] = React.createRef())
     );
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { edit: undefined };
+    this.state = { editKey: undefined };
   }
 
   render() {
-    const pkgs = this.props.pkgs;
-    var cnt = 0;
-
     return (
       <Form onSubmit={this.handleSubmit}>
         <Table bordered hover responsive>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Balíček</th>
-              <th>Barva</th>
-              <th>Akce</th>
-            </tr>
-          </thead>
+          <PackagesHeader />
           <tbody>
-            {[...pkgs.entries()].map(([key, pkg]) => (
-              <tr key={key}>
-                <td>{(cnt += 1)}</td>
-                <td>
-                  {this.state.edit === key ? (
-                    <Form.Control ref={this.nameEdit} defaultValue={pkg.name} />
-                  ) : (
-                    pkg.name
-                  )}
-                </td>
-                <td>
-                  {this.state.edit === key ? (
-                    <Form.Control
-                      type="color"
-                      ref={this.colorEdit}
-                      defaultValue={pkg.color}
-                    />
-                  ) : (
-                    <>
-                      <span
-                        className="color-sample"
-                        style={{ backgroundColor: pkg.color }}
-                      >
-                        &nbsp;
-                      </span>{" "}
-                      {pkg.color}
-                    </>
-                  )}
-                </td>
-                <td>
-                  {this.state.edit === key ? (
-                    <Button variant="primary" type="submit">
-                      <i className="fa fa-check" /> Uložit
-                    </Button>
-                  ) : (
-                    <span>
-                      <Button
-                        variant="link"
-                        onClick={() => this.setState({ edit: key })}
-                      >
-                        <i className="fa fa-pencil" /> Upravit
-                      </Button>
-                      &nbsp;
-                      <Button
-                        variant="link text-danger"
-                        onClick={() => this.props.deletePkg(pkg._id)}
-                      >
-                        <i className="fa fa-trash" /> Smazat
-                      </Button>
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-            <tr key="new_pkg">
-              <td></td>
-              <td>
-                <Form.Control ref={this.name} defaultValue="Nový balíček" />
-              </td>
-              <td>
-                <Form.Control
-                  type="color"
-                  ref={this.color}
-                  defaultValue="#81d4fa"
+            {[...this.props.pkgs.entries()].map(([key, pkg], index) =>
+              key === this.state.editKey ? (
+                <EditedPackage
+                  key={key}
+                  pkg={pkg}
+                  cnt={index + 1}
+                  nameRef={this.nameEditRef}
+                  colorRef={this.colorEditRef}
                 />
-              </td>
-              <td>
-                <Button variant="success" type="submit">
-                  <i className="fa fa-plus" /> Přidat
-                </Button>
-              </td>
-            </tr>
+              ) : (
+                <Package
+                  key={key}
+                  pkg={pkg}
+                  cnt={index + 1}
+                  deletePkg={() => this.props.deletePkg(pkg._id)}
+                  editPkg={() => this.setState({ editKey: key })}
+                />
+              )
+            )}
+            <NewPackage nameRef={this.nameAddRef} colorRef={this.colorAddRef} />
           </tbody>
         </Table>
       </Form>
@@ -110,19 +48,107 @@ export default class Packages extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    if (this.state.edit) {
+    if (this.state.editKey) {
       this.props
         .updatePkg({
-          _id: this.state.edit,
-          name: this.nameEdit.current.value,
-          color: this.colorEdit.current.value,
+          _id: this.state.editKey,
+          name: this.nameEditRef.current.value,
+          color: this.colorEditRef.current.value,
         })
-        .then(() => this.setState({ edit: undefined }));
+        .then(() => this.setState({ editKey: undefined }));
     } else {
       this.props.addPkg({
-        name: this.name.current.value,
-        color: this.color.current.value,
+        name: this.nameAddRef.current.value,
+        color: this.colorAddRef.current.value,
       });
     }
   }
+}
+
+function PackagesHeader() {
+  return (
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Balíček</th>
+        <th>Barva</th>
+        <th>Akce</th>
+      </tr>
+    </thead>
+  );
+}
+
+function Package(props) {
+  return (
+    <tr>
+      <td>{props.cnt}</td>
+      <td>{props.pkg.name}</td>
+      <td>
+        <span
+          className="color-sample"
+          style={{ backgroundColor: props.pkg.color }}
+        >
+          &nbsp;
+        </span>{" "}
+        {props.pkg.color}
+      </td>
+      <td>
+        <span>
+          <Button variant="link" onClick={props.editPkg}>
+            <i className="fa fa-pencil" /> Upravit
+          </Button>
+          &nbsp;
+          <Button variant="link text-danger" onClick={props.deletePkg}>
+            <i className="fa fa-trash" /> Smazat
+          </Button>
+        </span>
+      </td>
+    </tr>
+  );
+}
+
+function EditedPackage(props) {
+  return (
+    <tr>
+      <td>{props.cnt}</td>
+      <td>
+        <Form.Control ref={props.nameRef} defaultValue={props.pkg.name} />
+      </td>
+      <td>
+        <Form.Control
+          type="color"
+          ref={props.colorRef}
+          defaultValue={props.pkg.color}
+        />
+      </td>
+      <td>
+        <Button variant="primary" type="submit">
+          <i className="fa fa-check" /> Uložit
+        </Button>
+      </td>
+    </tr>
+  );
+}
+
+function NewPackage(props) {
+  return (
+    <tr key="new_pkg">
+      <td></td>
+      <td>
+        <Form.Control ref={props.nameRef} defaultValue="Nový balíček" />
+      </td>
+      <td>
+        <Form.Control
+          type="color"
+          ref={props.colorRef}
+          defaultValue="#81d4fa"
+        />
+      </td>
+      <td>
+        <Button variant="success" type="submit">
+          <i className="fa fa-plus" /> Přidat
+        </Button>
+      </td>
+    </tr>
+  );
 }
