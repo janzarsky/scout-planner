@@ -129,11 +129,15 @@ export default class EditProgramModal extends React.Component {
                   ref={this.pkg}
                 >
                   <option>žádný</option>
-                  {[...this.props.pkgs.entries()].map(([key, pkg]) => (
-                    <option key={key} value={key}>
-                      {pkg.name}
-                    </option>
-                  ))}
+                  {[...this.props.pkgs.entries()]
+                    .sort(([, pkg1], [, pkg2]) =>
+                      pkg1.name.localeCompare(pkg2.name)
+                    )
+                    .map(([key, pkg]) => (
+                      <option key={key} value={key}>
+                        {pkg.name}
+                      </option>
+                    ))}
                 </Form.Control>
               </Col>
             </Form.Group>
