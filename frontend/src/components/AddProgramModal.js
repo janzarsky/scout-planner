@@ -136,11 +136,10 @@ export default class AddProgramModal extends React.Component {
               <Col>
                 <Row>
                   {[...this.props.groups.entries()].map(([key, { name }]) => (
-                    <Col>
+                    <Col key={key}>
                       <Form.Check
                         type="checkbox"
                         label={name}
-                        key={key}
                         defaultChecked={this.state.groups.includes(key)}
                         onClick={(e) => {
                           if (e.target.checked) {
@@ -170,11 +169,10 @@ export default class AddProgramModal extends React.Component {
                   {[
                     ...new Set([...this.props.people, ...this.state.people]),
                   ].map((person) => (
-                    <Col>
+                    <Col key={person}>
                       <Form.Check
                         type="checkbox"
                         label={person}
-                        key={person}
                         defaultChecked={this.state.people.includes(person)}
                         onClick={(e) => {
                           if (e.target.checked) {
