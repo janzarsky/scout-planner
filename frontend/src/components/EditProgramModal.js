@@ -152,6 +152,7 @@ export default class EditProgramModal extends React.Component {
                       <Form.Check
                         type="checkbox"
                         label={name}
+                        id={key}
                         defaultChecked={this.state.groups.includes(key)}
                         onClick={(e) => {
                           if (e.target.checked) {
@@ -185,6 +186,7 @@ export default class EditProgramModal extends React.Component {
                       <Form.Check
                         type="checkbox"
                         label={person}
+                        id={person}
                         defaultChecked={this.state.people.includes(person)}
                         onClick={(e) => {
                           if (e.target.checked) {
