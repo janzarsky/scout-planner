@@ -1,12 +1,7 @@
-/**
- * @file Program component
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
-import { formatTime } from "./DateUtils";
+import { formatTime } from "../helpers/DateUtils";
 
-class Program extends React.Component {
+export default class Program extends React.Component {
   constructor(props) {
     super(props);
     this.state = { dragged: false };
@@ -133,5 +128,3 @@ function ProgramUrl(props) {
     </div>
   );
 }
-
-export default Program;

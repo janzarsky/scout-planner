@@ -1,11 +1,4 @@
-/**
- * @file Testing set of programs
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- *
- * These functions add testing set of programs, packages and rules.
- */
-
-import Data from "./Data";
+import Data from "./Client";
 
 export default async function clear(table) {
   return Promise.all([

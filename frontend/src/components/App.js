@@ -1,8 +1,3 @@
-/**
- * @file Main application
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
 import AddProgramModal from "./AddProgramModal";
 import EditProgramModal from "./EditProgramModal";
@@ -12,12 +7,12 @@ import Rules from "./Rules";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
-import Data from "./Data";
-import { checkRules } from "./Checker";
-import Example from "./Example";
-import ImportExport from "./ImportExport";
+import Data from "../Client";
+import { checkRules } from "../Checker";
+import Example from "../Example";
+import ImportExport from "../ImportExport";
 
-class App extends React.Component {
+export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -383,5 +378,3 @@ class App extends React.Component {
     });
   }
 }
-
-export default App;

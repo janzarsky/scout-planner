@@ -1,8 +1,3 @@
-/**
- * @file Modal for adding programs
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -10,39 +5,43 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {
-  parseDate,
   formatDate,
+  formatDuration,
   formatTime,
-  parseTime,
+  parseDate,
   parseDuration,
-} from "./DateUtils";
+  parseTime,
+} from "../helpers/DateUtils";
 
-class AddProgramModal extends React.Component {
+export default class EditProgramModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { groups: [], people: [] };
+    this.state = {
+      groups: this.props.program.groups,
+      people: this.props.program.people,
+    };
     [
       "title",
       "date",
       "time",
       "duration",
       "pkg",
+      "groups",
       "people",
       "url",
       "notes",
     ].forEach((field) => (this[field] = React.createRef()));
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   render() {
-    let date = "",
-      time = "",
-      duration = "1:00";
+    const date = formatDate(this.props.program.begin);
+    const time = formatTime(this.props.program.begin);
+    const duration = formatDuration(this.props.program.duration);
 
-    if (this.props.options.hasOwnProperty("begin")) {
-      date = formatDate(this.props.options.begin);
-      time = formatTime(this.props.options.begin);
-    }
+    const url = this.props.program.url;
+    const notes = this.props.program.notes;
 
     const setDuration = (duration) => {
       this.duration.current.value = duration;
@@ -52,7 +51,7 @@ class AddProgramModal extends React.Component {
       <Modal show={true} onHide={this.props.handleClose}>
         <Form onSubmit={this.handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Nový program</Modal.Title>
+            <Modal.Title>Upravit program</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form.Group as={Row}>
@@ -60,7 +59,11 @@ class AddProgramModal extends React.Component {
                 Název
               </Form.Label>
               <Col>
-                <Form.Control type="text" ref={this.title} />
+                <Form.Control
+                  type="text"
+                  defaultValue={this.props.program.title}
+                  ref={this.title}
+                />
               </Col>
             </Form.Group>
             <Form.Group as={Row}>
@@ -120,8 +123,12 @@ class AddProgramModal extends React.Component {
                 Balíček
               </Form.Label>
               <Col>
-                <Form.Control as="select" defaultValue="žádný" ref={this.pkg}>
-                  <option value="">žádný</option>
+                <Form.Control
+                  as="select"
+                  defaultValue={this.props.program.pkg}
+                  ref={this.pkg}
+                >
+                  <option>žádný</option>
                   {[...this.props.pkgs.entries()].map(([key, pkg]) => (
                     <option key={key} value={key}>
                       {pkg.name}
@@ -215,7 +222,7 @@ class AddProgramModal extends React.Component {
                 URL
               </Form.Label>
               <Col>
-                <Form.Control type="text" ref={this.url} />
+                <Form.Control type="text" defaultValue={url} ref={this.url} />
               </Col>
             </Form.Group>
             <Form.Group as={Row}>
@@ -223,16 +230,27 @@ class AddProgramModal extends React.Component {
                 Poznámky
               </Form.Label>
               <Col>
-                <Form.Control as="textarea" ref={this.notes} />
+                <Form.Control
+                  as="textarea"
+                  defaultValue={notes}
+                  ref={this.notes}
+                />
               </Col>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
+            <Button
+              variant="link text-danger"
+              onClick={this.handleDelete}
+              style={{ marginRight: "auto" }}
+            >
+              Smazat
+            </Button>
             <Button variant="link" onClick={this.props.handleClose}>
               Zrušit
             </Button>
             <Button variant="primary" type="submit">
-              Přidat
+              Uložit
             </Button>
           </Modal.Footer>
         </Form>
@@ -240,10 +258,17 @@ class AddProgramModal extends React.Component {
     );
   }
 
+  handleDelete(event) {
+    event.preventDefault();
+    this.props.deleteProgram(this.props.program._id);
+    this.props.handleClose();
+  }
+
   handleSubmit(event) {
     event.preventDefault();
 
-    this.props.addProgram({
+    this.props.updateProgram({
+      ...this.props.program,
       begin:
         parseDate(this.date.current.value) + parseTime(this.time.current.value),
       duration: parseDuration(this.duration.current.value),
@@ -258,5 +283,3 @@ class AddProgramModal extends React.Component {
     this.props.handleClose();
   }
 }
-
-export default AddProgramModal;

@@ -1,8 +1,3 @@
-/**
- * @file Timetable component
- * @author Jan Zarsky <xzarsk03@fit.vutbr.cz>
- */
-
 import React from "react";
 import {
   formatDay,
@@ -10,11 +5,11 @@ import {
   getOnlyTime,
   parseDuration,
   parseTime,
-} from "./DateUtils";
+} from "../helpers/DateUtils";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
-class Timetable extends React.Component {
+export default class Timetable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -307,5 +302,3 @@ function DateHeader(props) {
     </div>
   );
 }
-
-export default Timetable;
