@@ -117,11 +117,15 @@ export default class AddProgramModal extends React.Component {
               <Col>
                 <Form.Control as="select" defaultValue="žádný" ref={this.pkg}>
                   <option value="">žádný</option>
-                  {[...this.props.pkgs.entries()].map(([key, pkg]) => (
-                    <option key={key} value={key}>
-                      {pkg.name}
-                    </option>
-                  ))}
+                  {[...this.props.pkgs.entries()]
+                    .sort(([, pkg1], [, pkg2]) =>
+                      pkg1.name.localeCompare(pkg2.name)
+                    )
+                    .map(([key, pkg]) => (
+                      <option key={key} value={key}>
+                        {pkg.name}
+                      </option>
+                    ))}
                 </Form.Control>
               </Col>
             </Form.Group>
@@ -132,11 +136,10 @@ export default class AddProgramModal extends React.Component {
               <Col>
                 <Row>
                   {[...this.props.groups.entries()].map(([key, { name }]) => (
-                    <Col>
+                    <Col key={key}>
                       <Form.Check
                         type="checkbox"
                         label={name}
-                        key={key}
                         defaultChecked={this.state.groups.includes(key)}
                         onClick={(e) => {
                           if (e.target.checked) {
@@ -166,11 +169,10 @@ export default class AddProgramModal extends React.Component {
                   {[
                     ...new Set([...this.props.people, ...this.state.people]),
                   ].map((person) => (
-                    <Col>
+                    <Col key={person}>
                       <Form.Check
                         type="checkbox"
                         label={person}
-                        key={person}
                         defaultChecked={this.state.people.includes(person)}
                         onClick={(e) => {
                           if (e.target.checked) {

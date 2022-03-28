@@ -19,25 +19,27 @@ export default class Packages extends React.Component {
         <Table bordered hover responsive>
           <PackagesHeader />
           <tbody>
-            {[...this.props.pkgs.entries()].map(([key, pkg], index) =>
-              key === this.state.editKey ? (
-                <EditedPackage
-                  key={key}
-                  pkg={pkg}
-                  cnt={index + 1}
-                  nameRef={this.nameEditRef}
-                  colorRef={this.colorEditRef}
-                />
-              ) : (
-                <Package
-                  key={key}
-                  pkg={pkg}
-                  cnt={index + 1}
-                  deletePkg={() => this.props.deletePkg(pkg._id)}
-                  editPkg={() => this.setState({ editKey: key })}
-                />
-              )
-            )}
+            {[...this.props.pkgs.entries()]
+              .sort(([, pkg1], [, pkg2]) => pkg1.name.localeCompare(pkg2.name))
+              .map(([key, pkg], index) =>
+                key === this.state.editKey ? (
+                  <EditedPackage
+                    key={key}
+                    pkg={pkg}
+                    cnt={index + 1}
+                    nameRef={this.nameEditRef}
+                    colorRef={this.colorEditRef}
+                  />
+                ) : (
+                  <Package
+                    key={key}
+                    pkg={pkg}
+                    cnt={index + 1}
+                    deletePkg={() => this.props.deletePkg(pkg._id)}
+                    editPkg={() => this.setState({ editKey: key })}
+                  />
+                )
+              )}
             <NewPackage nameRef={this.nameAddRef} colorRef={this.colorAddRef} />
           </tbody>
         </Table>
