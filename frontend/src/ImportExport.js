@@ -45,7 +45,7 @@ export default class ImportExport extends React.Component {
 
     Promise.all([
       ...data.pkgs.map((pkg) =>
-        Data.addPkg(this.props.table, { ...pkg, _id: undefined }).then(
+        Data.addPackage(this.props.table, { ...pkg, _id: undefined }).then(
           (newPkg) => [pkg._id, newPkg._id]
         )
       ),
