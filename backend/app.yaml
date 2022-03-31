@@ -5,9 +5,9 @@ instance_class: F1
 automatic_scaling:
   min_instances: 0
 inbound_services:
-- warmup
+  - warmup
 handlers:
-- url: .*
-  script: auto
-  redirect_http_response_code: 301
-  secure: always
+  - url: .*
+    script: auto
+    redirect_http_response_code: 301
+    secure: always
