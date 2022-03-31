@@ -38,6 +38,7 @@ export default class Program extends React.Component {
         {this.props.program.url ? (
           <ProgramUrl url={this.props.program.url} />
         ) : null}
+        <ProgramClone clone={() => this.props.clone(this.props.program)} />
       </div>
     );
   }
@@ -125,6 +126,14 @@ function ProgramUrl(props) {
       <a href={props.url} rel="noopener noreferrer" target="_blank">
         <i className="fa fa-link" />
       </a>
+    </div>
+  );
+}
+
+function ProgramClone(props) {
+  return (
+    <div className="program-clone" onClick={props.clone}>
+      <i className="fa fa-clone" />
     </div>
   );
 }

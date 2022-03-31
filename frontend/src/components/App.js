@@ -178,6 +178,7 @@ export default class App extends React.Component {
                   viewTime: this.state.viewTime,
                   viewPeople: this.state.viewPeople,
                 }}
+                clone={(program) => this.addProgram(program)}
               />
             </Tab.Pane>
             <Tab.Pane eventKey="rules">
