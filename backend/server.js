@@ -94,18 +94,6 @@ function updateItem(collection) {
     .delete(deleteItem(collection));
 });
 
-// for compatibility
-app
-  .route("/api/:table/pkgs")
-  .get(getAllItems("packages"))
-  .post(createItem("packages"));
-
-app
-  .route("/api/:table/pkgs/:id")
-  .get(getItem("packages"))
-  .put(updateItem("packages"))
-  .delete(deleteItem("packages"));
-
 app.use(function (req, res) {
   res.status(404).send({ url: req.originalUrl + " not found" });
 });
