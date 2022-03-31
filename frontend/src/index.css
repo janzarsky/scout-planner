@@ -127,7 +127,8 @@ p {
 
 .program-edit,
 .program-move,
-.program-url {
+.program-url,
+.program-clone {
   display: none;
   width: 2rem;
   height: 2rem;
@@ -159,9 +160,16 @@ p {
 .program-url a {
   color: inherit;
 }
+.program-clone {
+  right: 0;
+  bottom: 0;
+  text-align: right;
+  z-index: 1;
+}
 .program-wrapper:hover .program-edit,
 .program-wrapper:hover .program-url,
-.program-wrapper:hover .program-move {
+.program-wrapper:hover .program-move,
+.program-wrapper:hover .program-clone {
   display: block;
 }
 

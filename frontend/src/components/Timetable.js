@@ -161,6 +161,7 @@ export default class Timetable extends React.Component {
           pkgs={this.props.pkgs}
           editProgramModal={this.props.editProgramModal}
           viewSettings={viewSettings}
+          clone={this.props.clone}
         />
       );
     }
