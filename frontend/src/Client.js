@@ -53,7 +53,7 @@ async function remove(table, path, id) {
 
 var toExport = {};
 
-["program", "pkg", "rule"].forEach((entity) => {
+["program", "package", "rule"].forEach((entity) => {
   const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
   toExport[`get${name}s`] = (table) => getAll(table, `${entity}s`);

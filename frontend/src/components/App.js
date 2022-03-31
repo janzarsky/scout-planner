@@ -49,7 +49,7 @@ export default class App extends React.Component {
     Data.getPrograms(this.props.table).then((programs) =>
       this.setState({ programs: programs }, this.runChecker)
     );
-    Data.getPkgs(this.props.table).then((pkgs) =>
+    Data.getPackages(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
     );
     Data.getRules(this.props.table).then((rules) =>
@@ -213,21 +213,21 @@ export default class App extends React.Component {
               <Packages
                 pkgs={this.state.pkgs}
                 addPkg={(pkg) =>
-                  Data.addPkg(this.props.table, pkg).then((pkg) => {
+                  Data.addPackage(this.props.table, pkg).then((pkg) => {
                     const pkgs = new Map(this.state.pkgs);
                     pkgs.set(pkg._id, pkg);
                     this.setState({ pkgs: pkgs });
                   })
                 }
                 updatePkg={(pkg) =>
-                  Data.updatePkg(this.props.table, pkg).then((pkg) => {
+                  Data.updatePackage(this.props.table, pkg).then((pkg) => {
                     const pkgs = new Map(this.state.pkgs);
                     pkgs.set(pkg._id, pkg);
                     this.setState({ pkgs: pkgs });
                   })
                 }
                 deletePkg={(id) =>
-                  Data.deletePkg(this.props.table, id).then((msg) => {
+                  Data.deletePackage(this.props.table, id).then((msg) => {
                     const pkgs = new Map(this.state.pkgs);
                     pkgs.delete(id);
                     this.setState({ pkgs: pkgs });
