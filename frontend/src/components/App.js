@@ -10,7 +10,7 @@ import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Data from "../Client";
 import { checkRules } from "../Checker";
-import Example from "../Example";
+import clear from "../Example";
 import ImportExport from "../ImportExport";
 
 export default class App extends React.Component {
@@ -43,7 +43,7 @@ export default class App extends React.Component {
   }
 
   removeAll() {
-    Example.clear(this.props.table).then(() => this.componentDidMount());
+    clear(this.props.table).then(() => this.componentDidMount());
   }
 
   componentDidMount() {
