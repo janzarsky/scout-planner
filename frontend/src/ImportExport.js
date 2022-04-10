@@ -43,29 +43,35 @@ export default class ImportExport extends React.Component {
 
     const data = JSON.parse(this.importData.current.value);
 
+    // add all packages
     Promise.all([
       ...data.pkgs.map((pkg) =>
         Data.addPackage(this.props.table, { ...pkg, _id: undefined }).then(
+          // create package ID replacement map
           (newPkg) => [pkg._id, newPkg._id]
         )
       ),
     ])
       .then((pkgs) => new Map(pkgs))
+      // replace package IDs in programs
       .then((pkgs) =>
         data.programs.map((prog) => {
           return { ...prog, pkg: pkgs.get(prog.pkg) };
         })
       )
+      // add all programs
       .then((programs) =>
         Promise.all(
           programs.map((prog) =>
             Data.addProgram(this.props.table, { ...prog, _id: undefined }).then(
+              // create program ID replacement map
               (newProg) => [prog._id, newProg._id]
             )
           )
         )
       )
       .then((programs) => new Map(programs))
+      // replace program IDs in rules
       .then((programs) =>
         data.rules.map((rule) => {
           var value = rule.value;
@@ -81,6 +87,7 @@ export default class ImportExport extends React.Component {
           };
         })
       )
+      // add all rules
       .then((rules) =>
         Promise.all(
           rules.map((rule) =>
