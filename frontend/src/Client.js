@@ -53,7 +53,7 @@ async function remove(table, path, id) {
 
 var toExport = {};
 
-["program", "package", "rule"].forEach((entity) => {
+["program", "package", "rule", "group"].forEach((entity) => {
   const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
   toExport[`get${name}s`] = (table) => getAll(table, `${entity}s`);
@@ -62,15 +62,5 @@ var toExport = {};
   toExport[`update${name}`] = (table, data) => put(table, `${entity}s`, data);
   toExport[`delete${name}`] = (table, id) => remove(table, `${entity}s`, id);
 });
-
-// TODO
-toExport.getGroups = async function () {
-  return new Map([
-    ["clk1", { name: "ČLK1" }],
-    ["clk2", { name: "ČLK2" }],
-    ["vlk", { name: "VLK" }],
-    ["in", { name: "IN" }],
-  ]);
-};
 
 export default toExport;

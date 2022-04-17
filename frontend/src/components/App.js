@@ -3,13 +3,14 @@ import AddProgramModal from "./AddProgramModal";
 import EditProgramModal from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
+import Groups from "./Groups";
 import Rules from "./Rules";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Data from "../Client";
 import { checkRules } from "../Checker";
-import Example from "../Example";
+import clear from "../Example";
 import ImportExport from "../ImportExport";
 
 export default class App extends React.Component {
@@ -42,7 +43,7 @@ export default class App extends React.Component {
   }
 
   removeAll() {
-    Example.clear(this.props.table).then(() => this.componentDidMount());
+    clear(this.props.table).then(() => this.componentDidMount());
   }
 
   componentDidMount() {
@@ -140,6 +141,11 @@ export default class App extends React.Component {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="groups">
+                Skupiny
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="importexport">
                 Import/Export
               </Nav.Link>
@@ -231,6 +237,32 @@ export default class App extends React.Component {
                     const pkgs = new Map(this.state.pkgs);
                     pkgs.delete(id);
                     this.setState({ pkgs: pkgs });
+                  })
+                }
+              />
+            </Tab.Pane>
+            <Tab.Pane eventKey="groups" title="Skupiny">
+              <Groups
+                groups={this.state.groups}
+                addGroup={(group) =>
+                  Data.addGroup(this.props.table, group).then((group) => {
+                    const groups = new Map(this.state.groups);
+                    groups.set(group._id, group);
+                    this.setState({ groups: groups });
+                  })
+                }
+                updateGroup={(group) =>
+                  Data.updateGroup(this.props.table, group).then((group) => {
+                    const groups = new Map(this.state.groups);
+                    groups.set(group._id, group);
+                    this.setState({ groups: groups });
+                  })
+                }
+                deleteGroup={(id) =>
+                  Data.deleteGroup(this.props.table, id).then((msg) => {
+                    const groups = new Map(this.state.groups);
+                    groups.delete(id);
+                    this.setState({ groups: groups });
                   })
                 }
               />

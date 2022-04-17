@@ -147,29 +147,35 @@ export default class EditProgramModal extends React.Component {
               </Form.Label>
               <Col>
                 <Row>
-                  {[...this.props.groups.entries()].map(([key, { name }]) => (
-                    <Col key={key}>
-                      <Form.Check
-                        type="checkbox"
-                        label={name}
-                        id={key}
-                        defaultChecked={this.state.groups.includes(key)}
-                        onClick={(e) => {
-                          if (e.target.checked) {
-                            this.setState((prev) => ({
-                              ...prev,
-                              groups: [...prev.groups, key],
-                            }));
-                          } else {
-                            this.setState((prev) => ({
-                              ...prev,
-                              groups: prev.groups.filter((g) => g !== key),
-                            }));
-                          }
-                        }}
-                      />
-                    </Col>
-                  ))}
+                  {[...this.props.groups.entries()]
+                    .sort(([, a], [, b]) => {
+                      if (a.order < b.order) return -1;
+                      if (a.order > b.order) return 1;
+                      return 0;
+                    })
+                    .map(([key, { name }]) => (
+                      <Col key={key}>
+                        <Form.Check
+                          type="checkbox"
+                          label={name}
+                          id={key}
+                          defaultChecked={this.state.groups.includes(key)}
+                          onClick={(e) => {
+                            if (e.target.checked) {
+                              this.setState((prev) => ({
+                                ...prev,
+                                groups: [...prev.groups, key],
+                              }));
+                            } else {
+                              this.setState((prev) => ({
+                                ...prev,
+                                groups: prev.groups.filter((g) => g !== key),
+                              }));
+                            }
+                          }}
+                        />
+                      </Col>
+                    ))}
                 </Row>
               </Col>
             </Form.Group>
