@@ -12,7 +12,7 @@ import {
   parseDuration,
 } from "../helpers/DateUtils";
 
-export default class AddProgramModal extends React.Component {
+export class AddProgramModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = { groups: [], people: [] };

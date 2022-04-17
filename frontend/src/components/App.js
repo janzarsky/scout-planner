@@ -1,6 +1,6 @@
 import React from "react";
-import AddProgramModal from "./AddProgramModal";
-import EditProgramModal from "./EditProgramModal";
+import { AddProgramModal } from "./AddProgramModal";
+import { EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
 import Groups from "./Groups";

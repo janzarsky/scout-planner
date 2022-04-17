@@ -13,7 +13,7 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 
-export default class EditProgramModal extends React.Component {
+export class EditProgramModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
