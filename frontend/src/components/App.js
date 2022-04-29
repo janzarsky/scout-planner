@@ -46,8 +46,8 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Data.getPrograms(this.props.table).then((programs) =>
-      this.setState({ programs: programs }, this.runChecker)
+    Data.getPrograms(this.props.table, (prog) => !prog.deleted).then(
+      (programs) => this.setState({ programs: programs }, this.runChecker)
     );
     Data.getPackages(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
