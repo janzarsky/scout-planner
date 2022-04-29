@@ -441,11 +441,8 @@ export class AddProgramModal extends React.Component {
                 }))
               }
             />
-            <ProgramUrl url={this.props.program.url} controlRef={this.url} />
-            <ProgramNotes
-              notes={this.props.program.notes}
-              controlRef={this.notes}
-            />
+            <ProgramUrl controlRef={this.url} />
+            <ProgramNotes controlRef={this.notes} />
           </Modal.Body>
           <Modal.Footer>
             <Button variant="link" onClick={this.props.handleClose}>
