@@ -402,11 +402,13 @@ export default class App extends React.Component {
     });
   }
 
-  deleteProgram(id) {
-    Data.deleteProgram(this.props.table, id).then((msg) => {
-      const programs = this.state.programs;
-      programs.delete(id);
-      this.setState({ programs: programs });
-    });
+  deleteProgram(program) {
+    Data.updateProgram(this.props.table, { ...program, deleted: true }).then(
+      (msg) => {
+        const programs = this.state.programs;
+        programs.delete(program._id);
+        this.setState({ programs: programs });
+      }
+    );
   }
 }

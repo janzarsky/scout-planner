@@ -124,7 +124,7 @@ export class EditProgramModal extends React.Component {
 
   handleDelete(event) {
     event.preventDefault();
-    this.props.deleteProgram(this.props.program._id);
+    this.props.deleteProgram(this.props.program);
     this.props.handleClose();
   }
 
