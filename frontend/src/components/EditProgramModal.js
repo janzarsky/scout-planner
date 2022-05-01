@@ -263,24 +263,24 @@ function ProgramGroups(props) {
       </Form.Label>
       <Col>
         <Row>
-          {[...props.allGroups.entries()]
-            .sort(([, a], [, b]) => {
+          {[...props.allGroups]
+            .sort((a, b) => {
               if (a.order < b.order) return -1;
               if (a.order > b.order) return 1;
               return 0;
             })
-            .map(([key, { name }]) => (
-              <Col key={key}>
+            .map((group) => (
+              <Col key={group._id}>
                 <Form.Check
                   type="checkbox"
-                  label={name}
-                  id={key}
-                  defaultChecked={props.programGroups.includes(key)}
+                  label={group.name}
+                  id={group._id}
+                  defaultChecked={props.programGroups.includes(group._id)}
                   onClick={(e) => {
                     if (e.target.checked) {
-                      props.addGroup(key);
+                      props.addGroup(group._id);
                     } else {
-                      props.removeGroup(key);
+                      props.removeGroup(group._id);
                     }
                   }}
                 />

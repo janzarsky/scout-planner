@@ -18,7 +18,7 @@ export default class App extends React.Component {
       programs: new Map(),
       deletedPrograms: new Map(),
       pkgs: new Map(),
-      groups: new Map(),
+      groups: [],
       rules: new Map(),
       violations: new Map(),
       otherProblems: [],
@@ -243,25 +243,30 @@ export default class App extends React.Component {
               <Groups
                 groups={this.state.groups}
                 addGroup={(group) =>
-                  Data.addGroup(this.props.table, group).then((group) => {
-                    const groups = new Map(this.state.groups);
-                    groups.set(group._id, group);
-                    this.setState({ groups: groups });
-                  })
+                  Data.addGroup(this.props.table, group).then((group) =>
+                    this.setState({
+                      groups: [...this.state.groups, group],
+                    })
+                  )
                 }
                 updateGroup={(group) =>
-                  Data.updateGroup(this.props.table, group).then((group) => {
-                    const groups = new Map(this.state.groups);
-                    groups.set(group._id, group);
-                    this.setState({ groups: groups });
-                  })
+                  Data.updateGroup(this.props.table, group).then((group) =>
+                    this.setState({
+                      groups: [
+                        ...this.state.groups.filter((g) => g._id !== group._id),
+                        group,
+                      ],
+                    })
+                  )
                 }
                 deleteGroup={(id) =>
-                  Data.deleteGroup(this.props.table, id).then((msg) => {
-                    const groups = new Map(this.state.groups);
-                    groups.delete(id);
-                    this.setState({ groups: groups });
-                  })
+                  Data.deleteGroup(this.props.table, id).then(() =>
+                    this.setState({
+                      groups: [
+                        ...this.state.groups.filter((g) => g._id !== id),
+                      ],
+                    })
+                  )
                 }
               />
             </Tab.Pane>

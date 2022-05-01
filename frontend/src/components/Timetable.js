@@ -84,14 +84,12 @@ export default class Timetable extends React.Component {
     );
     settings.timeStep = 15 * 60 * 1000;
     settings.timeSpan = Math.ceil(hour / (15 * 60 * 1000));
-    settings.groups = [...groups.entries()]
-      .sort(([, a], [, b]) => {
-        if (a.order < b.order) return -1;
-        if (a.order > b.order) return 1;
-        return 0;
-      })
-      .map((a) => a[0]);
-    settings.groupCnt = groups.size;
+    settings.groups = [...groups].sort((a, b) => {
+      if (a.order < b.order) return -1;
+      if (a.order > b.order) return 1;
+      return 0;
+    });
+    settings.groupCnt = groups.length;
 
     return settings;
   }
@@ -146,7 +144,7 @@ export default class Timetable extends React.Component {
                 gridRowStart: idx * settings.groupCnt + groupIdx + 2,
               }}
             >
-              {this.props.groups.get(group).name}
+              {group.name}
             </div>
           ))}
         </>
@@ -181,7 +179,7 @@ export default class Timetable extends React.Component {
 
     if (program.groups && program.groups.length > 0) {
       const groupMap = settings.groups.map(
-        (group) => program.groups.indexOf(group) !== -1
+        (group) => program.groups.findIndex((idx) => idx === group._id) !== -1
       );
       first = groupMap.reduce(
         (acc, cur, idx) => (cur && idx < acc ? idx : acc),
