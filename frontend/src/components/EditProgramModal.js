@@ -242,10 +242,10 @@ function ProgramPackage(props) {
           ref={props.controlRef}
         >
           <option>žádný</option>
-          {[...props.packages.entries()]
-            .sort(([, pkg1], [, pkg2]) => pkg1.name.localeCompare(pkg2.name))
-            .map(([key, pkg]) => (
-              <option key={key} value={key}>
+          {[...props.packages]
+            .sort((pkg1, pkg2) => pkg1.name.localeCompare(pkg2.name))
+            .map((pkg) => (
+              <option key={pkg._id} value={pkg._id}>
                 {pkg.name}
               </option>
             ))}

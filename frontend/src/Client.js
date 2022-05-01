@@ -73,5 +73,6 @@ var toExport = {};
 
 toExport[`getGroups`] = (table) => getAll(table, `groups`);
 toExport[`getRules`] = (table) => getAll(table, `rules`);
+toExport[`getPackages`] = (table) => getAll(table, `packages`);
 
 export default toExport;

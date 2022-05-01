@@ -17,7 +17,7 @@ export default class App extends React.Component {
     this.state = {
       programs: new Map(),
       deletedPrograms: new Map(),
-      pkgs: new Map(),
+      pkgs: [],
       groups: [],
       rules: [],
       violations: new Map(),
@@ -225,25 +225,33 @@ export default class App extends React.Component {
               <Packages
                 pkgs={this.state.pkgs}
                 addPkg={(pkg) =>
-                  Data.addPackage(this.props.table, pkg).then((pkg) => {
-                    const pkgs = new Map(this.state.pkgs);
-                    pkgs.set(pkg._id, pkg);
-                    this.setState({ pkgs: pkgs });
-                  })
+                  Data.addPackage(this.props.table, pkg).then((pkg) =>
+                    this.setState(
+                      { pkgs: [...this.state.pkgs, pkg] },
+                      this.runChecker
+                    )
+                  )
                 }
                 updatePkg={(pkg) =>
-                  Data.updatePackage(this.props.table, pkg).then((pkg) => {
-                    const pkgs = new Map(this.state.pkgs);
-                    pkgs.set(pkg._id, pkg);
-                    this.setState({ pkgs: pkgs });
-                  })
+                  Data.updatePackage(this.props.table, pkg).then((pkg) =>
+                    this.setState(
+                      {
+                        pkgs: [
+                          ...this.state.pkgs.filter((p) => p._id !== pkg._id),
+                          pkg,
+                        ],
+                      },
+                      this.runChecker
+                    )
+                  )
                 }
                 deletePkg={(id) =>
-                  Data.deletePackage(this.props.table, id).then((msg) => {
-                    const pkgs = new Map(this.state.pkgs);
-                    pkgs.delete(id);
-                    this.setState({ pkgs: pkgs });
-                  })
+                  Data.deletePackage(this.props.table, id).then((msg) =>
+                    this.setState(
+                      { pkgs: this.state.pkgs.filter((p) => p._id !== id) },
+                      this.runChecker
+                    )
+                  )
                 }
               />
             </Tab.Pane>
@@ -333,8 +341,8 @@ export default class App extends React.Component {
           </Nav.Link>
         </Nav.Item>
         {this.state.filterActive &&
-          [...this.state.pkgs.entries()].map(([key, pkg]) => (
-            <Nav.Item key={key}>
+          this.state.pkgs.map((pkg) => (
+            <Nav.Item key={pkg._id}>
               <Nav.Link
                 as={Button}
                 variant={
