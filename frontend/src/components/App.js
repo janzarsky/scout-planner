@@ -16,6 +16,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       programs: new Map(),
+      deletedPrograms: new Map(),
       pkgs: new Map(),
       groups: new Map(),
       rules: new Map(),
@@ -40,9 +41,18 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Data.getPrograms(this.props.table, (prog) => !prog.deleted).then(
-      (programs) => this.setState({ programs: programs }, this.runChecker)
-    );
+    Data.getPrograms(this.props.table).then((allPrograms) => {
+      const programs = new Map(
+        [...allPrograms.entries()].filter(([, program]) => !program.deleted)
+      );
+      const deletedPrograms = new Map(
+        [...allPrograms.entries()].filter(([, program]) => program.deleted)
+      );
+      this.setState(
+        { programs: programs, deletedPrograms: deletedPrograms },
+        this.runChecker
+      );
+    });
     Data.getPackages(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
     );
@@ -257,7 +267,12 @@ export default class App extends React.Component {
             </Tab.Pane>
             <Tab.Pane eventKey="importexport" title="Import/Export">
               <ImportExport
-                programs={this.state.programs}
+                programs={
+                  new Map([
+                    ...this.state.programs,
+                    ...this.state.deletedPrograms,
+                  ])
+                }
                 pkgs={this.state.pkgs}
                 groups={this.state.groups}
                 rules={this.state.rules}
@@ -396,7 +411,9 @@ export default class App extends React.Component {
       (msg) => {
         const programs = this.state.programs;
         programs.delete(program._id);
-        this.setState({ programs: programs });
+        const deletedPrograms = this.state.deletedPrograms;
+        deletedPrograms.set(program._id, program);
+        this.setState({ programs: programs, deletedPrograms: deletedPrograms });
       }
     );
   }

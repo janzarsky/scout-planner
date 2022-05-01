@@ -8,13 +8,13 @@ async function get(table, path, id) {
   return await resp.json();
 }
 
-async function getAll(table, path, filter = () => true) {
+async function getAll(table, path) {
   const resp = await fetch(`${config.host}/${table}/${path}`);
   if (!resp.ok) {
     throw new Error(`HTTP error: ${resp.status}`);
   }
   const data = await resp.json();
-  return new Map(data.filter(filter).map((elem) => [elem._id, elem]));
+  return new Map(data.map((elem) => [elem._id, elem]));
 }
 
 async function post(table, path, data) {
@@ -56,8 +56,7 @@ var toExport = {};
 ["program", "package", "rule", "group"].forEach((entity) => {
   const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
-  toExport[`get${name}s`] = (table, filter = () => true) =>
-    getAll(table, `${entity}s`, filter);
+  toExport[`get${name}s`] = (table) => getAll(table, `${entity}s`);
   toExport[`get${name}`] = (table, id) => get(table, `${entity}s`, id);
   toExport[`add${name}`] = (table, data) => post(table, `${entity}s`, data);
   toExport[`update${name}`] = (table, data) => put(table, `${entity}s`, data);
