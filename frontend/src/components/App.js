@@ -9,7 +9,6 @@ import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Data from "../Client";
 import { checkRules } from "../Checker";
-import clear from "../Example";
 import ImportExport from "../ImportExport";
 
 export default class App extends React.Component {
@@ -17,6 +16,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       programs: new Map(),
+      deletedPrograms: new Map(),
       pkgs: new Map(),
       groups: new Map(),
       rules: new Map(),
@@ -38,17 +38,21 @@ export default class App extends React.Component {
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
     this.deleteProgram = this.deleteProgram.bind(this);
-    this.removeAll = this.removeAll.bind(this);
-  }
-
-  removeAll() {
-    clear(this.props.table).then(() => this.componentDidMount());
   }
 
   componentDidMount() {
-    Data.getPrograms(this.props.table).then((programs) =>
-      this.setState({ programs: programs }, this.runChecker)
-    );
+    Data.getPrograms(this.props.table).then((allPrograms) => {
+      const programs = new Map(
+        [...allPrograms].filter(([, program]) => !program.deleted)
+      );
+      const deletedPrograms = new Map(
+        [...allPrograms].filter(([, program]) => program.deleted)
+      );
+      this.setState(
+        { programs: programs, deletedPrograms: deletedPrograms },
+        this.runChecker
+      );
+    });
     Data.getPackages(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
     );
@@ -151,11 +155,6 @@ export default class App extends React.Component {
             </Nav.Item>
             {this.getFilters()}
             {this.getViewSettings()}
-            <Nav.Item style={{ marginLeft: "auto" }}>
-              <Nav.Link as={Button} variant="light" onClick={this.removeAll}>
-                Smazat vše
-              </Nav.Link>
-            </Nav.Item>
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="timetable">
@@ -268,7 +267,12 @@ export default class App extends React.Component {
             </Tab.Pane>
             <Tab.Pane eventKey="importexport" title="Import/Export">
               <ImportExport
-                programs={this.state.programs}
+                programs={
+                  new Map([
+                    ...this.state.programs,
+                    ...this.state.deletedPrograms,
+                  ])
+                }
                 pkgs={this.state.pkgs}
                 groups={this.state.groups}
                 rules={this.state.rules}
@@ -402,11 +406,15 @@ export default class App extends React.Component {
     });
   }
 
-  deleteProgram(id) {
-    Data.deleteProgram(this.props.table, id).then((msg) => {
-      const programs = this.state.programs;
-      programs.delete(id);
-      this.setState({ programs: programs });
-    });
+  deleteProgram(program) {
+    Data.updateProgram(this.props.table, { ...program, deleted: true }).then(
+      (msg) => {
+        const programs = this.state.programs;
+        programs.delete(program._id);
+        const deletedPrograms = this.state.deletedPrograms;
+        deletedPrograms.set(program._id, program);
+        this.setState({ programs: programs, deletedPrograms: deletedPrograms });
+      }
+    );
   }
 }
