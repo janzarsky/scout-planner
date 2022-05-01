@@ -16,15 +16,6 @@ async function getAll(table, path) {
   return await resp.json();
 }
 
-async function getAllLegacy(table, path) {
-  const resp = await fetch(`${config.host}/${table}/${path}`);
-  if (!resp.ok) {
-    throw new Error(`HTTP error: ${resp.status}`);
-  }
-  const data = await resp.json();
-  return new Map(data.map((elem) => [elem._id, elem]));
-}
-
 async function post(table, path, data) {
   const resp = await fetch(`${config.host}/${table}/${path}`, {
     method: "POST",
@@ -64,15 +55,11 @@ var toExport = {};
 ["program", "package", "rule", "group"].forEach((entity) => {
   const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
-  toExport[`get${name}s`] = (table) => getAllLegacy(table, `${entity}s`);
+  toExport[`get${name}s`] = (table) => getAll(table, `${entity}s`);
   toExport[`get${name}`] = (table, id) => get(table, `${entity}s`, id);
   toExport[`add${name}`] = (table, data) => post(table, `${entity}s`, data);
   toExport[`update${name}`] = (table, data) => put(table, `${entity}s`, data);
   toExport[`delete${name}`] = (table, id) => remove(table, `${entity}s`, id);
 });
-
-toExport[`getGroups`] = (table) => getAll(table, `groups`);
-toExport[`getRules`] = (table) => getAll(table, `rules`);
-toExport[`getPackages`] = (table) => getAll(table, `packages`);
 
 export default toExport;

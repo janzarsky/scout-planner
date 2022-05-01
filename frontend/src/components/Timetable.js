@@ -54,25 +54,25 @@ export default class Timetable extends React.Component {
   getSettings(programs, groups) {
     const hour = parseDuration("1:00");
 
-    if (programs.size === 0)
-      programs = new Map([[1, { begin: Date.now(), duration: hour }]]);
+    if (programs.length === 0)
+      programs = [{ begin: Date.now(), duration: hour }];
 
     var settings = {};
 
     settings.days = [];
-    for (const prog of programs.values()) {
+    for (const prog of programs) {
       settings.days.push(getOnlyDate(prog.begin));
     }
     settings.days = [...new Set(settings.days)].sort();
 
     settings.dayStart = parseTime("10:00");
-    for (const prog of programs.values()) {
+    for (const prog of programs) {
       const time = getOnlyTime(prog.begin);
       if (time < settings.dayStart) settings.dayStart = time;
     }
 
     settings.dayEnd = parseTime("16:00");
-    for (const prog of programs.values()) {
+    for (const prog of programs) {
       let time = getOnlyTime(prog.begin + prog.duration);
       if (time === 0) time = parseTime("23:59");
       if (time > settings.dayEnd) settings.dayEnd = time;
@@ -153,13 +153,13 @@ export default class Timetable extends React.Component {
   }
 
   *getPrograms(programs, settings, viewSettings) {
-    for (const [key, prog] of programs) {
+    for (const prog of programs) {
       yield (
         <Program
-          key={key}
+          key={prog._id}
           program={prog}
           filtered={this.props.filterPkgs.indexOf(prog.pkg) !== -1}
-          violations={this.props.violations.get(key)}
+          violations={this.props.violations.get(prog._id)}
           rect={this.getRect(prog, settings)}
           onDragStart={this.onProgramDragStart}
           pkgs={this.props.pkgs}
@@ -226,7 +226,9 @@ export default class Timetable extends React.Component {
   }
 
   onDroppableDrop(begin) {
-    var prog = this.props.programs.get(this.draggedProgram);
+    var prog = this.props.programs.find(
+      (program) => program._id === this.draggedProgram
+    );
     if (prog) {
       prog.begin = begin;
       this.props.updateProgram(prog);

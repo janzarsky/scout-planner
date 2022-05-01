@@ -15,8 +15,8 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      programs: new Map(),
-      deletedPrograms: new Map(),
+      programs: [],
+      deletedPrograms: [],
       pkgs: [],
       groups: [],
       rules: [],
@@ -41,18 +41,17 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Data.getPrograms(this.props.table).then((allPrograms) => {
-      const programs = new Map(
-        [...allPrograms].filter(([, program]) => !program.deleted)
-      );
-      const deletedPrograms = new Map(
-        [...allPrograms].filter(([, program]) => program.deleted)
-      );
+    Data.getPrograms(this.props.table).then((allPrograms) =>
       this.setState(
-        { programs: programs, deletedPrograms: deletedPrograms },
+        {
+          programs: [...allPrograms].filter((program) => !program.deleted),
+          deletedPrograms: [...allPrograms].filter(
+            (program) => program.deleted
+          ),
+        },
         this.runChecker
-      );
-    });
+      )
+    );
     Data.getPackages(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
     );
@@ -95,7 +94,7 @@ export default class App extends React.Component {
     });
 
     const people = new Set(
-      Array.from(this.state.programs.values()).flatMap(({ people }) => people)
+      [...this.state.programs].flatMap((program) => program.people)
     );
 
     return (
@@ -423,30 +422,37 @@ export default class App extends React.Component {
   }
 
   addProgram(program) {
-    Data.addProgram(this.props.table, program).then((program) => {
-      const programs = new Map(this.state.programs);
-      programs.set(program._id, program);
-      this.setState({ programs: programs }, this.runChecker);
-    });
+    Data.addProgram(this.props.table, program).then((program) =>
+      this.setState(
+        { programs: [...this.state.programs, program] },
+        this.runChecker
+      )
+    );
   }
 
   updateProgram(program) {
-    Data.updateProgram(this.props.table, program).then((program) => {
-      const programs = new Map(this.state.programs);
-      programs.set(program._id, program);
-      this.setState({ programs: programs }, this.runChecker);
-    });
+    Data.updateProgram(this.props.table, program).then((program) =>
+      this.setState(
+        {
+          programs: [
+            ...this.state.programs.filter((p) => p._id !== program._id),
+            program,
+          ],
+        },
+        this.runChecker
+      )
+    );
   }
 
   deleteProgram(program) {
     Data.updateProgram(this.props.table, { ...program, deleted: true }).then(
-      (msg) => {
-        const programs = this.state.programs;
-        programs.delete(program._id);
-        const deletedPrograms = this.state.deletedPrograms;
-        deletedPrograms.set(program._id, program);
-        this.setState({ programs: programs, deletedPrograms: deletedPrograms });
-      }
+      () =>
+        this.setState({
+          programs: [
+            ...this.state.programs.filter((p) => p._id !== program._id),
+          ],
+          deletedPrograms: [...this.state.deletedPrograms, program],
+        })
     );
   }
 }

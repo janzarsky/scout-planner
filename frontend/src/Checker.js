@@ -17,7 +17,7 @@ export async function checkRules(rules, programs) {
 }
 
 function checkRule(rule, programs) {
-  const program = programs.get(rule.program);
+  const program = programs.find((program) => program._id === rule.program);
 
   if (!program)
     return { program: null, satisfied: false, msg: "Program neexistuje" };
@@ -47,7 +47,7 @@ function checkRule(rule, programs) {
     rule.condition === "is_before_program" ||
     rule.condition === "is_after_program"
   ) {
-    const program2 = programs.get(rule.value);
+    const program2 = programs.find((program) => program._id === rule.value);
 
     if (!program2) return failure("Druhý program neexistuje");
 
@@ -67,9 +67,7 @@ function checkRule(rule, programs) {
 
 function checkOverlaps(programs) {
   var overlaps = [];
-  const sorted = [...programs.values()].sort((a, b) =>
-    a.begin < b.begin ? -1 : 1
-  );
+  const sorted = [...programs].sort((a, b) => (a.begin < b.begin ? -1 : 1));
 
   sorted.forEach((prog1, idx1) => {
     for (let idx2 = idx1 + 1; idx2 < sorted.length; idx2++) {
@@ -107,9 +105,7 @@ function checkOverlaps(programs) {
 
 function checkPeople(programs) {
   var overlaps = [];
-  const sorted = [...programs.values()].sort((a, b) =>
-    a.begin < b.begin ? -1 : 1
-  );
+  const sorted = [...programs].sort((a, b) => (a.begin < b.begin ? -1 : 1));
 
   sorted.forEach((prog1, idx1) => {
     for (let idx2 = idx1 + 1; idx2 < sorted.length; idx2++) {
