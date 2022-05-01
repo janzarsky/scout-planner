@@ -43,10 +43,10 @@ export default class App extends React.Component {
   componentDidMount() {
     Data.getPrograms(this.props.table).then((allPrograms) => {
       const programs = new Map(
-        [...allPrograms.entries()].filter(([, program]) => !program.deleted)
+        [...allPrograms].filter(([, program]) => !program.deleted)
       );
       const deletedPrograms = new Map(
-        [...allPrograms.entries()].filter(([, program]) => program.deleted)
+        [...allPrograms].filter(([, program]) => program.deleted)
       );
       this.setState(
         { programs: programs, deletedPrograms: deletedPrograms },
