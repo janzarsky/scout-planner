@@ -31,13 +31,13 @@ export default class Settings extends React.Component {
         <Table bordered hover responsive>
           <RulesHeader />
           <tbody>
-            {[...this.props.rules.entries()].map(([key, rule], index) => (
+            {this.props.rules.map((rule, index) => (
               <Rule
-                key={key}
+                key={rule._id}
                 cnt={index + 1}
                 rule={rule}
                 programs={this.props.programs}
-                violation={this.props.violations.get(key)}
+                violation={this.props.violations.get(rule._id)}
                 deleteRule={() => this.props.deleteRule(rule._id)}
               />
             ))}

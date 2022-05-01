@@ -3,8 +3,8 @@ import { formatDateTime } from "./helpers/DateUtils";
 export async function checkRules(rules, programs) {
   const violations = new Map();
 
-  for (const [id, rule] of rules) {
-    violations.set(id, checkRule(rule, programs));
+  for (const rule of rules) {
+    violations.set(rule._id, checkRule(rule, programs));
   }
 
   const overlaps = checkOverlaps(programs);

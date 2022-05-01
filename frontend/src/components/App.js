@@ -19,7 +19,7 @@ export default class App extends React.Component {
       deletedPrograms: new Map(),
       pkgs: new Map(),
       groups: [],
-      rules: new Map(),
+      rules: [],
       violations: new Map(),
       otherProblems: [],
       satisfied: true,
@@ -191,25 +191,33 @@ export default class App extends React.Component {
                 rules={this.state.rules}
                 violations={this.state.violations}
                 addRule={(rule) =>
-                  Data.addRule(this.props.table, rule).then((rule) => {
-                    const rules = new Map(this.state.rules);
-                    rules.set(rule._id, rule);
-                    this.setState({ rules: rules }, this.runChecker);
-                  })
+                  Data.addRule(this.props.table, rule).then((rule) =>
+                    this.setState(
+                      { rules: [...this.state.rules, rule] },
+                      this.runChecker
+                    )
+                  )
                 }
                 updateRule={(rule) =>
-                  Data.updateRule(this.props.table, rule).then((rule) => {
-                    const rules = new Map(this.state.rules);
-                    rules.set(rule._id, rule);
-                    this.setState({ rules: rules }, this.runChecker);
-                  })
+                  Data.updateRule(this.props.table, rule).then((rule) =>
+                    this.setState(
+                      {
+                        rules: [
+                          ...this.state.rules.filter((r) => r._id !== rule._id),
+                          rule,
+                        ],
+                      },
+                      this.runChecker
+                    )
+                  )
                 }
                 deleteRule={(id) =>
-                  Data.deleteRule(this.props.table, id).then((msg) => {
-                    const rules = new Map(this.state.rules);
-                    rules.delete(id);
-                    this.setState({ rules: rules }, this.runChecker);
-                  })
+                  Data.deleteRule(this.props.table, id).then((msg) =>
+                    this.setState(
+                      { rules: this.state.rules.filter((r) => r._id !== id) },
+                      this.runChecker
+                    )
+                  )
                 }
               />
             </Tab.Pane>
@@ -244,28 +252,39 @@ export default class App extends React.Component {
                 groups={this.state.groups}
                 addGroup={(group) =>
                   Data.addGroup(this.props.table, group).then((group) =>
-                    this.setState({
-                      groups: [...this.state.groups, group],
-                    })
+                    this.setState(
+                      {
+                        groups: [...this.state.groups, group],
+                      },
+                      this.runChecker
+                    )
                   )
                 }
                 updateGroup={(group) =>
                   Data.updateGroup(this.props.table, group).then((group) =>
-                    this.setState({
-                      groups: [
-                        ...this.state.groups.filter((g) => g._id !== group._id),
-                        group,
-                      ],
-                    })
+                    this.setState(
+                      {
+                        groups: [
+                          ...this.state.groups.filter(
+                            (g) => g._id !== group._id
+                          ),
+                          group,
+                        ],
+                      },
+                      this.runChecker
+                    )
                   )
                 }
                 deleteGroup={(id) =>
                   Data.deleteGroup(this.props.table, id).then(() =>
-                    this.setState({
-                      groups: [
-                        ...this.state.groups.filter((g) => g._id !== id),
-                      ],
-                    })
+                    this.setState(
+                      {
+                        groups: [
+                          ...this.state.groups.filter((g) => g._id !== id),
+                        ],
+                      },
+                      this.runChecker
+                    )
                   )
                 }
               />

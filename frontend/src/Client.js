@@ -72,5 +72,6 @@ var toExport = {};
 });
 
 toExport[`getGroups`] = (table) => getAll(table, `groups`);
+toExport[`getRules`] = (table) => getAll(table, `rules`);
 
 export default toExport;
