@@ -298,12 +298,10 @@ export default class App extends React.Component {
             </Tab.Pane>
             <Tab.Pane eventKey="importexport" title="Import/Export">
               <ImportExport
-                programs={
-                  new Map([
-                    ...this.state.programs,
-                    ...this.state.deletedPrograms,
-                  ])
-                }
+                programs={[
+                  ...this.state.programs,
+                  ...this.state.deletedPrograms,
+                ]}
                 pkgs={this.state.pkgs}
                 groups={this.state.groups}
                 rules={this.state.rules}
