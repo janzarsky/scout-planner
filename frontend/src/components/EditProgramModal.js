@@ -60,7 +60,7 @@ export class EditProgramModal extends React.Component {
               }
             />
             <ProgramPackage
-              package={this.props.program.package}
+              package={this.props.program.pkg}
               packages={this.props.pkgs}
               controlRef={this.pkg}
             />
