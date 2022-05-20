@@ -31,13 +31,13 @@ export default class Settings extends React.Component {
         <Table bordered hover responsive>
           <RulesHeader />
           <tbody>
-            {[...this.props.rules.entries()].map(([key, rule], index) => (
+            {this.props.rules.map((rule, index) => (
               <Rule
-                key={key}
+                key={rule._id}
                 cnt={index + 1}
                 rule={rule}
                 programs={this.props.programs}
-                violation={this.props.violations.get(key)}
+                violation={this.props.violations.get(rule._id)}
                 deleteRule={() => this.props.deleteRule(rule._id)}
               />
             ))}
@@ -140,8 +140,8 @@ function NewRule(props) {
               ref={props.firstProgramRef}
             >
               <option>Žádný program</option>
-              {[...props.programs.entries()].map(([key, prog]) => (
-                <option key={key} value={key}>
+              {props.programs.map((prog) => (
+                <option key={prog._id} value={prog._id}>
                   {formatProgram(prog)}
                 </option>
               ))}
@@ -193,8 +193,8 @@ function NewRule(props) {
                       ref={props.secondProgramRef}
                     >
                       <option>Žádný program</option>
-                      {[...props.programs.entries()].map(([key, prog]) => (
-                        <option key={key} value={key}>
+                      {props.programs.map((prog) => (
+                        <option key={prog._id} value={prog._id}>
                           {formatProgram(prog)}
                         </option>
                       ))}
@@ -218,7 +218,9 @@ function NewRule(props) {
 }
 
 function formatRule(rule, programs) {
-  const prog_title = formatProgram(programs.get(rule.program));
+  const prog_title = formatProgram(
+    programs.find((program) => program._id === rule.program)
+  );
 
   switch (rule.condition) {
     case "is_before_date":
@@ -238,7 +240,9 @@ function formatRule(rule, programs) {
     default:
   }
 
-  var prog2_title = formatProgram(programs.get(rule.value));
+  var prog2_title = formatProgram(
+    programs.find((program) => program._id === rule.program)
+  );
 
   switch (rule.condition) {
     case "is_before_program":

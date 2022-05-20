@@ -55,12 +55,9 @@ export default class Program extends React.Component {
 }
 
 function ProgramBody(props) {
-  const pkgName = props.pkgs.get(props.program.pkg)
-    ? props.pkgs.get(props.program.pkg).name
-    : "";
-  const color = props.pkgs.get(props.program.pkg)
-    ? props.pkgs.get(props.program.pkg).color
-    : null;
+  const pkg = props.pkgs.find((p) => p._id === props.program.pkg);
+  const pkgName = pkg ? pkg.name : "";
+  const color = pkg ? pkg.color : null;
 
   return (
     <div

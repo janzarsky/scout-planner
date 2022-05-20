@@ -13,10 +13,10 @@ export default class ImportExport extends React.Component {
 
   render() {
     const data = JSON.stringify({
-      programs: [...this.props.programs.values()],
-      pkgs: [...this.props.pkgs.values()],
-      groups: [...this.props.groups.values()],
-      rules: [...this.props.rules.values()],
+      programs: this.props.programs,
+      pkgs: this.props.pkgs,
+      groups: this.props.groups,
+      rules: this.props.rules,
     });
 
     return (
@@ -84,7 +84,6 @@ export default class ImportExport extends React.Component {
           )
         )
       )
-      .then((programs) => new Map(programs))
       // replace program IDs in rules
       .then((programs) =>
         data.rules.map((rule) => {

@@ -15,11 +15,11 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      programs: new Map(),
-      deletedPrograms: new Map(),
-      pkgs: new Map(),
-      groups: new Map(),
-      rules: new Map(),
+      programs: [],
+      deletedPrograms: [],
+      pkgs: [],
+      groups: [],
+      rules: [],
       violations: new Map(),
       otherProblems: [],
       satisfied: true,
@@ -41,18 +41,17 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Data.getPrograms(this.props.table).then((allPrograms) => {
-      const programs = new Map(
-        [...allPrograms].filter(([, program]) => !program.deleted)
-      );
-      const deletedPrograms = new Map(
-        [...allPrograms].filter(([, program]) => program.deleted)
-      );
+    Data.getPrograms(this.props.table).then((allPrograms) =>
       this.setState(
-        { programs: programs, deletedPrograms: deletedPrograms },
+        {
+          programs: [...allPrograms].filter((program) => !program.deleted),
+          deletedPrograms: [...allPrograms].filter(
+            (program) => program.deleted
+          ),
+        },
         this.runChecker
-      );
-    });
+      )
+    );
     Data.getPackages(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
     );
@@ -95,7 +94,7 @@ export default class App extends React.Component {
     });
 
     const people = new Set(
-      Array.from(this.state.programs.values()).flatMap(({ people }) => people)
+      [...this.state.programs].flatMap((program) => program.people)
     );
 
     return (
@@ -191,25 +190,33 @@ export default class App extends React.Component {
                 rules={this.state.rules}
                 violations={this.state.violations}
                 addRule={(rule) =>
-                  Data.addRule(this.props.table, rule).then((rule) => {
-                    const rules = new Map(this.state.rules);
-                    rules.set(rule._id, rule);
-                    this.setState({ rules: rules }, this.runChecker);
-                  })
+                  Data.addRule(this.props.table, rule).then((rule) =>
+                    this.setState(
+                      { rules: [...this.state.rules, rule] },
+                      this.runChecker
+                    )
+                  )
                 }
                 updateRule={(rule) =>
-                  Data.updateRule(this.props.table, rule).then((rule) => {
-                    const rules = new Map(this.state.rules);
-                    rules.set(rule._id, rule);
-                    this.setState({ rules: rules }, this.runChecker);
-                  })
+                  Data.updateRule(this.props.table, rule).then((rule) =>
+                    this.setState(
+                      {
+                        rules: [
+                          ...this.state.rules.filter((r) => r._id !== rule._id),
+                          rule,
+                        ],
+                      },
+                      this.runChecker
+                    )
+                  )
                 }
                 deleteRule={(id) =>
-                  Data.deleteRule(this.props.table, id).then((msg) => {
-                    const rules = new Map(this.state.rules);
-                    rules.delete(id);
-                    this.setState({ rules: rules }, this.runChecker);
-                  })
+                  Data.deleteRule(this.props.table, id).then((msg) =>
+                    this.setState(
+                      { rules: this.state.rules.filter((r) => r._id !== id) },
+                      this.runChecker
+                    )
+                  )
                 }
               />
             </Tab.Pane>
@@ -217,25 +224,33 @@ export default class App extends React.Component {
               <Packages
                 pkgs={this.state.pkgs}
                 addPkg={(pkg) =>
-                  Data.addPackage(this.props.table, pkg).then((pkg) => {
-                    const pkgs = new Map(this.state.pkgs);
-                    pkgs.set(pkg._id, pkg);
-                    this.setState({ pkgs: pkgs });
-                  })
+                  Data.addPackage(this.props.table, pkg).then((pkg) =>
+                    this.setState(
+                      { pkgs: [...this.state.pkgs, pkg] },
+                      this.runChecker
+                    )
+                  )
                 }
                 updatePkg={(pkg) =>
-                  Data.updatePackage(this.props.table, pkg).then((pkg) => {
-                    const pkgs = new Map(this.state.pkgs);
-                    pkgs.set(pkg._id, pkg);
-                    this.setState({ pkgs: pkgs });
-                  })
+                  Data.updatePackage(this.props.table, pkg).then((pkg) =>
+                    this.setState(
+                      {
+                        pkgs: [
+                          ...this.state.pkgs.filter((p) => p._id !== pkg._id),
+                          pkg,
+                        ],
+                      },
+                      this.runChecker
+                    )
+                  )
                 }
                 deletePkg={(id) =>
-                  Data.deletePackage(this.props.table, id).then((msg) => {
-                    const pkgs = new Map(this.state.pkgs);
-                    pkgs.delete(id);
-                    this.setState({ pkgs: pkgs });
-                  })
+                  Data.deletePackage(this.props.table, id).then((msg) =>
+                    this.setState(
+                      { pkgs: this.state.pkgs.filter((p) => p._id !== id) },
+                      this.runChecker
+                    )
+                  )
                 }
               />
             </Tab.Pane>
@@ -243,36 +258,50 @@ export default class App extends React.Component {
               <Groups
                 groups={this.state.groups}
                 addGroup={(group) =>
-                  Data.addGroup(this.props.table, group).then((group) => {
-                    const groups = new Map(this.state.groups);
-                    groups.set(group._id, group);
-                    this.setState({ groups: groups });
-                  })
+                  Data.addGroup(this.props.table, group).then((group) =>
+                    this.setState(
+                      {
+                        groups: [...this.state.groups, group],
+                      },
+                      this.runChecker
+                    )
+                  )
                 }
                 updateGroup={(group) =>
-                  Data.updateGroup(this.props.table, group).then((group) => {
-                    const groups = new Map(this.state.groups);
-                    groups.set(group._id, group);
-                    this.setState({ groups: groups });
-                  })
+                  Data.updateGroup(this.props.table, group).then((group) =>
+                    this.setState(
+                      {
+                        groups: [
+                          ...this.state.groups.filter(
+                            (g) => g._id !== group._id
+                          ),
+                          group,
+                        ],
+                      },
+                      this.runChecker
+                    )
+                  )
                 }
                 deleteGroup={(id) =>
-                  Data.deleteGroup(this.props.table, id).then((msg) => {
-                    const groups = new Map(this.state.groups);
-                    groups.delete(id);
-                    this.setState({ groups: groups });
-                  })
+                  Data.deleteGroup(this.props.table, id).then(() =>
+                    this.setState(
+                      {
+                        groups: [
+                          ...this.state.groups.filter((g) => g._id !== id),
+                        ],
+                      },
+                      this.runChecker
+                    )
+                  )
                 }
               />
             </Tab.Pane>
             <Tab.Pane eventKey="importexport" title="Import/Export">
               <ImportExport
-                programs={
-                  new Map([
-                    ...this.state.programs,
-                    ...this.state.deletedPrograms,
-                  ])
-                }
+                programs={[
+                  ...this.state.programs,
+                  ...this.state.deletedPrograms,
+                ]}
                 pkgs={this.state.pkgs}
                 groups={this.state.groups}
                 rules={this.state.rules}
@@ -309,8 +338,8 @@ export default class App extends React.Component {
           </Nav.Link>
         </Nav.Item>
         {this.state.filterActive &&
-          [...this.state.pkgs.entries()].map(([key, pkg]) => (
-            <Nav.Item key={key}>
+          this.state.pkgs.map((pkg) => (
+            <Nav.Item key={pkg._id}>
               <Nav.Link
                 as={Button}
                 variant={
@@ -391,30 +420,37 @@ export default class App extends React.Component {
   }
 
   addProgram(program) {
-    Data.addProgram(this.props.table, program).then((program) => {
-      const programs = new Map(this.state.programs);
-      programs.set(program._id, program);
-      this.setState({ programs: programs }, this.runChecker);
-    });
+    Data.addProgram(this.props.table, program).then((program) =>
+      this.setState(
+        { programs: [...this.state.programs, program] },
+        this.runChecker
+      )
+    );
   }
 
   updateProgram(program) {
-    Data.updateProgram(this.props.table, program).then((program) => {
-      const programs = new Map(this.state.programs);
-      programs.set(program._id, program);
-      this.setState({ programs: programs }, this.runChecker);
-    });
+    Data.updateProgram(this.props.table, program).then((program) =>
+      this.setState(
+        {
+          programs: [
+            ...this.state.programs.filter((p) => p._id !== program._id),
+            program,
+          ],
+        },
+        this.runChecker
+      )
+    );
   }
 
   deleteProgram(program) {
     Data.updateProgram(this.props.table, { ...program, deleted: true }).then(
-      (msg) => {
-        const programs = this.state.programs;
-        programs.delete(program._id);
-        const deletedPrograms = this.state.deletedPrograms;
-        deletedPrograms.set(program._id, program);
-        this.setState({ programs: programs, deletedPrograms: deletedPrograms });
-      }
+      () =>
+        this.setState({
+          programs: [
+            ...this.state.programs.filter((p) => p._id !== program._id),
+          ],
+          deletedPrograms: [...this.state.deletedPrograms, program],
+        })
     );
   }
 }

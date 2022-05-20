@@ -13,8 +13,7 @@ async function getAll(table, path) {
   if (!resp.ok) {
     throw new Error(`HTTP error: ${resp.status}`);
   }
-  const data = await resp.json();
-  return new Map(data.map((elem) => [elem._id, elem]));
+  return await resp.json();
 }
 
 async function post(table, path, data) {
