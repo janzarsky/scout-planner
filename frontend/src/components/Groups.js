@@ -19,26 +19,26 @@ export default class Groups extends React.Component {
         <Table bordered hover responsive>
           <GroupsHeader />
           <tbody>
-            {[...this.props.groups.entries()]
-              .sort(([, a], [, b]) => {
+            {[...this.props.groups]
+              .sort((a, b) => {
                 if (a.order < b.order) return -1;
                 if (a.order > b.order) return 1;
                 return 0;
               })
-              .map(([key, group], index) =>
-                key === this.state.editKey ? (
+              .map((group) =>
+                group._id === this.state.editKey ? (
                   <EditedGroup
-                    key={key}
+                    key={group._id}
                     group={group}
                     nameRef={this.nameEditRef}
                     orderRef={this.orderEditRef}
                   />
                 ) : (
                   <Group
-                    key={key}
+                    key={group._id}
                     group={group}
                     deleteGroup={() => this.props.deleteGroup(group._id)}
-                    editGroup={() => this.setState({ editKey: key })}
+                    editGroup={() => this.setState({ editKey: group._id })}
                   />
                 )
               )}
@@ -53,17 +53,23 @@ export default class Groups extends React.Component {
     event.preventDefault();
 
     if (this.state.editKey) {
+      let order = parseInt(this.orderEditRef.current.value);
+      if (order === NaN) order = 0;
+
       this.props
         .updateGroup({
           _id: this.state.editKey,
           name: this.nameEditRef.current.value,
-          order: this.orderEditRef.current.value,
+          order: order,
         })
         .then(() => this.setState({ editKey: undefined }));
     } else {
+      let order = parseInt(this.orderAddRef.current.value);
+      if (order === NaN) order = 0;
+
       this.props.addGroup({
         name: this.nameAddRef.current.value,
-        order: this.orderAddRef.current.value,
+        order: order,
       });
     }
   }
