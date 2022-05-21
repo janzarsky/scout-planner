@@ -154,6 +154,7 @@ function NewRule(props) {
               as="select"
               ref={props.conditionRef}
               onChange={(ev) => props.setCondition(ev.target.value)}
+              defaultValue="is_before_program"
             >
               <option value="is_before_date">musí proběhnout před</option>
               <option value="is_after_date">musí proběhnout po</option>
