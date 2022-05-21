@@ -84,6 +84,7 @@ export default class ImportExport extends React.Component {
           )
         )
       )
+      .then((programs) => new Map(programs))
       // replace program IDs in rules
       .then((programs) =>
         data.rules.map((rule) => {
