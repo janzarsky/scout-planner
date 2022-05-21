@@ -121,6 +121,10 @@ function checkPeople(programs) {
           program: prog1._id,
           msg: "Programy se překrývají (jeden člověk na více programech)",
         });
+        overlaps.push({
+          program: prog2._id,
+          msg: "Programy se překrývají (jeden člověk na více programech)",
+        });
       }
     }
   });
