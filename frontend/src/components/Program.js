@@ -92,7 +92,11 @@ function ProgramText(props) {
         </p>
       )}
       {props.viewSettings.viewPeople && (
-        <p className="program-people">{props.program.people.join(", ")}</p>
+        <p className="program-people">
+          {[...props.program.people]
+            .sort((a, b) => a.localeCompare(b))
+            .join(", ")}
+        </p>
       )}
     </div>
   );

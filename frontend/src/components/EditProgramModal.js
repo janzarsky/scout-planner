@@ -300,25 +300,29 @@ function ProgramPeople(props) {
       </Form.Label>
       <Col>
         <Row>
-          {[...new Set([...props.allPeople, ...props.programPeople])].map(
-            (person) => (
-              <Col key={person}>
-                <Form.Check
-                  type="checkbox"
-                  label={person}
-                  id={person}
-                  defaultChecked={props.programPeople.includes(person)}
-                  onClick={(e) => {
-                    if (e.target.checked) {
-                      props.addPerson(person);
-                    } else {
-                      props.removePerson(person);
-                    }
-                  }}
-                />
-              </Col>
-            )
-          )}
+          {[
+            ...new Set(
+              [...props.allPeople, ...props.programPeople].sort((a, b) =>
+                a.localeCompare(b)
+              )
+            ),
+          ].map((person) => (
+            <Col key={person}>
+              <Form.Check
+                type="checkbox"
+                label={person}
+                id={person}
+                defaultChecked={props.programPeople.includes(person)}
+                onClick={(e) => {
+                  if (e.target.checked) {
+                    props.addPerson(person);
+                  } else {
+                    props.removePerson(person);
+                  }
+                }}
+              />
+            </Col>
+          ))}
         </Row>
         <Button
           variant="outline-secondary"
