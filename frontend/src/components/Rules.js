@@ -245,7 +245,7 @@ function formatRule(rule, programs, groups) {
   }
 
   var prog2_title = formatProgram(
-    programs.find((program) => program._id === rule.program),
+    programs.find((program) => program._id === rule.value),
     groups
   );
 
