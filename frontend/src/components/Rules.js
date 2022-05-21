@@ -271,8 +271,13 @@ function formatRule(rule, programs, groups) {
 
 function formatProgram(prog, groups) {
   const groupNames = prog.groups
-    .map((groupId) => groups.find((group) => group._id === groupId).name)
-    .join(", ");
+    ? prog.groups
+        .map((groupId) => {
+          const found = groups.find((group) => group._id === groupId);
+          if (found) return found.name;
+        })
+        .join(", ")
+    : "";
 
   if (prog) {
     return `${prog.title === "" ? "(bez názvu)" : prog.title} (${formatDateTime(
