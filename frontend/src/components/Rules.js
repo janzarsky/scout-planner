@@ -37,12 +37,14 @@ export default class Settings extends React.Component {
                 cnt={index + 1}
                 rule={rule}
                 programs={this.props.programs}
+                groups={this.props.groups}
                 violation={this.props.violations.get(rule._id)}
                 deleteRule={() => this.props.deleteRule(rule._id)}
               />
             ))}
             <NewRule
               programs={this.props.programs}
+              groups={this.props.groups}
               condition={this.state.condition}
               setCondition={(condition) =>
                 this.setState({ condition: condition })
@@ -105,7 +107,7 @@ function Rule(props) {
   return (
     <tr>
       <td>{props.cnt}</td>
-      <td>{formatRule(props.rule, props.programs)}</td>
+      <td>{formatRule(props.rule, props.programs, props.groups)}</td>
       <td>
         {props.violation &&
           (props.violation.satisfied ? (
@@ -142,7 +144,7 @@ function NewRule(props) {
               <option>Žádný program</option>
               {props.programs.map((prog) => (
                 <option key={prog._id} value={prog._id}>
-                  {formatProgram(prog)}
+                  {formatProgram(prog, props.groups)}
                 </option>
               ))}
             </Form.Control>
@@ -195,7 +197,7 @@ function NewRule(props) {
                       <option>Žádný program</option>
                       {props.programs.map((prog) => (
                         <option key={prog._id} value={prog._id}>
-                          {formatProgram(prog)}
+                          {formatProgram(prog, props.groups)}
                         </option>
                       ))}
                     </Form.Control>
@@ -217,9 +219,10 @@ function NewRule(props) {
   );
 }
 
-function formatRule(rule, programs) {
+function formatRule(rule, programs, groups) {
   const prog_title = formatProgram(
-    programs.find((program) => program._id === rule.program)
+    programs.find((program) => program._id === rule.program),
+    groups
   );
 
   switch (rule.condition) {
@@ -241,7 +244,8 @@ function formatRule(rule, programs) {
   }
 
   var prog2_title = formatProgram(
-    programs.find((program) => program._id === rule.program)
+    programs.find((program) => program._id === rule.program),
+    groups
   );
 
   switch (rule.condition) {
@@ -264,13 +268,17 @@ function formatRule(rule, programs) {
   }
 }
 
-function formatProgram(prog) {
+function formatProgram(prog, groups) {
+  const groupNames = prog.groups
+    .map((groupId) => groups.find((group) => group._id === groupId).name)
+    .join(", ");
+
   if (prog) {
     return `${prog.title === "" ? "(bez názvu)" : prog.title} (${formatDateTime(
       prog.begin
     )}) ${
-      prog.groups.length > 0
-        ? ` (skupiny: ${prog.groups.join(", ")})`
+      prog.groups.length > 0 && prog.groups.length < groups.length
+        ? ` (skupiny: ${groupNames})`
         : " (všechny skupiny)"
     }`;
   }

@@ -187,6 +187,7 @@ export default class App extends React.Component {
             <Tab.Pane eventKey="rules">
               <Rules
                 programs={this.state.programs}
+                groups={this.state.groups}
                 rules={this.state.rules}
                 violations={this.state.violations}
                 addRule={(rule) =>
