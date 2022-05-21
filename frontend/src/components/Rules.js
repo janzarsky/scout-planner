@@ -270,20 +270,24 @@ function formatRule(rule, programs, groups) {
 }
 
 function formatProgram(prog, groups) {
-  const groupNames = prog.groups
-    ? prog.groups
-        .map((groupId) => {
-          const found = groups.find((group) => group._id === groupId);
-          if (found) return found.name;
-        })
-        .join(", ")
-    : "";
+  const groupNames =
+    prog && prog.groups && groups
+      ? prog.groups
+          .map((groupId) => {
+            const found = groups.find((group) => group._id === groupId);
+            if (found) return found.name;
+          })
+          .join(", ")
+      : "";
 
   if (prog) {
     return `${prog.title === "" ? "(bez názvu)" : prog.title} (${formatDateTime(
       prog.begin
     )}) ${
-      prog.groups.length > 0 && prog.groups.length < groups.length
+      prog.groups &&
+      prog.groups.length > 0 &&
+      groups &&
+      prog.groups.length < groups.length
         ? ` (skupiny: ${groupNames})`
         : " (všechny skupiny)"
     }`;
