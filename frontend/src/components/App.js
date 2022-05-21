@@ -33,7 +33,7 @@ export default class App extends React.Component {
       viewSettingsActive: false,
       viewPkg: true,
       viewTime: false,
-      viewPeople: false,
+      viewPeople: true,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
