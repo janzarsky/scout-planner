@@ -201,12 +201,15 @@ export default class Timetable extends React.Component {
 
   getTimeIndicator(settings) {
     const now = Date.now();
+    // the times in timetable are in UTC (we don't know the timezone of the actual event)
+    // the indicator assumes that you are in the correct timezone
+    const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
 
-    const currTime = getOnlyTime(now);
+    const currTime = getOnlyTime(zoneAdjust);
     if (currTime < settings.dayStart || currTime > settings.dayEnd)
       return <div />;
 
-    const currDate = getOnlyDate(now);
+    const currDate = getOnlyDate(zoneAdjust);
     if (settings.days.indexOf(currDate) === -1) return <div />;
 
     return (
