@@ -39,6 +39,7 @@ export default class Timetable extends React.Component {
         {[...this.getDroppables(settings)]}
         {[...this.getTimeHeaders(settings)]}
         {[...this.getDateHeaders(settings)]}
+        {[...this.getGroupHeaders(settings)]}
         {[
           ...this.getPrograms(
             this.props.programs,
@@ -130,25 +131,27 @@ export default class Timetable extends React.Component {
   *getDateHeaders(settings) {
     for (const [idx, date] of settings.days.entries()) {
       yield (
-        <>
-          <DateHeader
-            key={date}
-            date={new Date(date)}
-            pos={idx * settings.groupCnt + 2}
-            span={settings.groupCnt}
-          />
-          {settings.groups.map((group, groupIdx) => (
-            <div
-              className="groupheader"
-              style={{
-                gridRowStart: idx * settings.groupCnt + groupIdx + 2,
-              }}
-            >
-              {group.name}
-            </div>
-          ))}
-        </>
+        <DateHeader
+          key={date}
+          date={new Date(date)}
+          pos={idx * settings.groupCnt + 2}
+          span={settings.groupCnt}
+        />
       );
+    }
+  }
+
+  *getGroupHeaders(settings) {
+    for (const [idx, date] of settings.days.entries()) {
+      for (const [groupIdx, group] of settings.groups.entries()) {
+        yield (
+          <GroupHeader
+            key={`group,${date},${group._id}`}
+            pos={idx * settings.groupCnt + groupIdx + 2}
+            name={group.name}
+          />
+        );
+      }
     }
   }
 
@@ -309,6 +312,19 @@ function DateHeader(props) {
       <br />
       {props.date.getUTCDate()}.<br />
       {props.date.getUTCMonth() + 1}.
+    </div>
+  );
+}
+
+function GroupHeader(props) {
+  return (
+    <div
+      className="groupheader"
+      style={{
+        gridRowStart: props.pos,
+      }}
+    >
+      {props.name}
     </div>
   );
 }
