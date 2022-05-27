@@ -339,26 +339,28 @@ export default class App extends React.Component {
           </Nav.Link>
         </Nav.Item>
         {this.state.filterActive &&
-          this.state.pkgs.map((pkg) => (
-            <Nav.Item key={pkg._id}>
-              <Nav.Link
-                as={Button}
-                variant={
-                  this.state.filterPkgs.indexOf(pkg._id) === -1
-                    ? "light"
-                    : "dark"
-                }
-                style={
-                  this.state.filterPkgs.indexOf(pkg._id) === -1
-                    ? { backgroundColor: pkg.color }
-                    : {}
-                }
-                onClick={() => toggle(pkg._id)}
-              >
-                {pkg.name}
-              </Nav.Link>
-            </Nav.Item>
-          ))}
+          [...this.state.pkgs]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((pkg) => (
+              <Nav.Item key={pkg._id}>
+                <Nav.Link
+                  as={Button}
+                  variant={
+                    this.state.filterPkgs.indexOf(pkg._id) === -1
+                      ? "light"
+                      : "dark"
+                  }
+                  style={
+                    this.state.filterPkgs.indexOf(pkg._id) === -1
+                      ? { backgroundColor: pkg.color }
+                      : {}
+                  }
+                  onClick={() => toggle(pkg._id)}
+                >
+                  {pkg.name}
+                </Nav.Link>
+              </Nav.Item>
+            ))}
       </>
     );
   }
