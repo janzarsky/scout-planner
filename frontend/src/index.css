@@ -94,8 +94,8 @@ p {
     135deg,
     rgba(0, 0, 0, 0),
     rgba(0, 0, 0, 0) 20px,
-    #ef9a9a 20px,
-    #ef9a9a 40px
+    rgba(66, 66, 66, 0.2) 20px,
+    rgba(66, 66, 66, 0.2) 40px
   );
 }
 .program.filtered {
