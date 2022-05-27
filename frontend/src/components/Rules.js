@@ -31,17 +31,19 @@ export default class Settings extends React.Component {
         <Table bordered hover responsive>
           <RulesHeader />
           <tbody>
-            {this.props.rules.map((rule, index) => (
-              <Rule
-                key={rule._id}
-                cnt={index + 1}
-                rule={rule}
-                programs={this.props.programs}
-                groups={this.props.groups}
-                violation={this.props.violations.get(rule._id)}
-                deleteRule={() => this.props.deleteRule(rule._id)}
-              />
-            ))}
+            {[...this.props.rules]
+              .sort((a, b) => ruleSort(a, b, this.props.programs))
+              .map((rule, index) => (
+                <Rule
+                  key={rule._id}
+                  cnt={index + 1}
+                  rule={rule}
+                  programs={this.props.programs}
+                  groups={this.props.groups}
+                  violation={this.props.violations.get(rule._id)}
+                  deleteRule={() => this.props.deleteRule(rule._id)}
+                />
+              ))}
             <NewRule
               programs={this.props.programs}
               groups={this.props.groups}
@@ -88,6 +90,15 @@ export default class Settings extends React.Component {
       value: value,
     });
   }
+}
+
+function ruleSort(a, b, programs) {
+  const progA = programs.find((program) => program._id === a.program);
+  const progB = programs.find((program) => program._id === b.program);
+
+  if (progA && progB) return programSort(progA, progB);
+
+  return 0;
 }
 
 function RulesHeader() {
@@ -142,7 +153,7 @@ function NewRule(props) {
               ref={props.firstProgramRef}
             >
               <option>Žádný program</option>
-              {props.programs.map((prog) => (
+              {[...props.programs].sort(programSort).map((prog) => (
                 <option key={prog._id} value={prog._id}>
                   {formatProgram(prog, props.groups)}
                 </option>
@@ -196,7 +207,7 @@ function NewRule(props) {
                       ref={props.secondProgramRef}
                     >
                       <option>Žádný program</option>
-                      {props.programs.map((prog) => (
+                      {[...props.programs].sort(programSort).map((prog) => (
                         <option key={prog._id} value={prog._id}>
                           {formatProgram(prog, props.groups)}
                         </option>
@@ -218,6 +229,15 @@ function NewRule(props) {
       </td>
     </tr>
   );
+}
+
+function programSort(a, b) {
+  const titleCmp = a.title.localeCompare(b.title);
+  if (titleCmp != 0) return titleCmp;
+
+  if (a.begin < b.begin) return -1;
+  else if (a.begin > b.begin) return 1;
+  else return 0;
 }
 
 function formatRule(rule, programs, groups) {
