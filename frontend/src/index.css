@@ -127,6 +127,7 @@ p {
 
 .program-edit,
 .program-move,
+.program-lock,
 .program-url,
 .program-clone {
   display: none;
@@ -144,12 +145,18 @@ p {
   text-align: right;
   z-index: 2;
 }
-.program-move {
+.program-move,
+.program-lock {
   top: 0;
   left: 0;
   text-align: left;
   z-index: 1;
+}
+.program-move {
   cursor: move;
+}
+.program-lock {
+  cursor: default;
 }
 .program-url {
   left: 0;
@@ -169,6 +176,7 @@ p {
 .program-wrapper:hover .program-edit,
 .program-wrapper:hover .program-url,
 .program-wrapper:hover .program-move,
+.program-wrapper:hover .program-lock,
 .program-wrapper:hover .program-clone {
   display: block;
 }
