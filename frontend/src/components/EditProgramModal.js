@@ -30,6 +30,7 @@ export class EditProgramModal extends React.Component {
       "people",
       "url",
       "notes",
+      "locked",
     ].forEach((field) => (this[field] = React.createRef()));
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
@@ -55,6 +56,8 @@ export class EditProgramModal extends React.Component {
             <ProgramDuration
               duration={this.props.program.duration}
               controlRef={this.duration}
+              locked={this.props.program.locked}
+              lockedRef={this.locked}
               setDuration={(duration) =>
                 (this.duration.current.value = duration)
               }
@@ -142,6 +145,7 @@ export class EditProgramModal extends React.Component {
       people: this.state.people,
       url: this.url.current.value,
       notes: this.notes.current.value,
+      locked: this.locked.current.checked,
     });
 
     this.props.handleClose();
@@ -204,6 +208,15 @@ function ProgramDuration(props) {
             defaultValue={formatDuration(props.duration)}
             ref={props.controlRef}
             placeholder="MM:HH"
+          />
+        </Col>
+        <Col>
+          <Form.Check
+            type="checkbox"
+            label="Zamknout"
+            ref={props.lockedRef}
+            defaultChecked={props.locked}
+            id="locked"
           />
         </Col>
       </Form.Group>
@@ -387,6 +400,7 @@ export class AddProgramModal extends React.Component {
       "people",
       "url",
       "notes",
+      "locked",
     ].forEach((field) => (this[field] = React.createRef()));
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -408,6 +422,8 @@ export class AddProgramModal extends React.Component {
             <ProgramDuration
               duration={60 * 60 * 1000}
               controlRef={this.duration}
+              locked={false}
+              lockedRef={this.locked}
               setDuration={(duration) =>
                 (this.duration.current.value = duration)
               }
@@ -474,6 +490,7 @@ export class AddProgramModal extends React.Component {
       people: this.state.people,
       url: this.url.current.value,
       notes: this.notes.current.value,
+      locked: this.locked.current.checked,
     });
 
     this.props.handleClose();
