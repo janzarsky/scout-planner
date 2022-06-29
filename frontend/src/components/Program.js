@@ -73,6 +73,7 @@ function ProgramBody(props) {
         program={props.program}
         pkgName={pkgName}
         viewSettings={props.viewSettings}
+        violations={props.violations}
       />
     </div>
   );
@@ -95,7 +96,22 @@ function ProgramText(props) {
         <p className="program-people">
           {[...props.program.people]
             .sort((a, b) => a.localeCompare(b))
-            .join(", ")}
+            .map((person) => (
+              <span
+                key={person}
+                className={
+                  // dirty hack
+                  props.violations && props.violations.join().includes(person)
+                    ? "program-violated"
+                    : ""
+                }
+              >
+                {person}
+              </span>
+            ))
+            .reduce((accu, elem) => {
+              return accu === null ? [elem] : [...accu, ", ", elem];
+            }, null)}
         </p>
       )}
     </div>
