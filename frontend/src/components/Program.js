@@ -19,7 +19,7 @@ export default class Program extends React.Component {
           gridColumnEnd: "span " + this.props.rect.width,
           gridRowEnd: "span " + this.props.rect.height,
         }}
-        draggable
+        draggable={!this.props.program.locked}
         onDragStart={(e) => this.onDragStart(e)}
         onDragEnd={(e) => this.onDragEnd(e)}
       >
@@ -34,7 +34,7 @@ export default class Program extends React.Component {
           program={this.props.program}
           editProgramModal={this.props.editProgramModal}
         />
-        <ProgramMove />
+        {this.props.program.locked ? <ProgramLock /> : <ProgramMove />}
         {this.props.program.url ? (
           <ProgramUrl url={this.props.program.url} />
         ) : null}
@@ -117,6 +117,14 @@ function ProgramMove() {
   return (
     <div className="program-move">
       <i className="fa fa-arrows" />
+    </div>
+  );
+}
+
+function ProgramLock() {
+  return (
+    <div className="program-lock">
+      <i className="fa fa-lock" />
     </div>
   );
 }
