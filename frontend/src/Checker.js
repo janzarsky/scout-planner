@@ -113,17 +113,18 @@ function checkPeople(programs) {
 
       if (prog2.begin >= prog1.begin + prog1.duration) break;
 
-      if (
-        prog1.people.filter((person) => prog2.people.indexOf(person) !== -1)
-          .length > 0
-      ) {
+      const overlap = prog1.people
+        .filter((person) => prog2.people.indexOf(person) !== -1)
+        .sort();
+
+      if (overlap.length > 0) {
         overlaps.push({
           program: prog1._id,
-          msg: "Jeden člověk na více programech",
+          msg: `Jeden člověk na více programech (${overlap.join(", ")})`,
         });
         overlaps.push({
           program: prog2._id,
-          msg: "Jeden člověk na více programech",
+          msg: `Jeden člověk na více programech (${overlap.join(", ")})`,
         });
       }
     }
