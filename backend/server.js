@@ -81,7 +81,7 @@ function updateItem(collection) {
   };
 }
 
-["programs", "packages", "rules", "groups"].forEach((collection) => {
+["programs", "packages", "rules", "groups", "ranges"].forEach((collection) => {
   app
     .route(`/api/:table/${collection}`)
     .get(getAllItems(collection))
