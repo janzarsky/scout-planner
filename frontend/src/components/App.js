@@ -350,6 +350,7 @@ export default class App extends React.Component {
                 pkgs={this.state.pkgs}
                 groups={this.state.groups}
                 rules={this.state.rules}
+                ranges={this.state.ranges}
                 table={this.props.table}
               />
             </Tab.Pane>

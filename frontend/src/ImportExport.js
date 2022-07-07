@@ -17,6 +17,7 @@ export default class ImportExport extends React.Component {
       pkgs: this.props.pkgs,
       groups: this.props.groups,
       rules: this.props.rules,
+      ranges: this.props.ranges,
     });
 
     return (
