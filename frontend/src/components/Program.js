@@ -63,7 +63,9 @@ function ProgramBody(props) {
     <div
       className={
         "program" +
-        (props.violations ? " violation" : "") +
+        (props.violations && props.viewSettings.viewViolations
+          ? " violation"
+          : "") +
         (props.filtered ? " filtered" : "")
       }
       style={color && !props.filtered ? { backgroundColor: color } : {}}
@@ -101,7 +103,9 @@ function ProgramText(props) {
                 key={person}
                 className={
                   // dirty hack
-                  props.violations && props.violations.join().includes(person)
+                  props.viewSettings.viewViolations &&
+                  props.violations &&
+                  props.violations.join().includes(person)
                     ? "program-violated"
                     : ""
                 }
