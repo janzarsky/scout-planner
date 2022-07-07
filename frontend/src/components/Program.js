@@ -84,8 +84,8 @@ function ProgramBody(props) {
 function ProgramText(props) {
   return (
     <div className="program-text">
-      <h3>{props.program.title}</h3>
-      {props.viewSettings.viewPkg && (
+      {props.program.title[0] !== "(" && <h3>{props.program.title}</h3>}
+      {props.viewSettings.viewPkg && props.pkgName[0] !== "(" && (
         <p className="program-package">{props.pkgName}</p>
       )}
       {props.viewSettings.viewTime && (
