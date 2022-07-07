@@ -87,15 +87,15 @@ p {
   padding: 5px;
   border-radius: 4px;
   background-color: #81d4fa;
-  line-height: 1.5;
+  line-height: 1.2;
 }
 .program.violation {
   background-image: repeating-linear-gradient(
     135deg,
     rgba(0, 0, 0, 0),
     rgba(0, 0, 0, 0) 20px,
-    rgba(66, 66, 66, 0.2) 20px,
-    rgba(66, 66, 66, 0.2) 40px
+    rgba(66, 66, 66, 0.15) 20px,
+    rgba(66, 66, 66, 0.15) 40px
   );
 }
 .program.filtered {
@@ -112,13 +112,13 @@ p {
   color: #b71c1c;
 }
 .program-text h3 {
-  margin: 0.5em 0 0 0;
+  margin: 0.2em 0 0.2em 0;
   font-size: 1em;
   text-transform: uppercase;
 }
 .program-text p {
   font-size: 0.9em;
-  margin-bottom: 0;
+  margin-bottom: 0.2em;
   color: #37474f;
 }
 .program.filtered .program-text h3 {
