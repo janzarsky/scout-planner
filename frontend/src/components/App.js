@@ -34,6 +34,7 @@ export default class App extends React.Component {
       viewPkg: true,
       viewTime: false,
       viewPeople: true,
+      viewViolations: true,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -180,6 +181,7 @@ export default class App extends React.Component {
                   viewPkg: this.state.viewPkg,
                   viewTime: this.state.viewTime,
                   viewPeople: this.state.viewPeople,
+                  viewViolations: this.state.viewViolations,
                 }}
                 clone={(program) => this.addProgram(program)}
               />
@@ -414,6 +416,17 @@ export default class App extends React.Component {
                 }
               >
                 Lidi
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                as={Button}
+                variant={this.state.viewViolations ? "dark" : "light"}
+                onClick={() =>
+                  this.setState({ viewViolations: !this.state.viewViolations })
+                }
+              >
+                Porušení pravidel
               </Nav.Link>
             </Nav.Item>
           </>

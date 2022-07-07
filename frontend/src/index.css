@@ -121,6 +121,9 @@ p {
   margin-bottom: 0.2em;
   color: #37474f;
 }
+p.program-violations {
+  color: #b71c1c;
+}
 .program.filtered .program-text h3 {
   color: #ffffff;
 }

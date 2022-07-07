@@ -114,6 +114,14 @@ function ProgramText(props) {
             }, null)}
         </p>
       )}
+      {props.viewSettings.viewViolations && props.violations && (
+        <p className="program-violations">
+          {props.violations
+            // dirty hack
+            .filter((violation) => !violation.includes("Jeden člověk na více"))
+            .join(", ")}
+        </p>
+      )}
     </div>
   );
 }
