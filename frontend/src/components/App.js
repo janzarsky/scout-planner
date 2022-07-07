@@ -64,6 +64,9 @@ export default class App extends React.Component {
     Data.getGroups(this.props.table).then((groups) =>
       this.setState({ groups: groups }, this.runChecker)
     );
+    Data.getRanges(this.props.table).then((ranges) =>
+      this.setState({ ranges: ranges })
+    );
   }
 
   runChecker() {
@@ -119,6 +122,7 @@ export default class App extends React.Component {
             program={this.state.editProgramData}
             pkgs={this.state.pkgs}
             groups={this.state.groups}
+            ranges={this.state.ranges}
             people={people}
             handleClose={() => this.setState({ editProgram: false })}
           />
