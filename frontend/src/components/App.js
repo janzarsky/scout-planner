@@ -3,6 +3,7 @@ import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
 import Groups from "./Groups";
+import Ranges from "./Ranges";
 import Rules from "./Rules";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
@@ -20,6 +21,7 @@ export default class App extends React.Component {
       pkgs: [],
       groups: [],
       rules: [],
+      ranges: [],
       violations: new Map(),
       otherProblems: [],
       satisfied: true,
@@ -146,6 +148,11 @@ export default class App extends React.Component {
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="groups">
                 Skupiny
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="ranges">
+                Linky
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -295,6 +302,37 @@ export default class App extends React.Component {
                       },
                       this.runChecker
                     )
+                  )
+                }
+              />
+            </Tab.Pane>
+            <Tab.Pane eventKey="ranges" title="Linky">
+              <Ranges
+                ranges={this.state.ranges}
+                addRange={(range) =>
+                  Data.addRange(this.props.table, range).then((range) =>
+                    this.setState({
+                      ranges: [...this.state.ranges, range],
+                    })
+                  )
+                }
+                updateRange={(range) =>
+                  Data.updateRange(this.props.table, range).then((range) =>
+                    this.setState({
+                      ranges: [
+                        ...this.state.ranges.filter((r) => r._id !== range._id),
+                        range,
+                      ],
+                    })
+                  )
+                }
+                deleteRange={(id) =>
+                  Data.deleteRange(this.props.table, id).then(() =>
+                    this.setState({
+                      ranges: [
+                        ...this.state.ranges.filter((r) => r._id !== id),
+                      ],
+                    })
                   )
                 }
               />
