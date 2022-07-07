@@ -63,14 +63,30 @@ export default class ImportExport extends React.Component {
           )
         ),
       ]).then((groups) => new Map(groups)),
+      // add all ranges
+      Promise.all([
+        ...data.ranges.map((range) =>
+          Data.addRange(this.props.table, { ...range, _id: undefined }).then(
+            // create range ID replacement map
+            (newRange) => [range._id, newRange._id]
+          )
+        ),
+      ]).then((ranges) => new Map(ranges)),
     ])
-      // replace package IDs and group IDs in programs
-      .then(([pkgs, groups]) =>
+      // replace package, group, and range IDs in programs
+      .then(([pkgs, groups, ranges]) =>
         data.programs.map((prog) => {
           return {
             ...prog,
             pkg: pkgs.get(prog.pkg),
             groups: prog.groups.map((oldGroup) => groups.get(oldGroup)),
+            ranges:
+              prog.ranges &&
+              Object.fromEntries(
+                prog.ranges
+                  .entries()
+                  .map((oldRange, val) => [ranges.get(oldRange), val])
+              ),
           };
         })
       )
