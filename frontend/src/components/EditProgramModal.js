@@ -385,26 +385,28 @@ function ProgramUrl(props) {
 }
 
 function ProgramRanges(props) {
-  return props.ranges.map((range) => (
-    <Form.Group as={Row} key={range._id}>
-      <Form.Label column sm="2">
-        {range.name}
-      </Form.Label>
-      <Col>
-        <Form.Control
-          type="range"
-          min="0"
-          max="3"
-          ref={props.controlRefs[range._id]}
-          defaultValue={
-            props.values && props.values[range._id]
-              ? props.values[range._id]
-              : 0
-          }
-        />
-      </Col>
-    </Form.Group>
-  ));
+  return props.ranges
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((range) => (
+      <Form.Group as={Row} key={range._id}>
+        <Form.Label column sm="2">
+          {range.name}
+        </Form.Label>
+        <Col>
+          <Form.Control
+            type="range"
+            min="0"
+            max="3"
+            ref={props.controlRefs[range._id]}
+            defaultValue={
+              props.values && props.values[range._id]
+                ? props.values[range._id]
+                : 0
+            }
+          />
+        </Col>
+      </Form.Group>
+    ));
 }
 
 function ProgramNotes(props) {
