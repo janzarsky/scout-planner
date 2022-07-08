@@ -401,6 +401,7 @@ export default class App extends React.Component {
                 groups={this.state.groups}
                 rules={this.state.rules}
                 ranges={this.state.ranges}
+                users={this.state.users}
                 client={new Client(this.state.token, this.props.table)}
               />
             </Tab.Pane>
