@@ -54,7 +54,7 @@ export default class Groups extends React.Component {
 
     if (this.state.editKey) {
       let order = parseInt(this.orderEditRef.current.value);
-      if (order === NaN) order = 0;
+      if (isNaN(order)) order = 0;
 
       this.props
         .updateGroup({
@@ -65,7 +65,7 @@ export default class Groups extends React.Component {
         .then(() => this.setState({ editKey: undefined }));
     } else {
       let order = parseInt(this.orderAddRef.current.value);
-      if (order === NaN) order = 0;
+      if (isNaN(order)) order = 0;
 
       this.props.addGroup({
         name: this.nameAddRef.current.value,
