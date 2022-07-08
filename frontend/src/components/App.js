@@ -8,7 +8,7 @@ import Rules from "./Rules";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
-import Data from "../Client";
+import Client from "../Client";
 import { checkRules } from "../Checker";
 import ImportExport from "../ImportExport";
 
@@ -46,7 +46,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Data.getPrograms(this.props.table).then((allPrograms) =>
+    Client.getPrograms(this.props.table).then((allPrograms) =>
       this.setState(
         {
           programs: [...allPrograms].filter((program) => !program.deleted),
@@ -57,16 +57,16 @@ export default class App extends React.Component {
         this.runChecker
       )
     );
-    Data.getPackages(this.props.table).then((pkgs) =>
+    Client.getPackages(this.props.table).then((pkgs) =>
       this.setState({ pkgs: pkgs })
     );
-    Data.getRules(this.props.table).then((rules) =>
+    Client.getRules(this.props.table).then((rules) =>
       this.setState({ rules: rules }, this.runChecker)
     );
-    Data.getGroups(this.props.table).then((groups) =>
+    Client.getGroups(this.props.table).then((groups) =>
       this.setState({ groups: groups }, this.runChecker)
     );
-    Data.getRanges(this.props.table).then((ranges) =>
+    Client.getRanges(this.props.table).then((ranges) =>
       this.setState({ ranges: ranges })
     );
   }
@@ -211,7 +211,7 @@ export default class App extends React.Component {
                 rules={this.state.rules}
                 violations={this.state.violations}
                 addRule={(rule) =>
-                  Data.addRule(this.props.table, rule).then((rule) =>
+                  Client.addRule(this.props.table, rule).then((rule) =>
                     this.setState(
                       { rules: [...this.state.rules, rule] },
                       this.runChecker
@@ -219,7 +219,7 @@ export default class App extends React.Component {
                   )
                 }
                 updateRule={(rule) =>
-                  Data.updateRule(this.props.table, rule).then((rule) =>
+                  Client.updateRule(this.props.table, rule).then((rule) =>
                     this.setState(
                       {
                         rules: [
@@ -232,7 +232,7 @@ export default class App extends React.Component {
                   )
                 }
                 deleteRule={(id) =>
-                  Data.deleteRule(this.props.table, id).then((msg) =>
+                  Client.deleteRule(this.props.table, id).then((msg) =>
                     this.setState(
                       { rules: this.state.rules.filter((r) => r._id !== id) },
                       this.runChecker
@@ -245,7 +245,7 @@ export default class App extends React.Component {
               <Packages
                 pkgs={this.state.pkgs}
                 addPkg={(pkg) =>
-                  Data.addPackage(this.props.table, pkg).then((pkg) =>
+                  Client.addPackage(this.props.table, pkg).then((pkg) =>
                     this.setState(
                       { pkgs: [...this.state.pkgs, pkg] },
                       this.runChecker
@@ -253,7 +253,7 @@ export default class App extends React.Component {
                   )
                 }
                 updatePkg={(pkg) =>
-                  Data.updatePackage(this.props.table, pkg).then((pkg) =>
+                  Client.updatePackage(this.props.table, pkg).then((pkg) =>
                     this.setState(
                       {
                         pkgs: [
@@ -266,7 +266,7 @@ export default class App extends React.Component {
                   )
                 }
                 deletePkg={(id) =>
-                  Data.deletePackage(this.props.table, id).then((msg) =>
+                  Client.deletePackage(this.props.table, id).then((msg) =>
                     this.setState(
                       { pkgs: this.state.pkgs.filter((p) => p._id !== id) },
                       this.runChecker
@@ -279,7 +279,7 @@ export default class App extends React.Component {
               <Groups
                 groups={this.state.groups}
                 addGroup={(group) =>
-                  Data.addGroup(this.props.table, group).then((group) =>
+                  Client.addGroup(this.props.table, group).then((group) =>
                     this.setState(
                       {
                         groups: [...this.state.groups, group],
@@ -289,7 +289,7 @@ export default class App extends React.Component {
                   )
                 }
                 updateGroup={(group) =>
-                  Data.updateGroup(this.props.table, group).then((group) =>
+                  Client.updateGroup(this.props.table, group).then((group) =>
                     this.setState(
                       {
                         groups: [
@@ -304,7 +304,7 @@ export default class App extends React.Component {
                   )
                 }
                 deleteGroup={(id) =>
-                  Data.deleteGroup(this.props.table, id).then(() =>
+                  Client.deleteGroup(this.props.table, id).then(() =>
                     this.setState(
                       {
                         groups: [
@@ -321,14 +321,14 @@ export default class App extends React.Component {
               <Ranges
                 ranges={this.state.ranges}
                 addRange={(range) =>
-                  Data.addRange(this.props.table, range).then((range) =>
+                  Client.addRange(this.props.table, range).then((range) =>
                     this.setState({
                       ranges: [...this.state.ranges, range],
                     })
                   )
                 }
                 updateRange={(range) =>
-                  Data.updateRange(this.props.table, range).then((range) =>
+                  Client.updateRange(this.props.table, range).then((range) =>
                     this.setState({
                       ranges: [
                         ...this.state.ranges.filter((r) => r._id !== range._id),
@@ -338,7 +338,7 @@ export default class App extends React.Component {
                   )
                 }
                 deleteRange={(id) =>
-                  Data.deleteRange(this.props.table, id).then(() =>
+                  Client.deleteRange(this.props.table, id).then(() =>
                     this.setState({
                       ranges: [
                         ...this.state.ranges.filter((r) => r._id !== id),
@@ -519,7 +519,7 @@ export default class App extends React.Component {
   }
 
   addProgram(program) {
-    Data.addProgram(this.props.table, program).then((program) =>
+    Client.addProgram(this.props.table, program).then((program) =>
       this.setState(
         { programs: [...this.state.programs, program] },
         this.runChecker
@@ -528,7 +528,7 @@ export default class App extends React.Component {
   }
 
   updateProgram(program) {
-    Data.updateProgram(this.props.table, program).then((program) =>
+    Client.updateProgram(this.props.table, program).then((program) =>
       this.setState(
         {
           programs: [
@@ -542,7 +542,7 @@ export default class App extends React.Component {
   }
 
   deleteProgram(program) {
-    Data.updateProgram(this.props.table, { ...program, deleted: true }).then(
+    Client.updateProgram(this.props.table, { ...program, deleted: true }).then(
       () =>
         this.setState({
           programs: [
