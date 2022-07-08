@@ -29,6 +29,7 @@ export default class Program extends React.Component {
           pkgs={this.props.pkgs}
           filtered={this.props.filtered}
           viewSettings={this.props.viewSettings}
+          activeRange={this.props.activeRange}
         />
         <ProgramEdit
           program={this.props.program}
@@ -58,6 +59,10 @@ function ProgramBody(props) {
   const pkg = props.pkgs.find((p) => p._id === props.program.pkg);
   const pkgName = pkg ? pkg.name : "";
   const color = pkg ? pkg.color : null;
+  let rangeValue = props.activeRange
+    ? props.program.ranges[props.activeRange]
+    : 0;
+  if (rangeValue === undefined) rangeValue = 0;
 
   return (
     <div
@@ -66,9 +71,14 @@ function ProgramBody(props) {
         (props.violations && props.viewSettings.viewViolations
           ? " violation"
           : "") +
-        (props.filtered ? " filtered" : "")
+        (props.filtered ? " filtered" : "") +
+        (props.activeRange ? " range range-" + rangeValue : "")
       }
-      style={color && !props.filtered ? { backgroundColor: color } : {}}
+      style={
+        color && !props.filtered && !props.activeRange
+          ? { backgroundColor: color }
+          : {}
+      }
       title={props.violations && props.violations.join(", ")}
     >
       <ProgramText

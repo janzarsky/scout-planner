@@ -199,6 +199,9 @@ export default class App extends React.Component {
                   viewViolations: this.state.viewViolations,
                 }}
                 clone={(program) => this.addProgram(program)}
+                activeRange={
+                  this.state.viewRanges ? this.state.activeRange : null
+                }
               />
             </Tab.Pane>
             <Tab.Pane eventKey="rules">
@@ -488,17 +491,17 @@ export default class App extends React.Component {
         <Nav.Item>
           <Nav.Link
             as={Button}
-            variant={this.state.rangesActive ? "dark" : "light"}
+            variant={this.state.viewRanges ? "dark" : "light"}
             onClick={() =>
-              this.setState({ rangesActive: !this.state.rangesActive })
+              this.setState({ viewRanges: !this.state.viewRanges })
             }
           >
             <i className="fa fa-area-chart" />
           </Nav.Link>
         </Nav.Item>
-        {this.state.rangesActive
+        {this.state.viewRanges
           ? this.state.ranges.map((range) => (
-              <Nav.Item>
+              <Nav.Item key={range._id}>
                 <Nav.Link
                   as={Button}
                   variant={
