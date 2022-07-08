@@ -113,6 +113,7 @@ export default class App extends React.Component {
             people={people}
             handleClose={() => this.setState({ addProgram: false })}
             groups={this.state.groups}
+            ranges={this.state.ranges}
           />
         )}
         {this.state.editProgram && (
