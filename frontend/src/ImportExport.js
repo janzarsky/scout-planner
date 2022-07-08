@@ -80,13 +80,14 @@ export default class ImportExport extends React.Component {
             ...prog,
             pkg: pkgs.get(prog.pkg),
             groups: prog.groups.map((oldGroup) => groups.get(oldGroup)),
-            ranges:
-              prog.ranges &&
-              Object.fromEntries(
-                prog.ranges
-                  .entries()
-                  .map((oldRange, val) => [ranges.get(oldRange), val])
-              ),
+            ranges: prog.ranges
+              ? Object.fromEntries(
+                  Object.entries(prog.ranges).map(([oldRange, val]) => [
+                    ranges.get(oldRange),
+                    val,
+                  ])
+                )
+              : undefined,
           };
         })
       )
