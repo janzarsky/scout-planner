@@ -32,11 +32,13 @@ export default class App extends React.Component {
       activeTab: "timetable",
       filterActive: false,
       filterPkgs: [],
+      activeRange: null,
       viewSettingsActive: false,
       viewPkg: true,
       viewTime: false,
       viewPeople: true,
       viewViolations: true,
+      viewRanges: false,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -167,6 +169,7 @@ export default class App extends React.Component {
             </Nav.Item>
             {this.getFilters()}
             {this.getViewSettings()}
+            {this.getRanges()}
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="timetable">
@@ -475,6 +478,39 @@ export default class App extends React.Component {
             </Nav.Item>
           </>
         )}
+      </>
+    );
+  }
+
+  getRanges() {
+    return (
+      <>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.rangesActive ? "dark" : "light"}
+            onClick={() =>
+              this.setState({ rangesActive: !this.state.rangesActive })
+            }
+          >
+            <i className="fa fa-area-chart" />
+          </Nav.Link>
+        </Nav.Item>
+        {this.state.rangesActive
+          ? this.state.ranges.map((range) => (
+              <Nav.Item>
+                <Nav.Link
+                  as={Button}
+                  variant={
+                    this.state.activeRange === range._id ? "dark" : "light"
+                  }
+                  onClick={() => this.setState({ activeRange: range._id })}
+                >
+                  {range.name}
+                </Nav.Link>
+              </Nav.Item>
+            ))
+          : null}
       </>
     );
   }
