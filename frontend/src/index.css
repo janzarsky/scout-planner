@@ -131,6 +131,19 @@ p.program-violations {
   color: #b0bec5;
 }
 
+.program.range-0 {
+  background-color: #f5f5f5;
+}
+.program.range-1 {
+  background-color: #c8e6c9;
+}
+.program.range-2 {
+  background-color: #81c784;
+}
+.program.range-3 {
+  background-color: #4caf50;
+}
+
 .program-edit,
 .program-move,
 .program-lock,

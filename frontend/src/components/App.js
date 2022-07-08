@@ -3,6 +3,7 @@ import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
 import Groups from "./Groups";
+import Ranges from "./Ranges";
 import Rules from "./Rules";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
@@ -20,6 +21,7 @@ export default class App extends React.Component {
       pkgs: [],
       groups: [],
       rules: [],
+      ranges: [],
       violations: new Map(),
       otherProblems: [],
       satisfied: true,
@@ -30,11 +32,13 @@ export default class App extends React.Component {
       activeTab: "timetable",
       filterActive: false,
       filterPkgs: [],
+      activeRange: null,
       viewSettingsActive: false,
       viewPkg: true,
       viewTime: false,
       viewPeople: true,
       viewViolations: true,
+      viewRanges: false,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -61,6 +65,9 @@ export default class App extends React.Component {
     );
     Data.getGroups(this.props.table).then((groups) =>
       this.setState({ groups: groups }, this.runChecker)
+    );
+    Data.getRanges(this.props.table).then((ranges) =>
+      this.setState({ ranges: ranges })
     );
   }
 
@@ -108,6 +115,7 @@ export default class App extends React.Component {
             people={people}
             handleClose={() => this.setState({ addProgram: false })}
             groups={this.state.groups}
+            ranges={this.state.ranges}
           />
         )}
         {this.state.editProgram && (
@@ -117,6 +125,7 @@ export default class App extends React.Component {
             program={this.state.editProgramData}
             pkgs={this.state.pkgs}
             groups={this.state.groups}
+            ranges={this.state.ranges}
             people={people}
             handleClose={() => this.setState({ editProgram: false })}
           />
@@ -149,12 +158,18 @@ export default class App extends React.Component {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="ranges">
+                Linky
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="importexport">
                 Import/Export
               </Nav.Link>
             </Nav.Item>
             {this.getFilters()}
             {this.getViewSettings()}
+            {this.getRanges()}
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="timetable">
@@ -184,6 +199,9 @@ export default class App extends React.Component {
                   viewViolations: this.state.viewViolations,
                 }}
                 clone={(program) => this.addProgram(program)}
+                activeRange={
+                  this.state.viewRanges ? this.state.activeRange : null
+                }
               />
             </Tab.Pane>
             <Tab.Pane eventKey="rules">
@@ -299,6 +317,37 @@ export default class App extends React.Component {
                 }
               />
             </Tab.Pane>
+            <Tab.Pane eventKey="ranges" title="Linky">
+              <Ranges
+                ranges={this.state.ranges}
+                addRange={(range) =>
+                  Data.addRange(this.props.table, range).then((range) =>
+                    this.setState({
+                      ranges: [...this.state.ranges, range],
+                    })
+                  )
+                }
+                updateRange={(range) =>
+                  Data.updateRange(this.props.table, range).then((range) =>
+                    this.setState({
+                      ranges: [
+                        ...this.state.ranges.filter((r) => r._id !== range._id),
+                        range,
+                      ],
+                    })
+                  )
+                }
+                deleteRange={(id) =>
+                  Data.deleteRange(this.props.table, id).then(() =>
+                    this.setState({
+                      ranges: [
+                        ...this.state.ranges.filter((r) => r._id !== id),
+                      ],
+                    })
+                  )
+                }
+              />
+            </Tab.Pane>
             <Tab.Pane eventKey="importexport" title="Import/Export">
               <ImportExport
                 programs={[
@@ -308,6 +357,7 @@ export default class App extends React.Component {
                 pkgs={this.state.pkgs}
                 groups={this.state.groups}
                 rules={this.state.rules}
+                ranges={this.state.ranges}
                 table={this.props.table}
               />
             </Tab.Pane>
@@ -431,6 +481,39 @@ export default class App extends React.Component {
             </Nav.Item>
           </>
         )}
+      </>
+    );
+  }
+
+  getRanges() {
+    return (
+      <>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.viewRanges ? "dark" : "light"}
+            onClick={() =>
+              this.setState({ viewRanges: !this.state.viewRanges })
+            }
+          >
+            <i className="fa fa-area-chart" />
+          </Nav.Link>
+        </Nav.Item>
+        {this.state.viewRanges
+          ? this.state.ranges.map((range) => (
+              <Nav.Item key={range._id}>
+                <Nav.Link
+                  as={Button}
+                  variant={
+                    this.state.activeRange === range._id ? "dark" : "light"
+                  }
+                  onClick={() => this.setState({ activeRange: range._id })}
+                >
+                  {range.name}
+                </Nav.Link>
+              </Nav.Item>
+            ))
+          : null}
       </>
     );
   }

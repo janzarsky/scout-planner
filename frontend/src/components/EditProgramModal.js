@@ -32,6 +32,9 @@ export class EditProgramModal extends React.Component {
       "notes",
       "locked",
     ].forEach((field) => (this[field] = React.createRef()));
+    this.rangeRefs = Object.fromEntries(
+      props.ranges.map((range) => [range._id, React.createRef()])
+    );
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
   }
@@ -100,6 +103,11 @@ export class EditProgramModal extends React.Component {
               }
             />
             <ProgramUrl url={this.props.program.url} controlRef={this.url} />
+            <ProgramRanges
+              ranges={this.props.ranges}
+              values={this.props.program.ranges}
+              controlRefs={this.rangeRefs}
+            />
             <ProgramNotes
               notes={this.props.program.notes}
               controlRef={this.notes}
@@ -143,6 +151,12 @@ export class EditProgramModal extends React.Component {
       pkg: this.pkg.current.value,
       groups: this.state.groups,
       people: this.state.people,
+      ranges: Object.fromEntries(
+        this.props.ranges.map((range) => {
+          let val = parseInt(this.rangeRefs[range._id].current.value);
+          return [range._id, isNaN(val) ? 0 : val];
+        })
+      ),
       url: this.url.current.value,
       notes: this.notes.current.value,
       locked: this.locked.current.checked,
@@ -370,6 +384,31 @@ function ProgramUrl(props) {
   );
 }
 
+function ProgramRanges(props) {
+  return props.ranges
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((range) => (
+      <Form.Group as={Row} key={range._id}>
+        <Form.Label column sm="2">
+          {range.name}
+        </Form.Label>
+        <Col>
+          <Form.Control
+            type="range"
+            min="0"
+            max="3"
+            ref={props.controlRefs[range._id]}
+            defaultValue={
+              props.values && props.values[range._id]
+                ? props.values[range._id]
+                : 0
+            }
+          />
+        </Col>
+      </Form.Group>
+    ));
+}
+
 function ProgramNotes(props) {
   return (
     <Form.Group as={Row}>
@@ -402,6 +441,9 @@ export class AddProgramModal extends React.Component {
       "notes",
       "locked",
     ].forEach((field) => (this[field] = React.createRef()));
+    this.rangeRefs = Object.fromEntries(
+      props.ranges.map((range) => [range._id, React.createRef()])
+    );
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -462,6 +504,13 @@ export class AddProgramModal extends React.Component {
               }
             />
             <ProgramUrl controlRef={this.url} />
+            <ProgramRanges
+              ranges={this.props.ranges}
+              values={Object.fromEntries(
+                this.props.ranges.map((range) => [range._id, 0])
+              )}
+              controlRefs={this.rangeRefs}
+            />
             <ProgramNotes controlRef={this.notes} />
           </Modal.Body>
           <Modal.Footer>
@@ -487,6 +536,12 @@ export class AddProgramModal extends React.Component {
       title: this.title.current.value,
       pkg: this.pkg.current.value,
       groups: this.state.groups,
+      ranges: Object.fromEntries(
+        this.props.ranges.map((range) => {
+          let val = parseInt(this.rangeRefs[range._id].current.value);
+          return [range._id, isNaN(val) ? 0 : val];
+        })
+      ),
       people: this.state.people,
       url: this.url.current.value,
       notes: this.notes.current.value,

@@ -169,6 +169,7 @@ export default class Timetable extends React.Component {
           editProgramModal={this.props.editProgramModal}
           viewSettings={viewSettings}
           clone={this.props.clone}
+          activeRange={this.props.activeRange}
         />
       );
     }
