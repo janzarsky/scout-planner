@@ -233,7 +233,7 @@ function NewRule(props) {
 
 function programSort(a, b) {
   const titleCmp = a.title.localeCompare(b.title);
-  if (titleCmp != 0) return titleCmp;
+  if (titleCmp !== 0) return titleCmp;
 
   if (a.begin < b.begin) return -1;
   else if (a.begin > b.begin) return 1;
@@ -295,7 +295,7 @@ function formatProgram(prog, groups) {
       ? prog.groups
           .map((groupId) => {
             const found = groups.find((group) => group._id === groupId);
-            if (found) return found.name;
+            return found ? found.name : "";
           })
           .join(", ")
       : "";
