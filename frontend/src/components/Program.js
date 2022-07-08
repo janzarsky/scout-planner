@@ -59,9 +59,10 @@ function ProgramBody(props) {
   const pkg = props.pkgs.find((p) => p._id === props.program.pkg);
   const pkgName = pkg ? pkg.name : "";
   const color = pkg ? pkg.color : null;
-  let rangeValue = props.activeRange
-    ? props.program.ranges[props.activeRange]
-    : 0;
+  let rangeValue =
+    props.activeRange && props.program.ranges
+      ? props.program.ranges[props.activeRange]
+      : 0;
   if (rangeValue === undefined) rangeValue = 0;
 
   return (
