@@ -11,6 +11,7 @@ import Nav from "react-bootstrap/Nav";
 import Client from "../Client";
 import { checkRules } from "../Checker";
 import ImportExport from "../ImportExport";
+import Users from "./Users";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -22,6 +23,7 @@ export default class App extends React.Component {
       groups: [],
       rules: [],
       ranges: [],
+      users: [],
       violations: new Map(),
       otherProblems: [],
       satisfied: true,
@@ -67,6 +69,7 @@ export default class App extends React.Component {
       .getGroups()
       .then((groups) => this.setState({ groups: groups }, this.runChecker));
     this.client.getRanges().then((ranges) => this.setState({ ranges: ranges }));
+    this.client.getUsers().then((users) => this.setState({ users: users }));
   }
 
   runChecker() {
@@ -158,6 +161,11 @@ export default class App extends React.Component {
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="ranges">
                 Linky
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="users">
+                Uživatelé
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -349,6 +357,35 @@ export default class App extends React.Component {
                       ranges: [
                         ...this.state.ranges.filter((r) => r._id !== id),
                       ],
+                    })
+                  )
+                }
+              />
+            </Tab.Pane>
+            <Tab.Pane eventKey="users" title="Uživatelé">
+              <Users
+                users={this.state.users}
+                addUser={(user) =>
+                  this.client.addUser(user).then((user) =>
+                    this.setState({
+                      users: [...this.state.users, user],
+                    })
+                  )
+                }
+                updateUser={(user) =>
+                  this.client.updateUser(user).then((user) =>
+                    this.setState({
+                      users: [
+                        ...this.state.users.filter((u) => u._id !== user._id),
+                        user,
+                      ],
+                    })
+                  )
+                }
+                deleteUser={(id) =>
+                  this.client.deleteUser(id).then(() =>
+                    this.setState({
+                      users: [...this.state.users.filter((u) => u._id !== id)],
                     })
                   )
                 }
