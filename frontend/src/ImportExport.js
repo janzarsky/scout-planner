@@ -44,6 +44,9 @@ export default class ImportExport extends React.Component {
 
     const data = JSON.parse(this.importData.current.value);
 
+    // data fix
+    if (data.ranges === undefined) data.ranges = [];
+
     Promise.all([
       // add all packages
       Promise.all([
