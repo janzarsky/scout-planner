@@ -39,11 +39,12 @@ export default class App extends React.Component {
       viewPeople: true,
       viewViolations: true,
       viewRanges: false,
+      token: null,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
     this.deleteProgram = this.deleteProgram.bind(this);
-    this.client = new Client(this.props.table);
+    this.client = new Client(this.state.token, this.props.table);
   }
 
   componentDidMount() {
@@ -363,7 +364,7 @@ export default class App extends React.Component {
                 groups={this.state.groups}
                 rules={this.state.rules}
                 ranges={this.state.ranges}
-                client={new Client(this.props.table)}
+                client={new Client(this.state.token, this.props.table)}
               />
             </Tab.Pane>
           </Tab.Content>

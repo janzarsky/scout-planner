@@ -1,7 +1,7 @@
 const config = require("./config.json");
 
 export default class Client {
-  constructor(timetable) {
+  constructor(token, timetable) {
     ["program", "package", "rule", "group", "range"].forEach((entity) => {
       const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
@@ -13,10 +13,14 @@ export default class Client {
     });
 
     this.basePath = `${config.host}/${timetable}`;
+    this.authHeader = token ? { Authorization: token } : {};
   }
 
   async #get(path, id) {
-    const resp = await fetch(`${this.basePath}/${path}/${id}`);
+    const resp = await fetch(`${this.basePath}/${path}/${id}`, {
+      method: "GET",
+      headers: this.authHeader,
+    });
     if (!resp.ok) {
       throw new Error(`HTTP error: ${resp.status}`);
     }
@@ -24,7 +28,10 @@ export default class Client {
   }
 
   async #getAll(path) {
-    const resp = await fetch(`${this.basePath}/${path}`);
+    const resp = await fetch(`${this.basePath}/${path}`, {
+      method: "GET",
+      headers: this.authHeader,
+    });
     if (!resp.ok) {
       throw new Error(`HTTP error: ${resp.status}`);
     }
@@ -34,7 +41,7 @@ export default class Client {
   async #post(path, data) {
     const resp = await fetch(`${this.basePath}/${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...this.authHeader },
       body: JSON.stringify(data),
     });
     if (!resp.ok) {
@@ -46,7 +53,7 @@ export default class Client {
   async #put(path, data) {
     const resp = await fetch(`${this.basePath}/${path}/${data._id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...this.authHeader },
       body: JSON.stringify(data),
     });
     if (!resp.ok) {
@@ -58,6 +65,7 @@ export default class Client {
   async #remove(path, id) {
     const resp = await fetch(`${this.basePath}/${path}/${id}`, {
       method: "DELETE",
+      headers: this.authHeader,
     });
     if (!resp.ok) {
       throw new Error(`HTTP error: ${resp.status}`);
