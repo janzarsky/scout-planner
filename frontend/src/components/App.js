@@ -12,6 +12,15 @@ import Client from "../Client";
 import { checkRules } from "../Checker";
 import ImportExport from "../ImportExport";
 import Users from "./Users";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
+
+const config = require("../config.json");
 
 export default class App extends React.Component {
   constructor(props) {
@@ -46,9 +55,27 @@ export default class App extends React.Component {
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
     this.deleteProgram = this.deleteProgram.bind(this);
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+
+    this.app = initializeApp({
+      apiKey: config.apiKey,
+      authDomain: config.authDomain,
+    });
+    this.provider = new GoogleAuthProvider();
+    this.auth = getAuth();
+    this.auth.onAuthStateChanged(async (user) => {
+      const token = user ? await user.getIdToken() : null;
+      this.setState(
+        {
+          client: new Client(token, this.props.table),
+        },
+        this.reloadData
+      );
+    });
   }
 
-  componentDidMount() {
+  reloadData() {
     this.state.client.getPrograms().then((allPrograms) =>
       this.setState(
         {
@@ -181,6 +208,7 @@ export default class App extends React.Component {
             {this.getFilters()}
             {this.getViewSettings()}
             {this.getRanges()}
+            {this.getGoogleLogin()}
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="timetable">
@@ -567,6 +595,24 @@ export default class App extends React.Component {
     );
   }
 
+  getGoogleLogin() {
+    return this.auth.currentUser ? (
+      <Nav.Item>
+        <Nav.Link as={Button} variant="light" onClick={this.logout}>
+          {this.auth.currentUser.displayName}
+          &nbsp;
+          <i className="fa fa-sign-out" />
+        </Nav.Link>
+      </Nav.Item>
+    ) : (
+      <Nav.Item>
+        <Nav.Link as={Button} variant="light" onClick={this.login}>
+          <i className="fa fa-sign-in" />
+        </Nav.Link>
+      </Nav.Item>
+    );
+  }
+
   addProgram(program) {
     this.state.client
       .addProgram(program)
@@ -599,5 +645,19 @@ export default class App extends React.Component {
         deletedPrograms: [...this.state.deletedPrograms, program],
       })
     );
+  }
+
+  async login() {
+    await signInWithPopup(this.auth, this.provider).catch((error) =>
+      console.error(error)
+    );
+  }
+
+  async logout() {
+    await signOut(this.auth)
+      .catch((error) => console.error(error))
+      .finally(() => {
+        this.setState({ client: new Client(null, this.props.table) });
+      });
   }
 }
