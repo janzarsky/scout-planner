@@ -17,6 +17,7 @@ export default class ImportExport extends React.Component {
       groups: this.props.groups,
       rules: this.props.rules,
       ranges: this.props.ranges,
+      users: this.props.users,
     });
 
     return (
@@ -45,6 +46,7 @@ export default class ImportExport extends React.Component {
 
     // data fix
     if (data.ranges === undefined) data.ranges = [];
+    if (data.users === undefined) data.users = [];
 
     Promise.all([
       // add all packages
@@ -133,6 +135,14 @@ export default class ImportExport extends React.Component {
             this.props.client.addRule({ ...rule, _id: undefined })
           )
         )
+      )
+      // add all users (at the end, so there are no issues with permissions)
+      .then(() =>
+        Promise.all([
+          ...data.users.map((user) =>
+            this.props.client.addUser({ ...user, _id: undefined })
+          ),
+        ])
       )
       .then(() => window.location.reload());
   }
