@@ -2,15 +2,17 @@ const config = require("./config.json");
 
 export default class Client {
   constructor(token, timetable) {
-    ["program", "package", "rule", "group", "range"].forEach((entity) => {
-      const name = entity.charAt(0).toUpperCase() + entity.slice(1);
+    ["program", "package", "rule", "group", "range", "user"].forEach(
+      (entity) => {
+        const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
-      this[`get${name}s`] = () => this.#getAll(`${entity}s`);
-      this[`get${name}`] = (id) => this.#get(`${entity}s`, id);
-      this[`add${name}`] = (data) => this.#post(`${entity}s`, data);
-      this[`update${name}`] = (data) => this.#put(`${entity}s`, data);
-      this[`delete${name}`] = (id) => this.#remove(`${entity}s`, id);
-    });
+        this[`get${name}s`] = () => this.#getAll(`${entity}s`);
+        this[`get${name}`] = (id) => this.#get(`${entity}s`, id);
+        this[`add${name}`] = (data) => this.#post(`${entity}s`, data);
+        this[`update${name}`] = (data) => this.#put(`${entity}s`, data);
+        this[`delete${name}`] = (id) => this.#remove(`${entity}s`, id);
+      }
+    );
 
     this.basePath = `${config.host}/${timetable}`;
     this.authHeader = token ? { Authorization: token } : {};
