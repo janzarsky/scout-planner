@@ -4,6 +4,11 @@ var port = process.env.PORT || 4000;
 var bodyParser = require("body-parser");
 var cors = require("cors");
 
+const { OAuth2Client } = require("google-auth-library");
+const clientId =
+  "684457012621-3g1skhe5pi3r6knlug7scfsn4iao8a79.apps.googleusercontent.com";
+const client = new OAuth2Client(clientId);
+
 var Firestore = require("@google-cloud/firestore");
 var db = new Firestore();
 
@@ -75,6 +80,31 @@ function updateItem(collection) {
       .then(() => res.json({ ...item, _id: req.params.id }));
   };
 }
+
+app.use(async (req, res, next) => {
+  if (req.headers.authorization) {
+    var ticket;
+
+    try {
+      ticket = await client.verifyIdToken({
+        idToken: req.headers.authorization,
+        audience: clientId,
+      });
+    } catch (err) {
+      res.status(401).json({ error: err.message });
+      return;
+    }
+
+    if (!ticket.getPayload().email_verified) {
+      res.status(401).json({ error: "Email not verified." });
+      return;
+    }
+
+    req.email = ticket.getPayload().email;
+  }
+
+  next();
+});
 
 ["programs", "packages", "rules", "groups", "ranges"].forEach((collection) => {
   app
