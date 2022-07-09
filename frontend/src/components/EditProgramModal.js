@@ -412,8 +412,8 @@ function ProgramUrl(props) {
             href={props.url}
             style={{ wordBreak: "break-all" }}
             target="_blank"
-            noreferrer
-            noopener
+            noreferrer="true"
+            noopener="true"
           >
             {props.url}
           </a>

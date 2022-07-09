@@ -79,36 +79,45 @@ export default class App extends React.Component {
     });
   }
 
-  reloadData() {
-    this.state.client
-      .getPermissions()
-      .then((permissions) => this.setState({ userLevel: permissions.level }));
-    this.state.client.getPrograms().then((allPrograms) =>
-      this.setState(
-        {
-          programs: [...allPrograms].filter((program) => !program.deleted),
-          deletedPrograms: [...allPrograms].filter(
-            (program) => program.deleted
-          ),
-        },
-        this.runChecker
-      )
+  async reloadData() {
+    const permissions = await this.state.client.getPermissions();
+
+    const viewData =
+      permissions.level > level.NONE
+        ? Promise.all([
+            this.state.client.getPrograms(),
+            this.state.client.getPackages(),
+            this.state.client.getRules(),
+            this.state.client.getGroups(),
+            this.state.client.getRanges(),
+          ])
+        : Promise.resolve([[], [], [], [], []]);
+
+    const adminData =
+      permissions.level >= level.ADMIN
+        ? this.state.client.getUsers()
+        : Promise.resolve([]);
+
+    Promise.all([viewData, adminData]).then(
+      ([[allPrograms, pkgs, rules, groups, ranges], users]) => {
+        this.setState(
+          {
+            programs: [...allPrograms].filter((program) => !program.deleted),
+            deletedPrograms: [...allPrograms].filter(
+              (program) => program.deleted
+            ),
+            pkgs: pkgs,
+            rules: rules,
+            groups: groups,
+            ranges: ranges,
+            users: users,
+          },
+          this.runChecker
+        );
+      }
     );
-    this.state.client
-      .getPackages()
-      .then((pkgs) => this.setState({ pkgs: pkgs }));
-    this.state.client
-      .getRules()
-      .then((rules) => this.setState({ rules: rules }, this.runChecker));
-    this.state.client
-      .getGroups()
-      .then((groups) => this.setState({ groups: groups }, this.runChecker));
-    this.state.client
-      .getRanges()
-      .then((ranges) => this.setState({ ranges: ranges }));
-    this.state.client
-      .getUsers()
-      .then((users) => this.setState({ users: users }));
+
+    this.setState({ userLevel: permissions.level });
   }
 
   runChecker() {

@@ -24,7 +24,7 @@ export default class Client {
       headers: this.authHeader,
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Při načítání uživatelských oprávnění nastala chyba.`);
     }
     return await resp.json();
   }
@@ -35,7 +35,7 @@ export default class Client {
       headers: this.authHeader,
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Při načítání nastala chyba.`);
     }
     return await resp.json();
   }
@@ -46,7 +46,7 @@ export default class Client {
       headers: this.authHeader,
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Při načítání nastala chyba.`);
     }
     return await resp.json();
   }
@@ -58,7 +58,7 @@ export default class Client {
       body: JSON.stringify(data),
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Během aktualizace nastala chyba.`);
     }
     return await resp.json();
   }
@@ -70,7 +70,7 @@ export default class Client {
       body: JSON.stringify(data),
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Během přidávání nastala chyba.`);
     }
     return await resp.json();
   }
@@ -81,7 +81,7 @@ export default class Client {
       headers: this.authHeader,
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Během odstraňování nastala chyba.`);
     }
     return await resp.json();
   }
