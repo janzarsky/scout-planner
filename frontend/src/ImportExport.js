@@ -2,7 +2,6 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import Data from "./Client";
 
 export default class ImportExport extends React.Component {
   constructor(props) {
@@ -51,7 +50,7 @@ export default class ImportExport extends React.Component {
       // add all packages
       Promise.all([
         ...data.pkgs.map((pkg) =>
-          Data.addPackage(this.props.table, { ...pkg, _id: undefined }).then(
+          this.props.client.addPackage({ ...pkg, _id: undefined }).then(
             // create package ID replacement map
             (newPkg) => [pkg._id, newPkg._id]
           )
@@ -60,7 +59,7 @@ export default class ImportExport extends React.Component {
       // add all groups
       Promise.all([
         ...data.groups.map((group) =>
-          Data.addGroup(this.props.table, { ...group, _id: undefined }).then(
+          this.props.client.addGroup({ ...group, _id: undefined }).then(
             // create group ID replacement map
             (newGroup) => [group._id, newGroup._id]
           )
@@ -69,7 +68,7 @@ export default class ImportExport extends React.Component {
       // add all ranges
       Promise.all([
         ...data.ranges.map((range) =>
-          Data.addRange(this.props.table, { ...range, _id: undefined }).then(
+          this.props.client.addRange({ ...range, _id: undefined }).then(
             // create range ID replacement map
             (newRange) => [range._id, newRange._id]
           )
@@ -98,10 +97,15 @@ export default class ImportExport extends React.Component {
       .then((programs) =>
         Promise.all(
           programs.map((prog) =>
-            Data.addProgram(this.props.table, { ...prog, _id: undefined }).then(
-              // create program ID replacement map
-              (newProg) => [prog._id, newProg._id]
-            )
+            this.props.client
+              .addProgram({
+                ...prog,
+                _id: undefined,
+              })
+              .then(
+                // create program ID replacement map
+                (newProg) => [prog._id, newProg._id]
+              )
           )
         )
       )
@@ -126,7 +130,7 @@ export default class ImportExport extends React.Component {
       .then((rules) =>
         Promise.all(
           rules.map((rule) =>
-            Data.addRule(this.props.table, { ...rule, _id: undefined })
+            this.props.client.addRule({ ...rule, _id: undefined })
           )
         )
       )
