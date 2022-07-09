@@ -18,6 +18,17 @@ export default class Client {
     this.authHeader = token ? { Authorization: token } : {};
   }
 
+  async getPermissions() {
+    const resp = await fetch(`${this.basePath}/permissions`, {
+      method: "GET",
+      headers: this.authHeader,
+    });
+    if (!resp.ok) {
+      throw new Error(`HTTP error: ${resp.status}`);
+    }
+    return await resp.json();
+  }
+
   async #get(path, id) {
     const resp = await fetch(`${this.basePath}/${path}/${id}`, {
       method: "GET",

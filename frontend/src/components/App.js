@@ -51,6 +51,7 @@ export default class App extends React.Component {
       viewViolations: true,
       viewRanges: false,
       client: new Client(null, this.props.table),
+      userLevel: 0,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -76,6 +77,9 @@ export default class App extends React.Component {
   }
 
   reloadData() {
+    this.state.client
+      .getPermissions()
+      .then((permissions) => this.setState({ userLevel: permissions.level }));
     this.state.client.getPrograms().then((allPrograms) =>
       this.setState(
         {
