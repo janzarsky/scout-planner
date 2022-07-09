@@ -161,6 +161,17 @@ app.use(async (req, res, next) => {
     .delete(authorize(EDIT), deleteItem(collection));
 });
 
+app
+  .route(`/api/:table/users`)
+  .get(authorize(ADMIN), getAllItems("users"))
+  .post(authorize(ADMIN), createItem("users"));
+
+app
+  .route(`/api/:table/users/:id`)
+  .get(authorize(ADMIN), getItem("users"))
+  .put(authorize(ADMIN), updateItem("users"))
+  .delete(authorize(ADMIN), deleteItem("users"));
+
 app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
 
 app.use(function (req, res) {
