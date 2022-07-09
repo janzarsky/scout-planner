@@ -12,6 +12,7 @@ import {
   parseDuration,
   parseTime,
 } from "../helpers/DateUtils";
+import { level } from "../helpers/Level";
 
 export class EditProgramModal extends React.Component {
   constructor(props) {
@@ -44,17 +45,23 @@ export class EditProgramModal extends React.Component {
       <Modal show={true} onHide={this.props.handleClose}>
         <Form onSubmit={this.handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Upravit program</Modal.Title>
+            <Modal.Title>
+              {this.props.userLevel >= level.EDIT
+                ? "Upravit program"
+                : "Program"}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <ProgramTitle
               title={this.props.program.title}
               controlRef={this.title}
+              disabled={this.props.userLevel < level.EDIT}
             />
             <ProgramBeginning
               begin={this.props.program.begin}
               timeRef={this.time}
               dateRef={this.date}
+              disabled={this.props.userLevel < level.EDIT}
             />
             <ProgramDuration
               duration={this.props.program.duration}
@@ -64,11 +71,13 @@ export class EditProgramModal extends React.Component {
               setDuration={(duration) =>
                 (this.duration.current.value = duration)
               }
+              disabled={this.props.userLevel < level.EDIT}
             />
             <ProgramPackage
               package={this.props.program.pkg}
               packages={this.props.pkgs}
               controlRef={this.pkg}
+              disabled={this.props.userLevel < level.EDIT}
             />
             <ProgramGroups
               programGroups={this.state.groups}
@@ -85,6 +94,7 @@ export class EditProgramModal extends React.Component {
                   groups: prev.groups.filter((g) => g !== group),
                 }))
               }
+              disabled={this.props.userLevel < level.EDIT}
             />
             <ProgramPeople
               programPeople={this.state.people}
@@ -101,32 +111,43 @@ export class EditProgramModal extends React.Component {
                   people: prev.people.filter((p) => p !== person),
                 }))
               }
+              disabled={this.props.userLevel < level.EDIT}
             />
-            <ProgramUrl url={this.props.program.url} controlRef={this.url} />
+            <ProgramUrl
+              url={this.props.program.url}
+              controlRef={this.url}
+              disabled={this.props.userLevel < level.EDIT}
+            />
             <ProgramRanges
               ranges={this.props.ranges}
               values={this.props.program.ranges}
               controlRefs={this.rangeRefs}
+              disabled={this.props.userLevel < level.EDIT}
             />
             <ProgramNotes
               notes={this.props.program.notes}
               controlRef={this.notes}
+              disabled={this.props.userLevel < level.EDIT}
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="link text-danger"
-              onClick={this.handleDelete}
-              style={{ marginRight: "auto" }}
-            >
-              Smazat
-            </Button>
+            {this.props.userLevel >= level.EDIT && (
+              <Button
+                variant="link text-danger"
+                onClick={this.handleDelete}
+                style={{ marginRight: "auto" }}
+              >
+                Smazat
+              </Button>
+            )}
             <Button variant="link" onClick={this.props.handleClose}>
-              Zrušit
+              {this.userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
             </Button>
-            <Button variant="primary" type="submit">
-              Uložit
-            </Button>
+            {this.props.userLevel >= level.EDIT && (
+              <Button variant="primary" type="submit">
+                Uložit
+              </Button>
+            )}
           </Modal.Footer>
         </Form>
       </Modal>
@@ -177,6 +198,7 @@ function ProgramTitle(props) {
           type="text"
           defaultValue={props.title}
           ref={props.controlRef}
+          disabled={props.disabled}
         />
       </Col>
     </Form.Group>
@@ -195,6 +217,7 @@ function ProgramBeginning(props) {
           defaultValue={formatTime(props.begin)}
           ref={props.timeRef}
           placeholder="MM:HH"
+          disabled={props.disabled}
         />
       </Col>
       <Col>
@@ -203,6 +226,7 @@ function ProgramBeginning(props) {
           defaultValue={formatDate(props.begin)}
           ref={props.dateRef}
           placeholder="YYYY-MM-DD"
+          disabled={props.disabled}
         />
       </Col>
     </Form.Group>
@@ -222,6 +246,7 @@ function ProgramDuration(props) {
             defaultValue={formatDuration(props.duration)}
             ref={props.controlRef}
             placeholder="MM:HH"
+            disabled={props.disabled}
           />
         </Col>
         <Col>
@@ -231,27 +256,30 @@ function ProgramDuration(props) {
             ref={props.lockedRef}
             defaultChecked={props.locked}
             id="locked"
+            disabled={props.disabled}
           />
         </Col>
       </Form.Group>
-      <Form.Group>
-        {[
-          ["0:15", "15 min"],
-          ["0:30", "30 min"],
-          ["0:45", "45 min"],
-          ["1:00", "1 hod"],
-          ["1:30", "1,5 hod"],
-          ["2:00", "2 hod"],
-        ].map(([value, text]) => (
-          <Button
-            variant={"outline-secondary"}
-            key={value}
-            onClick={() => props.setDuration(value)}
-          >
-            {text}
-          </Button>
-        ))}
-      </Form.Group>
+      {!props.disabled && (
+        <Form.Group>
+          {[
+            ["0:15", "15 min"],
+            ["0:30", "30 min"],
+            ["0:45", "45 min"],
+            ["1:00", "1 hod"],
+            ["1:30", "1,5 hod"],
+            ["2:00", "2 hod"],
+          ].map(([value, text]) => (
+            <Button
+              variant={"outline-secondary"}
+              key={value}
+              onClick={() => props.setDuration(value)}
+            >
+              {text}
+            </Button>
+          ))}
+        </Form.Group>
+      )}
     </>
   );
 }
@@ -267,6 +295,7 @@ function ProgramPackage(props) {
           as="select"
           defaultValue={props.package}
           ref={props.controlRef}
+          disabled={props.disabled}
         >
           <option>žádný</option>
           {[...props.packages]
@@ -303,6 +332,7 @@ function ProgramGroups(props) {
                   label={group.name}
                   id={group._id}
                   defaultChecked={props.programGroups.includes(group._id)}
+                  disabled={props.disabled}
                   onClick={(e) => {
                     if (e.target.checked) {
                       props.addGroup(group._id);
@@ -340,6 +370,7 @@ function ProgramPeople(props) {
                 label={person}
                 id={person}
                 defaultChecked={props.programPeople.includes(person)}
+                disabled={props.disabled}
                 onClick={(e) => {
                   if (e.target.checked) {
                     props.addPerson(person);
@@ -351,17 +382,19 @@ function ProgramPeople(props) {
             </Col>
           ))}
         </Row>
-        <Button
-          variant="outline-secondary"
-          onClick={() => {
-            const name = window.prompt("Jméno");
-            if (name) {
-              props.addPerson(name);
-            }
-          }}
-        >
-          Další člověk
-        </Button>
+        {!props.disabled && (
+          <Button
+            variant="outline-secondary"
+            onClick={() => {
+              const name = window.prompt("Jméno");
+              if (name) {
+                props.addPerson(name);
+              }
+            }}
+          >
+            Další člověk
+          </Button>
+        )}
       </Col>
     </Form.Group>
   );
@@ -374,11 +407,23 @@ function ProgramUrl(props) {
         URL
       </Form.Label>
       <Col>
-        <Form.Control
-          type="text"
-          defaultValue={props.url}
-          ref={props.controlRef}
-        />
+        {props.disabled ? (
+          <a
+            href={props.url}
+            style={{ wordBreak: "break-all" }}
+            target="_blank"
+            noreferrer
+            noopener
+          >
+            {props.url}
+          </a>
+        ) : (
+          <Form.Control
+            type="text"
+            defaultValue={props.url}
+            ref={props.controlRef}
+          />
+        )}
       </Col>
     </Form.Group>
   );
@@ -403,6 +448,7 @@ function ProgramRanges(props) {
                 ? props.values[range._id]
                 : 0
             }
+            disabled={props.disabled}
           />
         </Col>
       </Form.Group>
@@ -416,11 +462,15 @@ function ProgramNotes(props) {
         Poznámky
       </Form.Label>
       <Col>
-        <Form.Control
-          as="textarea"
-          defaultValue={props.notes}
-          ref={props.controlRef}
-        />
+        {props.disabled ? (
+          <p>{props.notes}</p>
+        ) : (
+          <Form.Control
+            as="textarea"
+            defaultValue={props.notes}
+            ref={props.controlRef}
+          />
+        )}
       </Col>
     </Form.Group>
   );

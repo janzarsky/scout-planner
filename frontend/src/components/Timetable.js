@@ -6,6 +6,7 @@ import {
   parseDuration,
   parseTime,
 } from "../helpers/DateUtils";
+import { level } from "../helpers/Level";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
@@ -36,7 +37,9 @@ export default class Timetable extends React.Component {
             ", minmax(20px, 1fr))",
         }}
       >
-        {[...this.getDroppables(settings)]}
+        {this.props.userLevel >= level.EDIT && [
+          ...this.getDroppables(settings),
+        ]}
         {[...this.getTimeHeaders(settings)]}
         {[...this.getDateHeaders(settings)]}
         {[...this.getGroupHeaders(settings)]}
@@ -44,7 +47,8 @@ export default class Timetable extends React.Component {
           ...this.getPrograms(
             this.props.programs,
             settings,
-            this.props.viewSettings
+            this.props.viewSettings,
+            this.props.userLevel
           ),
         ]}
         {this.getTimeIndicator(settings)}
@@ -155,7 +159,7 @@ export default class Timetable extends React.Component {
     }
   }
 
-  *getPrograms(programs, settings, viewSettings) {
+  *getPrograms(programs, settings, viewSettings, userLevel) {
     for (const prog of programs) {
       yield (
         <Program
@@ -170,6 +174,7 @@ export default class Timetable extends React.Component {
           viewSettings={viewSettings}
           clone={this.props.clone}
           activeRange={this.props.activeRange}
+          userLevel={this.props.userLevel}
         />
       );
     }

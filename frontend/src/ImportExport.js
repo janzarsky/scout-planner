@@ -2,6 +2,7 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+import { level } from "./helpers/Level";
 
 export default class ImportExport extends React.Component {
   constructor(props) {
@@ -27,13 +28,17 @@ export default class ImportExport extends React.Component {
             <Form.Label>Exportovaná data:</Form.Label>
             <Form.Control as="textarea" value={data} readOnly />
           </Form.Group>
-          <Form.Group>
-            <Form.Label>Data k importu:</Form.Label>
-            <Form.Control as="textarea" ref={this.importData} />
-          </Form.Group>
-          <Form.Group>
-            <Button type="submit">Importovat</Button>
-          </Form.Group>
+          {this.props.userLevel >= level.ADMIN && (
+            <>
+              <Form.Group>
+                <Form.Label>Data k importu:</Form.Label>
+                <Form.Control as="textarea" ref={this.importData} />
+              </Form.Group>
+              <Form.Group>
+                <Button type="submit">Importovat</Button>
+              </Form.Group>
+            </>
+          )}
         </Container>
       </Form>
     );
