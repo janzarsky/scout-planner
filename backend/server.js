@@ -30,8 +30,7 @@ function getAllItems(collection) {
             _id: docSnapshot.id,
           }))
         )
-      )
-      .catch((err) => res.status(500).json({ error: err }));
+      );
   };
 }
 
@@ -43,8 +42,7 @@ function createItem(collection) {
     };
     db.collection(collection)
       .add(item)
-      .then((doc) => res.json({ ...item, _id: doc.id }))
-      .catch((err) => res.status(500).json({ error: err }));
+      .then((doc) => res.json({ ...item, _id: doc.id }));
   };
 }
 
@@ -52,8 +50,7 @@ function deleteItem(collection) {
   return function (req, res) {
     db.doc(`${collection}/${req.params.id}`)
       .delete()
-      .then(() => res.json({}))
-      .catch((err) => res.status(500).json({ error: err }));
+      .then(() => res.json({}));
   };
 }
 
@@ -63,8 +60,7 @@ function getItem(collection) {
       .get()
       .then((docSnapshot) =>
         res.json({ ...docSnapshot.data(), _id: docSnapshot.id })
-      )
-      .catch((err) => res.status(500).json({ error: err }));
+      );
   };
 }
 
@@ -76,8 +72,7 @@ function updateItem(collection) {
     };
     db.doc(`${collection}/${req.params.id}`)
       .update(item)
-      .then(() => res.json({ ...item, _id: req.params.id }))
-      .catch((err) => res.status(500).json({ error: err }));
+      .then(() => res.json({ ...item, _id: req.params.id }));
   };
 }
 
@@ -93,6 +88,8 @@ function updateItem(collection) {
     .put(updateItem(collection))
     .delete(deleteItem(collection));
 });
+
+app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
 
 app.use(function (req, res) {
   res.status(404).send({ url: req.originalUrl + " not found" });
