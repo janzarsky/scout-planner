@@ -168,6 +168,15 @@ app
   .put(authorize(ADMIN), updateItem("users"))
   .delete(authorize(ADMIN), deleteItem("users"));
 
+app.get("/api/:table/permissions", async (req, res) => {
+  const users = await getUsers(req.params.table);
+
+  const userLevel = req.email ? getAllowedLevel(users, req.email) : NONE;
+  const publicLevel = getAllowedLevel(users, "public");
+
+  res.json({ level: userLevel > publicLevel ? userLevel : publicLevel });
+});
+
 app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
 
 app.use(function (req, res) {
