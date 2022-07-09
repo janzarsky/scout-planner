@@ -4,6 +4,11 @@ var port = process.env.PORT || 4000;
 var bodyParser = require("body-parser");
 var cors = require("cors");
 
+const { OAuth2Client } = require("google-auth-library");
+const clientId =
+  "684457012621-3g1skhe5pi3r6knlug7scfsn4iao8a79.apps.googleusercontent.com";
+const client = new OAuth2Client(clientId);
+
 var Firestore = require("@google-cloud/firestore");
 var db = new Firestore();
 
@@ -18,6 +23,48 @@ app.get("/_ah/warmup", (req, res) => {
   res.send("");
 });
 
+const NONE = 0;
+const VIEW = 1;
+const EDIT = 2;
+const ADMIN = 3;
+
+async function getUsers(table) {
+  return db
+    .collection("users")
+    .where("table", "==", table)
+    .get()
+    .then((querySnapshot) =>
+      querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
+    );
+}
+
+function getAllowedLevel(users, email) {
+  const user = users.find((user) => user.email === email);
+
+  if (user) return user.level;
+
+  // this is required so that new tables can be created
+  if (email === "public") return ADMIN;
+
+  return NONE;
+}
+
+function authorize(level) {
+  return async function (req, res, next) {
+    const users = await getUsers(req.params.table);
+
+    if (req.email && getAllowedLevel(users, req.email) >= level) {
+      next();
+    } else if (getAllowedLevel(users, "public") >= level) {
+      next();
+    } else {
+      res
+        .status(403)
+        .json({ error: "You do not have sufficient permissions." });
+    }
+  };
+}
+
 function getAllItems(collection) {
   return function (req, res) {
     db.collection(collection)
@@ -30,8 +77,7 @@ function getAllItems(collection) {
             _id: docSnapshot.id,
           }))
         )
-      )
-      .catch((err) => res.status(500).json({ error: err }));
+      );
   };
 }
 
@@ -43,8 +89,7 @@ function createItem(collection) {
     };
     db.collection(collection)
       .add(item)
-      .then((doc) => res.json({ ...item, _id: doc.id }))
-      .catch((err) => res.status(500).json({ error: err }));
+      .then((doc) => res.json({ ...item, _id: doc.id }));
   };
 }
 
@@ -52,8 +97,7 @@ function deleteItem(collection) {
   return function (req, res) {
     db.doc(`${collection}/${req.params.id}`)
       .delete()
-      .then(() => res.json({}))
-      .catch((err) => res.status(500).json({ error: err }));
+      .then(() => res.json({}));
   };
 }
 
@@ -63,8 +107,7 @@ function getItem(collection) {
       .get()
       .then((docSnapshot) =>
         res.json({ ...docSnapshot.data(), _id: docSnapshot.id })
-      )
-      .catch((err) => res.status(500).json({ error: err }));
+      );
   };
 }
 
@@ -76,23 +119,60 @@ function updateItem(collection) {
     };
     db.doc(`${collection}/${req.params.id}`)
       .update(item)
-      .then(() => res.json({ ...item, _id: req.params.id }))
-      .catch((err) => res.status(500).json({ error: err }));
+      .then(() => res.json({ ...item, _id: req.params.id }));
   };
 }
+
+app.use(async (req, res, next) => {
+  if (req.headers.authorization) {
+    var ticket;
+
+    try {
+      ticket = await client.verifyIdToken({
+        idToken: req.headers.authorization,
+        audience: clientId,
+      });
+    } catch (err) {
+      res.status(401).json({ error: err.message });
+      return;
+    }
+
+    if (!ticket.getPayload().email_verified) {
+      res.status(401).json({ error: "Email not verified." });
+      return;
+    }
+
+    req.email = ticket.getPayload().email;
+  }
+
+  next();
+});
 
 ["programs", "packages", "rules", "groups", "ranges"].forEach((collection) => {
   app
     .route(`/api/:table/${collection}`)
-    .get(getAllItems(collection))
-    .post(createItem(collection));
+    .get(authorize(VIEW), getAllItems(collection))
+    .post(authorize(EDIT), createItem(collection));
 
   app
     .route(`/api/:table/${collection}/:id`)
-    .get(getItem(collection))
-    .put(updateItem(collection))
-    .delete(deleteItem(collection));
+    .get(authorize(VIEW), getItem(collection))
+    .put(authorize(EDIT), updateItem(collection))
+    .delete(authorize(EDIT), deleteItem(collection));
 });
+
+app
+  .route(`/api/:table/users`)
+  .get(authorize(ADMIN), getAllItems("users"))
+  .post(authorize(ADMIN), createItem("users"));
+
+app
+  .route(`/api/:table/users/:id`)
+  .get(authorize(ADMIN), getItem("users"))
+  .put(authorize(ADMIN), updateItem("users"))
+  .delete(authorize(ADMIN), deleteItem("users"));
+
+app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
 
 app.use(function (req, res) {
   res.status(404).send({ url: req.originalUrl + " not found" });
