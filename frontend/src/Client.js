@@ -18,13 +18,24 @@ export default class Client {
     this.authHeader = token ? { Authorization: token } : {};
   }
 
+  async getPermissions() {
+    const resp = await fetch(`${this.basePath}/permissions`, {
+      method: "GET",
+      headers: this.authHeader,
+    });
+    if (!resp.ok) {
+      throw new Error(`Při načítání uživatelských oprávnění nastala chyba.`);
+    }
+    return await resp.json();
+  }
+
   async #get(path, id) {
     const resp = await fetch(`${this.basePath}/${path}/${id}`, {
       method: "GET",
       headers: this.authHeader,
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Při načítání nastala chyba.`);
     }
     return await resp.json();
   }
@@ -35,7 +46,7 @@ export default class Client {
       headers: this.authHeader,
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Při načítání nastala chyba.`);
     }
     return await resp.json();
   }
@@ -47,7 +58,7 @@ export default class Client {
       body: JSON.stringify(data),
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Během aktualizace nastala chyba.`);
     }
     return await resp.json();
   }
@@ -59,7 +70,7 @@ export default class Client {
       body: JSON.stringify(data),
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Během přidávání nastala chyba.`);
     }
     return await resp.json();
   }
@@ -70,7 +81,7 @@ export default class Client {
       headers: this.authHeader,
     });
     if (!resp.ok) {
-      throw new Error(`HTTP error: ${resp.status}`);
+      throw new Error(`Během odstraňování nastala chyba.`);
     }
     return await resp.json();
   }

@@ -1,5 +1,6 @@
 import React from "react";
 import { formatTime } from "../helpers/DateUtils";
+import { level } from "../helpers/Level";
 
 export default class Program extends React.Component {
   constructor(props) {
@@ -34,12 +35,18 @@ export default class Program extends React.Component {
         <ProgramEdit
           program={this.props.program}
           editProgramModal={this.props.editProgramModal}
+          userLevel={this.props.userLevel}
         />
-        {this.props.program.locked ? <ProgramLock /> : <ProgramMove />}
+        {this.props.program.locked && <ProgramLock />}
+        {!this.props.program.locked && this.props.userLevel >= level.EDIT && (
+          <ProgramMove />
+        )}
         {this.props.program.url ? (
           <ProgramUrl url={this.props.program.url} />
         ) : null}
-        <ProgramClone clone={() => this.props.clone(this.props.program)} />
+        {this.props.userLevel >= level.EDIT && (
+          <ProgramClone clone={() => this.props.clone(this.props.program)} />
+        )}
       </div>
     );
   }
@@ -147,7 +154,11 @@ function ProgramEdit(props) {
       className="program-edit"
       onClick={(_) => props.editProgramModal(props.program)}
     >
-      <i className="fa fa-pencil" />
+      {props.userLevel >= level.EDIT ? (
+        <i className="fa fa-pencil" />
+      ) : (
+        <i className="fa fa-eye" />
+      )}
     </div>
   );
 }

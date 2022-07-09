@@ -10,6 +10,7 @@ import {
   parseDate,
   parseTime,
 } from "../helpers/DateUtils";
+import { level } from "../helpers/Level";
 
 export default class Settings extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ export default class Settings extends React.Component {
     return (
       <Form onSubmit={this.handleSubmit}>
         <Table bordered hover responsive>
-          <RulesHeader />
+          <RulesHeader userLevel={this.props.userLevel} />
           <tbody>
             {[...this.props.rules]
               .sort((a, b) => ruleSort(a, b, this.props.programs))
@@ -42,21 +43,24 @@ export default class Settings extends React.Component {
                   groups={this.props.groups}
                   violation={this.props.violations.get(rule._id)}
                   deleteRule={() => this.props.deleteRule(rule._id)}
+                  userLevel={this.props.userLevel}
                 />
               ))}
-            <NewRule
-              programs={this.props.programs}
-              groups={this.props.groups}
-              condition={this.state.condition}
-              setCondition={(condition) =>
-                this.setState({ condition: condition })
-              }
-              firstProgramRef={this.firstProgramRef}
-              secondProgramRef={this.secondProgramRef}
-              conditionRef={this.conditionRef}
-              timeRef={this.timeRef}
-              dateRef={this.dateRef}
-            />
+            {this.props.userLevel >= level.EDIT && (
+              <NewRule
+                programs={this.props.programs}
+                groups={this.props.groups}
+                condition={this.state.condition}
+                setCondition={(condition) =>
+                  this.setState({ condition: condition })
+                }
+                firstProgramRef={this.firstProgramRef}
+                secondProgramRef={this.secondProgramRef}
+                conditionRef={this.conditionRef}
+                timeRef={this.timeRef}
+                dateRef={this.dateRef}
+              />
+            )}
           </tbody>
         </Table>
       </Form>
@@ -101,14 +105,14 @@ function ruleSort(a, b, programs) {
   return 0;
 }
 
-function RulesHeader() {
+function RulesHeader(props) {
   return (
     <thead>
       <tr>
         <th>#</th>
         <th>Pravidlo</th>
         <th>Splněno</th>
-        <th>Akce</th>
+        {props.userLevel >= level.EDIT && <th>Akce</th>}
       </tr>
     </thead>
   );
@@ -131,11 +135,13 @@ function Rule(props) {
             </span>
           ))}
       </td>
-      <td>
-        <Button variant="link text-danger" onClick={props.deleteRule}>
-          <i className="fa fa-trash"></i> Smazat
-        </Button>
-      </td>
+      {props.userLevel >= level.EDIT && (
+        <td>
+          <Button variant="link text-danger" onClick={props.deleteRule}>
+            <i className="fa fa-trash"></i> Smazat
+          </Button>
+        </td>
+      )}
     </tr>
   );
 }
