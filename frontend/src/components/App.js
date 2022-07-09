@@ -47,7 +47,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.client.getPrograms(this.props.table).then((allPrograms) =>
+    this.client.getPrograms().then((allPrograms) =>
       this.setState(
         {
           programs: [...allPrograms].filter((program) => !program.deleted),
@@ -58,18 +58,14 @@ export default class App extends React.Component {
         this.runChecker
       )
     );
+    this.client.getPackages().then((pkgs) => this.setState({ pkgs: pkgs }));
     this.client
-      .getPackages(this.props.table)
-      .then((pkgs) => this.setState({ pkgs: pkgs }));
-    this.client
-      .getRules(this.props.table)
+      .getRules()
       .then((rules) => this.setState({ rules: rules }, this.runChecker));
     this.client
-      .getGroups(this.props.table)
+      .getGroups()
       .then((groups) => this.setState({ groups: groups }, this.runChecker));
-    this.client
-      .getRanges(this.props.table)
-      .then((ranges) => this.setState({ ranges: ranges }));
+    this.client.getRanges().then((ranges) => this.setState({ ranges: ranges }));
   }
 
   runChecker() {
