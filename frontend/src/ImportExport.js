@@ -9,6 +9,7 @@ export default class ImportExport extends React.Component {
     super(props);
     ["importData"].forEach((field) => (this[field] = React.createRef()));
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.deleteAll = this.deleteAll.bind(this);
   }
 
   render() {
@@ -22,29 +23,36 @@ export default class ImportExport extends React.Component {
     });
 
     return (
-      <Form onSubmit={this.handleSubmit}>
-        <Container fluid>
-          <Form.Group>
-            <Form.Label>Exportovaná data:</Form.Label>
-            <Form.Control as="textarea" value={data} readOnly />
-          </Form.Group>
-          {this.props.userLevel >= level.ADMIN && (
-            <>
-              <Form.Group>
-                <Form.Label>Data k importu:</Form.Label>
-                <Form.Control as="textarea" ref={this.importData} />
-              </Form.Group>
-              <Form.Group>
-                <Button type="submit">Importovat</Button>
-              </Form.Group>
-            </>
-          )}
-        </Container>
-      </Form>
+      <>
+        <Form onSubmit={this.handleSubmit}>
+          <Container fluid>
+            <Form.Group>
+              <Form.Label>Exportovaná data:</Form.Label>
+              <Form.Control as="textarea" value={data} readOnly />
+            </Form.Group>
+            {this.props.userLevel >= level.ADMIN && (
+              <>
+                <Form.Group>
+                  <Form.Label>Data k importu:</Form.Label>
+                  <Form.Control as="textarea" ref={this.importData} />
+                </Form.Group>
+                <Form.Group>
+                  <Button type="submit">Importovat</Button>
+                </Form.Group>
+              </>
+            )}
+          </Container>
+        </Form>
+        {this.props.userLevel >= level.ADMIN && (
+          <Container fluid>
+            <Button onClick={this.deleteAll}>Smazat vše</Button>
+          </Container>
+        )}
+      </>
     );
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
 
     const data = JSON.parse(this.importData.current.value);
@@ -53,7 +61,7 @@ export default class ImportExport extends React.Component {
     if (data.ranges === undefined) data.ranges = [];
     if (data.users === undefined) data.users = [];
 
-    Promise.all([
+    await Promise.all([
       // add all packages
       Promise.all([
         ...data.pkgs.map((pkg) =>
@@ -150,5 +158,18 @@ export default class ImportExport extends React.Component {
         ])
       )
       .then(() => window.location.reload());
+  }
+
+  async deleteAll() {
+    await Promise.all([
+      ...this.props.programs.map((it) =>
+        this.props.client.deleteProgram(it._id)
+      ),
+      ...this.props.pkgs.map((it) => this.props.client.deletePackage(it._id)),
+      ...this.props.groups.map((it) => this.props.client.deleteGroup(it._id)),
+      ...this.props.rules.map((it) => this.props.client.deleteRule(it._id)),
+      ...this.props.ranges.map((it) => this.props.client.deleteRange(it._id)),
+      ...this.props.users.map((it) => this.props.client.deleteUser(it._id)),
+    ]).then(() => window.location.reload());
   }
 }
