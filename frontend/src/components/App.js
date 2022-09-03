@@ -13,6 +13,7 @@ import Client from "../Client";
 import { checkRules } from "../Checker";
 import ImportExport from "../ImportExport";
 import Users from "./Users";
+import Stats from "./Stats";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -217,6 +218,13 @@ export default class App extends React.Component {
               <Nav.Item>
                 <Nav.Link as={Button} variant="light" eventKey="ranges">
                   Linky
+                </Nav.Link>
+              </Nav.Item>
+            )}
+            {this.state.userLevel >= level.VIEW && (
+              <Nav.Item>
+                <Nav.Link as={Button} variant="light" eventKey="stats">
+                  Statistiky
                 </Nav.Link>
               </Nav.Item>
             )}
@@ -449,6 +457,16 @@ export default class App extends React.Component {
                       })
                     )
                   }
+                />
+              </Tab.Pane>
+            )}
+            {this.state.userLevel >= level.VIEW && (
+              <Tab.Pane eventKey="stats" title="Statistiky">
+                <Stats
+                  programs={this.state.programs}
+                  people={people}
+                  groups={this.state.groups}
+                  packages={this.state.pkgs}
                 />
               </Tab.Pane>
             )}
