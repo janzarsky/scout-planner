@@ -228,3 +228,14 @@ p.program-violations {
 .jumbotron .container {
   max-width: 40em;
 }
+
+@page {
+    size: 800mm 1108mm;
+    margin: 10mm;
+}
+
+@media print {
+  .control-panel {
+    display: none;
+  }
+}
