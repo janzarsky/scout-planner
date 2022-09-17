@@ -36,7 +36,7 @@ export function formatDuration(ms) {
 
   if (isNaN(date.getTime())) return "(chybná délka)";
 
-  return `${date.getUTCHours()}:${
+  return `${date.getUTCHours() + (date.getUTCDate() - 1) * 24}:${
     date.getUTCMinutes() < 10 ? "0" : ""
   }${date.getUTCMinutes()}`;
 }
