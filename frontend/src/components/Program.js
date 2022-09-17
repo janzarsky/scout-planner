@@ -98,49 +98,74 @@ function ProgramBody(props) {
 function ProgramText(props) {
   return (
     <div className="program-text">
-      {props.program.title[0] !== "(" && <h3>{props.program.title}</h3>}
-      {props.viewSettings.viewPkg && props.pkgName[0] !== "(" && (
+      {!isHidden(props.program.title) && <h3>{props.program.title}</h3>}
+      {props.viewSettings.viewPkg && !isHidden(props.pkgName) && (
         <p className="program-package">{props.pkgName}</p>
       )}
       {props.viewSettings.viewTime && (
-        <p className="program-time">
-          {formatTime(props.program.begin)}&ndash;
-          {formatTime(props.program.begin + props.program.duration)}
-        </p>
+        <ProgramTime
+          begin={props.program.begin}
+          end={props.program.begin + props.program.duration}
+        />
       )}
       {props.viewSettings.viewPeople && (
-        <p className="program-people">
-          {[...props.program.people]
-            .sort((a, b) => a.localeCompare(b))
-            .map((person) => (
-              <span
-                key={person}
-                className={
-                  // dirty hack
-                  props.viewSettings.viewViolations &&
-                  props.violations &&
-                  props.violations.join().includes(person)
-                    ? "program-violated"
-                    : ""
-                }
-              >
-                {person}
-              </span>
-            ))
-            .reduce((accu, elem) => {
-              return accu === null ? [elem] : [...accu, ", ", elem];
-            }, null)}
-        </p>
+        <ProgramPeople
+          people={props.program.people}
+          viewViolations={props.viewSettings.viewViolations}
+          violations={props.violations}
+        />
       )}
       {props.viewSettings.viewViolations && props.violations && (
-        <p className="program-violations">
-          {props.violations
-            // dirty hack
-            .filter((violation) => !violation.includes("Jeden člověk na více"))
-            .join(", ")}
-        </p>
+        <ProgramViolations violations={props.violations} />
       )}
     </div>
+  );
+}
+
+function ProgramTime(props) {
+  return (
+    <p className="program-time">
+      {formatTime(props.begin)}&ndash;
+      {formatTime(props.end)}
+    </p>
+  );
+}
+
+function ProgramPeople(props) {
+  return (
+    <p className="program-people">
+      {[...props.people]
+        .sort((a, b) => a.localeCompare(b))
+        .map((person) => (
+          <span
+            key={person}
+            className={
+              // dirty hack
+              props.viewViolations &&
+              props.violations &&
+              props.violations.join().includes(person)
+                ? "program-violated"
+                : ""
+            }
+          >
+            {person}
+          </span>
+        ))
+        .reduce((accu, elem) => {
+          return accu === null ? [elem] : [...accu, ", ", elem];
+        }, null)}
+    </p>
+  );
+}
+
+function ProgramViolations(props) {
+  return (
+    <p className="program-violations">
+      {props.violations
+        // dirty hack
+        .filter((violation) => !violation.includes("Jeden člověk na více"))
+        .join(", ")}
+    </p>
   );
 }
 
@@ -188,4 +213,8 @@ function ProgramClone(props) {
       <i className="fa fa-clone" />
     </div>
   );
+}
+
+function isHidden(programTitle) {
+  return programTitle.length > 0 && programTitle[0] === "(";
 }
