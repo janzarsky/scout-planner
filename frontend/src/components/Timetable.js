@@ -270,30 +270,16 @@ class Droppable extends React.Component {
           gridRowEnd: "span " + this.props.height,
         }}
         onClick={(_) => this.props.addProgramModal({ begin: this.props.begin })}
-        onDrop={(e) => this.onDrop(e)}
-        onDragEnter={(e) => this.onDragEnter(e)}
-        onDragOver={(e) => this.onDragOver(e)}
-        onDragLeave={(e) => this.onDragLeave(e)}
+        onDrop={(e) => {
+          e.preventDefault();
+          this.props.onDrop(this.props.begin);
+          this.setState({ dragOver: false });
+        }}
+        onDragEnter={() => this.setState({ dragOver: true })}
+        onDragOver={(e) => e.preventDefault()}
+        onDragLeave={() => this.setState({ dragOver: false })}
       />
     );
-  }
-
-  onDragEnter(e) {
-    this.setState({ dragOver: true });
-  }
-
-  onDragOver(e) {
-    e.preventDefault();
-  }
-
-  onDragLeave(e) {
-    this.setState({ dragOver: false });
-  }
-
-  onDrop(e) {
-    e.preventDefault();
-    this.props.onDrop(this.props.begin);
-    this.setState({ dragOver: false });
   }
 }
 
