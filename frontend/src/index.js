@@ -34,7 +34,7 @@ const Homepage = () => {
 
   return (
     <Jumbotron className="text-center min-vh-100">
-      <div class="container">
+      <div className="container">
         <h1 className="mb-5">Skautský plánovač</h1>
 
         <InputGroup className="mb-4">
