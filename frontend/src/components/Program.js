@@ -83,7 +83,10 @@ function ProgramBody(props) {
       title={props.violations && props.violations.join(", ")}
     >
       <ProgramText
-        program={props.program}
+        people={props.program.people}
+        title={props.program.title}
+        begin={props.program.begin}
+        duration={props.program.duration}
         pkgName={props.pkg ? props.pkg.name : ""}
         viewSettings={props.viewSettings}
         violations={props.violations}
@@ -95,19 +98,16 @@ function ProgramBody(props) {
 function ProgramText(props) {
   return (
     <div className="program-text">
-      {!isHidden(props.program.title) && <h3>{props.program.title}</h3>}
+      {!isHidden(props.title) && <h3>{props.title}</h3>}
       {props.viewSettings.viewPkg && !isHidden(props.pkgName) && (
         <p className="program-package">{props.pkgName}</p>
       )}
       {props.viewSettings.viewTime && (
-        <ProgramTime
-          begin={props.program.begin}
-          end={props.program.begin + props.program.duration}
-        />
+        <ProgramTime begin={props.begin} end={props.begin + props.duration} />
       )}
       {props.viewSettings.viewPeople && (
         <ProgramPeople
-          people={props.program.people}
+          people={props.people}
           viewViolations={props.viewSettings.viewViolations}
           violations={props.violations}
         />
