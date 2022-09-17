@@ -9,8 +9,6 @@ export default class Program extends React.Component {
   }
 
   render() {
-    if (this.props.rect.x < 0 || this.props.rect.y < 0) return null;
-
     return (
       <div
         className={"program-wrapper" + (this.state.dragged ? " dragged" : "")}
@@ -27,23 +25,21 @@ export default class Program extends React.Component {
         <ProgramBody
           program={this.props.program}
           violations={this.props.violations}
-          pkgs={this.props.pkgs}
-          filtered={this.props.filtered}
+          pkg={this.props.pkgs.find((p) => p._id === this.props.program.pkg)}
+          highlighted={this.props.highlighted}
           viewSettings={this.props.viewSettings}
           activeRange={this.props.activeRange}
         />
         <ProgramEdit
           program={this.props.program}
-          editProgramModal={this.props.editProgramModal}
+          onEdit={this.props.onEdit}
           userLevel={this.props.userLevel}
         />
         {this.props.program.locked && <ProgramLock />}
         {!this.props.program.locked && this.props.userLevel >= level.EDIT && (
           <ProgramMove />
         )}
-        {this.props.program.url ? (
-          <ProgramUrl url={this.props.program.url} />
-        ) : null}
+        {this.props.program.url && <ProgramUrl url={this.props.program.url} />}
         {this.props.userLevel >= level.EDIT && (
           <ProgramClone clone={() => this.props.clone(this.props.program)} />
         )}
@@ -63,9 +59,6 @@ export default class Program extends React.Component {
 }
 
 function ProgramBody(props) {
-  const pkg = props.pkgs.find((p) => p._id === props.program.pkg);
-  const pkgName = pkg ? pkg.name : "";
-  const color = pkg ? pkg.color : null;
   let rangeValue =
     props.activeRange && props.program.ranges
       ? props.program.ranges[props.activeRange]
@@ -79,19 +72,22 @@ function ProgramBody(props) {
         (props.violations && props.viewSettings.viewViolations
           ? " violation"
           : "") +
-        (props.filtered ? " filtered" : "") +
+        (props.highlighted ? " highlighted" : "") +
         (props.activeRange ? " range range-" + rangeValue : "")
       }
       style={
-        color && !props.filtered && !props.activeRange
-          ? { backgroundColor: color }
+        !props.highlighted && !props.activeRange && props.pkg
+          ? { backgroundColor: props.pkg.color }
           : {}
       }
       title={props.violations && props.violations.join(", ")}
     >
       <ProgramText
-        program={props.program}
-        pkgName={pkgName}
+        people={props.program.people}
+        title={props.program.title}
+        begin={props.program.begin}
+        duration={props.program.duration}
+        pkgName={props.pkg ? props.pkg.name : ""}
         viewSettings={props.viewSettings}
         violations={props.violations}
       />
@@ -102,58 +98,77 @@ function ProgramBody(props) {
 function ProgramText(props) {
   return (
     <div className="program-text">
-      {props.program.title[0] !== "(" && <h3>{props.program.title}</h3>}
-      {props.viewSettings.viewPkg && props.pkgName[0] !== "(" && (
+      {!isHidden(props.title) && <h3>{props.title}</h3>}
+      {props.viewSettings.viewPkg && !isHidden(props.pkgName) && (
         <p className="program-package">{props.pkgName}</p>
       )}
       {props.viewSettings.viewTime && (
-        <p className="program-time">
-          {formatTime(props.program.begin)}&ndash;
-          {formatTime(props.program.begin + props.program.duration)}
-        </p>
+        <ProgramTime begin={props.begin} end={props.begin + props.duration} />
       )}
       {props.viewSettings.viewPeople && (
-        <p className="program-people">
-          {[...props.program.people]
-            .sort((a, b) => a.localeCompare(b))
-            .map((person) => (
-              <span
-                key={person}
-                className={
-                  // dirty hack
-                  props.viewSettings.viewViolations &&
-                  props.violations &&
-                  props.violations.join().includes(person)
-                    ? "program-violated"
-                    : ""
-                }
-              >
-                {person}
-              </span>
-            ))
-            .reduce((accu, elem) => {
-              return accu === null ? [elem] : [...accu, ", ", elem];
-            }, null)}
-        </p>
+        <ProgramPeople
+          people={props.people}
+          viewViolations={props.viewSettings.viewViolations}
+          violations={props.violations}
+        />
       )}
       {props.viewSettings.viewViolations && props.violations && (
-        <p className="program-violations">
-          {props.violations
-            // dirty hack
-            .filter((violation) => !violation.includes("Jeden člověk na více"))
-            .join(", ")}
-        </p>
+        <ProgramViolations violations={props.violations} />
       )}
     </div>
   );
 }
 
+function ProgramTime(props) {
+  return (
+    <p className="program-time">
+      {formatTime(props.begin)}&ndash;
+      {formatTime(props.end)}
+    </p>
+  );
+}
+
+function ProgramPeople(props) {
+  return (
+    <p className="program-people">
+      {[...props.people]
+        .sort((a, b) => a.localeCompare(b))
+        .map((person) => (
+          <span
+            key={person}
+            className={
+              // dirty hack
+              props.viewViolations &&
+              props.violations &&
+              props.violations.join().includes(person)
+                ? "program-violated"
+                : ""
+            }
+          >
+            {person}
+          </span>
+        ))
+        .reduce((accu, elem) => {
+          return accu === null ? [elem] : [...accu, ", ", elem];
+        }, null)}
+    </p>
+  );
+}
+
+function ProgramViolations(props) {
+  return (
+    <p className="program-violations">
+      {props.violations
+        // dirty hack
+        .filter((violation) => !violation.includes("Jeden člověk na více"))
+        .join(", ")}
+    </p>
+  );
+}
+
 function ProgramEdit(props) {
   return (
-    <div
-      className="program-edit"
-      onClick={(_) => props.editProgramModal(props.program)}
-    >
+    <div className="program-edit" onClick={() => props.onEdit(props.program)}>
       {props.userLevel >= level.EDIT ? (
         <i className="fa fa-pencil" />
       ) : (
@@ -195,4 +210,8 @@ function ProgramClone(props) {
       <i className="fa fa-clone" />
     </div>
   );
+}
+
+function isHidden(programTitle) {
+  return programTitle.length > 0 && programTitle[0] === "(";
 }

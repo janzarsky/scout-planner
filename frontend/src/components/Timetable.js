@@ -158,22 +158,31 @@ export default class Timetable extends React.Component {
 
   *getPrograms(programs, settings, viewSettings, userLevel) {
     for (const prog of programs) {
-      yield (
-        <Program
-          key={prog._id}
-          program={prog}
-          filtered={this.props.filterPkgs.indexOf(prog.pkg) !== -1}
-          violations={this.props.violations.get(prog._id)}
-          rect={this.getRect(prog, settings)}
-          onDragStart={this.onProgramDragStart}
-          pkgs={this.props.pkgs}
-          editProgramModal={this.props.editProgramModal}
-          viewSettings={viewSettings}
-          clone={this.props.clone}
-          activeRange={this.props.activeRange}
-          userLevel={this.props.userLevel}
-        />
-      );
+      const rect = this.getRect(prog, settings);
+
+      if (rect.x >= 0 && rect.y >= 0)
+        yield (
+          <Program
+            key={prog._id}
+            program={prog}
+            highlighted={
+              this.props.highlightedPackages.indexOf(prog.pkg) !== -1
+            }
+            violations={this.props.violations.get(prog._id)}
+            rect={rect}
+            onDragStart={this.onProgramDragStart}
+            pkgs={this.props.pkgs}
+            onEdit={this.props.onEdit}
+            viewSettings={viewSettings}
+            clone={this.props.clone}
+            activeRange={this.props.activeRange}
+            userLevel={this.props.userLevel}
+          />
+        );
+      else
+        console.warn(
+          `The computed rectangle ${rect} for program ${prog._id} is invalid`
+        );
     }
   }
 

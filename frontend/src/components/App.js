@@ -46,8 +46,8 @@ export default class App extends React.Component {
       editProgram: false,
       editProgramData: {},
       activeTab: "timetable",
-      filterActive: false,
-      filterPkgs: [],
+      highlightingEnabled: false,
+      highlightedPackages: [],
       activeRange: null,
       viewSettingsActive: false,
       viewPkg: true,
@@ -257,8 +257,10 @@ export default class App extends React.Component {
                   groups={this.state.groups}
                   settings={this.state.settings}
                   violations={violationsPerProgram}
-                  filterPkgs={
-                    this.state.filterActive ? this.state.filterPkgs : []
+                  highlightedPackages={
+                    this.state.highlightingEnabled
+                      ? this.state.highlightedPackages
+                      : []
                   }
                   updateProgram={this.updateProgram}
                   addProgramModal={(options) =>
@@ -267,7 +269,7 @@ export default class App extends React.Component {
                       addProgramOptions: options,
                     })
                   }
-                  editProgramModal={(program) =>
+                  onEdit={(program) =>
                     this.setState({
                       editProgram: true,
                       editProgramData: program,
@@ -527,10 +529,10 @@ export default class App extends React.Component {
 
   getFilters() {
     const toggle = (id) => {
-      let filterPkgs = this.state.filterPkgs;
-      if (filterPkgs.indexOf(id) === -1) filterPkgs.push(id);
-      else filterPkgs.splice(filterPkgs.indexOf(id), 1);
-      this.setState({ filterPkgs: filterPkgs });
+      let highlightedPackages = this.state.highlightedPackages;
+      if (highlightedPackages.indexOf(id) === -1) highlightedPackages.push(id);
+      else highlightedPackages.splice(highlightedPackages.indexOf(id), 1);
+      this.setState({ highlightedPackages });
     };
 
     return (
@@ -538,28 +540,30 @@ export default class App extends React.Component {
         <Nav.Item>
           <Nav.Link
             as={Button}
-            variant={this.state.filterActive ? "dark" : "light"}
+            variant={this.state.highlightingEnabled ? "dark" : "light"}
             onClick={() =>
               this.setState({
-                filterActive: this.state.filterActive ? false : true,
+                highlightingEnabled: this.state.highlightingEnabled
+                  ? false
+                  : true,
               })
             }
           >
             <i className="fa fa-filter" />
           </Nav.Link>
         </Nav.Item>
-        {this.state.filterActive &&
+        {this.state.highlightingEnabled &&
           [...this.state.pkgs].sort(byName).map((pkg) => (
             <Nav.Item key={pkg._id}>
               <Nav.Link
                 as={Button}
                 variant={
-                  this.state.filterPkgs.indexOf(pkg._id) === -1
+                  this.state.highlightedPackages.indexOf(pkg._id) === -1
                     ? "light"
                     : "dark"
                 }
                 style={
-                  this.state.filterPkgs.indexOf(pkg._id) === -1
+                  this.state.highlightedPackages.indexOf(pkg._id) === -1
                     ? { backgroundColor: pkg.color }
                     : {}
                 }

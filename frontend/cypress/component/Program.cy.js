@@ -37,7 +37,7 @@ describe("Program.cy.js", () => {
         program={prog}
         rect={rect}
         pkgs={[]}
-        editProgramModal={cy.stub().as("edit")}
+        onEdit={cy.stub().as("edit")}
         viewSettings={viewSettings}
         clone={cy.stub().as("clone")}
         userLevel={level.ADMIN}
@@ -108,6 +108,23 @@ describe("Program.cy.js", () => {
     cy.get(".program-people")
       .contains("Alice")
       .should("have.css", "color", "rgb(183, 28, 28)");
+  });
+
+  it("without URL", () => {
+    const progWithoutUrl = Cypress._.cloneDeep(prog);
+    delete progWithoutUrl.url;
+
+    cy.mount(
+      <Program
+        program={progWithoutUrl}
+        rect={rect}
+        pkgs={[]}
+        viewSettings={viewSettings}
+        userLevel={level.ADMIN}
+      />
+    );
+
+    cy.get(".program-url").should("not.exist");
   });
 
   describe("View settings", () => {
@@ -212,7 +229,7 @@ describe("Program.cy.js", () => {
           pkgs={[]}
           viewSettings={viewSettings}
           userLevel={levelValue}
-          editProgramModal={cy.stub().as("edit")}
+          onEdit={cy.stub().as("edit")}
         />
       );
     }
