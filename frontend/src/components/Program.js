@@ -39,9 +39,7 @@ export default class Program extends React.Component {
         {!this.props.program.locked && this.props.userLevel >= level.EDIT && (
           <ProgramMove />
         )}
-        {this.props.program.url ? (
-          <ProgramUrl url={this.props.program.url} />
-        ) : null}
+        {this.props.program.url && <ProgramUrl url={this.props.program.url} />}
         {this.props.userLevel >= level.EDIT && (
           <ProgramClone clone={() => this.props.clone(this.props.program)} />
         )}

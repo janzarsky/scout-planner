@@ -110,6 +110,23 @@ describe("Program.cy.js", () => {
       .should("have.css", "color", "rgb(183, 28, 28)");
   });
 
+  it("without URL", () => {
+    const progWithoutUrl = Cypress._.cloneDeep(prog);
+    delete progWithoutUrl.url;
+
+    cy.mount(
+      <Program
+        program={progWithoutUrl}
+        rect={rect}
+        pkgs={[]}
+        viewSettings={viewSettings}
+        userLevel={level.ADMIN}
+      />
+    );
+
+    cy.get(".program-url").should("not.exist");
+  });
+
   describe("View settings", () => {
     it("no package", () => {
       const pkg = {
