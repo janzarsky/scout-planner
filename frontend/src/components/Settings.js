@@ -2,9 +2,9 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import { level } from "./helpers/Level";
+import { level } from "../helpers/Level";
 
-export default class ImportExport extends React.Component {
+export default class Settings extends React.Component {
   constructor(props) {
     super(props);
     ["importData"].forEach((field) => (this[field] = React.createRef()));

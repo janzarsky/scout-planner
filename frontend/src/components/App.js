@@ -11,7 +11,7 @@ import Nav from "react-bootstrap/Nav";
 import Alert from "react-bootstrap/Alert";
 import Client from "../Client";
 import { checkRules } from "../Checker";
-import ImportExport from "../ImportExport";
+import Settings from "./Settings";
 import Users from "./Users";
 import Stats from "./Stats";
 import { initializeApp } from "firebase/app";
@@ -238,8 +238,8 @@ export default class App extends React.Component {
             )}
             {this.state.userLevel >= level.VIEW && (
               <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="importexport">
-                  Import/Export
+                <Nav.Link as={Button} variant="light" eventKey="settings">
+                  Nastavení
                 </Nav.Link>
               </Nav.Item>
             )}
@@ -506,8 +506,8 @@ export default class App extends React.Component {
                 />
               </Tab.Pane>
             )}
-            <Tab.Pane eventKey="importexport" title="Import/Export">
-              <ImportExport
+            <Tab.Pane eventKey="settings" title="Nastavení">
+              <Settings
                 programs={[
                   ...this.state.programs,
                   ...this.state.deletedPrograms,
