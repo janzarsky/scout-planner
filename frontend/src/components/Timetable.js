@@ -170,7 +170,7 @@ export default class Timetable extends React.Component {
             rect={rect}
             onDragStart={this.onProgramDragStart}
             pkgs={this.props.pkgs}
-            editProgramModal={this.props.editProgramModal}
+            onEdit={this.props.onEdit}
             viewSettings={viewSettings}
             clone={this.props.clone}
             activeRange={this.props.activeRange}

@@ -32,7 +32,7 @@ export default class Program extends React.Component {
         />
         <ProgramEdit
           program={this.props.program}
-          editProgramModal={this.props.editProgramModal}
+          onEdit={this.props.onEdit}
           userLevel={this.props.userLevel}
         />
         {this.props.program.locked && <ProgramLock />}
@@ -146,10 +146,7 @@ function ProgramText(props) {
 
 function ProgramEdit(props) {
   return (
-    <div
-      className="program-edit"
-      onClick={(_) => props.editProgramModal(props.program)}
-    >
+    <div className="program-edit" onClick={() => props.onEdit(props.program)}>
       {props.userLevel >= level.EDIT ? (
         <i className="fa fa-pencil" />
       ) : (

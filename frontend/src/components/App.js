@@ -267,7 +267,7 @@ export default class App extends React.Component {
                       addProgramOptions: options,
                     })
                   }
-                  editProgramModal={(program) =>
+                  onEdit={(program) =>
                     this.setState({
                       editProgram: true,
                       editProgramData: program,

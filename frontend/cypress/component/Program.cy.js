@@ -37,7 +37,7 @@ describe("Program.cy.js", () => {
         program={prog}
         rect={rect}
         pkgs={[]}
-        editProgramModal={cy.stub().as("edit")}
+        onEdit={cy.stub().as("edit")}
         viewSettings={viewSettings}
         clone={cy.stub().as("clone")}
         userLevel={level.ADMIN}
@@ -229,7 +229,7 @@ describe("Program.cy.js", () => {
           pkgs={[]}
           viewSettings={viewSettings}
           userLevel={levelValue}
-          editProgramModal={cy.stub().as("edit")}
+          onEdit={cy.stub().as("edit")}
         />
       );
     }
