@@ -147,8 +147,6 @@ function getDurationPerPersonAndGroup(programs, pkgs) {
           counters[person][group] += program.duration;
         }
       }
-    } else {
-      console.log("skipping " + program.title);
     }
   }
 
