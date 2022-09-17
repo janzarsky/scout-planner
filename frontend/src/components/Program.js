@@ -25,7 +25,7 @@ export default class Program extends React.Component {
         <ProgramBody
           program={this.props.program}
           violations={this.props.violations}
-          pkgs={this.props.pkgs}
+          pkg={this.props.pkgs.find((p) => p._id === this.props.program.pkg)}
           highlighted={this.props.highlighted}
           viewSettings={this.props.viewSettings}
           activeRange={this.props.activeRange}
@@ -59,9 +59,6 @@ export default class Program extends React.Component {
 }
 
 function ProgramBody(props) {
-  const pkg = props.pkgs.find((p) => p._id === props.program.pkg);
-  const pkgName = pkg ? pkg.name : "";
-  const color = pkg ? pkg.color : null;
   let rangeValue =
     props.activeRange && props.program.ranges
       ? props.program.ranges[props.activeRange]
@@ -79,15 +76,15 @@ function ProgramBody(props) {
         (props.activeRange ? " range range-" + rangeValue : "")
       }
       style={
-        color && !props.highlighted && !props.activeRange
-          ? { backgroundColor: color }
+        !props.highlighted && !props.activeRange && props.pkg
+          ? { backgroundColor: props.pkg.color }
           : {}
       }
       title={props.violations && props.violations.join(", ")}
     >
       <ProgramText
         program={props.program}
-        pkgName={pkgName}
+        pkgName={props.pkg ? props.pkg.name : ""}
         viewSettings={props.viewSettings}
         violations={props.violations}
       />
