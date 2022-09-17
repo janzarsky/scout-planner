@@ -239,3 +239,8 @@ p.program-violations {
     display: none;
   }
 }
+
+/* Bootstrap fix */
+.nav-pills .nav-link.btn-dark {
+  background: 0 0 #343a40;
+}
