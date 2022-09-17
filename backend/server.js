@@ -168,6 +168,37 @@ app
   .put(authorize(ADMIN), updateItem("users"))
   .delete(authorize(ADMIN), deleteItem("users"));
 
+app
+  .route(`/api/:table/settings`)
+  .get(authorize(EDIT), async (req, res) =>
+    db
+      .collection("settings")
+      .where("table", "==", req.params.table)
+      .limit(1)
+      .get()
+      .then((querySnapshot) =>
+        res.json(querySnapshot.size > 0 ? querySnapshot.docs[0].data() : {})
+      )
+  )
+  .put(authorize(EDIT), async (req, res) =>
+    db
+      .collection("settings")
+      .where("table", "==", req.params.table)
+      .limit(1)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.size > 0) {
+          db.doc(`settings/${querySnapshot.docs[0].id}`)
+            .update(req.body)
+            .then(() => res.send());
+        } else {
+          db.collection("settings")
+            .add(req.body)
+            .then(() => res.send());
+        }
+      })
+  );
+
 app.get("/api/:table/permissions", async (req, res) => {
   const users = await getUsers(req.params.table);
 
