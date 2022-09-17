@@ -202,4 +202,40 @@ describe("Program.cy.js", () => {
         .should("not.have.css", "color", "rgb(183, 28, 28)");
     });
   });
+
+  describe("Permissions", () => {
+    function mountProgram(levelValue) {
+      cy.mount(
+        <Program
+          program={prog}
+          rect={rect}
+          pkgs={[]}
+          viewSettings={viewSettings}
+          userLevel={levelValue}
+          editProgramModal={cy.stub().as("edit")}
+        />
+      );
+    }
+
+    it(`able to edit (admin)`, () => {
+      mountProgram(level.ADMIN);
+
+      cy.get(".program-move");
+      cy.get(".program-clone");
+    });
+
+    it(`able to edit (edit)`, () => {
+      mountProgram(level.EDIT);
+
+      cy.get(".program-move");
+      cy.get(".program-clone");
+    });
+
+    it(`unable to edit (view)`, () => {
+      mountProgram(level.VIEW);
+
+      cy.get(".program-move").should("not.exist");
+      cy.get(".program-clone").should("not.exist");
+    });
+  });
 });
