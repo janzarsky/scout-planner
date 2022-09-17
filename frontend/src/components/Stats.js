@@ -5,13 +5,22 @@ import { formatDuration } from "../helpers/DateUtils";
 export default function Stats(props) {
   return (
     <>
-      {getPackageStats(props)}
-      {getPeopleStats(props)}
+      <PackageStats
+        groups={props.groups}
+        programs={props.programs}
+        packages={props.packages}
+      />
+      <PeopleStats
+        groups={props.groups}
+        programs={props.programs}
+        packages={props.packages}
+        people={props.people}
+      />
     </>
   );
 }
 
-function getPackageStats(props) {
+function PackageStats(props) {
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(
     props.programs
   );
@@ -61,7 +70,7 @@ function getPackageStats(props) {
   );
 }
 
-function getPeopleStats(props) {
+function PeopleStats(props) {
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
     props.programs,
     props.packages
