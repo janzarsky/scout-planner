@@ -17,7 +17,7 @@ app.options("*", cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get("/_ah/warmup", (req, res) => {
+app.get("/_ah/warmup", (_req, res) => {
   db = new Firestore();
   res.send("");
 });
@@ -208,7 +208,7 @@ app.get("/api/:table/permissions", async (req, res) => {
   res.json({ level: userLevel > publicLevel ? userLevel : publicLevel });
 });
 
-app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
+app.use((err, _req, res) => res.status(500).json({ error: err.message }));
 
 app.use(function (req, res) {
   res.status(404).send({ url: req.originalUrl + " not found" });
