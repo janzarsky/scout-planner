@@ -9,8 +9,6 @@ export default class Program extends React.Component {
   }
 
   render() {
-    if (this.props.rect.x < 0 || this.props.rect.y < 0) return null;
-
     return (
       <div
         className={"program-wrapper" + (this.state.dragged ? " dragged" : "")}
