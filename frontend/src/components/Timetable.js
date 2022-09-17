@@ -91,7 +91,7 @@ export default class Timetable extends React.Component {
     settings.timeStep = 15 * 60 * 1000;
     settings.timeSpan = Math.ceil(hour / (15 * 60 * 1000));
     settings.groups = [...groups].sort(byOrder);
-    settings.groupCnt = groups.length;
+    settings.groupCnt = groups.length > 0 ? groups.length : 1;
 
     return settings;
   }
