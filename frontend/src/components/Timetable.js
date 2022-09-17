@@ -165,7 +165,9 @@ export default class Timetable extends React.Component {
           <Program
             key={prog._id}
             program={prog}
-            filtered={this.props.filterPkgs.indexOf(prog.pkg) !== -1}
+            highlighted={
+              this.props.highlightedPackages.indexOf(prog.pkg) !== -1
+            }
             violations={this.props.violations.get(prog._id)}
             rect={rect}
             onDragStart={this.onProgramDragStart}

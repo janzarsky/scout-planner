@@ -98,7 +98,7 @@ p {
     rgba(66, 66, 66, 0.15) 40px
   );
 }
-.program.filtered {
+.program.highlighted {
   background-color: #343a40;
 }
 
@@ -124,10 +124,10 @@ p {
 p.program-violations {
   color: #b71c1c;
 }
-.program.filtered .program-text h3 {
+.program.highlighted .program-text h3 {
   color: #ffffff;
 }
-.program.filtered .program-text p {
+.program.highlighted .program-text p {
   color: #b0bec5;
 }
 

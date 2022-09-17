@@ -26,7 +26,7 @@ export default class Program extends React.Component {
           program={this.props.program}
           violations={this.props.violations}
           pkgs={this.props.pkgs}
-          filtered={this.props.filtered}
+          highlighted={this.props.highlighted}
           viewSettings={this.props.viewSettings}
           activeRange={this.props.activeRange}
         />
@@ -75,11 +75,11 @@ function ProgramBody(props) {
         (props.violations && props.viewSettings.viewViolations
           ? " violation"
           : "") +
-        (props.filtered ? " filtered" : "") +
+        (props.highlighted ? " highlighted" : "") +
         (props.activeRange ? " range range-" + rangeValue : "")
       }
       style={
-        color && !props.filtered && !props.activeRange
+        color && !props.highlighted && !props.activeRange
           ? { backgroundColor: color }
           : {}
       }
