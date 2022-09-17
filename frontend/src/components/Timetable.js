@@ -22,7 +22,11 @@ export default class Timetable extends React.Component {
   }
 
   render() {
-    const settings = this.getSettings(this.props.programs, this.props.groups);
+    const settings = this.getSettings(
+      this.props.programs,
+      this.props.groups,
+      this.props.timeStep
+    );
 
     return (
       <div
@@ -57,7 +61,7 @@ export default class Timetable extends React.Component {
     );
   }
 
-  getSettings(programs, groups) {
+  getSettings(programs, groups, timeStep) {
     const hour = parseDuration("1:00");
 
     if (programs.length === 0)
@@ -88,8 +92,8 @@ export default class Timetable extends React.Component {
       { length: Math.ceil((settings.dayEnd - settings.dayStart) / hour) },
       (_, idx) => settings.dayStart + idx * hour
     );
-    settings.timeStep = 15 * 60 * 1000;
-    settings.timeSpan = Math.ceil(hour / (15 * 60 * 1000));
+    settings.timeStep = timeStep;
+    settings.timeSpan = Math.ceil(hour / timeStep);
     settings.groups = [...groups].sort(byOrder);
     settings.groupCnt = groups.length > 0 ? groups.length : 1;
 

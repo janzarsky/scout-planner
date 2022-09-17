@@ -57,6 +57,7 @@ export default class App extends React.Component {
       viewRanges: false,
       client: new Client(null, this.props.table),
       userLevel: level.NONE,
+      timeStep: 5 * 60 * 1000,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -256,6 +257,7 @@ export default class App extends React.Component {
                   pkgs={this.state.pkgs}
                   groups={this.state.groups}
                   settings={this.state.settings}
+                  timeStep={this.state.timeStep}
                   violations={violationsPerProgram}
                   highlightedPackages={
                     this.state.highlightingEnabled
