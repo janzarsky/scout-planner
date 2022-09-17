@@ -7,6 +7,7 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import { byOrder } from "../helpers/Sorting";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
@@ -89,11 +90,7 @@ export default class Timetable extends React.Component {
     );
     settings.timeStep = 15 * 60 * 1000;
     settings.timeSpan = Math.ceil(hour / (15 * 60 * 1000));
-    settings.groups = [...groups].sort((a, b) => {
-      if (a.order < b.order) return -1;
-      if (a.order > b.order) return 1;
-      return 0;
-    });
+    settings.groups = [...groups].sort(byOrder);
     settings.groupCnt = groups.length;
 
     return settings;

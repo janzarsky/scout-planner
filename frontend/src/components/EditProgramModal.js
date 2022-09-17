@@ -13,6 +13,7 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import { byName } from "../helpers/Sorting";
 
 export class EditProgramModal extends React.Component {
   constructor(props) {
@@ -298,13 +299,11 @@ function ProgramPackage(props) {
           disabled={props.disabled}
         >
           <option>žádný</option>
-          {[...props.packages]
-            .sort((pkg1, pkg2) => pkg1.name.localeCompare(pkg2.name))
-            .map((pkg) => (
-              <option key={pkg._id} value={pkg._id}>
-                {pkg.name}
-              </option>
-            ))}
+          {[...props.packages].sort(byName).map((pkg) => (
+            <option key={pkg._id} value={pkg._id}>
+              {pkg.name}
+            </option>
+          ))}
         </Form.Control>
       </Col>
     </Form.Group>
@@ -319,30 +318,24 @@ function ProgramGroups(props) {
       </Form.Label>
       <Col>
         <Row>
-          {[...props.allGroups]
-            .sort((a, b) => {
-              if (a.order < b.order) return -1;
-              if (a.order > b.order) return 1;
-              return 0;
-            })
-            .map((group) => (
-              <Col key={group._id}>
-                <Form.Check
-                  type="checkbox"
-                  label={group.name}
-                  id={group._id}
-                  defaultChecked={props.programGroups.includes(group._id)}
-                  disabled={props.disabled}
-                  onClick={(e) => {
-                    if (e.target.checked) {
-                      props.addGroup(group._id);
-                    } else {
-                      props.removeGroup(group._id);
-                    }
-                  }}
-                />
-              </Col>
-            ))}
+          {[...props.allGroups].sort(byName).map((group) => (
+            <Col key={group._id}>
+              <Form.Check
+                type="checkbox"
+                label={group.name}
+                id={group._id}
+                defaultChecked={props.programGroups.includes(group._id)}
+                disabled={props.disabled}
+                onClick={(e) => {
+                  if (e.target.checked) {
+                    props.addGroup(group._id);
+                  } else {
+                    props.removeGroup(group._id);
+                  }
+                }}
+              />
+            </Col>
+          ))}
         </Row>
       </Col>
     </Form.Group>
@@ -429,29 +422,27 @@ function ProgramUrl(props) {
 }
 
 function ProgramRanges(props) {
-  return props.ranges
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((range) => (
-      <Form.Group as={Row} key={range._id}>
-        <Form.Label column sm="2">
-          {range.name}
-        </Form.Label>
-        <Col>
-          <Form.Control
-            type="range"
-            min="0"
-            max="3"
-            ref={props.controlRefs[range._id]}
-            defaultValue={
-              props.values && props.values[range._id]
-                ? props.values[range._id]
-                : 0
-            }
-            disabled={props.disabled}
-          />
-        </Col>
-      </Form.Group>
-    ));
+  return props.ranges.sort(byName).map((range) => (
+    <Form.Group as={Row} key={range._id}>
+      <Form.Label column sm="2">
+        {range.name}
+      </Form.Label>
+      <Col>
+        <Form.Control
+          type="range"
+          min="0"
+          max="3"
+          ref={props.controlRefs[range._id]}
+          defaultValue={
+            props.values && props.values[range._id]
+              ? props.values[range._id]
+              : 0
+          }
+          disabled={props.disabled}
+        />
+      </Col>
+    </Form.Group>
+  ));
 }
 
 function ProgramNotes(props) {

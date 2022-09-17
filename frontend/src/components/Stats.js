@@ -1,6 +1,7 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
 import { formatDuration } from "../helpers/DateUtils";
+import { byName, byOrder } from "../helpers/Sorting";
 
 export default function Stats(props) {
   return (
@@ -29,40 +30,28 @@ function PackageStats(props) {
       <thead>
         <tr>
           <th>Balíček</th>
-          {[...props.groups]
-            .sort((a, b) => {
-              if (a.order < b.order) return -1;
-              if (a.order > b.order) return 1;
-              return 0;
-            })
-            .map((group) => (
-              <th key={group._id}>{group.name}</th>
-            ))}
+          {[...props.groups].sort(byOrder).map((group) => (
+            <th key={group._id}>{group.name}</th>
+          ))}
         </tr>
       </thead>
       <tbody>
         {[...props.packages]
-          .sort((a, b) => a.name.localeCompare(b.name))
+          .sort(byName)
           .filter((pkg) => pkg.name[0] !== "(")
           .map((pkg) => (
             <tr key={pkg._id}>
               <td>{pkg.name}</td>
-              {[...props.groups]
-                .sort((a, b) => {
-                  if (a.order < b.order) return -1;
-                  if (a.order > b.order) return 1;
-                  return 0;
-                })
-                .map((group) => (
-                  <td key={group._id}>
-                    {durationPerPackageAndGroup[pkg._id] &&
-                    durationPerPackageAndGroup[pkg._id][group._id]
-                      ? formatDuration(
-                          durationPerPackageAndGroup[pkg._id][group._id]
-                        )
-                      : ""}
-                  </td>
-                ))}
+              {[...props.groups].sort(byOrder).map((group) => (
+                <td key={group._id}>
+                  {durationPerPackageAndGroup[pkg._id] &&
+                  durationPerPackageAndGroup[pkg._id][group._id]
+                    ? formatDuration(
+                        durationPerPackageAndGroup[pkg._id][group._id]
+                      )
+                    : ""}
+                </td>
+              ))}
             </tr>
           ))}
       </tbody>
@@ -80,15 +69,9 @@ function PeopleStats(props) {
       <thead>
         <tr>
           <th>Lidi</th>
-          {[...props.groups]
-            .sort((a, b) => {
-              if (a.order < b.order) return -1;
-              if (a.order > b.order) return 1;
-              return 0;
-            })
-            .map((group) => (
-              <th key={group._id}>{group.name}</th>
-            ))}
+          {[...props.groups].sort(byOrder).map((group) => (
+            <th key={group._id}>{group.name}</th>
+          ))}
         </tr>
       </thead>
       <tbody>
@@ -97,22 +80,16 @@ function PeopleStats(props) {
           .map((person) => (
             <tr key={person}>
               <td>{person}</td>
-              {[...props.groups]
-                .sort((a, b) => {
-                  if (a.order < b.order) return -1;
-                  if (a.order > b.order) return 1;
-                  return 0;
-                })
-                .map((group) => (
-                  <td key={group._id}>
-                    {durationPerPersonAndGroup[person] &&
-                    durationPerPersonAndGroup[person][group._id]
-                      ? formatDuration(
-                          durationPerPersonAndGroup[person][group._id]
-                        )
-                      : ""}
-                  </td>
-                ))}
+              {[...props.groups].sort(byOrder).map((group) => (
+                <td key={group._id}>
+                  {durationPerPersonAndGroup[person] &&
+                  durationPerPersonAndGroup[person][group._id]
+                    ? formatDuration(
+                        durationPerPersonAndGroup[person][group._id]
+                      )
+                    : ""}
+                </td>
+              ))}
             </tr>
           ))}
       </tbody>

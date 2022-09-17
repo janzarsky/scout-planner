@@ -2,6 +2,7 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { byOrder } from "../helpers/Sorting";
 
 export default class Groups extends React.Component {
   constructor(props) {
@@ -20,11 +21,7 @@ export default class Groups extends React.Component {
           <GroupsHeader />
           <tbody>
             {[...this.props.groups]
-              .sort((a, b) => {
-                if (a.order < b.order) return -1;
-                if (a.order > b.order) return 1;
-                return 0;
-              })
+              .sort(byOrder)
               .map((group) =>
                 group._id === this.state.editKey ? (
                   <EditedGroup

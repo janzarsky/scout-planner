@@ -2,6 +2,7 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { byName } from "../helpers/Sorting";
 
 export default class Ranges extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ export default class Ranges extends React.Component {
           <RangesHeader />
           <tbody>
             {[...this.props.ranges]
-              .sort((a, b) => a.name.localeCompare(b.name))
+              .sort(byName)
               .map((range) =>
                 range._id === this.state.editKey ? (
                   <EditedRange

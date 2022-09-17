@@ -2,6 +2,7 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { byName } from "../helpers/Sorting";
 
 export default class Packages extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ export default class Packages extends React.Component {
           <PackagesHeader />
           <tbody>
             {[...this.props.pkgs]
-              .sort((pkg1, pkg2) => pkg1.name.localeCompare(pkg2.name))
+              .sort(byName)
               .map((pkg, index) =>
                 pkg._id === this.state.editKey ? (
                   <EditedPackage
