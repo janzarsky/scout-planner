@@ -181,7 +181,7 @@ export default class Timetable extends React.Component {
         );
       else
         console.warn(
-          `The computed rectange ${rect} for program ${prog._id} is invalid`
+          `The computed rectangle ${rect} for program ${prog._id} is invalid`
         );
     }
   }
