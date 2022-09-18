@@ -21,6 +21,8 @@ export class EditProgramModal extends React.Component {
     this.state = {
       groups: this.props.program.groups,
       people: this.props.program.people,
+      submitInProgress: false,
+      deleteInProgress: false,
     };
     [
       "title",
@@ -138,7 +140,12 @@ export class EditProgramModal extends React.Component {
                 onClick={this.handleDelete}
                 style={{ marginRight: "auto" }}
               >
-                Smazat
+                {this.state.deleteInProgress ? (
+                  <i className="fa fa-spinner fa-pulse" />
+                ) : (
+                  <i className="fa fa-trash" />
+                )}
+                &nbsp; Smazat
               </Button>
             )}
             <Button variant="link" onClick={this.props.handleClose}>
@@ -146,7 +153,12 @@ export class EditProgramModal extends React.Component {
             </Button>
             {this.props.userLevel >= level.EDIT && (
               <Button variant="primary" type="submit">
-                Uložit
+                {this.state.submitInProgress ? (
+                  <i className="fa fa-spinner fa-pulse" />
+                ) : (
+                  <i className="fa fa-save" />
+                )}
+                &nbsp; Uložit
               </Button>
             )}
           </Modal.Footer>
@@ -157,34 +169,45 @@ export class EditProgramModal extends React.Component {
 
   handleDelete(event) {
     event.preventDefault();
-    this.props.deleteProgram(this.props.program);
-    this.props.handleClose();
+
+    this.setState({ deleteInProgress: true });
+
+    this.props.deleteProgram(this.props.program).then(() => {
+      this.setState({ deleteInProgress: false });
+      this.props.handleClose();
+    });
   }
 
   handleSubmit(event) {
     event.preventDefault();
 
-    this.props.updateProgram({
-      ...this.props.program,
-      begin:
-        parseDate(this.date.current.value) + parseTime(this.time.current.value),
-      duration: parseDuration(this.duration.current.value),
-      title: this.title.current.value,
-      pkg: this.pkg.current.value,
-      groups: this.state.groups,
-      people: this.state.people,
-      ranges: Object.fromEntries(
-        this.props.ranges.map((range) => {
-          let val = parseInt(this.rangeRefs[range._id].current.value);
-          return [range._id, isNaN(val) ? 0 : val];
-        })
-      ),
-      url: this.url.current.value,
-      notes: this.notes.current.value,
-      locked: this.locked.current.checked,
-    });
+    this.setState({ submitInProgress: true });
 
-    this.props.handleClose();
+    this.props
+      .updateProgram({
+        ...this.props.program,
+        begin:
+          parseDate(this.date.current.value) +
+          parseTime(this.time.current.value),
+        duration: parseDuration(this.duration.current.value),
+        title: this.title.current.value,
+        pkg: this.pkg.current.value,
+        groups: this.state.groups,
+        people: this.state.people,
+        ranges: Object.fromEntries(
+          this.props.ranges.map((range) => {
+            let val = parseInt(this.rangeRefs[range._id].current.value);
+            return [range._id, isNaN(val) ? 0 : val];
+          })
+        ),
+        url: this.url.current.value,
+        notes: this.notes.current.value,
+        locked: this.locked.current.checked,
+      })
+      .then(() => {
+        this.setState({ submitInProgress: false });
+        this.props.handleClose();
+      });
   }
 }
 
@@ -469,7 +492,7 @@ function ProgramNotes(props) {
 export class AddProgramModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { groups: [], people: [] };
+    this.state = { groups: [], people: [], submitInProgress: false };
     [
       "title",
       "date",
@@ -558,7 +581,12 @@ export class AddProgramModal extends React.Component {
               Zrušit
             </Button>
             <Button variant="primary" type="submit">
-              Přidat
+              {this.state.submitInProgress ? (
+                <i className="fa fa-spinner fa-pulse" />
+              ) : (
+                <i className="fa fa-plus" />
+              )}
+              &nbsp; Přidat
             </Button>
           </Modal.Footer>
         </Form>
@@ -569,25 +597,31 @@ export class AddProgramModal extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    this.props.addProgram({
-      begin:
-        parseDate(this.date.current.value) + parseTime(this.time.current.value),
-      duration: parseDuration(this.duration.current.value),
-      title: this.title.current.value,
-      pkg: this.pkg.current.value,
-      groups: this.state.groups,
-      ranges: Object.fromEntries(
-        this.props.ranges.map((range) => {
-          let val = parseInt(this.rangeRefs[range._id].current.value);
-          return [range._id, isNaN(val) ? 0 : val];
-        })
-      ),
-      people: this.state.people,
-      url: this.url.current.value,
-      notes: this.notes.current.value,
-      locked: this.locked.current.checked,
-    });
+    this.setState({ submitInProgress: true });
 
-    this.props.handleClose();
+    this.props
+      .addProgram({
+        begin:
+          parseDate(this.date.current.value) +
+          parseTime(this.time.current.value),
+        duration: parseDuration(this.duration.current.value),
+        title: this.title.current.value,
+        pkg: this.pkg.current.value,
+        groups: this.state.groups,
+        ranges: Object.fromEntries(
+          this.props.ranges.map((range) => {
+            let val = parseInt(this.rangeRefs[range._id].current.value);
+            return [range._id, isNaN(val) ? 0 : val];
+          })
+        ),
+        people: this.state.people,
+        url: this.url.current.value,
+        notes: this.notes.current.value,
+        locked: this.locked.current.checked,
+      })
+      .then(() => {
+        this.setState({ submitInProgress: false });
+        this.props.handleClose();
+      });
   }
 }
