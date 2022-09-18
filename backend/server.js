@@ -170,7 +170,7 @@ app
 
 app
   .route(`/api/:table/settings`)
-  .get(authorize(EDIT), async (req, res) =>
+  .get(authorize(VIEW), async (req, res) =>
     db
       .collection("settings")
       .where("table", "==", req.params.table)
