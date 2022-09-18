@@ -27,7 +27,7 @@ export default class Client {
     if (!resp.ok) {
       throw new Error(`Během aktualizace nastavení nastala chyba.`);
     }
-    return await resp.json();
+    return;
   }
 
   async getSettings() {
