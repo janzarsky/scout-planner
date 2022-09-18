@@ -57,7 +57,7 @@ export default class App extends React.Component {
       viewRanges: false,
       client: new Client(null, this.props.table),
       userLevel: level.NONE,
-      timeStep: 5 * 60 * 1000,
+      timeStep: 15 * 60 * 1000,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -521,6 +521,13 @@ export default class App extends React.Component {
                 users={this.state.users}
                 client={this.state.client}
                 userLevel={this.state.userLevel}
+                timeStep={this.state.timeStep}
+                updateTimeStep={(timeStep) => {
+                  // FIXME: this will not work when new fields are added to settings
+                  this.state.client
+                    .updateSettings({ timeStep })
+                    .then(() => this.setState({ timeStep }));
+                }}
               />
             </Tab.Pane>
           </Tab.Content>
