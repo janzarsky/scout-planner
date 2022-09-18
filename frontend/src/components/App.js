@@ -58,6 +58,7 @@ export default class App extends React.Component {
       client: new Client(null, this.props.table),
       userLevel: level.NONE,
       settings: {},
+      loaded: false,
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -116,6 +117,7 @@ export default class App extends React.Component {
             ranges: ranges,
             users: users,
             settings: settings,
+            loaded: true,
           },
           this.runChecker
         );
@@ -253,7 +255,7 @@ export default class App extends React.Component {
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="timetable">
-              {this.state.userLevel >= level.VIEW && (
+              {this.state.userLevel >= level.VIEW && this.state.loaded && (
                 <Timetable
                   programs={this.state.programs}
                   pkgs={this.state.pkgs}
@@ -296,7 +298,15 @@ export default class App extends React.Component {
                   userLevel={this.state.userLevel}
                 />
               )}
-              {this.state.userLevel === level.NONE && (
+              {!this.state.loaded && (
+                <Container fluid>
+                  <Alert variant="primary">
+                    <i className="fa fa-spinner" />
+                    &nbsp; Načítání&hellip;
+                  </Alert>
+                </Container>
+              )}
+              {this.state.userLevel === level.NONE && this.state.loaded && (
                 <Container fluid>
                   <Alert variant="danger">
                     <i className="fa fa-exclamation-triangle" />
