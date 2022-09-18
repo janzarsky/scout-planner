@@ -728,8 +728,8 @@ export default class App extends React.Component {
     );
   }
 
-  addProgram(program) {
-    this.state.client
+  async addProgram(program) {
+    await this.state.client
       .addProgram(program)
       .then((program) =>
         this.setState(
@@ -739,8 +739,8 @@ export default class App extends React.Component {
       );
   }
 
-  updateProgram(program) {
-    this.state.client.updateProgram(program).then((program) =>
+  async updateProgram(program) {
+    await this.state.client.updateProgram(program).then((program) =>
       this.setState(
         {
           programs: [
@@ -753,13 +753,17 @@ export default class App extends React.Component {
     );
   }
 
-  deleteProgram(program) {
-    this.state.client.updateProgram({ ...program, deleted: true }).then(() =>
-      this.setState({
-        programs: [...this.state.programs.filter((p) => p._id !== program._id)],
-        deletedPrograms: [...this.state.deletedPrograms, program],
-      })
-    );
+  async deleteProgram(program) {
+    await this.state.client
+      .updateProgram({ ...program, deleted: true })
+      .then(() =>
+        this.setState({
+          programs: [
+            ...this.state.programs.filter((p) => p._id !== program._id),
+          ],
+          deletedPrograms: [...this.state.deletedPrograms, program],
+        })
+      );
   }
 
   async login() {
