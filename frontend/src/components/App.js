@@ -301,7 +301,7 @@ export default class App extends React.Component {
               {!this.state.loaded && (
                 <Container fluid>
                   <Alert variant="primary">
-                    <i className="fa fa-spinner" />
+                    <i className="fa fa-spinner fa-pulse" />
                     &nbsp; Načítání&hellip;
                   </Alert>
                 </Container>
