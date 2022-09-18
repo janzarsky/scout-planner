@@ -11,7 +11,7 @@ import Nav from "react-bootstrap/Nav";
 import Alert from "react-bootstrap/Alert";
 import Client from "../Client";
 import { checkRules } from "../Checker";
-import ImportExport from "../ImportExport";
+import Settings from "./Settings";
 import Users from "./Users";
 import Stats from "./Stats";
 import { initializeApp } from "firebase/app";
@@ -57,6 +57,7 @@ export default class App extends React.Component {
       viewRanges: false,
       client: new Client(null, this.props.table),
       userLevel: level.NONE,
+      settings: {},
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -92,8 +93,9 @@ export default class App extends React.Component {
             this.state.client.getRules(),
             this.state.client.getGroups(),
             this.state.client.getRanges(),
+            this.state.client.getSettings(),
           ])
-        : Promise.resolve([[], [], [], [], []]);
+        : Promise.resolve([[], [], [], [], [], []]);
 
     const adminData =
       permissions.level >= level.ADMIN
@@ -101,7 +103,7 @@ export default class App extends React.Component {
         : Promise.resolve([]);
 
     Promise.all([viewData, adminData]).then(
-      ([[allPrograms, pkgs, rules, groups, ranges], users]) => {
+      ([[allPrograms, pkgs, rules, groups, ranges, settings], users]) => {
         this.setState(
           {
             programs: [...allPrograms].filter((program) => !program.deleted),
@@ -113,6 +115,7 @@ export default class App extends React.Component {
             groups: groups,
             ranges: ranges,
             users: users,
+            settings: settings,
           },
           this.runChecker
         );
@@ -238,8 +241,8 @@ export default class App extends React.Component {
             )}
             {this.state.userLevel >= level.VIEW && (
               <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="importexport">
-                  Import/Export
+                <Nav.Link as={Button} variant="light" eventKey="settings">
+                  Nastavení
                 </Nav.Link>
               </Nav.Item>
             )}
@@ -256,6 +259,11 @@ export default class App extends React.Component {
                   pkgs={this.state.pkgs}
                   groups={this.state.groups}
                   settings={this.state.settings}
+                  timeStep={
+                    this.state.settings.timeStep
+                      ? this.state.settings.timeStep
+                      : 15 * 60 * 1000
+                  }
                   violations={violationsPerProgram}
                   highlightedPackages={
                     this.state.highlightingEnabled
@@ -506,8 +514,8 @@ export default class App extends React.Component {
                 />
               </Tab.Pane>
             )}
-            <Tab.Pane eventKey="importexport" title="Import/Export">
-              <ImportExport
+            <Tab.Pane eventKey="settings" title="Nastavení">
+              <Settings
                 programs={[
                   ...this.state.programs,
                   ...this.state.deletedPrograms,
@@ -519,6 +527,20 @@ export default class App extends React.Component {
                 users={this.state.users}
                 client={this.state.client}
                 userLevel={this.state.userLevel}
+                timeStep={
+                  this.state.settings.timeStep
+                    ? this.state.settings.timeStep
+                    : 15 * 60 * 1000
+                }
+                updateTimeStep={(timeStep) => {
+                  this.state.client
+                    .updateSettings({ ...this.state.settings, timeStep })
+                    .then(() =>
+                      this.setState({
+                        settings: { ...this.state.settings, timeStep },
+                      })
+                    );
+                }}
               />
             </Tab.Pane>
           </Tab.Content>

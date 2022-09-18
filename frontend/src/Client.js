@@ -18,6 +18,29 @@ export default class Client {
     this.authHeader = token ? { Authorization: token } : {};
   }
 
+  async updateSettings(data) {
+    const resp = await fetch(`${this.basePath}/settings`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", ...this.authHeader },
+      body: JSON.stringify(data),
+    });
+    if (!resp.ok) {
+      throw new Error(`Během aktualizace nastavení nastala chyba.`);
+    }
+    return;
+  }
+
+  async getSettings() {
+    const resp = await fetch(`${this.basePath}/settings`, {
+      method: "GET",
+      headers: this.authHeader,
+    });
+    if (!resp.ok) {
+      throw new Error(`Při načítání nastavení nastala chyba.`);
+    }
+    return await resp.json();
+  }
+
   async getPermissions() {
     const resp = await fetch(`${this.basePath}/permissions`, {
       method: "GET",
