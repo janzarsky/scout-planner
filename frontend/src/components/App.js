@@ -57,7 +57,7 @@ export default class App extends React.Component {
       viewRanges: false,
       client: new Client(null, this.props.table),
       userLevel: level.NONE,
-      timeStep: 15 * 60 * 1000,
+      settings: {},
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -93,8 +93,9 @@ export default class App extends React.Component {
             this.state.client.getRules(),
             this.state.client.getGroups(),
             this.state.client.getRanges(),
+            this.state.client.getSettings(),
           ])
-        : Promise.resolve([[], [], [], [], []]);
+        : Promise.resolve([[], [], [], [], [], []]);
 
     const adminData =
       permissions.level >= level.ADMIN
@@ -102,7 +103,7 @@ export default class App extends React.Component {
         : Promise.resolve([]);
 
     Promise.all([viewData, adminData]).then(
-      ([[allPrograms, pkgs, rules, groups, ranges], users]) => {
+      ([[allPrograms, pkgs, rules, groups, ranges, settings], users]) => {
         this.setState(
           {
             programs: [...allPrograms].filter((program) => !program.deleted),
@@ -114,6 +115,7 @@ export default class App extends React.Component {
             groups: groups,
             ranges: ranges,
             users: users,
+            settings: settings,
           },
           this.runChecker
         );
@@ -257,7 +259,11 @@ export default class App extends React.Component {
                   pkgs={this.state.pkgs}
                   groups={this.state.groups}
                   settings={this.state.settings}
-                  timeStep={this.state.timeStep}
+                  timeStep={
+                    this.state.settings.timeStep
+                      ? this.state.settings.timeStep
+                      : 15 * 60 * 1000
+                  }
                   violations={violationsPerProgram}
                   highlightedPackages={
                     this.state.highlightingEnabled
@@ -521,12 +527,19 @@ export default class App extends React.Component {
                 users={this.state.users}
                 client={this.state.client}
                 userLevel={this.state.userLevel}
-                timeStep={this.state.timeStep}
+                timeStep={
+                  this.state.settings.timeStep
+                    ? this.state.settings.timeStep
+                    : 15 * 60 * 1000
+                }
                 updateTimeStep={(timeStep) => {
-                  // FIXME: this will not work when new fields are added to settings
                   this.state.client
-                    .updateSettings({ timeStep })
-                    .then(() => this.setState({ timeStep }));
+                    .updateSettings({ ...this.state.settings, timeStep })
+                    .then(() =>
+                      this.setState({
+                        settings: { ...this.state.settings, timeStep },
+                      })
+                    );
                 }}
               />
             </Tab.Pane>
