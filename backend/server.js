@@ -17,7 +17,7 @@ app.options("*", cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get("/_ah/warmup", (req, res) => {
+app.get("/_ah/warmup", (_req, res) => {
   db = new Firestore();
   res.send("");
 });
@@ -168,6 +168,37 @@ app
   .put(authorize(ADMIN), updateItem("users"))
   .delete(authorize(ADMIN), deleteItem("users"));
 
+app
+  .route(`/api/:table/settings`)
+  .get(authorize(EDIT), async (req, res) =>
+    db
+      .collection("settings")
+      .where("table", "==", req.params.table)
+      .limit(1)
+      .get()
+      .then((querySnapshot) =>
+        res.json(querySnapshot.size > 0 ? querySnapshot.docs[0].data() : {})
+      )
+  )
+  .put(authorize(EDIT), async (req, res) =>
+    db
+      .collection("settings")
+      .where("table", "==", req.params.table)
+      .limit(1)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.size > 0) {
+          db.doc(`settings/${querySnapshot.docs[0].id}`)
+            .update({ ...req.body, table: req.params.table })
+            .then(() => res.send());
+        } else {
+          db.collection("settings")
+            .add({ ...req.body, table: req.params.table })
+            .then(() => res.send());
+        }
+      })
+  );
+
 app.get("/api/:table/permissions", async (req, res) => {
   const users = await getUsers(req.params.table);
 
@@ -177,7 +208,7 @@ app.get("/api/:table/permissions", async (req, res) => {
   res.json({ level: userLevel > publicLevel ? userLevel : publicLevel });
 });
 
-app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
+app.use((err, _req, res) => res.status(500).json({ error: err.message }));
 
 app.use(function (req, res) {
   res.status(404).send({ url: req.originalUrl + " not found" });
