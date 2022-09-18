@@ -189,11 +189,11 @@ app
       .then((querySnapshot) => {
         if (querySnapshot.size > 0) {
           db.doc(`settings/${querySnapshot.docs[0].id}`)
-            .update(req.body)
+            .update({ ...req.body, table: req.params.table })
             .then(() => res.send());
         } else {
           db.collection("settings")
-            .add(req.body)
+            .add({ ...req.body, table: req.params.table })
             .then(() => res.send());
         }
       })
