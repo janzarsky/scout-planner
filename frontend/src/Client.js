@@ -19,11 +19,16 @@ export default class Client {
   }
 
   async updateSettings(data) {
-    const resp = await fetch(`${this.basePath}/settings`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", ...this.authHeader },
-      body: JSON.stringify(data),
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/settings`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", ...this.authHeader },
+        body: JSON.stringify(data),
+      });
+    } catch {
+      throw new Error(`Během aktualizace nastavení nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Během aktualizace nastavení nastala chyba.`);
     }
@@ -31,10 +36,15 @@ export default class Client {
   }
 
   async getSettings() {
-    const resp = await fetch(`${this.basePath}/settings`, {
-      method: "GET",
-      headers: this.authHeader,
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/settings`, {
+        method: "GET",
+        headers: this.authHeader,
+      });
+    } catch {
+      throw new Error(`Při načítání nastavení nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Při načítání nastavení nastala chyba.`);
     }
@@ -42,10 +52,15 @@ export default class Client {
   }
 
   async getPermissions() {
-    const resp = await fetch(`${this.basePath}/permissions`, {
-      method: "GET",
-      headers: this.authHeader,
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/permissions`, {
+        method: "GET",
+        headers: this.authHeader,
+      });
+    } catch {
+      throw new Error(`Při načítání uživatelských oprávnění nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Při načítání uživatelských oprávnění nastala chyba.`);
     }
@@ -53,10 +68,15 @@ export default class Client {
   }
 
   async #get(path, id) {
-    const resp = await fetch(`${this.basePath}/${path}/${id}`, {
-      method: "GET",
-      headers: this.authHeader,
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/${path}/${id}`, {
+        method: "GET",
+        headers: this.authHeader,
+      });
+    } catch {
+      throw new Error(`Při načítání nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Při načítání nastala chyba.`);
     }
@@ -64,10 +84,15 @@ export default class Client {
   }
 
   async #getAll(path) {
-    const resp = await fetch(`${this.basePath}/${path}`, {
-      method: "GET",
-      headers: this.authHeader,
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/${path}`, {
+        method: "GET",
+        headers: this.authHeader,
+      });
+    } catch {
+      throw new Error(`Při načítání nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Při načítání nastala chyba.`);
     }
@@ -75,11 +100,16 @@ export default class Client {
   }
 
   async #post(path, data) {
-    const resp = await fetch(`${this.basePath}/${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...this.authHeader },
-      body: JSON.stringify(data),
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...this.authHeader },
+        body: JSON.stringify(data),
+      });
+    } catch {
+      throw new Error(`Během aktualizace nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Během aktualizace nastala chyba.`);
     }
@@ -87,11 +117,16 @@ export default class Client {
   }
 
   async #put(path, data) {
-    const resp = await fetch(`${this.basePath}/${path}/${data._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", ...this.authHeader },
-      body: JSON.stringify(data),
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/${path}/${data._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", ...this.authHeader },
+        body: JSON.stringify(data),
+      });
+    } catch {
+      throw new Error(`Během přidávání nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Během přidávání nastala chyba.`);
     }
@@ -99,10 +134,15 @@ export default class Client {
   }
 
   async #remove(path, id) {
-    const resp = await fetch(`${this.basePath}/${path}/${id}`, {
-      method: "DELETE",
-      headers: this.authHeader,
-    });
+    let resp;
+    try {
+      resp = await fetch(`${this.basePath}/${path}/${id}`, {
+        method: "DELETE",
+        headers: this.authHeader,
+      });
+    } catch {
+      throw new Error(`Během odstraňování nastala chyba.`);
+    }
     if (!resp.ok) {
       throw new Error(`Během odstraňování nastala chyba.`);
     }

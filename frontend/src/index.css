@@ -229,6 +229,12 @@ p.program-violations {
   max-width: 40em;
 }
 
+.notifications {
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+}
+
 @page {
     size: 800mm 1108mm;
     margin: 10mm;

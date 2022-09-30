@@ -59,12 +59,14 @@ export default class App extends React.Component {
       userLevel: level.NONE,
       settings: {},
       loaded: false,
+      errors: [],
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
     this.deleteProgram = this.deleteProgram.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
+    this.handleError = this.handleError.bind(this);
 
     this.app = initializeApp({
       apiKey: config.apiKey,
@@ -163,6 +165,22 @@ export default class App extends React.Component {
 
     return (
       <div className="App">
+        {this.state.errors.length > 0 && (
+          <Container fluid className="notifications">
+            <Alert
+              variant="danger"
+              dismissible
+              onClose={() =>
+                this.setState((prevState) => ({
+                  errors: prevState.errors.slice(1),
+                }))
+              }
+            >
+              <i className="fa fa-exclamation-triangle" />
+              &nbsp; {this.state.errors[0]}
+            </Alert>
+          </Container>
+        )}
         {this.state.addProgram && (
           <AddProgramModal
             addProgram={this.addProgram}
@@ -327,36 +345,42 @@ export default class App extends React.Component {
                   addRule={(rule) =>
                     this.state.client
                       .addRule(rule)
-                      .then((rule) =>
-                        this.setState(
-                          { rules: [...this.state.rules, rule] },
-                          this.runChecker
-                        )
+                      .then(
+                        (rule) =>
+                          this.setState(
+                            { rules: [...this.state.rules, rule] },
+                            this.runChecker
+                          ),
+                        this.handleError
                       )
                   }
                   updateRule={(rule) =>
-                    this.state.client.updateRule(rule).then((rule) =>
-                      this.setState(
-                        {
-                          rules: [
-                            ...this.state.rules.filter(
-                              (r) => r._id !== rule._id
-                            ),
-                            rule,
-                          ],
-                        },
-                        this.runChecker
-                      )
+                    this.state.client.updateRule(rule).then(
+                      (rule) =>
+                        this.setState(
+                          {
+                            rules: [
+                              ...this.state.rules.filter(
+                                (r) => r._id !== rule._id
+                              ),
+                              rule,
+                            ],
+                          },
+                          this.runChecker
+                        ),
+                      this.handleError
                     )
                   }
                   deleteRule={(id) =>
-                    this.state.client.deleteRule(id).then((msg) =>
-                      this.setState(
-                        {
-                          rules: this.state.rules.filter((r) => r._id !== id),
-                        },
-                        this.runChecker
-                      )
+                    this.state.client.deleteRule(id).then(
+                      (msg) =>
+                        this.setState(
+                          {
+                            rules: this.state.rules.filter((r) => r._id !== id),
+                          },
+                          this.runChecker
+                        ),
+                      this.handleError
                     )
                   }
                 />
@@ -369,34 +393,44 @@ export default class App extends React.Component {
                   addPkg={(pkg) =>
                     this.state.client
                       .addPackage(pkg)
-                      .then((pkg) =>
-                        this.setState(
-                          { pkgs: [...this.state.pkgs, pkg] },
-                          this.runChecker
-                        )
+                      .then(
+                        (pkg) =>
+                          this.setState(
+                            { pkgs: [...this.state.pkgs, pkg] },
+                            this.runChecker
+                          ),
+                        this.handleError
                       )
                   }
                   updatePkg={(pkg) =>
-                    this.state.client.updatePackage(pkg).then((pkg) =>
-                      this.setState(
-                        {
-                          pkgs: [
-                            ...this.state.pkgs.filter((p) => p._id !== pkg._id),
-                            pkg,
-                          ],
-                        },
-                        this.runChecker
-                      )
+                    this.state.client.updatePackage(pkg).then(
+                      (pkg) =>
+                        this.setState(
+                          {
+                            pkgs: [
+                              ...this.state.pkgs.filter(
+                                (p) => p._id !== pkg._id
+                              ),
+                              pkg,
+                            ],
+                          },
+                          this.runChecker
+                        ),
+                      this.handleError
                     )
                   }
                   deletePkg={(id) =>
                     this.state.client
                       .deletePackage(id)
-                      .then((msg) =>
-                        this.setState(
-                          { pkgs: this.state.pkgs.filter((p) => p._id !== id) },
-                          this.runChecker
-                        )
+                      .then(
+                        (msg) =>
+                          this.setState(
+                            {
+                              pkgs: this.state.pkgs.filter((p) => p._id !== id),
+                            },
+                            this.runChecker
+                          ),
+                        this.handleError
                       )
                   }
                 />
@@ -407,40 +441,46 @@ export default class App extends React.Component {
                 <Groups
                   groups={this.state.groups}
                   addGroup={(group) =>
-                    this.state.client.addGroup(group).then((group) =>
-                      this.setState(
-                        {
-                          groups: [...this.state.groups, group],
-                        },
-                        this.runChecker
-                      )
+                    this.state.client.addGroup(group).then(
+                      (group) =>
+                        this.setState(
+                          {
+                            groups: [...this.state.groups, group],
+                          },
+                          this.runChecker
+                        ),
+                      this.handleError
                     )
                   }
                   updateGroup={(group) =>
-                    this.state.client.updateGroup(group).then((group) =>
-                      this.setState(
-                        {
-                          groups: [
-                            ...this.state.groups.filter(
-                              (g) => g._id !== group._id
-                            ),
-                            group,
-                          ],
-                        },
-                        this.runChecker
-                      )
+                    this.state.client.updateGroup(group).then(
+                      (group) =>
+                        this.setState(
+                          {
+                            groups: [
+                              ...this.state.groups.filter(
+                                (g) => g._id !== group._id
+                              ),
+                              group,
+                            ],
+                          },
+                          this.runChecker
+                        ),
+                      this.handleError
                     )
                   }
                   deleteGroup={(id) =>
-                    this.state.client.deleteGroup(id).then(() =>
-                      this.setState(
-                        {
-                          groups: [
-                            ...this.state.groups.filter((g) => g._id !== id),
-                          ],
-                        },
-                        this.runChecker
-                      )
+                    this.state.client.deleteGroup(id).then(
+                      () =>
+                        this.setState(
+                          {
+                            groups: [
+                              ...this.state.groups.filter((g) => g._id !== id),
+                            ],
+                          },
+                          this.runChecker
+                        ),
+                      this.handleError
                     )
                   }
                 />
@@ -451,31 +491,37 @@ export default class App extends React.Component {
                 <Ranges
                   ranges={this.state.ranges}
                   addRange={(range) =>
-                    this.state.client.addRange(range).then((range) =>
-                      this.setState({
-                        ranges: [...this.state.ranges, range],
-                      })
+                    this.state.client.addRange(range).then(
+                      (range) =>
+                        this.setState({
+                          ranges: [...this.state.ranges, range],
+                        }),
+                      this.handleError
                     )
                   }
                   updateRange={(range) =>
-                    this.state.client.updateRange(range).then((range) =>
-                      this.setState({
-                        ranges: [
-                          ...this.state.ranges.filter(
-                            (r) => r._id !== range._id
-                          ),
-                          range,
-                        ],
-                      })
+                    this.state.client.updateRange(range).then(
+                      (range) =>
+                        this.setState({
+                          ranges: [
+                            ...this.state.ranges.filter(
+                              (r) => r._id !== range._id
+                            ),
+                            range,
+                          ],
+                        }),
+                      this.handleError
                     )
                   }
                   deleteRange={(id) =>
-                    this.state.client.deleteRange(id).then(() =>
-                      this.setState({
-                        ranges: [
-                          ...this.state.ranges.filter((r) => r._id !== id),
-                        ],
-                      })
+                    this.state.client.deleteRange(id).then(
+                      () =>
+                        this.setState({
+                          ranges: [
+                            ...this.state.ranges.filter((r) => r._id !== id),
+                          ],
+                        }),
+                      this.handleError
                     )
                   }
                 />
@@ -496,29 +542,37 @@ export default class App extends React.Component {
                 <Users
                   users={this.state.users}
                   addUser={(user) =>
-                    this.state.client.addUser(user).then((user) =>
-                      this.setState({
-                        users: [...this.state.users, user],
-                      })
+                    this.state.client.addUser(user).then(
+                      (user) =>
+                        this.setState({
+                          users: [...this.state.users, user],
+                        }),
+                      this.handleError
                     )
                   }
                   updateUser={(user) =>
-                    this.state.client.updateUser(user).then((user) =>
-                      this.setState({
-                        users: [
-                          ...this.state.users.filter((u) => u._id !== user._id),
-                          user,
-                        ],
-                      })
+                    this.state.client.updateUser(user).then(
+                      (user) =>
+                        this.setState({
+                          users: [
+                            ...this.state.users.filter(
+                              (u) => u._id !== user._id
+                            ),
+                            user,
+                          ],
+                        }),
+                      this.handleError
                     )
                   }
                   deleteUser={(id) =>
-                    this.state.client.deleteUser(id).then(() =>
-                      this.setState({
-                        users: [
-                          ...this.state.users.filter((u) => u._id !== id),
-                        ],
-                      })
+                    this.state.client.deleteUser(id).then(
+                      () =>
+                        this.setState({
+                          users: [
+                            ...this.state.users.filter((u) => u._id !== id),
+                          ],
+                        }),
+                      this.handleError
                     )
                   }
                 />
@@ -545,10 +599,12 @@ export default class App extends React.Component {
                 updateTimeStep={(timeStep) => {
                   this.state.client
                     .updateSettings({ ...this.state.settings, timeStep })
-                    .then(() =>
-                      this.setState({
-                        settings: { ...this.state.settings, timeStep },
-                      })
+                    .then(
+                      () =>
+                        this.setState({
+                          settings: { ...this.state.settings, timeStep },
+                        }),
+                      this.handleError
                     );
                 }}
               />
@@ -731,39 +787,43 @@ export default class App extends React.Component {
   async addProgram(program) {
     await this.state.client
       .addProgram(program)
-      .then((program) =>
-        this.setState(
-          { programs: [...this.state.programs, program] },
-          this.runChecker
-        )
+      .then(
+        (program) =>
+          this.setState(
+            { programs: [...this.state.programs, program] },
+            this.runChecker
+          ),
+        this.handleError
       );
   }
 
   async updateProgram(program) {
-    await this.state.client.updateProgram(program).then((program) =>
-      this.setState(
-        {
-          programs: [
-            ...this.state.programs.filter((p) => p._id !== program._id),
-            program,
-          ],
-        },
-        this.runChecker
-      )
+    await this.state.client.updateProgram(program).then(
+      (program) =>
+        this.setState(
+          {
+            programs: [
+              ...this.state.programs.filter((p) => p._id !== program._id),
+              program,
+            ],
+          },
+          this.runChecker
+        ),
+      this.handleError
     );
   }
 
   async deleteProgram(program) {
-    await this.state.client
-      .updateProgram({ ...program, deleted: true })
-      .then(() =>
+    await this.state.client.updateProgram({ ...program, deleted: true }).then(
+      () =>
         this.setState({
           programs: [
             ...this.state.programs.filter((p) => p._id !== program._id),
           ],
           deletedPrograms: [...this.state.deletedPrograms, program],
-        })
-      );
+        }),
+      this.handleError
+    );
   }
 
   async login() {
@@ -778,5 +838,11 @@ export default class App extends React.Component {
       .finally(() => {
         this.setState({ client: new Client(null, this.props.table) });
       });
+  }
+
+  handleError(error) {
+    this.setState((prevState) => ({
+      errors: [error.message, ...prevState.errors],
+    }));
   }
 }
