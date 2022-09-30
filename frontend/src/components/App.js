@@ -59,6 +59,7 @@ export default class App extends React.Component {
       userLevel: level.NONE,
       settings: {},
       loaded: false,
+      errors: [],
     };
     this.addProgram = this.addProgram.bind(this);
     this.updateProgram = this.updateProgram.bind(this);
@@ -163,6 +164,22 @@ export default class App extends React.Component {
 
     return (
       <div className="App">
+        {this.state.errors.length > 0 && (
+          <Container fluid className="notifications">
+            <Alert
+              variant="danger"
+              dismissible
+              onClose={() =>
+                this.setState((prevState) => ({
+                  errors: prevState.errors.slice(1),
+                }))
+              }
+            >
+              <i className="fa fa-exclamation-triangle" />
+              &nbsp; {this.state.errors[0]}
+            </Alert>
+          </Container>
+        )}
         {this.state.addProgram && (
           <AddProgramModal
             addProgram={this.addProgram}
