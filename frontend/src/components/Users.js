@@ -2,6 +2,7 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { level } from "../helpers/Level";
 
 export default class Users extends React.Component {
   constructor(props) {
@@ -19,6 +20,30 @@ export default class Users extends React.Component {
 
   render() {
     const publicUser = this.props.users.find((user) => user.email === "public");
+
+    // allow editing of public user only in case the current user has ADMIN rights
+    const publicUserEditable =
+      this.props.userEmail &&
+      this.props.users.some(
+        (user) =>
+          user.email === this.props.userEmail && user.level >= level.ADMIN
+      );
+
+    // allow editing of current user only in case they are other users with ADMIN rights
+    // (or there is a implicit public user which also has ADMIN rights)
+    const currentUserEditable =
+      this.props.userEmail &&
+      (!publicUser ||
+        this.props.users.some(
+          (user) =>
+            user.email !== this.props.userEmail && user.level >= level.ADMIN
+        ));
+
+    // when it is allowed to edit current user, there is a warning about losing access,
+    // the warning should not be shown in case there is still public ADMIN access
+    const currentUserWarning =
+      currentUserEditable && publicUser && publicUser.level < level.ADMIN;
+
     return (
       <Form onSubmit={this.handleSubmit}>
         <Table bordered hover responsive>
@@ -34,6 +59,8 @@ export default class Users extends React.Component {
               <PublicUser
                 key="public_user"
                 level={publicUser ? publicUser.level : 3}
+                userEmail={this.props.userEmail}
+                editable={publicUserEditable}
                 editUser={() => this.setState({ editKey: "public_user" })}
               />
             )}
@@ -52,6 +79,12 @@ export default class Users extends React.Component {
                   <User
                     key={user._id}
                     user={user}
+                    editable={
+                      user.email !== this.props.userEmail || currentUserEditable
+                    }
+                    currentUserWarning={
+                      user.email === this.props.userEmail && currentUserWarning
+                    }
                     deleteUser={() => this.props.deleteUser(user._id)}
                     editUser={() => this.setState({ editKey: user._id })}
                   />
@@ -148,15 +181,21 @@ function User(props) {
       <td>{props.user.email}</td>
       <td>{formatLevel(props.user.level)}</td>
       <td>
-        <span>
-          <Button variant="link" onClick={props.editUser}>
-            <i className="fa fa-pencil" /> Upravit
-          </Button>
-          &nbsp;
-          <Button variant="link text-danger" onClick={props.deleteUser}>
-            <i className="fa fa-trash" /> Smazat
-          </Button>
-        </span>
+        {props.editable ? (
+          <span>
+            <Button variant="link" onClick={props.editUser}>
+              <i className="fa fa-pencil" /> Upravit
+            </Button>
+            &nbsp;
+            <Button variant="link text-danger" onClick={props.deleteUser}>
+              <i className="fa fa-trash" /> Smazat
+            </Button>
+            {props.currentUserWarning &&
+              "Upozornění: pokud změníte vlastní oprávnění, ztratíte přístup ke správě uživatelů."}
+          </span>
+        ) : (
+          "Pro úpravu přidejte alespoň jednoho dalšího uživatele s oprávněním spravovat uživatele."
+        )}
       </td>
     </tr>
   );
@@ -220,9 +259,17 @@ function PublicUser(props) {
       <td>Kdokoliv</td>
       <td>{formatLevel(props.level)}</td>
       <td>
-        <Button variant="link" onClick={props.editUser}>
-          <i className="fa fa-pencil" /> Upravit
-        </Button>
+        {props.editable && (
+          <Button variant="link" onClick={props.editUser}>
+            <i className="fa fa-pencil" /> Upravit
+          </Button>
+        )}
+        {!props.editable &&
+          !props.userEmail &&
+          "Pro změnu veřejného přístupu se přihlaste."}
+        {!props.editable &&
+          props.userEmail &&
+          `Pro změnu veřejného přístupu nejdříve nastavte oprávnění "spravovat uživatele" pro e-mailovou adresu "${props.userEmail}".`}
       </td>
     </tr>
   );
