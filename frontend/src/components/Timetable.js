@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   formatDay,
   getOnlyDate,
@@ -285,33 +285,28 @@ function getTimeIndicatorRect(settings) {
   };
 }
 
-class Droppable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { dragOver: false };
-  }
+function Droppable(props) {
+  const [dragOver, setDragOver] = useState(false);
 
-  render() {
-    return (
-      <div
-        className={"droppable " + (this.state.dragOver ? "drag-over" : "")}
-        style={{
-          gridColumnStart: this.props.x,
-          gridRowStart: this.props.y,
-          gridRowEnd: "span " + this.props.height,
-        }}
-        onClick={(_) => this.props.addProgramModal({ begin: this.props.begin })}
-        onDrop={(e) => {
-          e.preventDefault();
-          this.props.onDrop(this.props.begin);
-          this.setState({ dragOver: false });
-        }}
-        onDragEnter={() => this.setState({ dragOver: true })}
-        onDragOver={(e) => e.preventDefault()}
-        onDragLeave={() => this.setState({ dragOver: false })}
-      />
-    );
-  }
+  return (
+    <div
+      className={"droppable " + (dragOver ? "drag-over" : "")}
+      style={{
+        gridColumnStart: props.x,
+        gridRowStart: props.y,
+        gridRowEnd: "span " + props.height,
+      }}
+      onClick={(_) => props.addProgramModal({ begin: props.begin })}
+      onDrop={(e) => {
+        e.preventDefault();
+        props.onDrop(props.begin);
+        setDragOver(false);
+      }}
+      onDragEnter={() => setDragOver(true)}
+      onDragOver={(e) => e.preventDefault()}
+      onDragLeave={() => setDragOver(false)}
+    />
+  );
 }
 
 function TimeHeader(props) {
