@@ -1,151 +1,139 @@
-import React from "react";
+import { useRef, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { level } from "../helpers/Level";
 
-export default class Users extends React.Component {
-  constructor(props) {
-    super(props);
-    [
-      "emailAddRef",
-      "emailEditRef",
-      "levelAddRef",
-      "levelEditRef",
-      "publicLevelRef",
-    ].forEach((field) => (this[field] = React.createRef()));
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { editKey: undefined };
-  }
+export default function Users(props) {
+  const emailAddRef = useRef();
+  const emailEditRef = useRef();
+  const levelAddRef = useRef();
+  const levelEditRef = useRef();
+  const publicLevelRef = useRef();
+  const [editKey, setEditKey] = useState(undefined);
 
-  render() {
-    const publicUser = this.props.users.find((user) => user.email === "public");
-
-    // allow editing of public user only in case the current user has ADMIN rights
-    const publicUserEditable =
-      this.props.userEmail &&
-      this.props.users.some(
-        (user) =>
-          user.email === this.props.userEmail && user.level >= level.ADMIN
-      );
-
-    // allow editing of current user only in case they are other users with ADMIN rights
-    // (or there is a implicit public user which also has ADMIN rights)
-    const currentUserEditable =
-      this.props.userEmail &&
-      (!publicUser ||
-        this.props.users.some(
-          (user) =>
-            user.email !== this.props.userEmail && user.level >= level.ADMIN
-        ));
-
-    // when it is allowed to edit current user, there is a warning about losing access,
-    // the warning should not be shown in case there is still public ADMIN access
-    const currentUserWarning =
-      currentUserEditable && publicUser && publicUser.level < level.ADMIN;
-
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Table bordered hover responsive>
-          <UsersHeader />
-          <tbody>
-            {this.state.editKey === "public_user" ? (
-              <PublicEditedUser
-                key="public_user"
-                level={publicUser ? publicUser.level : 3}
-                levelRef={this.publicLevelRef}
-              />
-            ) : (
-              <PublicUser
-                key="public_user"
-                level={publicUser ? publicUser.level : 3}
-                userEmail={this.props.userEmail}
-                editable={publicUserEditable}
-                editUser={() => this.setState({ editKey: "public_user" })}
-              />
-            )}
-            {[...this.props.users]
-              .sort((a, b) => a.email.localeCompare(b.email))
-              .filter((user) => user.email !== "public")
-              .map((user) =>
-                user._id === this.state.editKey ? (
-                  <EditedUser
-                    key={user._id}
-                    user={user}
-                    emailRef={this.emailEditRef}
-                    levelRef={this.levelEditRef}
-                  />
-                ) : (
-                  <User
-                    key={user._id}
-                    user={user}
-                    editable={
-                      user.email !== this.props.userEmail || currentUserEditable
-                    }
-                    currentUserWarning={
-                      user.email === this.props.userEmail && currentUserWarning
-                    }
-                    deleteUser={() => this.props.deleteUser(user._id)}
-                    editUser={() => this.setState({ editKey: user._id })}
-                  />
-                )
-              )}
-            <NewUser emailRef={this.emailAddRef} levelRef={this.levelAddRef} />
-          </tbody>
-        </Table>
-      </Form>
-    );
-  }
-
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
     // TODO refactor
-    if (this.state.editKey && this.state.editKey === "public_user") {
-      let level = parseInt(this.publicLevelRef.current.value);
+    if (editKey && editKey === "public_user") {
+      let level = parseInt(publicLevelRef.current.value);
       if (isNaN(level)) level = 0;
 
-      const publicUser = this.props.users.find(
-        (user) => user.email === "public"
-      );
+      const publicUser = props.users.find((user) => user.email === "public");
 
       if (publicUser) {
-        this.props
+        props
           .updateUser({
             _id: publicUser._id,
             email: publicUser.email,
             level: level,
           })
-          .then(() => this.setState({ editKey: undefined }));
+          .then(() => setEditKey(undefined));
       } else {
-        this.props
+        props
           .addUser({
             email: "public",
             level: level,
           })
-          .then(() => this.setState({ editKey: undefined }));
+          .then(() => setEditKey(undefined));
       }
-    } else if (this.state.editKey) {
-      let level = parseInt(this.levelEditRef.current.value);
+    } else if (editKey) {
+      let level = parseInt(levelEditRef.current.value);
       if (isNaN(level)) level = 0;
 
-      this.props
+      props
         .updateUser({
-          _id: this.state.editKey,
-          email: this.emailEditRef.current.value,
+          _id: editKey,
+          email: emailEditRef.current.value,
           level: level,
         })
-        .then(() => this.setState({ editKey: undefined }));
+        .then(() => setEditKey(undefined));
     } else {
-      let level = parseInt(this.levelAddRef.current.value);
+      let level = parseInt(levelAddRef.current.value);
       if (isNaN(level)) level = 0;
 
-      this.props.addUser({
-        email: this.emailAddRef.current.value,
+      props.addUser({
+        email: emailAddRef.current.value,
         level: level,
       });
     }
   }
+
+  const publicUser = props.users.find((user) => user.email === "public");
+
+  // allow editing of public user only in case the current user has ADMIN rights
+  const publicUserEditable =
+    props.userEmail &&
+    props.users.some(
+      (user) => user.email === props.userEmail && user.level >= level.ADMIN
+    );
+
+  // allow editing of current user only in case they are other users with ADMIN rights
+  // (or there is a implicit public user which also has ADMIN rights)
+  const currentUserEditable =
+    props.userEmail &&
+    (!publicUser ||
+      props.users.some(
+        (user) => user.email !== props.userEmail && user.level >= level.ADMIN
+      ));
+
+  // when it is allowed to edit current user, there is a warning about losing access,
+  // the warning should not be shown in case there is still public ADMIN access
+  const currentUserWarning =
+    currentUserEditable && publicUser && publicUser.level < level.ADMIN;
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Table bordered hover responsive>
+        <UsersHeader />
+        <tbody>
+          {editKey === "public_user" ? (
+            <PublicEditedUser
+              key="public_user"
+              level={publicUser ? publicUser.level : 3}
+              levelRef={publicLevelRef}
+            />
+          ) : (
+            <PublicUser
+              key="public_user"
+              level={publicUser ? publicUser.level : 3}
+              userEmail={props.userEmail}
+              editable={publicUserEditable}
+              editUser={() => setEditKey("public_user")}
+            />
+          )}
+          {[...props.users]
+            .sort((a, b) => a.email.localeCompare(b.email))
+            .filter((user) => user.email !== "public")
+            .map((user) =>
+              user._id === editKey ? (
+                <EditedUser
+                  key={user._id}
+                  user={user}
+                  emailRef={emailEditRef}
+                  levelRef={levelEditRef}
+                />
+              ) : (
+                <User
+                  key={user._id}
+                  user={user}
+                  editable={
+                    user.email !== props.userEmail || currentUserEditable
+                  }
+                  currentUserWarning={
+                    user.email === props.userEmail && currentUserWarning
+                  }
+                  deleteUser={() => props.deleteUser(user._id)}
+                  editUser={() => setEditKey(user._id)}
+                />
+              )
+            )}
+          <NewUser emailRef={emailAddRef} levelRef={levelAddRef} />
+        </tbody>
+      </Table>
+    </Form>
+  );
 }
 
 function UsersHeader() {
