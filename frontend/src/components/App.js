@@ -420,18 +420,16 @@ export default class App extends React.Component {
                     )
                   }
                   deletePkg={(id) =>
-                    this.state.client
-                      .deletePackage(id)
-                      .then(
-                        (msg) =>
-                          this.setState(
-                            {
-                              pkgs: this.state.pkgs.filter((p) => p._id !== id),
-                            },
-                            this.runChecker
-                          ),
-                        this.handleError
-                      )
+                    this.state.client.deletePackage(id).then(
+                      (msg) =>
+                        this.setState(
+                          {
+                            pkgs: this.state.pkgs.filter((p) => p._id !== id),
+                          },
+                          this.runChecker
+                        ),
+                      this.handleError
+                    )
                   }
                 />
               </Tab.Pane>
@@ -541,6 +539,9 @@ export default class App extends React.Component {
               <Tab.Pane eventKey="users" title="Uživatelé">
                 <Users
                   users={this.state.users}
+                  userEmail={
+                    this.auth.currentUser ? this.auth.currentUser.email : null
+                  }
                   addUser={(user) =>
                     this.state.client.addUser(user).then(
                       (user) =>
