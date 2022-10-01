@@ -28,19 +28,6 @@ export default function Timetable(props) {
     draggedProgram.current = id;
   }
 
-  function* getDateHeaders(settings) {
-    for (const [idx, date] of settings.days.entries()) {
-      yield (
-        <DateHeader
-          key={date}
-          date={new Date(date)}
-          pos={idx * settings.groupCnt + 2}
-          span={settings.groupCnt}
-        />
-      );
-    }
-  }
-
   function* getGroupHeaders(settings) {
     for (const [idx, date] of settings.days.entries()) {
       for (const [groupIdx, group] of settings.groups.entries()) {
@@ -231,6 +218,19 @@ function* getTimeHeaders(settings) {
         time={new Date(time)}
         pos={idx * settings.timeSpan + 3}
         span={settings.timeSpan}
+      />
+    );
+  }
+}
+
+function* getDateHeaders(settings) {
+  for (const [idx, date] of settings.days.entries()) {
+    yield (
+      <DateHeader
+        key={date}
+        date={new Date(date)}
+        pos={idx * settings.groupCnt + 2}
+        span={settings.groupCnt}
       />
     );
   }
