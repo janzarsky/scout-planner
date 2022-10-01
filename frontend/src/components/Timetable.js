@@ -28,19 +28,6 @@ export default function Timetable(props) {
     draggedProgram.current = id;
   }
 
-  function* getTimeHeaders(settings) {
-    for (const [idx, time] of settings.timeHeaders.entries()) {
-      yield (
-        <TimeHeader
-          key={time}
-          time={new Date(time)}
-          pos={idx * settings.timeSpan + 3}
-          span={settings.timeSpan}
-        />
-      );
-    }
-  }
-
   function* getDateHeaders(settings) {
     for (const [idx, date] of settings.days.entries()) {
       yield (
@@ -233,6 +220,19 @@ function* getDroppables(settings, onDrop, addProgramModal) {
         );
       }
     }
+  }
+}
+
+function* getTimeHeaders(settings) {
+  for (const [idx, time] of settings.timeHeaders.entries()) {
+    yield (
+      <TimeHeader
+        key={time}
+        time={new Date(time)}
+        pos={idx * settings.timeSpan + 3}
+        span={settings.timeSpan}
+      />
+    );
   }
 }
 
