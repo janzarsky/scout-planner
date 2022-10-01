@@ -28,26 +28,6 @@ export default function Timetable(props) {
     draggedProgram.current = id;
   }
 
-  function* getDroppables(settings) {
-    for (const [idxDate, date] of settings.days.entries()) {
-      for (const [idxTime, time] of settings.timeHeaders.entries()) {
-        for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
-          yield (
-            <Droppable
-              key={[idxTime, idxDate, idxSpan]}
-              x={3 + idxTime * settings.timeSpan + idxSpan}
-              y={2 + idxDate * settings.groupCnt}
-              height={settings.groupCnt}
-              begin={date + time + idxSpan * settings.timeStep}
-              onDrop={onDroppableDrop}
-              addProgramModal={props.addProgramModal}
-            />
-          );
-        }
-      }
-    }
-  }
-
   function* getTimeHeaders(settings) {
     for (const [idx, time] of settings.timeHeaders.entries()) {
       yield (
@@ -132,7 +112,9 @@ export default function Timetable(props) {
           ", minmax(20px, 1fr))",
       }}
     >
-      {props.userLevel >= level.EDIT && [...getDroppables(settings)]}
+      {props.userLevel >= level.EDIT && [
+        ...getDroppables(settings, onDroppableDrop, props.addProgramModal),
+      ]}
       {[...getTimeHeaders(settings)]}
       {[...getDateHeaders(settings)]}
       {[...getGroupHeaders(settings)]}
@@ -232,6 +214,26 @@ function addEmptyDays(days) {
     );
 
   return extendedDays;
+}
+
+function* getDroppables(settings, onDrop, addProgramModal) {
+  for (const [idxDate, date] of settings.days.entries()) {
+    for (const [idxTime, time] of settings.timeHeaders.entries()) {
+      for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
+        yield (
+          <Droppable
+            key={[idxTime, idxDate, idxSpan]}
+            x={3 + idxTime * settings.timeSpan + idxSpan}
+            y={2 + idxDate * settings.groupCnt}
+            height={settings.groupCnt}
+            begin={date + time + idxSpan * settings.timeStep}
+            onDrop={onDrop}
+            addProgramModal={addProgramModal}
+          />
+        );
+      }
+    }
+  }
 }
 
 function getProgramRect(program, settings) {
