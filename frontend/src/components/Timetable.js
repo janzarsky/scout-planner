@@ -123,7 +123,7 @@ export default class Timetable extends React.Component {
 
   *getPrograms(programs, settings, viewSettings, userLevel) {
     for (const prog of programs) {
-      const rect = this.getRect(prog, settings);
+      const rect = getProgramRect(prog, settings);
 
       if (rect.x >= 0 && rect.y >= 0)
         yield (
@@ -149,34 +149,6 @@ export default class Timetable extends React.Component {
           `The computed rectangle ${rect} for program ${prog._id} is invalid`
         );
     }
-  }
-
-  getRect(program, settings) {
-    const date = getOnlyDate(program.begin);
-    const time = getOnlyTime(program.begin);
-
-    var [first, last] = [0, settings.groupCnt - 1];
-
-    if (program.groups && program.groups.length > 0) {
-      const groupMap = settings.groups.map(
-        (group) => program.groups.findIndex((idx) => idx === group._id) !== -1
-      );
-      first = groupMap.reduce(
-        (acc, cur, idx) => (cur && idx < acc ? idx : acc),
-        settings.groupCnt - 1
-      );
-      last = groupMap.reduce(
-        (acc, cur, idx) => (cur && idx > acc ? idx : acc),
-        0
-      );
-    }
-
-    return {
-      x: Math.ceil((time - settings.dayStart) / settings.timeStep),
-      y: settings.days.indexOf(date) * settings.groupCnt + first,
-      width: Math.ceil(program.duration / settings.timeStep),
-      height: last - first + 1,
-    };
   }
 
   onProgramDragStart(id) {
@@ -277,6 +249,34 @@ function addEmptyDays(days) {
     );
 
   return extendedDays;
+}
+
+function getProgramRect(program, settings) {
+  const date = getOnlyDate(program.begin);
+  const time = getOnlyTime(program.begin);
+
+  var [first, last] = [0, settings.groupCnt - 1];
+
+  if (program.groups && program.groups.length > 0) {
+    const groupMap = settings.groups.map(
+      (group) => program.groups.findIndex((idx) => idx === group._id) !== -1
+    );
+    first = groupMap.reduce(
+      (acc, cur, idx) => (cur && idx < acc ? idx : acc),
+      settings.groupCnt - 1
+    );
+    last = groupMap.reduce(
+      (acc, cur, idx) => (cur && idx > acc ? idx : acc),
+      0
+    );
+  }
+
+  return {
+    x: Math.ceil((time - settings.dayStart) / settings.timeStep),
+    y: settings.days.indexOf(date) * settings.groupCnt + first,
+    width: Math.ceil(program.duration / settings.timeStep),
+    height: last - first + 1,
+  };
 }
 
 function getTimeIndicatorRect(settings) {
