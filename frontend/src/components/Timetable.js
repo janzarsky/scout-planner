@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   formatDay,
   getOnlyDate,
@@ -11,57 +11,24 @@ import { byOrder } from "../helpers/Sorting";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
-export default class Timetable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      programModal: false,
-    };
-    this.onProgramDragStart = this.onProgramDragStart.bind(this);
-    this.onDroppableDrop = this.onDroppableDrop.bind(this);
+export default function Timetable(props) {
+  const draggedProgram = useRef();
+
+  function onDroppableDrop(begin) {
+    var prog = props.programs.find(
+      (program) => program._id === draggedProgram.current
+    );
+    if (prog) {
+      prog.begin = begin;
+      props.updateProgram(prog);
+    }
   }
 
-  render() {
-    const settings = getSettings(
-      this.props.programs,
-      this.props.groups,
-      this.props.timeStep
-    );
-
-    return (
-      <div
-        className="timetable"
-        style={{
-          gridTemplateRows:
-            "repeat(" +
-            (settings.days.length * settings.groupCnt + 1) +
-            ", auto)",
-          gridTemplateColumns:
-            "auto auto repeat(" +
-            settings.timeSpan * settings.timeHeaders.length +
-            ", minmax(20px, 1fr))",
-        }}
-      >
-        {this.props.userLevel >= level.EDIT && [
-          ...this.getDroppables(settings),
-        ]}
-        {[...this.getTimeHeaders(settings)]}
-        {[...this.getDateHeaders(settings)]}
-        {[...this.getGroupHeaders(settings)]}
-        {[
-          ...this.getPrograms(
-            this.props.programs,
-            settings,
-            this.props.viewSettings,
-            this.props.userLevel
-          ),
-        ]}
-        <TimeIndicator rect={getTimeIndicatorRect(settings)} />
-      </div>
-    );
+  function onProgramDragStart(id) {
+    draggedProgram.current = id;
   }
 
-  *getDroppables(settings) {
+  function* getDroppables(settings) {
     for (const [idxDate, date] of settings.days.entries()) {
       for (const [idxTime, time] of settings.timeHeaders.entries()) {
         for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
@@ -72,8 +39,8 @@ export default class Timetable extends React.Component {
               y={2 + idxDate * settings.groupCnt}
               height={settings.groupCnt}
               begin={date + time + idxSpan * settings.timeStep}
-              onDrop={this.onDroppableDrop}
-              addProgramModal={this.props.addProgramModal}
+              onDrop={onDroppableDrop}
+              addProgramModal={props.addProgramModal}
             />
           );
         }
@@ -81,7 +48,7 @@ export default class Timetable extends React.Component {
     }
   }
 
-  *getTimeHeaders(settings) {
+  function* getTimeHeaders(settings) {
     for (const [idx, time] of settings.timeHeaders.entries()) {
       yield (
         <TimeHeader
@@ -94,7 +61,7 @@ export default class Timetable extends React.Component {
     }
   }
 
-  *getDateHeaders(settings) {
+  function* getDateHeaders(settings) {
     for (const [idx, date] of settings.days.entries()) {
       yield (
         <DateHeader
@@ -107,7 +74,7 @@ export default class Timetable extends React.Component {
     }
   }
 
-  *getGroupHeaders(settings) {
+  function* getGroupHeaders(settings) {
     for (const [idx, date] of settings.days.entries()) {
       for (const [groupIdx, group] of settings.groups.entries()) {
         yield (
@@ -121,7 +88,7 @@ export default class Timetable extends React.Component {
     }
   }
 
-  *getPrograms(programs, settings, viewSettings, userLevel) {
+  function* getPrograms(programs, settings, viewSettings, userLevel) {
     for (const prog of programs) {
       const rect = getProgramRect(prog, settings);
 
@@ -130,18 +97,16 @@ export default class Timetable extends React.Component {
           <Program
             key={prog._id}
             program={prog}
-            highlighted={
-              this.props.highlightedPackages.indexOf(prog.pkg) !== -1
-            }
-            violations={this.props.violations.get(prog._id)}
+            highlighted={props.highlightedPackages.indexOf(prog.pkg) !== -1}
+            violations={props.violations.get(prog._id)}
             rect={rect}
-            onDragStart={this.onProgramDragStart}
-            pkgs={this.props.pkgs}
-            onEdit={this.props.onEdit}
+            onDragStart={onProgramDragStart}
+            pkgs={props.pkgs}
+            onEdit={props.onEdit}
             viewSettings={viewSettings}
-            clone={this.props.clone}
-            activeRange={this.props.activeRange}
-            userLevel={this.props.userLevel}
+            clone={props.clone}
+            activeRange={props.activeRange}
+            userLevel={props.userLevel}
           />
         );
       else
@@ -151,19 +116,37 @@ export default class Timetable extends React.Component {
     }
   }
 
-  onProgramDragStart(id) {
-    this.draggedProgram = id;
-  }
+  const settings = getSettings(props.programs, props.groups, props.timeStep);
 
-  onDroppableDrop(begin) {
-    var prog = this.props.programs.find(
-      (program) => program._id === this.draggedProgram
-    );
-    if (prog) {
-      prog.begin = begin;
-      this.props.updateProgram(prog);
-    }
-  }
+  return (
+    <div
+      className="timetable"
+      style={{
+        gridTemplateRows:
+          "repeat(" +
+          (settings.days.length * settings.groupCnt + 1) +
+          ", auto)",
+        gridTemplateColumns:
+          "auto auto repeat(" +
+          settings.timeSpan * settings.timeHeaders.length +
+          ", minmax(20px, 1fr))",
+      }}
+    >
+      {props.userLevel >= level.EDIT && [...getDroppables(settings)]}
+      {[...getTimeHeaders(settings)]}
+      {[...getDateHeaders(settings)]}
+      {[...getGroupHeaders(settings)]}
+      {[
+        ...getPrograms(
+          props.programs,
+          settings,
+          props.viewSettings,
+          props.userLevel
+        ),
+      ]}
+      <TimeIndicator rect={getTimeIndicatorRect(settings)} />
+    </div>
+  );
 }
 
 function getSettings(programs, groups, timeStep) {
