@@ -56,7 +56,7 @@ export default class Timetable extends React.Component {
             this.props.userLevel
           ),
         ]}
-        <TimeIndicator rect={this.getTimeIndicatorRect(settings)} />
+        <TimeIndicator rect={getTimeIndicatorRect(settings)} />
       </div>
     );
   }
@@ -265,27 +265,6 @@ export default class Timetable extends React.Component {
     };
   }
 
-  getTimeIndicatorRect(settings) {
-    const now = Date.now();
-    // the times in timetable are in UTC (we don't know the timezone of the actual event)
-    // the indicator assumes that you are in the correct timezone
-    const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
-
-    const currTime = getOnlyTime(zoneAdjust);
-    if (currTime < settings.dayStart || currTime > settings.dayEnd)
-      return <div />;
-
-    const currDate = getOnlyDate(zoneAdjust);
-    if (settings.days.indexOf(currDate) === -1) return <div />;
-
-    return {
-      x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
-      y: settings.days.indexOf(currDate) * settings.groupCnt,
-      width: 1,
-      height: settings.groupCnt,
-    };
-  }
-
   onProgramDragStart(id) {
     this.draggedProgram = id;
   }
@@ -299,6 +278,27 @@ export default class Timetable extends React.Component {
       this.props.updateProgram(prog);
     }
   }
+}
+
+function getTimeIndicatorRect(settings) {
+  const now = Date.now();
+  // the times in timetable are in UTC (we don't know the timezone of the actual event)
+  // the indicator assumes that you are in the correct timezone
+  const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
+
+  const currTime = getOnlyTime(zoneAdjust);
+  if (currTime < settings.dayStart || currTime > settings.dayEnd)
+    return <div />;
+
+  const currDate = getOnlyDate(zoneAdjust);
+  if (settings.days.indexOf(currDate) === -1) return <div />;
+
+  return {
+    x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
+    y: settings.days.indexOf(currDate) * settings.groupCnt,
+    width: 1,
+    height: settings.groupCnt,
+  };
 }
 
 class Droppable extends React.Component {
