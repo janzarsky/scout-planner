@@ -180,15 +180,15 @@ function* getDroppables(settings, onDrop, addProgramModal) {
   for (const [idxDate, date] of settings.days.entries()) {
     for (const [idxTime, time] of settings.timeHeaders.entries()) {
       for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
+        const begin = date + time + idxSpan * settings.timeStep;
         yield (
           <Droppable
             key={[idxTime, idxDate, idxSpan]}
             x={3 + idxTime * settings.timeSpan + idxSpan}
             y={2 + idxDate * settings.groupCnt}
             height={settings.groupCnt}
-            begin={date + time + idxSpan * settings.timeStep}
-            onDrop={onDrop}
-            addProgramModal={addProgramModal}
+            onDrop={() => onDrop(begin)}
+            addProgramModal={() => addProgramModal({ begin })}
           />
         );
       }
@@ -296,10 +296,10 @@ function Droppable(props) {
         gridRowStart: props.y,
         gridRowEnd: "span " + props.height,
       }}
-      onClick={(_) => props.addProgramModal({ begin: props.begin })}
+      onClick={(_) => props.addProgramModal()}
       onDrop={(e) => {
         e.preventDefault();
-        props.onDrop(props.begin);
+        props.onDrop();
         setDragOver(false);
       }}
       onDragEnter={() => setDragOver(true)}
