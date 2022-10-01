@@ -56,7 +56,7 @@ export default class Timetable extends React.Component {
             this.props.userLevel
           ),
         ]}
-        {this.getTimeIndicator(settings)}
+        <TimeIndicator rect={this.getTimeIndicatorRect(settings)} />
       </div>
     );
   }
@@ -265,7 +265,7 @@ export default class Timetable extends React.Component {
     };
   }
 
-  getTimeIndicator(settings) {
+  getTimeIndicatorRect(settings) {
     const now = Date.now();
     // the times in timetable are in UTC (we don't know the timezone of the actual event)
     // the indicator assumes that you are in the correct timezone
@@ -278,16 +278,12 @@ export default class Timetable extends React.Component {
     const currDate = getOnlyDate(zoneAdjust);
     if (settings.days.indexOf(currDate) === -1) return <div />;
 
-    return (
-      <TimeIndicator
-        rect={{
-          x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
-          y: settings.days.indexOf(currDate) * settings.groupCnt,
-          width: 1,
-          height: settings.groupCnt,
-        }}
-      />
-    );
+    return {
+      x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
+      y: settings.days.indexOf(currDate) * settings.groupCnt,
+      width: 1,
+      height: settings.groupCnt,
+    };
   }
 
   onProgramDragStart(id) {
