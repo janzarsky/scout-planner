@@ -1,4 +1,3 @@
-import React from "react";
 import Table from "react-bootstrap/Table";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";

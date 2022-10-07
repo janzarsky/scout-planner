@@ -1,4 +1,4 @@
-import React from "react";
+import { useRef, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -12,88 +12,77 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 
-export default class Settings extends React.Component {
-  constructor(props) {
-    super(props);
-    [
-      "firstProgramRef",
-      "conditionRef",
-      "timeRef",
-      "dateRef",
-      "secondProgramRef",
-    ].forEach((field) => (this[field] = React.createRef()));
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { condition: "is_before_program" };
-  }
+export default function Settings(props) {
+  const firstProgramRef = useRef();
+  const conditionRef = useRef();
+  const timeRef = useRef();
+  const dateRef = useRef();
+  const secondProgramRef = useRef();
+  const [condition, setCondition] = useState("is_before_program");
 
-  render() {
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Table bordered hover responsive>
-          <RulesHeader userLevel={this.props.userLevel} />
-          <tbody>
-            {[...this.props.rules]
-              .sort((a, b) => ruleSort(a, b, this.props.programs))
-              .map((rule, index) => (
-                <Rule
-                  key={rule._id}
-                  cnt={index + 1}
-                  rule={rule}
-                  programs={this.props.programs}
-                  groups={this.props.groups}
-                  violation={this.props.violations.get(rule._id)}
-                  deleteRule={() => this.props.deleteRule(rule._id)}
-                  userLevel={this.props.userLevel}
-                />
-              ))}
-            {this.props.userLevel >= level.EDIT && (
-              <NewRule
-                programs={this.props.programs}
-                groups={this.props.groups}
-                condition={this.state.condition}
-                setCondition={(condition) =>
-                  this.setState({ condition: condition })
-                }
-                firstProgramRef={this.firstProgramRef}
-                secondProgramRef={this.secondProgramRef}
-                conditionRef={this.conditionRef}
-                timeRef={this.timeRef}
-                dateRef={this.dateRef}
-              />
-            )}
-          </tbody>
-        </Table>
-      </Form>
-    );
-  }
-
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
-    const condition = this.conditionRef.current.value;
+    const conditionVal = conditionRef.current.value;
 
     var value;
-    switch (condition) {
+    switch (conditionVal) {
       case "is_before_date":
       case "is_after_date":
         value =
-          parseDate(this.dateRef.current.value) +
-          parseTime(this.timeRef.current.value);
+          parseDate(dateRef.current.value) + parseTime(timeRef.current.value);
         break;
       case "is_before_program":
       case "is_after_program":
-        value = this.secondProgramRef.current.value;
+        value = secondProgramRef.current.value;
         break;
       default:
         value = null;
     }
 
-    this.props.addRule({
-      program: this.firstProgramRef.current.value,
-      condition: condition,
+    props.addRule({
+      program: firstProgramRef.current.value,
+      condition: conditionVal,
       value: value,
     });
   }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Table bordered hover responsive>
+        <RulesHeader userLevel={props.userLevel} />
+        <tbody>
+          {[...props.rules]
+            .sort((a, b) => ruleSort(a, b, props.programs))
+            .map((rule, index) => (
+              <Rule
+                key={rule._id}
+                cnt={index + 1}
+                rule={rule}
+                programs={props.programs}
+                groups={props.groups}
+                violation={props.violations.get(rule._id)}
+                deleteRule={() => props.deleteRule(rule._id)}
+                userLevel={props.userLevel}
+              />
+            ))}
+          {props.userLevel >= level.EDIT && (
+            <NewRule
+              programs={props.programs}
+              groups={props.groups}
+              condition={condition}
+              setCondition={(condition) => setCondition(condition)}
+              firstProgramRef={firstProgramRef}
+              secondProgramRef={secondProgramRef}
+              conditionRef={conditionRef}
+              timeRef={timeRef}
+              dateRef={dateRef}
+            />
+          )}
+        </tbody>
+      </Table>
+    </Form>
+  );
 }
 
 function ruleSort(a, b, programs) {

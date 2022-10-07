@@ -1,66 +1,59 @@
-import React from "react";
+import { useRef, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 
-export default class Ranges extends React.Component {
-  constructor(props) {
-    super(props);
-    ["nameAddRef", "nameEditRef"].forEach(
-      (field) => (this[field] = React.createRef())
-    );
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { editKey: undefined };
-  }
+export default function Ranges(props) {
+  const nameAddRef = useRef();
+  const nameEditRef = useRef();
+  const [editKey, setEditKey] = useState(undefined);
 
-  render() {
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Table bordered hover responsive>
-          <RangesHeader />
-          <tbody>
-            {[...this.props.ranges]
-              .sort(byName)
-              .map((range) =>
-                range._id === this.state.editKey ? (
-                  <EditedRange
-                    key={range._id}
-                    range={range}
-                    nameRef={this.nameEditRef}
-                  />
-                ) : (
-                  <Range
-                    key={range._id}
-                    range={range}
-                    deleteRange={() => this.props.deleteRange(range._id)}
-                    editRange={() => this.setState({ editKey: range._id })}
-                  />
-                )
-              )}
-            <NewRange nameRef={this.nameAddRef} />
-          </tbody>
-        </Table>
-      </Form>
-    );
-  }
-
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
-    if (this.state.editKey) {
-      this.props
+    if (editKey) {
+      props
         .updateRange({
-          _id: this.state.editKey,
-          name: this.nameEditRef.current.value,
+          _id: editKey,
+          name: nameEditRef.current.value,
         })
-        .then(() => this.setState({ editKey: undefined }));
+        .then(() => setEditKey(undefined));
     } else {
-      this.props.addRange({
-        name: this.nameAddRef.current.value,
+      props.addRange({
+        name: nameAddRef.current.value,
       });
     }
   }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Table bordered hover responsive>
+        <RangesHeader />
+        <tbody>
+          {[...props.ranges]
+            .sort(byName)
+            .map((range) =>
+              range._id === editKey ? (
+                <EditedRange
+                  key={range._id}
+                  range={range}
+                  nameRef={nameEditRef}
+                />
+              ) : (
+                <Range
+                  key={range._id}
+                  range={range}
+                  deleteRange={() => props.deleteRange(range._id)}
+                  editRange={() => setEditKey(range._id)}
+                />
+              )
+            )}
+          <NewRange nameRef={nameAddRef} />
+        </tbody>
+      </Table>
+    </Form>
+  );
 }
 
 function RangesHeader() {
@@ -110,7 +103,7 @@ function EditedRange(props) {
 
 function NewRange(props) {
   return (
-    <tr key="new_range">
+    <tr>
       <td>
         <Form.Control ref={props.nameRef} defaultValue="Nová linka" />
       </td>
