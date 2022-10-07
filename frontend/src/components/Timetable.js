@@ -57,6 +57,7 @@ export default function Timetable(props) {
   }
 
   const settings = getSettings(props.programs, props.groups, props.timeStep);
+  const timeIndicatorRect = getTimeIndicatorRect(settings);
 
   return (
     <div
@@ -86,7 +87,7 @@ export default function Timetable(props) {
           props.userLevel
         ),
       ]}
-      <TimeIndicator rect={getTimeIndicatorRect(settings)} />
+      {timeIndicatorRect && <TimeIndicator rect={timeIndicatorRect} />}
     </div>
   );
 }
@@ -271,11 +272,10 @@ function getTimeIndicatorRect(settings) {
   const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
 
   const currTime = getOnlyTime(zoneAdjust);
-  if (currTime < settings.dayStart || currTime > settings.dayEnd)
-    return <div />;
+  if (currTime < settings.dayStart || currTime > settings.dayEnd) return null;
 
   const currDate = getOnlyDate(zoneAdjust);
-  if (settings.days.indexOf(currDate) === -1) return <div />;
+  if (settings.days.indexOf(currDate) === -1) return null;
 
   return {
     x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
