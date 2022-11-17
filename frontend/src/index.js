@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import App from "./components/App";
@@ -58,7 +58,9 @@ const Homepage = () => {
   );
 };
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root"));
+
+root.render(
   <BrowserRouter>
     <Switch>
       <Route path="/" exact>
@@ -68,6 +70,5 @@ ReactDOM.render(
         <AppWrapper />
       </Route>
     </Switch>
-  </BrowserRouter>,
-  document.getElementById("root")
+  </BrowserRouter>
 );
