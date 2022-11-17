@@ -1,61 +1,56 @@
-import React from "react";
+import { useState } from "react";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 
-export default class Program extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { dragged: false };
+export default function Program(props) {
+  const [dragged, setDragged] = useState(false);
+
+  function onDragStart(e) {
+    props.onDragStart(props.program._id);
+    setTimeout(() => setDragged(true));
   }
 
-  render() {
-    return (
-      <div
-        className={"program-wrapper" + (this.state.dragged ? " dragged" : "")}
-        style={{
-          gridColumnStart: this.props.rect.x + 3,
-          gridRowStart: this.props.rect.y + 2,
-          gridColumnEnd: "span " + this.props.rect.width,
-          gridRowEnd: "span " + this.props.rect.height,
-        }}
-        draggable={!this.props.program.locked}
-        onDragStart={(e) => this.onDragStart(e)}
-        onDragEnd={(e) => this.onDragEnd(e)}
-      >
-        <ProgramBody
-          program={this.props.program}
-          violations={this.props.violations}
-          pkg={this.props.pkgs.find((p) => p._id === this.props.program.pkg)}
-          highlighted={this.props.highlighted}
-          viewSettings={this.props.viewSettings}
-          activeRange={this.props.activeRange}
-        />
-        <ProgramEdit
-          program={this.props.program}
-          onEdit={this.props.onEdit}
-          userLevel={this.props.userLevel}
-        />
-        {this.props.program.locked && <ProgramLock />}
-        {!this.props.program.locked && this.props.userLevel >= level.EDIT && (
-          <ProgramMove />
-        )}
-        {this.props.program.url && <ProgramUrl url={this.props.program.url} />}
-        {this.props.userLevel >= level.EDIT && (
-          <ProgramClone clone={() => this.props.clone(this.props.program)} />
-        )}
-      </div>
-    );
-  }
-
-  onDragStart(e) {
-    this.props.onDragStart(this.props.program._id);
-    setTimeout(() => this.setState({ dragged: true }));
-  }
-
-  onDragEnd(e) {
+  function onDragEnd(e) {
     e.preventDefault();
-    this.setState({ dragged: false });
+    setDragged(false);
   }
+
+  return (
+    <div
+      className={"program-wrapper" + (dragged ? " dragged" : "")}
+      style={{
+        gridColumnStart: props.rect.x + 3,
+        gridRowStart: props.rect.y + 2,
+        gridColumnEnd: "span " + props.rect.width,
+        gridRowEnd: "span " + props.rect.height,
+      }}
+      draggable={!props.program.locked}
+      onDragStart={(e) => onDragStart(e)}
+      onDragEnd={(e) => onDragEnd(e)}
+    >
+      <ProgramBody
+        program={props.program}
+        violations={props.violations}
+        pkg={props.pkgs.find((p) => p._id === props.program.pkg)}
+        highlighted={props.highlighted}
+        viewSettings={props.viewSettings}
+        activeRange={props.activeRange}
+      />
+      <ProgramEdit
+        program={props.program}
+        onEdit={props.onEdit}
+        userLevel={props.userLevel}
+      />
+      {props.program.locked && <ProgramLock />}
+      {!props.program.locked && props.userLevel >= level.EDIT && (
+        <ProgramMove />
+      )}
+      {props.program.url && <ProgramUrl url={props.program.url} />}
+      {props.userLevel >= level.EDIT && (
+        <ProgramClone clone={() => props.clone(props.program)} />
+      )}
+    </div>
+  );
 }
 
 function ProgramBody(props) {
