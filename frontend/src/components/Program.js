@@ -1,23 +1,17 @@
-import { useState } from "react";
+import { useDrag } from "react-dnd";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 
 export default function Program(props) {
-  const [dragged, setDragged] = useState(false);
-
-  function onDragStart(e) {
-    props.onDragStart(props.program._id);
-    setTimeout(() => setDragged(true));
-  }
-
-  function onDragEnd(e) {
-    e.preventDefault();
-    setDragged(false);
-  }
+  const [, drag] = useDrag(() => ({
+    type: "program",
+    item: { id: props.program._id },
+  }));
 
   return (
     <div
-      className={"program-wrapper" + (dragged ? " dragged" : "")}
+      ref={drag}
+      className={"program-wrapper"}
       style={{
         gridColumnStart: props.rect.x + 3,
         gridRowStart: props.rect.y + 2,
@@ -25,8 +19,6 @@ export default function Program(props) {
         gridRowEnd: "span " + props.rect.height,
       }}
       draggable={!props.program.locked}
-      onDragStart={(e) => onDragStart(e)}
-      onDragEnd={(e) => onDragEnd(e)}
     >
       <ProgramBody
         program={props.program}

@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import { DndProvider, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import {
   formatDay,
   getOnlyDate,
@@ -12,20 +13,12 @@ import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
 export default function Timetable(props) {
-  const draggedProgram = useRef();
-
-  function onDroppableDrop(begin) {
-    var prog = props.programs.find(
-      (program) => program._id === draggedProgram.current
-    );
+  function onDroppableDrop(item, begin) {
+    var prog = props.programs.find((program) => program._id === item.id);
     if (prog) {
       prog.begin = begin;
       props.updateProgram(prog);
     }
-  }
-
-  function onProgramDragStart(id) {
-    draggedProgram.current = id;
   }
 
   function* getPrograms(programs, settings, viewSettings, userLevel) {
@@ -40,7 +33,6 @@ export default function Timetable(props) {
             highlighted={props.highlightedPackages.indexOf(prog.pkg) !== -1}
             violations={props.violations.get(prog._id)}
             rect={rect}
-            onDragStart={onProgramDragStart}
             pkgs={props.pkgs}
             onEdit={props.onEdit}
             viewSettings={viewSettings}
@@ -60,35 +52,37 @@ export default function Timetable(props) {
   const timeIndicatorRect = getTimeIndicatorRect(settings);
 
   return (
-    <div
-      className="timetable"
-      style={{
-        gridTemplateRows:
-          "repeat(" +
-          (settings.days.length * settings.groupCnt + 1) +
-          ", auto)",
-        gridTemplateColumns:
-          "auto auto repeat(" +
-          settings.timeSpan * settings.timeHeaders.length +
-          ", minmax(20px, 1fr))",
-      }}
-    >
-      {props.userLevel >= level.EDIT && [
-        ...getDroppables(settings, onDroppableDrop, props.addProgramModal),
-      ]}
-      {[...getTimeHeaders(settings)]}
-      {[...getDateHeaders(settings)]}
-      {[...getGroupHeaders(settings)]}
-      {[
-        ...getPrograms(
-          props.programs,
-          settings,
-          props.viewSettings,
-          props.userLevel
-        ),
-      ]}
-      {timeIndicatorRect && <TimeIndicator rect={timeIndicatorRect} />}
-    </div>
+    <DndProvider backend={HTML5Backend}>
+      <div
+        className="timetable"
+        style={{
+          gridTemplateRows:
+            "repeat(" +
+            (settings.days.length * settings.groupCnt + 1) +
+            ", auto)",
+          gridTemplateColumns:
+            "auto auto repeat(" +
+            settings.timeSpan * settings.timeHeaders.length +
+            ", minmax(20px, 1fr))",
+        }}
+      >
+        {props.userLevel >= level.EDIT && [
+          ...getDroppables(settings, onDroppableDrop, props.addProgramModal),
+        ]}
+        {[...getTimeHeaders(settings)]}
+        {[...getDateHeaders(settings)]}
+        {[...getGroupHeaders(settings)]}
+        {[
+          ...getPrograms(
+            props.programs,
+            settings,
+            props.viewSettings,
+            props.userLevel
+          ),
+        ]}
+        {timeIndicatorRect && <TimeIndicator rect={timeIndicatorRect} />}
+      </div>
+    </DndProvider>
   );
 }
 
@@ -188,7 +182,7 @@ function* getDroppables(settings, onDrop, addProgramModal) {
             x={3 + idxTime * settings.timeSpan + idxSpan}
             y={2 + idxDate * settings.groupCnt}
             height={settings.groupCnt}
-            onDrop={() => onDrop(begin)}
+            onDrop={(item) => onDrop(item, begin)}
             addProgramModal={() => addProgramModal({ begin })}
           />
         );
@@ -286,25 +280,24 @@ function getTimeIndicatorRect(settings) {
 }
 
 function Droppable(props) {
-  const [dragOver, setDragOver] = useState(false);
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: "program",
+    drop: (item) => props.onDrop(item),
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
 
   return (
     <div
-      className={"droppable " + (dragOver ? "drag-over" : "")}
+      ref={drop}
+      className={"droppable " + (isOver ? "drag-over" : "")}
       style={{
         gridColumnStart: props.x,
         gridRowStart: props.y,
         gridRowEnd: "span " + props.height,
       }}
       onClick={(_) => props.addProgramModal()}
-      onDrop={(e) => {
-        e.preventDefault();
-        props.onDrop();
-        setDragOver(false);
-      }}
-      onDragEnter={() => setDragOver(true)}
-      onDragOver={(e) => e.preventDefault()}
-      onDragLeave={() => setDragOver(false)}
     />
   );
 }
