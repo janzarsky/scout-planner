@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 
-export default function Ranges(props) {
+export default function Ranges({ addRange, updateRange, deleteRange, ranges }) {
   const [newName, setNewName] = useState("Nová linka");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
@@ -13,11 +13,11 @@ export default function Ranges(props) {
     event.preventDefault();
 
     if (editKey) {
-      props
-        .updateRange({ _id: editKey, name: editedName })
-        .then(() => setEditKey(undefined));
+      updateRange({ _id: editKey, name: editedName }).then(() =>
+        setEditKey(undefined)
+      );
     } else {
-      props.addRange({ name: newName });
+      addRange({ name: newName });
     }
   }
 
@@ -26,7 +26,7 @@ export default function Ranges(props) {
       <Table bordered hover responsive>
         <RangesHeader />
         <tbody>
-          {[...props.ranges].sort(byName).map((range) =>
+          {[...ranges].sort(byName).map((range) =>
             range._id === editKey ? (
               <EditedRange
                 key={range._id}
@@ -36,8 +36,8 @@ export default function Ranges(props) {
             ) : (
               <Range
                 key={range._id}
-                range={range}
-                deleteRange={() => props.deleteRange(range._id)}
+                name={range.name}
+                deleteRange={() => deleteRange(range._id)}
                 editRange={() => {
                   setEditKey(range._id);
                   setEditedName(range.name);
@@ -45,7 +45,7 @@ export default function Ranges(props) {
               />
             )
           )}
-          <NewRange name={newName} setName={setNewName} />
+          <EditedRange name={newName} setName={setNewName} isNew={true} />
         </tbody>
       </Table>
     </Form>
@@ -63,17 +63,17 @@ function RangesHeader() {
   );
 }
 
-function Range(props) {
+function Range({ name, editRange, deleteRange }) {
   return (
     <tr>
-      <td>{props.range.name}</td>
+      <td>{name}</td>
       <td>
         <span>
-          <Button variant="link" onClick={props.editRange}>
+          <Button variant="link" onClick={editRange}>
             <i className="fa fa-pencil" /> Upravit
           </Button>
           &nbsp;
-          <Button variant="link text-danger" onClick={props.deleteRange}>
+          <Button variant="link text-danger" onClick={deleteRange}>
             <i className="fa fa-trash" /> Smazat
           </Button>
         </span>
@@ -82,36 +82,23 @@ function Range(props) {
   );
 }
 
-function EditedRange(props) {
+function EditedRange({ name, setName, isNew = false }) {
   return (
     <tr>
       <td>
-        <Form.Control
-          value={props.name}
-          onChange={(e) => props.setName(e.target.value)}
-        />
+        <Form.Control value={name} onChange={(e) => setName(e.target.value)} />
       </td>
       <td>
         <Button variant="primary" type="submit">
-          <i className="fa fa-check" /> Uložit
-        </Button>
-      </td>
-    </tr>
-  );
-}
-
-function NewRange(props) {
-  return (
-    <tr>
-      <td>
-        <Form.Control
-          value={props.name}
-          onChange={(e) => props.setName(e.target.value)}
-        />
-      </td>
-      <td>
-        <Button variant="success" type="submit">
-          <i className="fa fa-plus" /> Přidat
+          {isNew ? (
+            <>
+              <i className="fa fa-plus" /> Přidat
+            </>
+          ) : (
+            <>
+              <i className="fa fa-check" /> Uložit
+            </>
+          )}
         </Button>
       </td>
     </tr>
