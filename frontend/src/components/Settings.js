@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import { level } from "../helpers/Level";
 import Import from "./Import";
 import Export from "./Export";
+import { formatDurationInMinutes } from "../helpers/DateUtils";
 
 export default function Settings(props) {
   async function deleteAll() {
@@ -59,10 +60,17 @@ export default function Settings(props) {
 
 function TimeStep({ timeStep, setTimeStep }) {
   const [step, setStep] = useState(timeStep);
+  const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
     event.preventDefault();
-    setTimeStep(step);
+
+    if (editing) {
+      setTimeStep(step);
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
   }
 
   return (
@@ -72,20 +80,30 @@ function TimeStep({ timeStep, setTimeStep }) {
           Základní interval
         </Form.Label>
         <Col sm="3">
-          <Form.Control
-            as="select"
-            value={step}
-            onChange={(e) => setStep(e.target.value)}
-          >
-            <option value={15 * 60 * 1000}>15 min</option>
-            <option value={10 * 60 * 1000}>10 min</option>
-            <option value={5 * 60 * 1000}>5 min</option>
-          </Form.Control>
+          {editing ? (
+            <Form.Control
+              as="select"
+              value={step}
+              onChange={(e) => setStep(e.target.value)}
+            >
+              <option value={15 * 60 * 1000}>15 min</option>
+              <option value={10 * 60 * 1000}>10 min</option>
+              <option value={5 * 60 * 1000}>5 min</option>
+            </Form.Control>
+          ) : (
+            formatDurationInMinutes(timeStep)
+          )}
         </Col>
         <Col>
-          <Button type="submit">
-            <i className="fa fa-check"></i> Uložit
-          </Button>
+          {editing ? (
+            <Button type="submit">
+              <i className="fa fa-check"></i> Uložit
+            </Button>
+          ) : (
+            <Button type="submit">
+              <i className="fa fa-pencil"></i> Upravit
+            </Button>
+          )}
         </Col>
       </Form.Row>
     </Form>
