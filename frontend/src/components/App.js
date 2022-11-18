@@ -143,6 +143,237 @@ export default class App extends React.Component {
     });
   }
 
+  getFilters() {
+    const toggle = (id) => {
+      let highlightedPackages = this.state.highlightedPackages;
+      if (highlightedPackages.indexOf(id) === -1) highlightedPackages.push(id);
+      else highlightedPackages.splice(highlightedPackages.indexOf(id), 1);
+      this.setState({ highlightedPackages });
+    };
+
+    return (
+      <>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.highlightingEnabled ? "dark" : "light"}
+            onClick={() =>
+              this.setState({
+                highlightingEnabled: this.state.highlightingEnabled
+                  ? false
+                  : true,
+              })
+            }
+          >
+            <i className="fa fa-filter" />
+          </Nav.Link>
+        </Nav.Item>
+        {this.state.highlightingEnabled &&
+          [...this.state.pkgs].sort(byName).map((pkg) => (
+            <Nav.Item key={pkg._id}>
+              <Nav.Link
+                as={Button}
+                variant={
+                  this.state.highlightedPackages.indexOf(pkg._id) === -1
+                    ? "light"
+                    : "dark"
+                }
+                style={
+                  this.state.highlightedPackages.indexOf(pkg._id) === -1
+                    ? { backgroundColor: pkg.color }
+                    : {}
+                }
+                onClick={() => toggle(pkg._id)}
+              >
+                {pkg.name}
+              </Nav.Link>
+            </Nav.Item>
+          ))}
+      </>
+    );
+  }
+
+  getViewSettings() {
+    return (
+      <>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.viewSettingsActive ? "dark" : "light"}
+            onClick={() =>
+              this.setState({
+                viewSettingsActive: this.state.viewSettingsActive
+                  ? false
+                  : true,
+              })
+            }
+          >
+            <i className="fa fa-eye" />
+          </Nav.Link>
+        </Nav.Item>
+        {this.state.viewSettingsActive && (
+          <>
+            <Nav.Item>
+              <Nav.Link
+                as={Button}
+                variant={this.state.viewPkg ? "dark" : "light"}
+                onClick={() => this.setState({ viewPkg: !this.state.viewPkg })}
+              >
+                Balíček
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                as={Button}
+                variant={this.state.viewTime ? "dark" : "light"}
+                onClick={() =>
+                  this.setState({ viewTime: !this.state.viewTime })
+                }
+              >
+                Čas
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                as={Button}
+                variant={this.state.viewPeople ? "dark" : "light"}
+                onClick={() =>
+                  this.setState({ viewPeople: !this.state.viewPeople })
+                }
+              >
+                Lidi
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                as={Button}
+                variant={this.state.viewViolations ? "dark" : "light"}
+                onClick={() =>
+                  this.setState({ viewViolations: !this.state.viewViolations })
+                }
+              >
+                Porušení pravidel
+              </Nav.Link>
+            </Nav.Item>
+          </>
+        )}
+      </>
+    );
+  }
+
+  getRanges() {
+    return (
+      <>
+        <Nav.Item>
+          <Nav.Link
+            as={Button}
+            variant={this.state.viewRanges ? "dark" : "light"}
+            onClick={() =>
+              this.setState({ viewRanges: !this.state.viewRanges })
+            }
+          >
+            <i className="fa fa-area-chart" />
+          </Nav.Link>
+        </Nav.Item>
+        {this.state.viewRanges
+          ? this.state.ranges.map((range) => (
+              <Nav.Item key={range._id}>
+                <Nav.Link
+                  as={Button}
+                  variant={
+                    this.state.activeRange === range._id ? "dark" : "light"
+                  }
+                  onClick={() => this.setState({ activeRange: range._id })}
+                >
+                  {range.name}
+                </Nav.Link>
+              </Nav.Item>
+            ))
+          : null}
+      </>
+    );
+  }
+
+  getGoogleLogin() {
+    return this.auth.currentUser ? (
+      <Nav.Item>
+        <Nav.Link as={Button} variant="light" onClick={this.logout}>
+          {this.auth.currentUser.displayName}
+          &nbsp;
+          <i className="fa fa-sign-out" />
+        </Nav.Link>
+      </Nav.Item>
+    ) : (
+      <Nav.Item>
+        <Nav.Link as={Button} variant="light" onClick={this.login}>
+          <i className="fa fa-sign-in" />
+        </Nav.Link>
+      </Nav.Item>
+    );
+  }
+
+  async addProgram(program) {
+    await this.state.client
+      .addProgram(program)
+      .then(
+        (program) =>
+          this.setState(
+            { programs: [...this.state.programs, program] },
+            this.runChecker
+          ),
+        this.handleError
+      );
+  }
+
+  async updateProgram(program) {
+    await this.state.client.updateProgram(program).then(
+      (program) =>
+        this.setState(
+          {
+            programs: [
+              ...this.state.programs.filter((p) => p._id !== program._id),
+              program,
+            ],
+          },
+          this.runChecker
+        ),
+      this.handleError
+    );
+  }
+
+  async deleteProgram(program) {
+    await this.state.client.updateProgram({ ...program, deleted: true }).then(
+      () =>
+        this.setState({
+          programs: [
+            ...this.state.programs.filter((p) => p._id !== program._id),
+          ],
+          deletedPrograms: [...this.state.deletedPrograms, program],
+        }),
+      this.handleError
+    );
+  }
+
+  async login() {
+    await signInWithPopup(this.auth, this.provider).catch((error) =>
+      console.error(error)
+    );
+  }
+
+  async logout() {
+    await signOut(this.auth)
+      .catch((error) => console.error(error))
+      .finally(() => {
+        this.setState({ client: new Client(null, this.props.table) });
+      });
+  }
+
+  handleError(error) {
+    this.setState((prevState) => ({
+      errors: [error.message, ...prevState.errors],
+    }));
+  }
+
   render() {
     var violationsPerProgram = new Map();
     [...this.state.violations.values()]
@@ -614,236 +845,5 @@ export default class App extends React.Component {
         </Tab.Container>
       </div>
     );
-  }
-
-  getFilters() {
-    const toggle = (id) => {
-      let highlightedPackages = this.state.highlightedPackages;
-      if (highlightedPackages.indexOf(id) === -1) highlightedPackages.push(id);
-      else highlightedPackages.splice(highlightedPackages.indexOf(id), 1);
-      this.setState({ highlightedPackages });
-    };
-
-    return (
-      <>
-        <Nav.Item>
-          <Nav.Link
-            as={Button}
-            variant={this.state.highlightingEnabled ? "dark" : "light"}
-            onClick={() =>
-              this.setState({
-                highlightingEnabled: this.state.highlightingEnabled
-                  ? false
-                  : true,
-              })
-            }
-          >
-            <i className="fa fa-filter" />
-          </Nav.Link>
-        </Nav.Item>
-        {this.state.highlightingEnabled &&
-          [...this.state.pkgs].sort(byName).map((pkg) => (
-            <Nav.Item key={pkg._id}>
-              <Nav.Link
-                as={Button}
-                variant={
-                  this.state.highlightedPackages.indexOf(pkg._id) === -1
-                    ? "light"
-                    : "dark"
-                }
-                style={
-                  this.state.highlightedPackages.indexOf(pkg._id) === -1
-                    ? { backgroundColor: pkg.color }
-                    : {}
-                }
-                onClick={() => toggle(pkg._id)}
-              >
-                {pkg.name}
-              </Nav.Link>
-            </Nav.Item>
-          ))}
-      </>
-    );
-  }
-
-  getViewSettings() {
-    return (
-      <>
-        <Nav.Item>
-          <Nav.Link
-            as={Button}
-            variant={this.state.viewSettingsActive ? "dark" : "light"}
-            onClick={() =>
-              this.setState({
-                viewSettingsActive: this.state.viewSettingsActive
-                  ? false
-                  : true,
-              })
-            }
-          >
-            <i className="fa fa-eye" />
-          </Nav.Link>
-        </Nav.Item>
-        {this.state.viewSettingsActive && (
-          <>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this.state.viewPkg ? "dark" : "light"}
-                onClick={() => this.setState({ viewPkg: !this.state.viewPkg })}
-              >
-                Balíček
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this.state.viewTime ? "dark" : "light"}
-                onClick={() =>
-                  this.setState({ viewTime: !this.state.viewTime })
-                }
-              >
-                Čas
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this.state.viewPeople ? "dark" : "light"}
-                onClick={() =>
-                  this.setState({ viewPeople: !this.state.viewPeople })
-                }
-              >
-                Lidi
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this.state.viewViolations ? "dark" : "light"}
-                onClick={() =>
-                  this.setState({ viewViolations: !this.state.viewViolations })
-                }
-              >
-                Porušení pravidel
-              </Nav.Link>
-            </Nav.Item>
-          </>
-        )}
-      </>
-    );
-  }
-
-  getRanges() {
-    return (
-      <>
-        <Nav.Item>
-          <Nav.Link
-            as={Button}
-            variant={this.state.viewRanges ? "dark" : "light"}
-            onClick={() =>
-              this.setState({ viewRanges: !this.state.viewRanges })
-            }
-          >
-            <i className="fa fa-area-chart" />
-          </Nav.Link>
-        </Nav.Item>
-        {this.state.viewRanges
-          ? this.state.ranges.map((range) => (
-              <Nav.Item key={range._id}>
-                <Nav.Link
-                  as={Button}
-                  variant={
-                    this.state.activeRange === range._id ? "dark" : "light"
-                  }
-                  onClick={() => this.setState({ activeRange: range._id })}
-                >
-                  {range.name}
-                </Nav.Link>
-              </Nav.Item>
-            ))
-          : null}
-      </>
-    );
-  }
-
-  getGoogleLogin() {
-    return this.auth.currentUser ? (
-      <Nav.Item>
-        <Nav.Link as={Button} variant="light" onClick={this.logout}>
-          {this.auth.currentUser.displayName}
-          &nbsp;
-          <i className="fa fa-sign-out" />
-        </Nav.Link>
-      </Nav.Item>
-    ) : (
-      <Nav.Item>
-        <Nav.Link as={Button} variant="light" onClick={this.login}>
-          <i className="fa fa-sign-in" />
-        </Nav.Link>
-      </Nav.Item>
-    );
-  }
-
-  async addProgram(program) {
-    await this.state.client
-      .addProgram(program)
-      .then(
-        (program) =>
-          this.setState(
-            { programs: [...this.state.programs, program] },
-            this.runChecker
-          ),
-        this.handleError
-      );
-  }
-
-  async updateProgram(program) {
-    await this.state.client.updateProgram(program).then(
-      (program) =>
-        this.setState(
-          {
-            programs: [
-              ...this.state.programs.filter((p) => p._id !== program._id),
-              program,
-            ],
-          },
-          this.runChecker
-        ),
-      this.handleError
-    );
-  }
-
-  async deleteProgram(program) {
-    await this.state.client.updateProgram({ ...program, deleted: true }).then(
-      () =>
-        this.setState({
-          programs: [
-            ...this.state.programs.filter((p) => p._id !== program._id),
-          ],
-          deletedPrograms: [...this.state.deletedPrograms, program],
-        }),
-      this.handleError
-    );
-  }
-
-  async login() {
-    await signInWithPopup(this.auth, this.provider).catch((error) =>
-      console.error(error)
-    );
-  }
-
-  async logout() {
-    await signOut(this.auth)
-      .catch((error) => console.error(error))
-      .finally(() => {
-        this.setState({ client: new Client(null, this.props.table) });
-      });
-  }
-
-  handleError(error) {
-    this.setState((prevState) => ({
-      errors: [error.message, ...prevState.errors],
-    }));
   }
 }
