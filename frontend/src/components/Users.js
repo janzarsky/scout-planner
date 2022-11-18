@@ -3,6 +3,7 @@ import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { level } from "../helpers/Level";
+import { parseIntOrZero } from "../helpers/Parsing";
 
 export default function Users({
   users,
@@ -210,7 +211,7 @@ function EditedUser({ email, setEmail, level, setLevel }) {
         <Form.Control
           as="select"
           value={level}
-          onChange={(e) => setLevel(parseInt(e.target.value))}
+          onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
           {[0, 1, 2, 3].map((level) => (
             <option key={level} value={level}>
@@ -241,7 +242,7 @@ function NewUser({ email, setEmail, level, setLevel }) {
         <Form.Control
           as="select"
           value={level}
-          onChange={(e) => setLevel(parseInt(e.target.value))}
+          onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
           {[0, 1, 2, 3].map((level) => (
             <option key={level} value={level}>
@@ -289,7 +290,7 @@ function PublicEditedUser({ level, setLevel }) {
         <Form.Control
           as="select"
           value={level}
-          onChange={(e) => setLevel(parseInt(e.target.value))}
+          onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
           {[0, 1, 2, 3].map((level) => (
             <option key={level} value={level}>
