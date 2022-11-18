@@ -73,60 +73,6 @@ export default function App(props) {
   const [this_auth, set_this_auth] = useState();
   const [this_provider, set_this_provider] = useState();
 
-  async function reloadData() {
-    const permissions = await this_state_client.getPermissions();
-
-    const viewData =
-      permissions.level > level.NONE
-        ? Promise.all([
-            this_state_client.getPrograms(),
-            this_state_client.getPackages(),
-            this_state_client.getRules(),
-            this_state_client.getGroups(),
-            this_state_client.getRanges(),
-            this_state_client.getSettings(),
-          ])
-        : Promise.resolve([[], [], [], [], [], []]);
-
-    const adminData =
-      permissions.level >= level.ADMIN
-        ? this_state_client.getUsers()
-        : Promise.resolve([]);
-
-    Promise.all([viewData, adminData]).then(
-      ([[allPrograms, pkgs, rules, groups, ranges, settings], users]) => {
-        set_this_state_programs(
-          [...allPrograms].filter((program) => !program.deleted)
-        );
-        set_this_state_deletedPrograms(
-          [...allPrograms].filter((program) => program.deleted)
-        );
-        set_this_state_pkgs(pkgs);
-        set_this_state_rules(rules);
-        set_this_state_groups(groups);
-        set_this_state_ranges(ranges);
-        set_this_state_users(users);
-        set_this_state_settings(settings);
-        set_this_state_loaded(true);
-      }
-    );
-
-    set_this_state_userLevel(permissions.level);
-  }
-
-  function runChecker() {
-    checkRules(this_state_rules, this_state_programs).then((problems) => {
-      set_this_state_violations(problems.violations);
-      set_this_state_otherProblems(problems.other);
-      set_this_state_satisfied(
-        [...problems.violations.values()].reduce(
-          (acc, curr) => acc && curr.satisfied,
-          true
-        ) && problems.other.length === 0
-      );
-    });
-  }
-
   function getFilters() {
     const toggle = (id) => {
       let highlightedPackages = this_state_highlightedPackages;
@@ -354,19 +300,60 @@ export default function App(props) {
   }, [props.table]);
 
   useEffect(() => {
-    console.log("reloading data");
-    async function reload() {
-      await reloadData();
+    async function reloadData() {
+      const permissions = await this_state_client.getPermissions();
+
+      const viewData =
+        permissions.level > level.NONE
+          ? Promise.all([
+              this_state_client.getPrograms(),
+              this_state_client.getPackages(),
+              this_state_client.getRules(),
+              this_state_client.getGroups(),
+              this_state_client.getRanges(),
+              this_state_client.getSettings(),
+            ])
+          : Promise.resolve([[], [], [], [], [], []]);
+
+      const adminData =
+        permissions.level >= level.ADMIN
+          ? this_state_client.getUsers()
+          : Promise.resolve([]);
+
+      Promise.all([viewData, adminData]).then(
+        ([[allPrograms, pkgs, rules, groups, ranges, settings], users]) => {
+          set_this_state_programs(
+            [...allPrograms].filter((program) => !program.deleted)
+          );
+          set_this_state_deletedPrograms(
+            [...allPrograms].filter((program) => program.deleted)
+          );
+          set_this_state_pkgs(pkgs);
+          set_this_state_rules(rules);
+          set_this_state_groups(groups);
+          set_this_state_ranges(ranges);
+          set_this_state_users(users);
+          set_this_state_settings(settings);
+          set_this_state_loaded(true);
+        }
+      );
+
+      set_this_state_userLevel(permissions.level);
     }
-    reload();
+    reloadData();
   }, [this_state_client]);
 
   useEffect(() => {
-    console.log("running checker");
-    async function checker() {
-      await runChecker();
-    }
-    checker();
+    const problems = checkRules(this_state_rules, this_state_programs);
+
+    set_this_state_violations(problems.violations);
+    set_this_state_otherProblems(problems.other);
+    set_this_state_satisfied(
+      [...problems.violations.values()].reduce(
+        (acc, curr) => acc && curr.satisfied,
+        true
+      ) && problems.other.length === 0
+    );
   }, [
     this_state_programs,
     this_state_deletedPrograms,
