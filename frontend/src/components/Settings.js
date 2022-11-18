@@ -49,7 +49,7 @@ export default function Settings(props) {
         {props.userLevel >= level.EDIT && (
           <TimeStep
             timeStep={props.timeStep}
-            updateTimeStep={props.updateTimeStep}
+            setTimeStep={props.updateTimeStep}
           />
         )}
       </Container>
@@ -57,12 +57,12 @@ export default function Settings(props) {
   );
 }
 
-function TimeStep(props) {
-  const [timeStep, setTimeStep] = useState(props.timeStep);
+function TimeStep({ timeStep, setTimeStep }) {
+  const [step, setStep] = useState(timeStep);
 
   function handleSubmit(event) {
     event.preventDefault();
-    props.updateTimeStep(timeStep);
+    setTimeStep(step);
   }
 
   return (
@@ -74,8 +74,8 @@ function TimeStep(props) {
         <Col sm="3">
           <Form.Control
             as="select"
-            value={timeStep}
-            onChange={(e) => setTimeStep(e.target.value)}
+            value={step}
+            onChange={(e) => setStep(e.target.value)}
           >
             <option value={15 * 60 * 1000}>15 min</option>
             <option value={10 * 60 * 1000}>10 min</option>
