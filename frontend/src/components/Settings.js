@@ -31,17 +31,7 @@ export default function Settings(props) {
           ranges={props.ranges}
           users={props.users}
         />
-        {props.userLevel >= level.ADMIN && (
-          <Import
-            programs={props.programs}
-            pkgs={props.pkgs}
-            groups={props.groups}
-            rules={props.rules}
-            ranges={props.ranges}
-            users={props.users}
-            client={props.client}
-          />
-        )}
+        {props.userLevel >= level.ADMIN && <Import client={props.client} />}
         {props.userLevel >= level.ADMIN && (
           <Form.Group>
             <Button onClick={deleteAll}>Smazat vše</Button>
