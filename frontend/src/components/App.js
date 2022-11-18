@@ -366,8 +366,6 @@ export default function App(props) {
     this_state_loaded,
   ]);
 
-  // --------------------------------------------------------------------------
-  // start of render()
   var violationsPerProgram = new Map();
   [...this_state_violations.values()]
     .filter((val) => !val.satisfied)
