@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -58,11 +58,11 @@ export default function Settings(props) {
 }
 
 function TimeStep(props) {
-  const timeStepRef = useRef();
+  const [timeStep, setTimeStep] = useState(props.timeStep);
 
   function handleSubmit(event) {
     event.preventDefault();
-    props.updateTimeStep(timeStepRef.current.value);
+    props.updateTimeStep(timeStep);
   }
 
   return (
@@ -74,8 +74,8 @@ function TimeStep(props) {
         <Col sm="3">
           <Form.Control
             as="select"
-            defaultValue={props.timeStep}
-            ref={timeStepRef}
+            value={timeStep}
+            onChange={(e) => setTimeStep(e.target.value)}
           >
             <option value={15 * 60 * 1000}>15 min</option>
             <option value={10 * 60 * 1000}>10 min</option>
