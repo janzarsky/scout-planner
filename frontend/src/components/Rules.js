@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -13,36 +13,32 @@ import {
 import { level } from "../helpers/Level";
 
 export default function Settings(props) {
-  const firstProgramRef = useRef();
-  const conditionRef = useRef();
-  const timeRef = useRef();
-  const dateRef = useRef();
-  const secondProgramRef = useRef();
+  const [firstProgram, setFirstProgram] = useState("Žádný program");
   const [condition, setCondition] = useState("is_before_program");
+  const [time, setTime] = useState(formatTime(Date.now()));
+  const [date, setDate] = useState(formatDate(Date.now()));
+  const [secondProgram, setSecondProgram] = useState("Žádný program");
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    const conditionVal = conditionRef.current.value;
-
     var value;
-    switch (conditionVal) {
+    switch (condition) {
       case "is_before_date":
       case "is_after_date":
-        value =
-          parseDate(dateRef.current.value) + parseTime(timeRef.current.value);
+        value = parseDate(date) + parseTime(time);
         break;
       case "is_before_program":
       case "is_after_program":
-        value = secondProgramRef.current.value;
+        value = secondProgram;
         break;
       default:
         value = null;
     }
 
     props.addRule({
-      program: firstProgramRef.current.value,
-      condition: conditionVal,
+      program: firstProgram,
+      condition: condition,
       value: value,
     });
   }
@@ -71,12 +67,15 @@ export default function Settings(props) {
               programs={props.programs}
               groups={props.groups}
               condition={condition}
-              setCondition={(condition) => setCondition(condition)}
-              firstProgramRef={firstProgramRef}
-              secondProgramRef={secondProgramRef}
-              conditionRef={conditionRef}
-              timeRef={timeRef}
-              dateRef={dateRef}
+              setCondition={setCondition}
+              firstProgram={firstProgram}
+              setFirstProgram={setFirstProgram}
+              secondProgram={secondProgram}
+              setSecondProgram={setSecondProgram}
+              time={time}
+              setTime={setTime}
+              date={date}
+              setDate={setDate}
             />
           )}
         </tbody>
@@ -144,8 +143,8 @@ function NewRule(props) {
           <Col sm="3">
             <Form.Control
               as="select"
-              defaultValue="Žádný program"
-              ref={props.firstProgramRef}
+              value={props.firstProgram}
+              onChange={(e) => props.setFirstProgram(e.target.value)}
             >
               <option>Žádný program</option>
               {[...props.programs].sort(programSort).map((prog) => (
@@ -158,9 +157,8 @@ function NewRule(props) {
           <Col>
             <Form.Control
               as="select"
-              ref={props.conditionRef}
-              onChange={(ev) => props.setCondition(ev.target.value)}
-              defaultValue="is_before_program"
+              value={props.condition}
+              onChange={(e) => props.setCondition(e.target.value)}
             >
               <option value="is_before_date">musí proběhnout před</option>
               <option value="is_after_date">musí proběhnout po</option>
@@ -180,14 +178,14 @@ function NewRule(props) {
                   <>
                     <Col sm="2">
                       <Form.Control
-                        ref={props.timeRef}
-                        defaultValue={formatTime(Date.now())}
+                        value={props.time}
+                        onChange={(e) => props.setTime(e.target.value)}
                       />
                     </Col>
                     <Col sm="2">
                       <Form.Control
-                        ref={props.dateRef}
-                        defaultValue={formatDate(Date.now())}
+                        value={props.date}
+                        onChange={(e) => props.setDate(e.target.value)}
                       />
                     </Col>
                   </>
@@ -198,8 +196,8 @@ function NewRule(props) {
                   <Col>
                     <Form.Control
                       as="select"
-                      defaultValue="Žádný program"
-                      ref={props.secondProgramRef}
+                      value={props.secondProgram}
+                      onChange={(e) => props.setSecondProgram(e.target.value)}
                     >
                       <option>Žádný program</option>
                       {[...props.programs].sort(programSort).map((prog) => (
