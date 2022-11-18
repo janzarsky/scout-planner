@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
@@ -27,128 +27,112 @@ import { byName } from "../helpers/Sorting";
 
 const config = require("../config.json");
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      programs: [],
-      deletedPrograms: [],
-      pkgs: [],
-      groups: [],
-      rules: [],
-      ranges: [],
-      users: [],
-      violations: new Map(),
-      otherProblems: [],
-      satisfied: true,
-      addProgram: false,
-      addProgramOptions: {},
-      editProgram: false,
-      editProgramData: {},
-      activeTab: "timetable",
-      highlightingEnabled: false,
-      highlightedPackages: [],
-      activeRange: null,
-      viewSettingsActive: false,
-      viewPkg: true,
-      viewTime: false,
-      viewPeople: true,
-      viewViolations: true,
-      viewRanges: false,
-      client: new Client(null, this.props.table),
-      userLevel: level.NONE,
-      settings: {},
-      loaded: false,
-      errors: [],
-    };
-    this.addProgram = this.addProgram.bind(this);
-    this.updateProgram = this.updateProgram.bind(this);
-    this.deleteProgram = this.deleteProgram.bind(this);
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
-    this.handleError = this.handleError.bind(this);
+export default function App(props) {
+  const [this_state_programs, set_this_state_programs] = useState([]);
+  const [this_state_deletedPrograms, set_this_state_deletedPrograms] = useState(
+    []
+  );
+  const [this_state_pkgs, set_this_state_pkgs] = useState([]);
+  const [this_state_groups, set_this_state_groups] = useState([]);
+  const [this_state_rules, set_this_state_rules] = useState([]);
+  const [this_state_ranges, set_this_state_ranges] = useState([]);
+  const [this_state_users, set_this_state_users] = useState([]);
+  const [this_state_violations, set_this_state_violations] = useState(
+    new Map()
+  );
+  const [this_state_otherProblems, set_this_state_otherProblems] = useState([]);
+  const [this_state_satisfied, set_this_state_satisfied] = useState(true);
+  const [this_state_addProgram, set_this_state_addProgram] = useState(false);
+  const [this_state_addProgramOptions, set_this_state_addProgramOptions] =
+    useState({});
+  const [this_state_editProgram, set_this_state_editProgram] = useState(false);
+  const [this_state_editProgramData, set_this_state_editProgramData] = useState(
+    {}
+  );
+  const [this_state_highlightingEnabled, set_this_state_highlightingEnabled] =
+    useState(false);
+  const [this_state_highlightedPackages, set_this_state_highlightedPackages] =
+    useState([]);
+  const [this_state_activeRange, set_this_state_activeRange] = useState(null);
+  const [this_state_viewSettingsActive, set_this_state_viewSettingsActive] =
+    useState(false);
+  const [this_state_viewPkg, set_this_state_viewPkg] = useState(true);
+  const [this_state_viewTime, set_this_state_viewTime] = useState(false);
+  const [this_state_viewPeople, set_this_state_viewPeople] = useState(true);
+  const [this_state_viewViolations, set_this_state_viewViolations] =
+    useState(true);
+  const [this_state_viewRanges, set_this_state_viewRanges] = useState(false);
+  const [this_state_client, set_this_state_client] = useState(
+    new Client(null, props.table)
+  );
+  const [this_state_userLevel, set_this_state_userLevel] = useState(level.NONE);
+  const [this_state_settings, set_this_state_settings] = useState({});
+  const [this_state_loaded, set_this_state_loaded] = useState(false);
+  const [this_state_errors, set_this_state_errors] = useState([]);
 
-    this.app = initializeApp({
-      apiKey: config.apiKey,
-      authDomain: config.authDomain,
-    });
-    this.provider = new GoogleAuthProvider();
-    this.auth = getAuth();
-    this.auth.onAuthStateChanged(async (user) => {
-      const token = user ? await user.getIdToken() : null;
-      this.setState(
-        {
-          client: new Client(token, this.props.table),
-        },
-        this.reloadData
-      );
-    });
-  }
+  const [this_auth, set_this_auth] = useState();
+  const [this_provider, set_this_provider] = useState();
 
-  async reloadData() {
-    const permissions = await this.state.client.getPermissions();
+  async function reloadData() {
+    const permissions = await this_state_client.getPermissions();
 
     const viewData =
       permissions.level > level.NONE
         ? Promise.all([
-            this.state.client.getPrograms(),
-            this.state.client.getPackages(),
-            this.state.client.getRules(),
-            this.state.client.getGroups(),
-            this.state.client.getRanges(),
-            this.state.client.getSettings(),
+            this_state_client.getPrograms(),
+            this_state_client.getPackages(),
+            this_state_client.getRules(),
+            this_state_client.getGroups(),
+            this_state_client.getRanges(),
+            this_state_client.getSettings(),
           ])
         : Promise.resolve([[], [], [], [], [], []]);
 
     const adminData =
       permissions.level >= level.ADMIN
-        ? this.state.client.getUsers()
+        ? this_state_client.getUsers()
         : Promise.resolve([]);
 
     Promise.all([viewData, adminData]).then(
       ([[allPrograms, pkgs, rules, groups, ranges, settings], users]) => {
-        this.setState(
-          {
-            programs: [...allPrograms].filter((program) => !program.deleted),
-            deletedPrograms: [...allPrograms].filter(
-              (program) => program.deleted
-            ),
-            pkgs: pkgs,
-            rules: rules,
-            groups: groups,
-            ranges: ranges,
-            users: users,
-            settings: settings,
-            loaded: true,
-          },
-          this.runChecker
+        set_this_state_programs(
+          [...allPrograms].filter((program) => !program.deleted)
         );
+        set_this_state_deletedPrograms(
+          [...allPrograms].filter((program) => program.deleted)
+        );
+        set_this_state_pkgs(pkgs);
+        set_this_state_rules(rules);
+        set_this_state_groups(groups);
+        set_this_state_ranges(ranges);
+        set_this_state_users(users);
+        set_this_state_settings(settings);
+        set_this_state_loaded(true);
       }
     );
 
-    this.setState({ userLevel: permissions.level });
+    set_this_state_userLevel(permissions.level);
   }
 
-  runChecker() {
-    checkRules(this.state.rules, this.state.programs).then((problems) => {
-      this.setState({
-        violations: problems.violations,
-        otherProblems: problems.other,
-        satisfied:
-          [...problems.violations.values()].reduce(
-            (acc, curr) => acc && curr.satisfied,
-            true
-          ) && problems.other.length === 0,
-      });
+  function runChecker() {
+    checkRules(this_state_rules, this_state_programs).then((problems) => {
+      set_this_state_violations(problems.violations);
+      set_this_state_otherProblems(problems.other);
+      set_this_state_satisfied(
+        [...problems.violations.values()].reduce(
+          (acc, curr) => acc && curr.satisfied,
+          true
+        ) && problems.other.length === 0
+      );
     });
   }
 
-  getFilters() {
+  function getFilters() {
     const toggle = (id) => {
-      let highlightedPackages = this.state.highlightedPackages;
+      let highlightedPackages = this_state_highlightedPackages;
       if (highlightedPackages.indexOf(id) === -1) highlightedPackages.push(id);
       else highlightedPackages.splice(highlightedPackages.indexOf(id), 1);
-      this.setState({ highlightedPackages });
+      set_this_state_highlightedPackages(highlightedPackages);
     };
 
     return (
@@ -156,30 +140,28 @@ export default class App extends React.Component {
         <Nav.Item>
           <Nav.Link
             as={Button}
-            variant={this.state.highlightingEnabled ? "dark" : "light"}
+            variant={this_state_highlightingEnabled ? "dark" : "light"}
             onClick={() =>
-              this.setState({
-                highlightingEnabled: this.state.highlightingEnabled
-                  ? false
-                  : true,
-              })
+              set_this_state_highlightingEnabled(
+                !this_state_highlightingEnabled
+              )
             }
           >
             <i className="fa fa-filter" />
           </Nav.Link>
         </Nav.Item>
-        {this.state.highlightingEnabled &&
-          [...this.state.pkgs].sort(byName).map((pkg) => (
+        {this_state_highlightingEnabled &&
+          [...this_state_pkgs].sort(byName).map((pkg) => (
             <Nav.Item key={pkg._id}>
               <Nav.Link
                 as={Button}
                 variant={
-                  this.state.highlightedPackages.indexOf(pkg._id) === -1
+                  this_state_highlightedPackages.indexOf(pkg._id) === -1
                     ? "light"
                     : "dark"
                 }
                 style={
-                  this.state.highlightedPackages.indexOf(pkg._id) === -1
+                  this_state_highlightedPackages.indexOf(pkg._id) === -1
                     ? { backgroundColor: pkg.color }
                     : {}
                 }
@@ -193,31 +175,27 @@ export default class App extends React.Component {
     );
   }
 
-  getViewSettings() {
+  function getViewSettings() {
     return (
       <>
         <Nav.Item>
           <Nav.Link
             as={Button}
-            variant={this.state.viewSettingsActive ? "dark" : "light"}
+            variant={this_state_viewSettingsActive ? "dark" : "light"}
             onClick={() =>
-              this.setState({
-                viewSettingsActive: this.state.viewSettingsActive
-                  ? false
-                  : true,
-              })
+              set_this_state_viewSettingsActive(!this_state_viewSettingsActive)
             }
           >
             <i className="fa fa-eye" />
           </Nav.Link>
         </Nav.Item>
-        {this.state.viewSettingsActive && (
+        {this_state_viewSettingsActive && (
           <>
             <Nav.Item>
               <Nav.Link
                 as={Button}
-                variant={this.state.viewPkg ? "dark" : "light"}
-                onClick={() => this.setState({ viewPkg: !this.state.viewPkg })}
+                variant={this_state_viewPkg ? "dark" : "light"}
+                onClick={() => set_this_state_viewPkg(!this_state_viewPkg)}
               >
                 Balíček
               </Nav.Link>
@@ -225,10 +203,8 @@ export default class App extends React.Component {
             <Nav.Item>
               <Nav.Link
                 as={Button}
-                variant={this.state.viewTime ? "dark" : "light"}
-                onClick={() =>
-                  this.setState({ viewTime: !this.state.viewTime })
-                }
+                variant={this_state_viewTime ? "dark" : "light"}
+                onClick={() => set_this_state_viewTime(!this_state_viewTime)}
               >
                 Čas
               </Nav.Link>
@@ -236,9 +212,9 @@ export default class App extends React.Component {
             <Nav.Item>
               <Nav.Link
                 as={Button}
-                variant={this.state.viewPeople ? "dark" : "light"}
+                variant={this_state_viewPeople ? "dark" : "light"}
                 onClick={() =>
-                  this.setState({ viewPeople: !this.state.viewPeople })
+                  set_this_state_viewPeople(!this_state_viewPeople)
                 }
               >
                 Lidi
@@ -247,9 +223,9 @@ export default class App extends React.Component {
             <Nav.Item>
               <Nav.Link
                 as={Button}
-                variant={this.state.viewViolations ? "dark" : "light"}
+                variant={this_state_viewViolations ? "dark" : "light"}
                 onClick={() =>
-                  this.setState({ viewViolations: !this.state.viewViolations })
+                  set_this_state_viewViolations(!this_state_viewViolations)
                 }
               >
                 Porušení pravidel
@@ -261,29 +237,27 @@ export default class App extends React.Component {
     );
   }
 
-  getRanges() {
+  function getRanges() {
     return (
       <>
         <Nav.Item>
           <Nav.Link
             as={Button}
-            variant={this.state.viewRanges ? "dark" : "light"}
-            onClick={() =>
-              this.setState({ viewRanges: !this.state.viewRanges })
-            }
+            variant={this_state_viewRanges ? "dark" : "light"}
+            onClick={() => set_this_state_viewRanges(!this_state_viewRanges)}
           >
             <i className="fa fa-area-chart" />
           </Nav.Link>
         </Nav.Item>
-        {this.state.viewRanges
-          ? this.state.ranges.map((range) => (
+        {this_state_viewRanges
+          ? this_state_ranges.map((range) => (
               <Nav.Item key={range._id}>
                 <Nav.Link
                   as={Button}
                   variant={
-                    this.state.activeRange === range._id ? "dark" : "light"
+                    this_state_activeRange === range._id ? "dark" : "light"
                   }
-                  onClick={() => this.setState({ activeRange: range._id })}
+                  onClick={() => set_this_state_activeRange(range._id)}
                 >
                   {range.name}
                 </Nav.Link>
@@ -294,556 +268,547 @@ export default class App extends React.Component {
     );
   }
 
-  getGoogleLogin() {
-    return this.auth.currentUser ? (
+  function getGoogleLogin() {
+    return this_auth && this_auth.currentUser ? (
       <Nav.Item>
-        <Nav.Link as={Button} variant="light" onClick={this.logout}>
-          {this.auth.currentUser.displayName}
+        <Nav.Link as={Button} variant="light" onClick={logout}>
+          {this_auth.currentUser.displayName}
           &nbsp;
           <i className="fa fa-sign-out" />
         </Nav.Link>
       </Nav.Item>
     ) : (
       <Nav.Item>
-        <Nav.Link as={Button} variant="light" onClick={this.login}>
+        <Nav.Link as={Button} variant="light" onClick={login}>
           <i className="fa fa-sign-in" />
         </Nav.Link>
       </Nav.Item>
     );
   }
 
-  async addProgram(program) {
-    await this.state.client
+  async function addProgram(program) {
+    await this_state_client
       .addProgram(program)
       .then(
-        (program) =>
-          this.setState(
-            { programs: [...this.state.programs, program] },
-            this.runChecker
-          ),
-        this.handleError
+        (program) => set_this_state_programs([...this_state_programs, program]),
+        handleError
       );
   }
 
-  async updateProgram(program) {
-    await this.state.client.updateProgram(program).then(
-      (program) =>
-        this.setState(
-          {
-            programs: [
-              ...this.state.programs.filter((p) => p._id !== program._id),
-              program,
-            ],
-          },
-          this.runChecker
-        ),
-      this.handleError
-    );
+  async function updateProgram(program) {
+    await this_state_client
+      .updateProgram(program)
+      .then(
+        (program) =>
+          set_this_state_programs([
+            ...this_state_programs.filter((p) => p._id !== program._id),
+            program,
+          ]),
+        handleError
+      );
   }
 
-  async deleteProgram(program) {
-    await this.state.client.updateProgram({ ...program, deleted: true }).then(
-      () =>
-        this.setState({
-          programs: [
-            ...this.state.programs.filter((p) => p._id !== program._id),
-          ],
-          deletedPrograms: [...this.state.deletedPrograms, program],
-        }),
-      this.handleError
-    );
+  async function deleteProgram(program) {
+    await this_state_client
+      .updateProgram({ ...program, deleted: true })
+      .then(() => {
+        set_this_state_programs([
+          ...this_state_programs.filter((p) => p._id !== program._id),
+        ]);
+        set_this_state_deletedPrograms([
+          ...this_state_deletedPrograms,
+          program,
+        ]);
+      }, handleError);
   }
 
-  async login() {
-    await signInWithPopup(this.auth, this.provider).catch((error) =>
+  async function login() {
+    await signInWithPopup(this_auth, this_provider).catch((error) =>
       console.error(error)
     );
   }
 
-  async logout() {
-    await signOut(this.auth)
+  async function logout() {
+    await signOut(this_auth)
       .catch((error) => console.error(error))
-      .finally(() => {
-        this.setState({ client: new Client(null, this.props.table) });
-      });
+      .finally(() => set_this_state_client(new Client(null, props.table)));
   }
 
-  handleError(error) {
-    this.setState((prevState) => ({
-      errors: [error.message, ...prevState.errors],
-    }));
+  function handleError(error) {
+    set_this_state_errors([error.message, ...this_state_errors]);
   }
 
-  render() {
-    var violationsPerProgram = new Map();
-    [...this.state.violations.values()]
-      .filter((val) => !val.satisfied)
-      .map((val) => [val.program, val.msg])
-      .forEach(([programId, msg]) => {
-        if (!violationsPerProgram.get(programId))
-          violationsPerProgram.set(programId, []);
-        violationsPerProgram.get(programId).push(msg);
-      });
-    this.state.otherProblems.forEach((problem) => {
-      if (!violationsPerProgram.get(problem.program))
-        violationsPerProgram.set(problem.program, []);
-      violationsPerProgram.get(problem.program).push(problem.msg);
+  useEffect(() => {
+    initializeApp({
+      apiKey: config.apiKey,
+      authDomain: config.authDomain,
     });
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth();
+    auth.onAuthStateChanged(async (user) => {
+      const token = user ? await user.getIdToken() : null;
+      set_this_state_client(new Client(token, props.table));
+    });
+    set_this_provider(provider);
+    set_this_auth(auth);
+  }, [props.table]);
 
-    const people = new Set(
-      [...this.state.programs].flatMap((program) => program.people)
-    );
+  useEffect(() => {
+    console.log("reloading data");
+    async function reload() {
+      await reloadData();
+    }
+    reload();
+  }, [this_state_client]);
 
-    return (
-      <div className="App">
-        {this.state.errors.length > 0 && (
-          <Container fluid className="notifications">
-            <Alert
-              variant="danger"
-              dismissible
-              onClose={() =>
-                this.setState((prevState) => ({
-                  errors: prevState.errors.slice(1),
-                }))
-              }
-            >
-              <i className="fa fa-exclamation-triangle" />
-              &nbsp; {this.state.errors[0]}
-            </Alert>
-          </Container>
-        )}
-        {this.state.addProgram && (
-          <AddProgramModal
-            addProgram={this.addProgram}
-            options={this.state.addProgramOptions}
-            pkgs={this.state.pkgs}
-            people={people}
-            handleClose={() => this.setState({ addProgram: false })}
-            groups={this.state.groups}
-            ranges={this.state.ranges}
-          />
-        )}
-        {this.state.editProgram && (
-          <EditProgramModal
-            updateProgram={this.updateProgram}
-            deleteProgram={this.deleteProgram}
-            program={this.state.editProgramData}
-            pkgs={this.state.pkgs}
-            groups={this.state.groups}
-            ranges={this.state.ranges}
-            people={people}
-            handleClose={() => this.setState({ editProgram: false })}
-            userLevel={this.state.userLevel}
-          />
-        )}
-        <Tab.Container defaultActiveKey={this.state.activeTab}>
-          <Nav variant="pills" className="control-panel">
+  useEffect(() => {
+    console.log("running checker");
+    async function checker() {
+      await runChecker();
+    }
+    checker();
+  }, [
+    this_state_programs,
+    this_state_deletedPrograms,
+    this_state_pkgs,
+    this_state_rules,
+    this_state_groups,
+    this_state_ranges,
+    this_state_users,
+    this_state_settings,
+    this_state_loaded,
+  ]);
+
+  // --------------------------------------------------------------------------
+  // start of render()
+  var violationsPerProgram = new Map();
+  [...this_state_violations.values()]
+    .filter((val) => !val.satisfied)
+    .map((val) => [val.program, val.msg])
+    .forEach(([programId, msg]) => {
+      if (!violationsPerProgram.get(programId))
+        violationsPerProgram.set(programId, []);
+      violationsPerProgram.get(programId).push(msg);
+    });
+  this_state_otherProblems.forEach((problem) => {
+    if (!violationsPerProgram.get(problem.program))
+      violationsPerProgram.set(problem.program, []);
+    violationsPerProgram.get(problem.program).push(problem.msg);
+  });
+
+  const people = new Set(
+    [...this_state_programs].flatMap((program) => program.people)
+  );
+
+  return (
+    <div className="App">
+      {this_state_errors.length > 0 && (
+        <Container fluid className="notifications">
+          <Alert
+            variant="danger"
+            dismissible
+            onClose={() => set_this_state_errors(this_state_errors.slice(1))}
+          >
+            <i className="fa fa-exclamation-triangle" />
+            &nbsp; {this_state_errors[0]}
+          </Alert>
+        </Container>
+      )}
+      {this_state_addProgram && (
+        <AddProgramModal
+          addProgram={addProgram}
+          options={this_state_addProgramOptions}
+          pkgs={this_state_pkgs}
+          people={people}
+          handleClose={() => set_this_state_addProgram(false)}
+          groups={this_state_groups}
+          ranges={this_state_ranges}
+        />
+      )}
+      {this_state_editProgram && (
+        <EditProgramModal
+          updateProgram={updateProgram}
+          deleteProgram={deleteProgram}
+          program={this_state_editProgramData}
+          pkgs={this_state_pkgs}
+          groups={this_state_groups}
+          ranges={this_state_ranges}
+          people={people}
+          handleClose={() => set_this_state_editProgram(false)}
+          userLevel={this_state_userLevel}
+        />
+      )}
+      <Tab.Container defaultActiveKey={"timetable"}>
+        <Nav variant="pills" className="control-panel">
+          <Nav.Item>
+            <Nav.Link as={Button} variant="light" eventKey="timetable">
+              Harmonogram
+            </Nav.Link>
+          </Nav.Item>
+          {this_state_userLevel >= level.VIEW && (
             <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="timetable">
-                Harmonogram
+              <Nav.Link as={Button} variant="light" eventKey="rules">
+                Pravidla{" "}
+                {this_state_satisfied ? (
+                  <i className="fa fa-check text-success" />
+                ) : (
+                  <i className="fa fa-times text-danger" />
+                )}
               </Nav.Link>
             </Nav.Item>
-            {this.state.userLevel >= level.VIEW && (
-              <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="rules">
-                  Pravidla{" "}
-                  {this.state.satisfied ? (
-                    <i className="fa fa-check text-success" />
-                  ) : (
-                    <i className="fa fa-times text-danger" />
-                  )}
-                </Nav.Link>
-              </Nav.Item>
-            )}
-            {this.state.userLevel >= level.EDIT && (
-              <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="packages">
-                  Balíčky
-                </Nav.Link>
-              </Nav.Item>
-            )}
-            {this.state.userLevel >= level.EDIT && (
-              <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="groups">
-                  Skupiny
-                </Nav.Link>
-              </Nav.Item>
-            )}
-            {this.state.userLevel >= level.EDIT && (
-              <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="ranges">
-                  Linky
-                </Nav.Link>
-              </Nav.Item>
-            )}
-            {this.state.userLevel >= level.VIEW && (
-              <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="stats">
-                  Statistiky
-                </Nav.Link>
-              </Nav.Item>
-            )}
-            {this.state.userLevel >= level.ADMIN && (
-              <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="users">
-                  Uživatelé
-                </Nav.Link>
-              </Nav.Item>
-            )}
-            {this.state.userLevel >= level.VIEW && (
-              <Nav.Item>
-                <Nav.Link as={Button} variant="light" eventKey="settings">
-                  Nastavení
-                </Nav.Link>
-              </Nav.Item>
-            )}
-            {this.state.userLevel >= level.VIEW && this.getFilters()}
-            {this.state.userLevel >= level.VIEW && this.getViewSettings()}
-            {this.state.userLevel >= level.VIEW && this.getRanges()}
-            {this.getGoogleLogin()}
-          </Nav>
-          <Tab.Content>
-            <Tab.Pane eventKey="timetable">
-              {this.state.userLevel >= level.VIEW && this.state.loaded && (
-                <Timetable
-                  programs={this.state.programs}
-                  pkgs={this.state.pkgs}
-                  groups={this.state.groups}
-                  settings={this.state.settings}
-                  timeStep={
-                    this.state.settings.timeStep
-                      ? this.state.settings.timeStep
-                      : 15 * 60 * 1000
-                  }
-                  violations={violationsPerProgram}
-                  highlightedPackages={
-                    this.state.highlightingEnabled
-                      ? this.state.highlightedPackages
-                      : []
-                  }
-                  updateProgram={this.updateProgram}
-                  addProgramModal={(options) =>
-                    this.setState({
-                      addProgram: true,
-                      addProgramOptions: options,
-                    })
-                  }
-                  onEdit={(program) =>
-                    this.setState({
-                      editProgram: true,
-                      editProgramData: program,
-                    })
-                  }
-                  viewSettings={{
-                    viewPkg: this.state.viewPkg,
-                    viewTime: this.state.viewTime,
-                    viewPeople: this.state.viewPeople,
-                    viewViolations: this.state.viewViolations,
-                  }}
-                  clone={(program) => this.addProgram(program)}
-                  activeRange={
-                    this.state.viewRanges ? this.state.activeRange : null
-                  }
-                  userLevel={this.state.userLevel}
-                />
-              )}
-              {!this.state.loaded && (
-                <Container fluid>
-                  <Alert variant="primary">
-                    <i className="fa fa-spinner fa-pulse" />
-                    &nbsp; Načítání&hellip;
-                  </Alert>
-                </Container>
-              )}
-              {this.state.userLevel === level.NONE && this.state.loaded && (
-                <Container fluid>
-                  <Alert variant="danger">
-                    <i className="fa fa-exclamation-triangle" />
-                    &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
-                    oprávnění.
-                  </Alert>
-                </Container>
-              )}
-            </Tab.Pane>
-            {this.state.userLevel >= level.VIEW && (
-              <Tab.Pane eventKey="rules">
-                <Rules
-                  programs={this.state.programs}
-                  groups={this.state.groups}
-                  rules={this.state.rules}
-                  violations={this.state.violations}
-                  userLevel={this.state.userLevel}
-                  addRule={(rule) =>
-                    this.state.client
-                      .addRule(rule)
-                      .then(
-                        (rule) =>
-                          this.setState(
-                            { rules: [...this.state.rules, rule] },
-                            this.runChecker
-                          ),
-                        this.handleError
-                      )
-                  }
-                  updateRule={(rule) =>
-                    this.state.client.updateRule(rule).then(
-                      (rule) =>
-                        this.setState(
-                          {
-                            rules: [
-                              ...this.state.rules.filter(
-                                (r) => r._id !== rule._id
-                              ),
-                              rule,
-                            ],
-                          },
-                          this.runChecker
-                        ),
-                      this.handleError
-                    )
-                  }
-                  deleteRule={(id) =>
-                    this.state.client.deleteRule(id).then(
-                      (msg) =>
-                        this.setState(
-                          {
-                            rules: this.state.rules.filter((r) => r._id !== id),
-                          },
-                          this.runChecker
-                        ),
-                      this.handleError
-                    )
-                  }
-                />
-              </Tab.Pane>
-            )}
-            {this.state.userLevel >= level.EDIT && (
-              <Tab.Pane eventKey="packages" title="Balíčky">
-                <Packages
-                  pkgs={this.state.pkgs}
-                  addPkg={(pkg) =>
-                    this.state.client
-                      .addPackage(pkg)
-                      .then(
-                        (pkg) =>
-                          this.setState(
-                            { pkgs: [...this.state.pkgs, pkg] },
-                            this.runChecker
-                          ),
-                        this.handleError
-                      )
-                  }
-                  updatePkg={(pkg) =>
-                    this.state.client.updatePackage(pkg).then(
-                      (pkg) =>
-                        this.setState(
-                          {
-                            pkgs: [
-                              ...this.state.pkgs.filter(
-                                (p) => p._id !== pkg._id
-                              ),
-                              pkg,
-                            ],
-                          },
-                          this.runChecker
-                        ),
-                      this.handleError
-                    )
-                  }
-                  deletePkg={(id) =>
-                    this.state.client.deletePackage(id).then(
-                      (msg) =>
-                        this.setState(
-                          {
-                            pkgs: this.state.pkgs.filter((p) => p._id !== id),
-                          },
-                          this.runChecker
-                        ),
-                      this.handleError
-                    )
-                  }
-                />
-              </Tab.Pane>
-            )}
-            {this.state.userLevel >= level.EDIT && (
-              <Tab.Pane eventKey="groups" title="Skupiny">
-                <Groups
-                  groups={this.state.groups}
-                  addGroup={(group) =>
-                    this.state.client.addGroup(group).then(
-                      (group) =>
-                        this.setState(
-                          {
-                            groups: [...this.state.groups, group],
-                          },
-                          this.runChecker
-                        ),
-                      this.handleError
-                    )
-                  }
-                  updateGroup={(group) =>
-                    this.state.client.updateGroup(group).then(
-                      (group) =>
-                        this.setState(
-                          {
-                            groups: [
-                              ...this.state.groups.filter(
-                                (g) => g._id !== group._id
-                              ),
-                              group,
-                            ],
-                          },
-                          this.runChecker
-                        ),
-                      this.handleError
-                    )
-                  }
-                  deleteGroup={(id) =>
-                    this.state.client.deleteGroup(id).then(
-                      () =>
-                        this.setState(
-                          {
-                            groups: [
-                              ...this.state.groups.filter((g) => g._id !== id),
-                            ],
-                          },
-                          this.runChecker
-                        ),
-                      this.handleError
-                    )
-                  }
-                />
-              </Tab.Pane>
-            )}
-            {this.state.userLevel >= level.EDIT && (
-              <Tab.Pane eventKey="ranges" title="Linky">
-                <Ranges
-                  ranges={this.state.ranges}
-                  addRange={(range) =>
-                    this.state.client.addRange(range).then(
-                      (range) =>
-                        this.setState({
-                          ranges: [...this.state.ranges, range],
-                        }),
-                      this.handleError
-                    )
-                  }
-                  updateRange={(range) =>
-                    this.state.client.updateRange(range).then(
-                      (range) =>
-                        this.setState({
-                          ranges: [
-                            ...this.state.ranges.filter(
-                              (r) => r._id !== range._id
-                            ),
-                            range,
-                          ],
-                        }),
-                      this.handleError
-                    )
-                  }
-                  deleteRange={(id) =>
-                    this.state.client.deleteRange(id).then(
-                      () =>
-                        this.setState({
-                          ranges: [
-                            ...this.state.ranges.filter((r) => r._id !== id),
-                          ],
-                        }),
-                      this.handleError
-                    )
-                  }
-                />
-              </Tab.Pane>
-            )}
-            {this.state.userLevel >= level.VIEW && (
-              <Tab.Pane eventKey="stats" title="Statistiky">
-                <Stats
-                  programs={this.state.programs}
-                  people={people}
-                  groups={this.state.groups}
-                  packages={this.state.pkgs}
-                />
-              </Tab.Pane>
-            )}
-            {this.state.userLevel >= level.ADMIN && (
-              <Tab.Pane eventKey="users" title="Uživatelé">
-                <Users
-                  users={this.state.users}
-                  userEmail={
-                    this.auth.currentUser ? this.auth.currentUser.email : null
-                  }
-                  addUser={(user) =>
-                    this.state.client.addUser(user).then(
-                      (user) =>
-                        this.setState({
-                          users: [...this.state.users, user],
-                        }),
-                      this.handleError
-                    )
-                  }
-                  updateUser={(user) =>
-                    this.state.client.updateUser(user).then(
-                      (user) =>
-                        this.setState({
-                          users: [
-                            ...this.state.users.filter(
-                              (u) => u._id !== user._id
-                            ),
-                            user,
-                          ],
-                        }),
-                      this.handleError
-                    )
-                  }
-                  deleteUser={(id) =>
-                    this.state.client.deleteUser(id).then(
-                      () =>
-                        this.setState({
-                          users: [
-                            ...this.state.users.filter((u) => u._id !== id),
-                          ],
-                        }),
-                      this.handleError
-                    )
-                  }
-                />
-              </Tab.Pane>
-            )}
-            <Tab.Pane eventKey="settings" title="Nastavení">
-              <Settings
-                programs={[
-                  ...this.state.programs,
-                  ...this.state.deletedPrograms,
-                ]}
-                pkgs={this.state.pkgs}
-                groups={this.state.groups}
-                rules={this.state.rules}
-                ranges={this.state.ranges}
-                users={this.state.users}
-                client={this.state.client}
-                userLevel={this.state.userLevel}
+          )}
+          {this_state_userLevel >= level.EDIT && (
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="packages">
+                Balíčky
+              </Nav.Link>
+            </Nav.Item>
+          )}
+          {this_state_userLevel >= level.EDIT && (
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="groups">
+                Skupiny
+              </Nav.Link>
+            </Nav.Item>
+          )}
+          {this_state_userLevel >= level.EDIT && (
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="ranges">
+                Linky
+              </Nav.Link>
+            </Nav.Item>
+          )}
+          {this_state_userLevel >= level.VIEW && (
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="stats">
+                Statistiky
+              </Nav.Link>
+            </Nav.Item>
+          )}
+          {this_state_userLevel >= level.ADMIN && (
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="users">
+                Uživatelé
+              </Nav.Link>
+            </Nav.Item>
+          )}
+          {this_state_userLevel >= level.VIEW && (
+            <Nav.Item>
+              <Nav.Link as={Button} variant="light" eventKey="settings">
+                Nastavení
+              </Nav.Link>
+            </Nav.Item>
+          )}
+          {this_state_userLevel >= level.VIEW && getFilters()}
+          {this_state_userLevel >= level.VIEW && getViewSettings()}
+          {this_state_userLevel >= level.VIEW && getRanges()}
+          {getGoogleLogin()}
+        </Nav>
+        <Tab.Content>
+          <Tab.Pane eventKey="timetable">
+            {this_state_userLevel >= level.VIEW && this_state_loaded && (
+              <Timetable
+                programs={this_state_programs}
+                pkgs={this_state_pkgs}
+                groups={this_state_groups}
+                settings={this_state_settings}
                 timeStep={
-                  this.state.settings.timeStep
-                    ? this.state.settings.timeStep
+                  this_state_settings.timeStep
+                    ? this_state_settings.timeStep
                     : 15 * 60 * 1000
                 }
-                updateTimeStep={(timeStep) => {
-                  this.state.client
-                    .updateSettings({ ...this.state.settings, timeStep })
-                    .then(
-                      () =>
-                        this.setState({
-                          settings: { ...this.state.settings, timeStep },
-                        }),
-                      this.handleError
-                    );
+                violations={violationsPerProgram}
+                highlightedPackages={
+                  this_state_highlightingEnabled
+                    ? this_state_highlightedPackages
+                    : []
+                }
+                updateProgram={updateProgram}
+                addProgramModal={(options) => {
+                  set_this_state_addProgram(true);
+                  set_this_state_addProgramOptions(options);
                 }}
+                onEdit={(program) => {
+                  set_this_state_editProgram(true);
+                  set_this_state_editProgramData(program);
+                }}
+                viewSettings={{
+                  viewPkg: this_state_viewPkg,
+                  viewTime: this_state_viewTime,
+                  viewPeople: this_state_viewPeople,
+                  viewViolations: this_state_viewViolations,
+                }}
+                clone={(program) => addProgram(program)}
+                activeRange={
+                  this_state_viewRanges ? this_state_activeRange : null
+                }
+                userLevel={this_state_userLevel}
+              />
+            )}
+            {!this_state_loaded && (
+              <Container fluid>
+                <Alert variant="primary">
+                  <i className="fa fa-spinner fa-pulse" />
+                  &nbsp; Načítání&hellip;
+                </Alert>
+              </Container>
+            )}
+            {this_state_userLevel === level.NONE && this_state_loaded && (
+              <Container fluid>
+                <Alert variant="danger">
+                  <i className="fa fa-exclamation-triangle" />
+                  &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
+                  oprávnění.
+                </Alert>
+              </Container>
+            )}
+          </Tab.Pane>
+          {this_state_userLevel >= level.VIEW && (
+            <Tab.Pane eventKey="rules">
+              <Rules
+                programs={this_state_programs}
+                groups={this_state_groups}
+                rules={this_state_rules}
+                violations={this_state_violations}
+                userLevel={this_state_userLevel}
+                addRule={(rule) =>
+                  this_state_client
+                    .addRule(rule)
+                    .then(
+                      (rule) =>
+                        set_this_state_rules([...this_state_rules, rule]),
+                      handleError
+                    )
+                }
+                updateRule={(rule) =>
+                  this_state_client
+                    .updateRule(rule)
+                    .then(
+                      (rule) =>
+                        set_this_state_rules([
+                          ...this_state_rules.filter((r) => r._id !== rule._id),
+                          rule,
+                        ]),
+                      handleError
+                    )
+                }
+                deleteRule={(id) =>
+                  this_state_client
+                    .deleteRule(id)
+                    .then(
+                      (msg) =>
+                        set_this_state_rules(
+                          this_state_rules.filter((r) => r._id !== id)
+                        ),
+                      handleError
+                    )
+                }
               />
             </Tab.Pane>
-          </Tab.Content>
-        </Tab.Container>
-      </div>
-    );
-  }
+          )}
+          {this_state_userLevel >= level.EDIT && (
+            <Tab.Pane eventKey="packages" title="Balíčky">
+              <Packages
+                pkgs={this_state_pkgs}
+                addPkg={(pkg) =>
+                  this_state_client
+                    .addPackage(pkg)
+                    .then(
+                      (pkg) => set_this_state_pkgs([...this_state_pkgs, pkg]),
+                      handleError
+                    )
+                }
+                updatePkg={(pkg) =>
+                  this_state_client
+                    .updatePackage(pkg)
+                    .then(
+                      (pkg) =>
+                        set_this_state_pkgs([
+                          ...this_state_pkgs.filter((p) => p._id !== pkg._id),
+                          pkg,
+                        ]),
+                      handleError
+                    )
+                }
+                deletePkg={(id) =>
+                  this_state_client
+                    .deletePackage(id)
+                    .then(
+                      (msg) =>
+                        set_this_state_pkgs(
+                          this_state_pkgs.filter((p) => p._id !== id)
+                        ),
+                      handleError
+                    )
+                }
+              />
+            </Tab.Pane>
+          )}
+          {this_state_userLevel >= level.EDIT && (
+            <Tab.Pane eventKey="groups" title="Skupiny">
+              <Groups
+                groups={this_state_groups}
+                addGroup={(group) =>
+                  this_state_client
+                    .addGroup(group)
+                    .then(
+                      (group) =>
+                        set_this_state_groups([...this_state_groups, group]),
+                      handleError
+                    )
+                }
+                updateGroup={(group) =>
+                  this_state_client
+                    .updateGroup(group)
+                    .then(
+                      (group) =>
+                        set_this_state_groups([
+                          ...this_state_groups.filter(
+                            (g) => g._id !== group._id
+                          ),
+                          group,
+                        ]),
+                      handleError
+                    )
+                }
+                deleteGroup={(id) =>
+                  this_state_client
+                    .deleteGroup(id)
+                    .then(
+                      () =>
+                        set_this_state_groups([
+                          ...this_state_groups.filter((g) => g._id !== id),
+                        ]),
+                      handleError
+                    )
+                }
+              />
+            </Tab.Pane>
+          )}
+          {this_state_userLevel >= level.EDIT && (
+            <Tab.Pane eventKey="ranges" title="Linky">
+              <Ranges
+                ranges={this_state_ranges}
+                addRange={(range) =>
+                  this_state_client
+                    .addRange(range)
+                    .then(
+                      (range) =>
+                        set_this_state_ranges([...this_state_ranges, range]),
+                      handleError
+                    )
+                }
+                updateRange={(range) =>
+                  this_state_client
+                    .updateRange(range)
+                    .then(
+                      (range) =>
+                        set_this_state_ranges([
+                          ...this_state_ranges.filter(
+                            (r) => r._id !== range._id
+                          ),
+                          range,
+                        ]),
+                      handleError
+                    )
+                }
+                deleteRange={(id) =>
+                  this_state_client
+                    .deleteRange(id)
+                    .then(
+                      () =>
+                        set_this_state_ranges([
+                          ...this_state_ranges.filter((r) => r._id !== id),
+                        ]),
+                      handleError
+                    )
+                }
+              />
+            </Tab.Pane>
+          )}
+          {this_state_userLevel >= level.VIEW && (
+            <Tab.Pane eventKey="stats" title="Statistiky">
+              <Stats
+                programs={this_state_programs}
+                people={people}
+                groups={this_state_groups}
+                packages={this_state_pkgs}
+              />
+            </Tab.Pane>
+          )}
+          {this_state_userLevel >= level.ADMIN && (
+            <Tab.Pane eventKey="users" title="Uživatelé">
+              <Users
+                users={this_state_users}
+                userEmail={
+                  this_auth.currentUser ? this_auth.currentUser.email : null
+                }
+                addUser={(user) =>
+                  this_state_client
+                    .addUser(user)
+                    .then(
+                      (user) =>
+                        set_this_state_users([...this_state_users, user]),
+                      handleError
+                    )
+                }
+                updateUser={(user) =>
+                  this_state_client
+                    .updateUser(user)
+                    .then(
+                      (user) =>
+                        set_this_state_users([
+                          ...this_state_users.filter((u) => u._id !== user._id),
+                          user,
+                        ]),
+                      handleError
+                    )
+                }
+                deleteUser={(id) =>
+                  this_state_client
+                    .deleteUser(id)
+                    .then(
+                      () =>
+                        set_this_state_users([
+                          ...this_state_users.filter((u) => u._id !== id),
+                        ]),
+                      handleError
+                    )
+                }
+              />
+            </Tab.Pane>
+          )}
+          <Tab.Pane eventKey="settings" title="Nastavení">
+            <Settings
+              programs={[...this_state_programs, ...this_state_deletedPrograms]}
+              pkgs={this_state_pkgs}
+              groups={this_state_groups}
+              rules={this_state_rules}
+              ranges={this_state_ranges}
+              users={this_state_users}
+              client={this_state_client}
+              userLevel={this_state_userLevel}
+              timeStep={
+                this_state_settings.timeStep
+                  ? this_state_settings.timeStep
+                  : 15 * 60 * 1000
+              }
+              updateTimeStep={(timeStep) => {
+                this_state_client
+                  .updateSettings({ ...this_state_settings, timeStep })
+                  .then(
+                    () =>
+                      set_this_state_settings({
+                        ...this_state_settings,
+                        timeStep,
+                      }),
+                    handleError
+                  );
+              }}
+            />
+          </Tab.Pane>
+        </Tab.Content>
+      </Tab.Container>
+    </div>
+  );
 }
