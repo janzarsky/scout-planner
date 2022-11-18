@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
@@ -35,7 +36,6 @@ export default function App(props) {
   const [this_state_pkgs, set_this_state_pkgs] = useState([]);
   const [this_state_groups, set_this_state_groups] = useState([]);
   const [this_state_rules, set_this_state_rules] = useState([]);
-  const [this_state_ranges, set_this_state_ranges] = useState([]);
   const [this_state_users, set_this_state_users] = useState([]);
   const [this_state_violations, set_this_state_violations] = useState(
     new Map()
@@ -72,6 +72,8 @@ export default function App(props) {
 
   const [this_auth, set_this_auth] = useState();
   const [this_provider, set_this_provider] = useState();
+
+  const { ranges: this_state_ranges } = useSelector((state) => state.ranges);
 
   function getFilters() {
     const toggle = (id) => {
@@ -310,10 +312,9 @@ export default function App(props) {
               this_state_client.getPackages(),
               this_state_client.getRules(),
               this_state_client.getGroups(),
-              this_state_client.getRanges(),
               this_state_client.getSettings(),
             ])
-          : Promise.resolve([[], [], [], [], [], []]);
+          : Promise.resolve([[], [], [], [], []]);
 
       const adminData =
         permissions.level >= level.ADMIN
@@ -321,7 +322,7 @@ export default function App(props) {
           : Promise.resolve([]);
 
       Promise.all([viewData, adminData]).then(
-        ([[allPrograms, pkgs, rules, groups, ranges, settings], users]) => {
+        ([[allPrograms, pkgs, rules, groups, settings], users]) => {
           set_this_state_programs(
             [...allPrograms].filter((program) => !program.deleted)
           );
@@ -331,7 +332,6 @@ export default function App(props) {
           set_this_state_pkgs(pkgs);
           set_this_state_rules(rules);
           set_this_state_groups(groups);
-          set_this_state_ranges(ranges);
           set_this_state_users(users);
           set_this_state_settings(settings);
           set_this_state_loaded(true);
@@ -360,7 +360,6 @@ export default function App(props) {
     this_state_pkgs,
     this_state_rules,
     this_state_groups,
-    this_state_ranges,
     this_state_users,
     this_state_settings,
     this_state_loaded,
@@ -407,7 +406,6 @@ export default function App(props) {
           people={people}
           handleClose={() => set_this_state_addProgram(false)}
           groups={this_state_groups}
-          ranges={this_state_ranges}
         />
       )}
       {this_state_editProgram && (
@@ -672,43 +670,7 @@ export default function App(props) {
           )}
           {this_state_userLevel >= level.EDIT && (
             <Tab.Pane eventKey="ranges" title="Linky">
-              <Ranges
-                ranges={this_state_ranges}
-                addRange={(range) =>
-                  this_state_client
-                    .addRange(range)
-                    .then(
-                      (range) =>
-                        set_this_state_ranges([...this_state_ranges, range]),
-                      handleError
-                    )
-                }
-                updateRange={(range) =>
-                  this_state_client
-                    .updateRange(range)
-                    .then(
-                      (range) =>
-                        set_this_state_ranges([
-                          ...this_state_ranges.filter(
-                            (r) => r._id !== range._id
-                          ),
-                          range,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteRange={(id) =>
-                  this_state_client
-                    .deleteRange(id)
-                    .then(
-                      () =>
-                        set_this_state_ranges([
-                          ...this_state_ranges.filter((r) => r._id !== id),
-                        ]),
-                      handleError
-                    )
-                }
-              />
+              <Ranges client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.VIEW && (

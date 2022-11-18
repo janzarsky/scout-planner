@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -14,6 +15,7 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byName } from "../helpers/Sorting";
+import { getRanges } from "../store/rangesSlice";
 
 export function EditProgramModal(props) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
@@ -423,12 +425,9 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
   );
 }
 
-function ProgramRanges({
-  programRanges,
-  updateRange,
-  allRanges,
-  disabled = false,
-}) {
+function ProgramRanges({ programRanges, updateRange, disabled = false }) {
+  const { ranges: allRanges } = useSelector((state) => state.ranges);
+
   return [...allRanges].sort(byName).map((range) => (
     <Form.Group as={Row} key={range._id}>
       <Form.Label column sm="2">
@@ -553,7 +552,6 @@ export function AddProgramModal(props) {
           <ProgramRanges
             programRanges={ranges}
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
-            allRanges={props.ranges}
           />
           <ProgramNotes notes={notes} setNotes={setNotes} />
         </Modal.Body>
