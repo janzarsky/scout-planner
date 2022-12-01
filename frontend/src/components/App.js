@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
@@ -25,6 +25,7 @@ import {
 import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { byName } from "../helpers/Sorting";
+import { getRanges } from "../store/rangesSlice";
 
 const config = require("../config.json");
 
@@ -74,6 +75,8 @@ export default function App(props) {
   const [this_provider, set_this_provider] = useState();
 
   const { ranges: this_state_ranges } = useSelector((state) => state.ranges);
+
+  const dispatch = useDispatch();
 
   function getFilters() {
     const toggle = (id) => {
@@ -185,7 +188,7 @@ export default function App(props) {
     );
   }
 
-  function getRanges() {
+  function getRangesElements() {
     return (
       <>
         <Nav.Item>
@@ -315,6 +318,8 @@ export default function App(props) {
               this_state_client.getSettings(),
             ])
           : Promise.resolve([[], [], [], [], []]);
+
+      dispatch(getRanges(this_state_client));
 
       const adminData =
         permissions.level >= level.ADMIN
@@ -484,7 +489,7 @@ export default function App(props) {
           )}
           {this_state_userLevel >= level.VIEW && getFilters()}
           {this_state_userLevel >= level.VIEW && getViewSettings()}
-          {this_state_userLevel >= level.VIEW && getRanges()}
+          {this_state_userLevel >= level.VIEW && getRangesElements()}
           {getGoogleLogin()}
         </Nav>
         <Tab.Content>

@@ -1,15 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
-import {
-  addRange,
-  updateRange,
-  deleteRange,
-  getRanges,
-} from "../store/rangesSlice";
+import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
 
 export default function Ranges({ client, handleError }) {
   const [newName, setNewName] = useState("Nová linka");
@@ -18,10 +13,6 @@ export default function Ranges({ client, handleError }) {
 
   const { ranges } = useSelector((state) => state.ranges);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getRanges(client));
-  }, [dispatch]);
 
   function handleSubmit(event) {
     event.preventDefault();
