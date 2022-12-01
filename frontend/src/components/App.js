@@ -26,6 +26,7 @@ import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { byName } from "../helpers/Sorting";
 import { getRanges } from "../store/rangesSlice";
+import { getGroups } from "../store/groupsSlice";
 
 const config = require("../config.json");
 
@@ -35,7 +36,6 @@ export default function App(props) {
     []
   );
   const [this_state_pkgs, set_this_state_pkgs] = useState([]);
-  const [this_state_groups, set_this_state_groups] = useState([]);
   const [this_state_rules, set_this_state_rules] = useState([]);
   const [this_state_users, set_this_state_users] = useState([]);
   const [this_state_violations, set_this_state_violations] = useState(
@@ -314,12 +314,12 @@ export default function App(props) {
               this_state_client.getPrograms(),
               this_state_client.getPackages(),
               this_state_client.getRules(),
-              this_state_client.getGroups(),
               this_state_client.getSettings(),
             ])
-          : Promise.resolve([[], [], [], [], []]);
+          : Promise.resolve([[], [], [], []]);
 
       dispatch(getRanges(this_state_client));
+      dispatch(getGroups(this_state_client));
 
       const adminData =
         permissions.level >= level.ADMIN
@@ -327,7 +327,7 @@ export default function App(props) {
           : Promise.resolve([]);
 
       Promise.all([viewData, adminData]).then(
-        ([[allPrograms, pkgs, rules, groups, settings], users]) => {
+        ([[allPrograms, pkgs, rules, settings], users]) => {
           set_this_state_programs(
             [...allPrograms].filter((program) => !program.deleted)
           );
@@ -336,7 +336,6 @@ export default function App(props) {
           );
           set_this_state_pkgs(pkgs);
           set_this_state_rules(rules);
-          set_this_state_groups(groups);
           set_this_state_users(users);
           set_this_state_settings(settings);
           set_this_state_loaded(true);
@@ -364,7 +363,6 @@ export default function App(props) {
     this_state_deletedPrograms,
     this_state_pkgs,
     this_state_rules,
-    this_state_groups,
     this_state_users,
     this_state_settings,
     this_state_loaded,
@@ -410,7 +408,6 @@ export default function App(props) {
           pkgs={this_state_pkgs}
           people={people}
           handleClose={() => set_this_state_addProgram(false)}
-          groups={this_state_groups}
         />
       )}
       {this_state_editProgram && (
@@ -419,8 +416,6 @@ export default function App(props) {
           deleteProgram={deleteProgram}
           program={this_state_editProgramData}
           pkgs={this_state_pkgs}
-          groups={this_state_groups}
-          ranges={this_state_ranges}
           people={people}
           handleClose={() => set_this_state_editProgram(false)}
           userLevel={this_state_userLevel}
@@ -498,7 +493,6 @@ export default function App(props) {
               <Timetable
                 programs={this_state_programs}
                 pkgs={this_state_pkgs}
-                groups={this_state_groups}
                 settings={this_state_settings}
                 timeStep={
                   this_state_settings.timeStep
@@ -555,7 +549,6 @@ export default function App(props) {
             <Tab.Pane eventKey="rules">
               <Rules
                 programs={this_state_programs}
-                groups={this_state_groups}
                 rules={this_state_rules}
                 violations={this_state_violations}
                 userLevel={this_state_userLevel}
@@ -634,43 +627,7 @@ export default function App(props) {
           )}
           {this_state_userLevel >= level.EDIT && (
             <Tab.Pane eventKey="groups" title="Skupiny">
-              <Groups
-                groups={this_state_groups}
-                addGroup={(group) =>
-                  this_state_client
-                    .addGroup(group)
-                    .then(
-                      (group) =>
-                        set_this_state_groups([...this_state_groups, group]),
-                      handleError
-                    )
-                }
-                updateGroup={(group) =>
-                  this_state_client
-                    .updateGroup(group)
-                    .then(
-                      (group) =>
-                        set_this_state_groups([
-                          ...this_state_groups.filter(
-                            (g) => g._id !== group._id
-                          ),
-                          group,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteGroup={(id) =>
-                  this_state_client
-                    .deleteGroup(id)
-                    .then(
-                      () =>
-                        set_this_state_groups([
-                          ...this_state_groups.filter((g) => g._id !== id),
-                        ]),
-                      handleError
-                    )
-                }
-              />
+              <Groups client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.EDIT && (
@@ -683,7 +640,6 @@ export default function App(props) {
               <Stats
                 programs={this_state_programs}
                 people={people}
-                groups={this_state_groups}
                 packages={this_state_pkgs}
               />
             </Tab.Pane>
@@ -734,9 +690,7 @@ export default function App(props) {
             <Settings
               programs={[...this_state_programs, ...this_state_deletedPrograms]}
               pkgs={this_state_pkgs}
-              groups={this_state_groups}
               rules={this_state_rules}
-              ranges={this_state_ranges}
               users={this_state_users}
               client={this_state_client}
               userLevel={this_state_userLevel}

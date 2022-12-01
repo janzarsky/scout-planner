@@ -11,6 +11,7 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import { useSelector } from "react-redux";
 
 export default function Settings({
   rules,
@@ -18,7 +19,6 @@ export default function Settings({
   deleteRule,
   userLevel,
   programs,
-  groups,
   violations,
 }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -64,7 +64,6 @@ export default function Settings({
                 cnt={index + 1}
                 rule={rule}
                 programs={programs}
-                groups={groups}
                 violation={violations.get(rule._id)}
                 deleteRule={() => deleteRule(rule._id)}
                 userLevel={userLevel}
@@ -73,7 +72,6 @@ export default function Settings({
           {userLevel >= level.EDIT && (
             <NewRule
               programs={programs}
-              groups={groups}
               condition={condition}
               setCondition={setCondition}
               firstProgram={firstProgram}
@@ -114,15 +112,9 @@ function RulesHeader({ userLevel }) {
   );
 }
 
-function Rule({
-  cnt,
-  rule,
-  programs,
-  groups,
-  violation,
-  userLevel,
-  deleteRule,
-}) {
+function Rule({ cnt, rule, programs, violation, userLevel, deleteRule }) {
+  const { groups } = useSelector((state) => state.groups);
+
   return (
     <tr>
       <td>{cnt}</td>
@@ -162,8 +154,9 @@ function NewRule({
   date,
   setDate,
   programs,
-  groups,
 }) {
+  const { groups } = useSelector((state) => state.groups);
+
   return (
     <tr>
       <td></td>

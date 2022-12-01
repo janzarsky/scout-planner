@@ -15,7 +15,6 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byName } from "../helpers/Sorting";
-import { getRanges } from "../store/rangesSlice";
 
 export function EditProgramModal(props) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
@@ -107,7 +106,6 @@ export function EditProgramModal(props) {
           />
           <ProgramGroups
             programGroups={groups}
-            allGroups={props.groups}
             addGroup={(group) => setGroups([...groups, group])}
             removeGroup={(group) =>
               setGroups(groups.filter((g) => g !== group))
@@ -131,7 +129,6 @@ export function EditProgramModal(props) {
           <ProgramRanges
             programRanges={ranges}
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
-            allRanges={props.ranges}
             disabled={props.userLevel < level.EDIT}
           />
           <ProgramNotes
@@ -304,11 +301,12 @@ function ProgramPackage({ pkg, setPkg, packages, disabled = false }) {
 
 function ProgramGroups({
   programGroups,
-  allGroups,
   addGroup,
   removeGroup,
   disabled = false,
 }) {
+  const { groups: allGroups } = useSelector((state) => state.groups);
+
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -534,7 +532,6 @@ export function AddProgramModal(props) {
           <ProgramPackage pkg={pkg} setPkg={setPkg} packages={props.pkgs} />
           <ProgramGroups
             programGroups={groups}
-            allGroups={props.groups}
             addGroup={(group) => setGroups([...groups, group])}
             removeGroup={(group) =>
               setGroups(groups.filter((g) => g !== group))

@@ -1,5 +1,6 @@
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useSelector } from "react-redux";
 import {
   formatDay,
   getOnlyDate,
@@ -48,7 +49,8 @@ export default function Timetable(props) {
     }
   }
 
-  const settings = getSettings(props.programs, props.groups, props.timeStep);
+  const { groups } = useSelector((state) => state.groups);
+  const settings = getSettings(props.programs, groups, props.timeStep);
   const timeIndicatorRect = getTimeIndicatorRect(settings);
 
   return (

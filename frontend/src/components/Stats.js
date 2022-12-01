@@ -1,17 +1,13 @@
 import Table from "react-bootstrap/Table";
+import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
 
 export default function Stats(props) {
   return (
     <>
-      <PackageStats
-        groups={props.groups}
-        programs={props.programs}
-        packages={props.packages}
-      />
+      <PackageStats programs={props.programs} packages={props.packages} />
       <PeopleStats
-        groups={props.groups}
         programs={props.programs}
         packages={props.packages}
         people={props.people}
@@ -21,6 +17,7 @@ export default function Stats(props) {
 }
 
 function PackageStats(props) {
+  const { groups } = useSelector((state) => state.groups);
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(
     props.programs
   );
@@ -29,7 +26,7 @@ function PackageStats(props) {
       <thead>
         <tr>
           <th>Balíček</th>
-          {[...props.groups].sort(byOrder).map((group) => (
+          {[...groups].sort(byOrder).map((group) => (
             <th key={group._id}>{group.name}</th>
           ))}
         </tr>
@@ -41,7 +38,7 @@ function PackageStats(props) {
           .map((pkg) => (
             <tr key={pkg._id}>
               <td>{pkg.name}</td>
-              {[...props.groups].sort(byOrder).map((group) => (
+              {[...groups].sort(byOrder).map((group) => (
                 <td key={group._id}>
                   {durationPerPackageAndGroup[pkg._id] &&
                   durationPerPackageAndGroup[pkg._id][group._id]
@@ -59,6 +56,7 @@ function PackageStats(props) {
 }
 
 function PeopleStats(props) {
+  const { groups } = useSelector((state) => state.groups);
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
     props.programs,
     props.packages
@@ -68,7 +66,7 @@ function PeopleStats(props) {
       <thead>
         <tr>
           <th>Lidi</th>
-          {[...props.groups].sort(byOrder).map((group) => (
+          {[...groups].sort(byOrder).map((group) => (
             <th key={group._id}>{group.name}</th>
           ))}
         </tr>
@@ -79,7 +77,7 @@ function PeopleStats(props) {
           .map((person) => (
             <tr key={person}>
               <td>{person}</td>
-              {[...props.groups].sort(byOrder).map((group) => (
+              {[...groups].sort(byOrder).map((group) => (
                 <td key={group._id}>
                   {durationPerPersonAndGroup[person] &&
                   durationPerPersonAndGroup[person][group._id]

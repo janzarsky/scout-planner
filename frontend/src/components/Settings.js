@@ -7,15 +7,19 @@ import { level } from "../helpers/Level";
 import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
+import { useSelector } from "react-redux";
 
 export default function Settings(props) {
+  const { groups } = useSelector((state) => state.groups);
+  const { ranges } = useSelector((state) => state.ranges);
+
   async function deleteAll() {
     await Promise.all([
       ...props.programs.map((it) => props.client.deleteProgram(it._id)),
       ...props.pkgs.map((it) => props.client.deletePackage(it._id)),
-      ...props.groups.map((it) => props.client.deleteGroup(it._id)),
+      ...groups.map((it) => props.client.deleteGroup(it._id)),
       ...props.rules.map((it) => props.client.deleteRule(it._id)),
-      ...props.ranges.map((it) => props.client.deleteRange(it._id)),
+      ...ranges.map((it) => props.client.deleteRange(it._id)),
       ...props.users.map((it) => props.client.deleteUser(it._id)),
     ]).then(() => window.location.reload());
   }
@@ -26,9 +30,7 @@ export default function Settings(props) {
         <Export
           programs={props.programs}
           pkgs={props.pkgs}
-          groups={props.groups}
           rules={props.rules}
-          ranges={props.ranges}
           users={props.users}
         />
         {props.userLevel >= level.ADMIN && <Import client={props.client} />}
