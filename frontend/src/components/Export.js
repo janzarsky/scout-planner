@@ -5,12 +5,13 @@ export default function Export(props) {
   const { groups } = useSelector((state) => state.groups);
   const { ranges } = useSelector((state) => state.ranges);
   const { packages } = useSelector((state) => state.packages);
+  const { rules } = useSelector((state) => state.rules);
 
   const data = JSON.stringify({
     programs: props.programs,
     pkgs: packages,
     groups,
-    rules: props.rules,
+    rules,
     ranges,
     users: props.users,
   });

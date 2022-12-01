@@ -28,6 +28,7 @@ import { byName } from "../helpers/Sorting";
 import { getRanges } from "../store/rangesSlice";
 import { getGroups } from "../store/groupsSlice";
 import { getPackages } from "../store/packagesSlice";
+import { getRules } from "../store/rulesSlice";
 
 const config = require("../config.json");
 
@@ -36,7 +37,6 @@ export default function App(props) {
   const [this_state_deletedPrograms, set_this_state_deletedPrograms] = useState(
     []
   );
-  const [this_state_rules, set_this_state_rules] = useState([]);
   const [this_state_users, set_this_state_users] = useState([]);
   const [this_state_violations, set_this_state_violations] = useState(
     new Map()
@@ -76,6 +76,7 @@ export default function App(props) {
 
   const { ranges: this_state_ranges } = useSelector((state) => state.ranges);
   const { packages: this_state_pkgs } = useSelector((state) => state.packages);
+  const { rules: this_state_rules } = useSelector((state) => state.rules);
 
   const dispatch = useDispatch();
 
@@ -313,14 +314,14 @@ export default function App(props) {
         permissions.level > level.NONE
           ? Promise.all([
               this_state_client.getPrograms(),
-              this_state_client.getRules(),
               this_state_client.getSettings(),
             ])
-          : Promise.resolve([[], [], []]);
+          : Promise.resolve([[], []]);
 
       dispatch(getRanges(this_state_client));
       dispatch(getGroups(this_state_client));
       dispatch(getPackages(this_state_client));
+      dispatch(getRules(this_state_client));
 
       const adminData =
         permissions.level >= level.ADMIN
@@ -328,14 +329,13 @@ export default function App(props) {
           : Promise.resolve([]);
 
       Promise.all([viewData, adminData]).then(
-        ([[allPrograms, rules, settings], users]) => {
+        ([[allPrograms, settings], users]) => {
           set_this_state_programs(
             [...allPrograms].filter((program) => !program.deleted)
           );
           set_this_state_deletedPrograms(
             [...allPrograms].filter((program) => program.deleted)
           );
-          set_this_state_rules(rules);
           set_this_state_users(users);
           set_this_state_settings(settings);
           set_this_state_loaded(true);
@@ -361,7 +361,6 @@ export default function App(props) {
   }, [
     this_state_programs,
     this_state_deletedPrograms,
-    this_state_rules,
     this_state_users,
     this_state_settings,
     this_state_loaded,
@@ -544,42 +543,11 @@ export default function App(props) {
           {this_state_userLevel >= level.VIEW && (
             <Tab.Pane eventKey="rules">
               <Rules
+                client={this_state_client}
+                handleError={handleError}
                 programs={this_state_programs}
-                rules={this_state_rules}
                 violations={this_state_violations}
                 userLevel={this_state_userLevel}
-                addRule={(rule) =>
-                  this_state_client
-                    .addRule(rule)
-                    .then(
-                      (rule) =>
-                        set_this_state_rules([...this_state_rules, rule]),
-                      handleError
-                    )
-                }
-                updateRule={(rule) =>
-                  this_state_client
-                    .updateRule(rule)
-                    .then(
-                      (rule) =>
-                        set_this_state_rules([
-                          ...this_state_rules.filter((r) => r._id !== rule._id),
-                          rule,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteRule={(id) =>
-                  this_state_client
-                    .deleteRule(id)
-                    .then(
-                      (msg) =>
-                        set_this_state_rules(
-                          this_state_rules.filter((r) => r._id !== id)
-                        ),
-                      handleError
-                    )
-                }
               />
             </Tab.Pane>
           )}
@@ -648,7 +616,6 @@ export default function App(props) {
           <Tab.Pane eventKey="settings" title="Nastavení">
             <Settings
               programs={[...this_state_programs, ...this_state_deletedPrograms]}
-              rules={this_state_rules}
               users={this_state_users}
               client={this_state_client}
               userLevel={this_state_userLevel}

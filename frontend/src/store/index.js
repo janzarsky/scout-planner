@@ -4,6 +4,7 @@ import thunkMiddleware from "redux-thunk";
 import rangesReducer from "./rangesSlice";
 import groupsReducer from "./groupsSlice";
 import packagesReducer from "./packagesSlice";
+import rulesReducer from "./rulesSlice";
 
 const composedEnhancer = applyMiddleware(thunkMiddleware);
 
@@ -13,6 +14,7 @@ export default configureStore(
       ranges: rangesReducer,
       groups: groupsReducer,
       packages: packagesReducer,
+      rules: rulesReducer,
     },
   },
   composedEnhancer

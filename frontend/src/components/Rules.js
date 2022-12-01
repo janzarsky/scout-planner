@@ -11,12 +11,12 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addRule, deleteRule } from "../store/rulesSlice";
 
-export default function Settings({
-  rules,
-  addRule,
-  deleteRule,
+export default function Rules({
+  client,
+  handleError,
   userLevel,
   programs,
   violations,
@@ -26,6 +26,9 @@ export default function Settings({
   const [time, setTime] = useState(formatTime(Date.now()));
   const [date, setDate] = useState(formatDate(Date.now()));
   const [secondProgram, setSecondProgram] = useState("Žádný program");
+
+  const { rules } = useSelector((state) => state.rules);
+  const dispatch = useDispatch();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -44,11 +47,13 @@ export default function Settings({
         value = null;
     }
 
-    addRule({
-      program: firstProgram,
-      condition: condition,
-      value: value,
-    });
+    client
+      .addRule({
+        program: firstProgram,
+        condition: condition,
+        value: value,
+      })
+      .then((resp) => dispatch(addRule(resp)), handleError);
   }
 
   return (
@@ -65,7 +70,11 @@ export default function Settings({
                 rule={rule}
                 programs={programs}
                 violation={violations.get(rule._id)}
-                deleteRule={() => deleteRule(rule._id)}
+                deleteRule={() =>
+                  client
+                    .deleteRule(rule._id)
+                    .then(() => dispatch(deleteRule(rule._id)), handleError)
+                }
                 userLevel={userLevel}
               />
             ))}
