@@ -101,7 +101,6 @@ export function EditProgramModal(props) {
           <ProgramPackage
             pkg={pkg}
             setPkg={setPkg}
-            packages={props.pkgs}
             disabled={props.userLevel < level.EDIT}
           />
           <ProgramGroups
@@ -274,7 +273,9 @@ function ProgramDuration({
   );
 }
 
-function ProgramPackage({ pkg, setPkg, packages, disabled = false }) {
+function ProgramPackage({ pkg, setPkg, disabled = false }) {
+  const { packages } = useSelector((state) => state.packages);
+
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -529,7 +530,7 @@ export function AddProgramModal(props) {
             locked={locked}
             setLocked={setLocked}
           />
-          <ProgramPackage pkg={pkg} setPkg={setPkg} packages={props.pkgs} />
+          <ProgramPackage pkg={pkg} setPkg={setPkg} />
           <ProgramGroups
             programGroups={groups}
             addGroup={(group) => setGroups([...groups, group])}

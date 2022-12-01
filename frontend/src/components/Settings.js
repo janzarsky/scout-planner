@@ -12,11 +12,12 @@ import { useSelector } from "react-redux";
 export default function Settings(props) {
   const { groups } = useSelector((state) => state.groups);
   const { ranges } = useSelector((state) => state.ranges);
+  const { packages } = useSelector((state) => state.packages);
 
   async function deleteAll() {
     await Promise.all([
       ...props.programs.map((it) => props.client.deleteProgram(it._id)),
-      ...props.pkgs.map((it) => props.client.deletePackage(it._id)),
+      ...packages.map((it) => props.client.deletePackage(it._id)),
       ...groups.map((it) => props.client.deleteGroup(it._id)),
       ...props.rules.map((it) => props.client.deleteRule(it._id)),
       ...ranges.map((it) => props.client.deleteRange(it._id)),
@@ -29,7 +30,6 @@ export default function Settings(props) {
       <Container fluid>
         <Export
           programs={props.programs}
-          pkgs={props.pkgs}
           rules={props.rules}
           users={props.users}
         />

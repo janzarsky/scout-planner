@@ -4,10 +4,11 @@ import { useSelector } from "react-redux";
 export default function Export(props) {
   const { groups } = useSelector((state) => state.groups);
   const { ranges } = useSelector((state) => state.ranges);
+  const { packages } = useSelector((state) => state.packages);
 
   const data = JSON.stringify({
     programs: props.programs,
-    pkgs: props.pkgs,
+    pkgs: packages,
     groups,
     rules: props.rules,
     ranges,

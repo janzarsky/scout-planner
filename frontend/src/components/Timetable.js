@@ -34,7 +34,6 @@ export default function Timetable(props) {
             highlighted={props.highlightedPackages.indexOf(prog.pkg) !== -1}
             violations={props.violations.get(prog._id)}
             rect={rect}
-            pkgs={props.pkgs}
             onEdit={props.onEdit}
             viewSettings={viewSettings}
             clone={props.clone}

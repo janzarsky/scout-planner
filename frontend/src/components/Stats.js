@@ -7,20 +7,19 @@ export default function Stats(props) {
   return (
     <>
       <PackageStats programs={props.programs} packages={props.packages} />
-      <PeopleStats
-        programs={props.programs}
-        packages={props.packages}
-        people={props.people}
-      />
+      <PeopleStats programs={props.programs} people={props.people} />
     </>
   );
 }
 
 function PackageStats(props) {
   const { groups } = useSelector((state) => state.groups);
+  const { packages } = useSelector((state) => state.packages);
+
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(
     props.programs
   );
+
   return (
     <Table bordered hover responsive>
       <thead>
@@ -32,7 +31,7 @@ function PackageStats(props) {
         </tr>
       </thead>
       <tbody>
-        {[...props.packages]
+        {[...packages]
           .sort(byName)
           .filter((pkg) => pkg.name[0] !== "(")
           .map((pkg) => (
@@ -57,10 +56,13 @@ function PackageStats(props) {
 
 function PeopleStats(props) {
   const { groups } = useSelector((state) => state.groups);
+  const { packages } = useSelector((state) => state.packages);
+
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
     props.programs,
-    props.packages
+    packages
   );
+
   return (
     <Table bordered hover responsive>
       <thead>

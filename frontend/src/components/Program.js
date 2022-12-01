@@ -1,8 +1,11 @@
 import { useDrag } from "react-dnd";
+import { useSelector } from "react-redux";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 
 export default function Program(props) {
+  const { packages } = useSelector((state) => state.packages);
+
   const [, drag] = useDrag(() => ({
     type: "program",
     item: { id: props.program._id },
@@ -23,7 +26,7 @@ export default function Program(props) {
       <ProgramBody
         program={props.program}
         violations={props.violations}
-        pkg={props.pkgs.find((p) => p._id === props.program.pkg)}
+        pkg={packages.find((p) => p._id === props.program.pkg)}
         highlighted={props.highlighted}
         viewSettings={props.viewSettings}
         activeRange={props.activeRange}

@@ -27,6 +27,7 @@ import Container from "react-bootstrap/esm/Container";
 import { byName } from "../helpers/Sorting";
 import { getRanges } from "../store/rangesSlice";
 import { getGroups } from "../store/groupsSlice";
+import { getPackages } from "../store/packagesSlice";
 
 const config = require("../config.json");
 
@@ -35,7 +36,6 @@ export default function App(props) {
   const [this_state_deletedPrograms, set_this_state_deletedPrograms] = useState(
     []
   );
-  const [this_state_pkgs, set_this_state_pkgs] = useState([]);
   const [this_state_rules, set_this_state_rules] = useState([]);
   const [this_state_users, set_this_state_users] = useState([]);
   const [this_state_violations, set_this_state_violations] = useState(
@@ -75,6 +75,7 @@ export default function App(props) {
   const [this_provider, set_this_provider] = useState();
 
   const { ranges: this_state_ranges } = useSelector((state) => state.ranges);
+  const { packages: this_state_pkgs } = useSelector((state) => state.packages);
 
   const dispatch = useDispatch();
 
@@ -312,14 +313,14 @@ export default function App(props) {
         permissions.level > level.NONE
           ? Promise.all([
               this_state_client.getPrograms(),
-              this_state_client.getPackages(),
               this_state_client.getRules(),
               this_state_client.getSettings(),
             ])
-          : Promise.resolve([[], [], [], []]);
+          : Promise.resolve([[], [], []]);
 
       dispatch(getRanges(this_state_client));
       dispatch(getGroups(this_state_client));
+      dispatch(getPackages(this_state_client));
 
       const adminData =
         permissions.level >= level.ADMIN
@@ -327,14 +328,13 @@ export default function App(props) {
           : Promise.resolve([]);
 
       Promise.all([viewData, adminData]).then(
-        ([[allPrograms, pkgs, rules, settings], users]) => {
+        ([[allPrograms, rules, settings], users]) => {
           set_this_state_programs(
             [...allPrograms].filter((program) => !program.deleted)
           );
           set_this_state_deletedPrograms(
             [...allPrograms].filter((program) => program.deleted)
           );
-          set_this_state_pkgs(pkgs);
           set_this_state_rules(rules);
           set_this_state_users(users);
           set_this_state_settings(settings);
@@ -361,7 +361,6 @@ export default function App(props) {
   }, [
     this_state_programs,
     this_state_deletedPrograms,
-    this_state_pkgs,
     this_state_rules,
     this_state_users,
     this_state_settings,
@@ -405,7 +404,6 @@ export default function App(props) {
         <AddProgramModal
           addProgram={addProgram}
           options={this_state_addProgramOptions}
-          pkgs={this_state_pkgs}
           people={people}
           handleClose={() => set_this_state_addProgram(false)}
         />
@@ -415,7 +413,6 @@ export default function App(props) {
           updateProgram={updateProgram}
           deleteProgram={deleteProgram}
           program={this_state_editProgramData}
-          pkgs={this_state_pkgs}
           people={people}
           handleClose={() => set_this_state_editProgram(false)}
           userLevel={this_state_userLevel}
@@ -492,7 +489,6 @@ export default function App(props) {
             {this_state_userLevel >= level.VIEW && this_state_loaded && (
               <Timetable
                 programs={this_state_programs}
-                pkgs={this_state_pkgs}
                 settings={this_state_settings}
                 timeStep={
                   this_state_settings.timeStep
@@ -589,40 +585,7 @@ export default function App(props) {
           )}
           {this_state_userLevel >= level.EDIT && (
             <Tab.Pane eventKey="packages" title="Balíčky">
-              <Packages
-                pkgs={this_state_pkgs}
-                addPkg={(pkg) =>
-                  this_state_client
-                    .addPackage(pkg)
-                    .then(
-                      (pkg) => set_this_state_pkgs([...this_state_pkgs, pkg]),
-                      handleError
-                    )
-                }
-                updatePkg={(pkg) =>
-                  this_state_client
-                    .updatePackage(pkg)
-                    .then(
-                      (pkg) =>
-                        set_this_state_pkgs([
-                          ...this_state_pkgs.filter((p) => p._id !== pkg._id),
-                          pkg,
-                        ]),
-                      handleError
-                    )
-                }
-                deletePkg={(id) =>
-                  this_state_client
-                    .deletePackage(id)
-                    .then(
-                      (msg) =>
-                        set_this_state_pkgs(
-                          this_state_pkgs.filter((p) => p._id !== id)
-                        ),
-                      handleError
-                    )
-                }
-              />
+              <Packages client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.EDIT && (
@@ -637,11 +600,7 @@ export default function App(props) {
           )}
           {this_state_userLevel >= level.VIEW && (
             <Tab.Pane eventKey="stats" title="Statistiky">
-              <Stats
-                programs={this_state_programs}
-                people={people}
-                packages={this_state_pkgs}
-              />
+              <Stats programs={this_state_programs} people={people} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.ADMIN && (
@@ -689,7 +648,6 @@ export default function App(props) {
           <Tab.Pane eventKey="settings" title="Nastavení">
             <Settings
               programs={[...this_state_programs, ...this_state_deletedPrograms]}
-              pkgs={this_state_pkgs}
               rules={this_state_rules}
               users={this_state_users}
               client={this_state_client}
