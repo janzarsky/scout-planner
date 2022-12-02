@@ -7,7 +7,7 @@ export const getPackages = createAsyncThunk(
 
 export const packagesSlice = createSlice({
   name: "packages",
-  initialState: { packages: [], loading: "idle", error: null },
+  initialState: { packages: [], loading: "idle", error: null, loaded: false },
   reducers: {
     addPackage: (state, action) => {
       state.packages.push(action.payload);
@@ -33,6 +33,7 @@ export const packagesSlice = createSlice({
       if (state.loading === "pending") {
         state.packages = action.payload;
         state.loading = "idle";
+        state.loaded = true;
       }
     });
 

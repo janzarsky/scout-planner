@@ -30,14 +30,11 @@ import { getGroups } from "../store/groupsSlice";
 import { getPackages } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
+import { getPrograms } from "../store/programsSlice";
 
 const config = require("../config.json");
 
 export default function App(props) {
-  const [this_state_programs, set_this_state_programs] = useState([]);
-  const [this_state_deletedPrograms, set_this_state_deletedPrograms] = useState(
-    []
-  );
   const [this_state_violations, set_this_state_violations] = useState(
     new Map()
   );
@@ -73,9 +70,23 @@ export default function App(props) {
   const [this_auth, set_this_auth] = useState();
   const [this_provider, set_this_provider] = useState();
 
-  const { ranges: this_state_ranges } = useSelector((state) => state.ranges);
-  const { packages: this_state_pkgs } = useSelector((state) => state.packages);
-  const { rules: this_state_rules } = useSelector((state) => state.rules);
+  const { groups: this_state_groups, loaded: groupsLoaded } = useSelector(
+    (state) => state.groups
+  );
+  const { ranges: this_state_ranges, loaded: rangesLoaded } = useSelector(
+    (state) => state.ranges
+  );
+  const { packages: this_state_pkgs, loaded: packagesLoaded } = useSelector(
+    (state) => state.packages
+  );
+  const { rules: this_state_rules, loaded: rulesLoaded } = useSelector(
+    (state) => state.rules
+  );
+  const {
+    programs: this_state_programs,
+    deletedPrograms: this_state_deletedPrograms,
+    loaded: programsLoaded,
+  } = useSelector((state) => state.programs);
 
   const dispatch = useDispatch();
 
@@ -238,42 +249,6 @@ export default function App(props) {
     );
   }
 
-  async function addProgram(program) {
-    await this_state_client
-      .addProgram(program)
-      .then(
-        (program) => set_this_state_programs([...this_state_programs, program]),
-        handleError
-      );
-  }
-
-  async function updateProgram(program) {
-    await this_state_client
-      .updateProgram(program)
-      .then(
-        (program) =>
-          set_this_state_programs([
-            ...this_state_programs.filter((p) => p._id !== program._id),
-            program,
-          ]),
-        handleError
-      );
-  }
-
-  async function deleteProgram(program) {
-    await this_state_client
-      .updateProgram({ ...program, deleted: true })
-      .then(() => {
-        set_this_state_programs([
-          ...this_state_programs.filter((p) => p._id !== program._id),
-        ]);
-        set_this_state_deletedPrograms([
-          ...this_state_deletedPrograms,
-          program,
-        ]);
-      }, handleError);
-  }
-
   async function login() {
     await signInWithPopup(this_auth, this_provider).catch((error) =>
       console.error(error)
@@ -309,11 +284,7 @@ export default function App(props) {
     async function reloadData() {
       const permissions = await this_state_client.getPermissions();
 
-      const viewData =
-        permissions.level > level.NONE
-          ? Promise.all([this_state_client.getPrograms()])
-          : Promise.resolve([[]]);
-
+      dispatch(getPrograms(this_state_client));
       dispatch(getRanges(this_state_client));
       dispatch(getGroups(this_state_client));
       dispatch(getPackages(this_state_client));
@@ -321,16 +292,6 @@ export default function App(props) {
 
       if (permissions.level >= level.ADMIN)
         dispatch(getUsers(this_state_client));
-
-      Promise.all([viewData]).then(([[allPrograms]]) => {
-        set_this_state_programs(
-          [...allPrograms].filter((program) => !program.deleted)
-        );
-        set_this_state_deletedPrograms(
-          [...allPrograms].filter((program) => program.deleted)
-        );
-        set_this_state_loaded(true);
-      });
 
       set_this_state_userLevel(permissions.level);
     }
@@ -348,7 +309,24 @@ export default function App(props) {
         true
       ) && problems.other.length === 0
     );
-  }, [this_state_programs, this_state_deletedPrograms, this_state_loaded]);
+  }, [
+    this_state_loaded,
+    this_state_programs,
+    this_state_groups,
+    this_state_pkgs,
+    this_state_ranges,
+  ]);
+
+  useEffect(() => {
+    if (
+      programsLoaded &&
+      rangesLoaded &&
+      groupsLoaded &&
+      packagesLoaded &&
+      rulesLoaded
+    )
+      set_this_state_loaded(true);
+  }, [programsLoaded, rangesLoaded, groupsLoaded, packagesLoaded, rulesLoaded]);
 
   var violationsPerProgram = new Map();
   [...this_state_violations.values()]
@@ -385,7 +363,8 @@ export default function App(props) {
       )}
       {this_state_addProgram && (
         <AddProgramModal
-          addProgram={addProgram}
+          client={this_state_client}
+          handleError={handleError}
           options={this_state_addProgramOptions}
           people={people}
           handleClose={() => set_this_state_addProgram(false)}
@@ -393,8 +372,8 @@ export default function App(props) {
       )}
       {this_state_editProgram && (
         <EditProgramModal
-          updateProgram={updateProgram}
-          deleteProgram={deleteProgram}
+          client={this_state_client}
+          handleError={handleError}
           program={this_state_editProgramData}
           people={people}
           handleClose={() => set_this_state_editProgram(false)}
@@ -471,14 +450,12 @@ export default function App(props) {
           <Tab.Pane eventKey="timetable">
             {this_state_userLevel >= level.VIEW && this_state_loaded && (
               <Timetable
-                programs={this_state_programs}
                 violations={violationsPerProgram}
                 highlightedPackages={
                   this_state_highlightingEnabled
                     ? this_state_highlightedPackages
                     : []
                 }
-                updateProgram={updateProgram}
                 addProgramModal={(options) => {
                   set_this_state_addProgram(true);
                   set_this_state_addProgramOptions(options);
@@ -493,11 +470,12 @@ export default function App(props) {
                   viewPeople: this_state_viewPeople,
                   viewViolations: this_state_viewViolations,
                 }}
-                clone={(program) => addProgram(program)}
                 activeRange={
                   this_state_viewRanges ? this_state_activeRange : null
                 }
                 userLevel={this_state_userLevel}
+                client={this_state_client}
+                handleError={handleError}
               />
             )}
             {!this_state_loaded && (
@@ -523,7 +501,6 @@ export default function App(props) {
               <Rules
                 client={this_state_client}
                 handleError={handleError}
-                programs={this_state_programs}
                 violations={this_state_violations}
                 userLevel={this_state_userLevel}
               />
@@ -546,7 +523,7 @@ export default function App(props) {
           )}
           {this_state_userLevel >= level.VIEW && (
             <Tab.Pane eventKey="stats" title="Statistiky">
-              <Stats programs={this_state_programs} people={people} />
+              <Stats people={people} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.ADMIN && (
@@ -562,7 +539,6 @@ export default function App(props) {
           )}
           <Tab.Pane eventKey="settings" title="Nastavení">
             <Settings
-              programs={[...this_state_programs, ...this_state_deletedPrograms]}
               client={this_state_client}
               handleError={handleError}
               userLevel={this_state_userLevel}

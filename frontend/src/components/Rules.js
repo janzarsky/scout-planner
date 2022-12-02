@@ -14,13 +14,7 @@ import { level } from "../helpers/Level";
 import { useDispatch, useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
 
-export default function Rules({
-  client,
-  handleError,
-  userLevel,
-  programs,
-  violations,
-}) {
+export default function Rules({ client, handleError, userLevel, violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
   const [condition, setCondition] = useState("is_before_program");
   const [time, setTime] = useState(formatTime(Date.now()));
@@ -28,6 +22,7 @@ export default function Rules({
   const [secondProgram, setSecondProgram] = useState("Žádný program");
 
   const { rules } = useSelector((state) => state.rules);
+  const { programs } = useSelector((state) => state.programs);
   const dispatch = useDispatch();
 
   function handleSubmit(event) {

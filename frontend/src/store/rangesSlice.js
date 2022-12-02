@@ -7,7 +7,7 @@ export const getRanges = createAsyncThunk(
 
 export const rangesSlice = createSlice({
   name: "ranges",
-  initialState: { ranges: [], loading: "idle", error: null },
+  initialState: { ranges: [], loading: "idle", error: null, loaded: false },
   reducers: {
     addRange: (state, action) => {
       state.ranges.push(action.payload);
@@ -33,6 +33,7 @@ export const rangesSlice = createSlice({
       if (state.loading === "pending") {
         state.ranges = action.payload;
         state.loading = "idle";
+        state.loaded = true;
       }
     });
 

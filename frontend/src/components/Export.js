@@ -7,9 +7,10 @@ export default function Export(props) {
   const { packages } = useSelector((state) => state.packages);
   const { rules } = useSelector((state) => state.rules);
   const { users } = useSelector((state) => state.users);
+  const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const data = JSON.stringify({
-    programs: props.programs,
+    programs: [...programs, ...deletedPrograms],
     pkgs: packages,
     groups,
     rules,

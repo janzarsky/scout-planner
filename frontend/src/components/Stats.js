@@ -15,10 +15,9 @@ export default function Stats(props) {
 function PackageStats(props) {
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
+  const { programs } = useSelector((state) => state.programs);
 
-  const durationPerPackageAndGroup = getDurationPerPackageAndGroup(
-    props.programs
-  );
+  const durationPerPackageAndGroup = getDurationPerPackageAndGroup(programs);
 
   return (
     <Table bordered hover responsive>
@@ -57,9 +56,10 @@ function PackageStats(props) {
 function PeopleStats(props) {
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
+  const { programs } = useSelector((state) => state.programs);
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
-    props.programs,
+    programs,
     packages
   );
 

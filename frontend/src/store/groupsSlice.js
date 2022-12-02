@@ -7,7 +7,7 @@ export const getGroups = createAsyncThunk(
 
 export const groupsSlice = createSlice({
   name: "groups",
-  initialState: { groups: [], loading: "idle", error: null },
+  initialState: { groups: [], loading: "idle", error: null, loaded: false },
   reducers: {
     addGroup: (state, action) => {
       state.groups.push(action.payload);
@@ -33,6 +33,7 @@ export const groupsSlice = createSlice({
       if (state.loading === "pending") {
         state.groups = action.payload;
         state.loading = "idle";
+        state.loaded = true;
       }
     });
 

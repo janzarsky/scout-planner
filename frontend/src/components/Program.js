@@ -1,7 +1,8 @@
 import { useDrag } from "react-dnd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import { addProgram } from "../store/programsSlice";
 
 export default function Program(props) {
   const { packages } = useSelector((state) => state.packages);
@@ -10,6 +11,12 @@ export default function Program(props) {
     type: "program",
     item: { id: props.program._id },
   }));
+
+  const dispatch = useDispatch();
+  const clone = (p) =>
+    props.client
+      .addProgram(p)
+      .then((resp) => dispatch(addProgram(resp)), props.handleError);
 
   return (
     <div
@@ -42,7 +49,7 @@ export default function Program(props) {
       )}
       {props.program.url && <ProgramUrl url={props.program.url} />}
       {props.userLevel >= level.EDIT && (
-        <ProgramClone clone={() => props.clone(props.program)} />
+        <ProgramClone clone={() => clone(props.program)} />
       )}
     </div>
   );

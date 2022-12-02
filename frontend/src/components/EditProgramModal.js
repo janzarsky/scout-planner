@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -15,6 +15,11 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byName } from "../helpers/Sorting";
+import {
+  addProgram,
+  deleteProgram,
+  updateProgram,
+} from "../store/programsSlice";
 
 export function EditProgramModal(props) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
@@ -34,15 +39,18 @@ export function EditProgramModal(props) {
   const [locked, setLocked] = useState(props.program.locked);
   const [ranges, setRanges] = useState(props.program.ranges);
 
+  const dispatch = useDispatch();
+
   function handleDelete(event) {
     event.preventDefault();
 
     setDeleteInProgress(true);
 
-    props.deleteProgram(props.program).then(() => {
+    props.client.updateProgram({ ...props.program, deleted: true }).then(() => {
+      dispatch(deleteProgram(props.program._id));
       setDeleteInProgress(false);
       props.handleClose();
-    });
+    }, props.handleError);
   }
 
   function handleSubmit(event) {
@@ -50,7 +58,7 @@ export function EditProgramModal(props) {
 
     setSubmitInProgress(true);
 
-    props
+    props.client
       .updateProgram({
         ...props.program,
         begin: parseDate(date) + parseTime(time),
@@ -64,10 +72,11 @@ export function EditProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then(() => {
+      .then((resp) => {
+        dispatch(updateProgram(props.program));
         setSubmitInProgress(false);
         props.handleClose();
-      });
+      }, props.handleError);
   }
 
   return (
@@ -486,12 +495,14 @@ export function AddProgramModal(props) {
   const [locked, setLocked] = useState(false);
   const [ranges, setRanges] = useState({});
 
+  const dispatch = useDispatch();
+
   function handleSubmit(event) {
     event.preventDefault();
 
     setSubmitInProgress(true);
 
-    props
+    props.client
       .addProgram({
         begin: parseDate(date) + parseTime(time),
         duration: parseDuration(duration),
@@ -504,10 +515,11 @@ export function AddProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then(() => {
+      .then((resp) => {
+        dispatch(addProgram(resp));
         setSubmitInProgress(false);
         props.handleClose();
-      });
+      }, props.handleError);
   }
 
   return (

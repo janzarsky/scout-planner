@@ -16,10 +16,12 @@ export default function Settings(props) {
   const { packages } = useSelector((state) => state.packages);
   const { rules } = useSelector((state) => state.rules);
   const { users } = useSelector((state) => state.users);
+  const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   async function deleteAll() {
     await Promise.all([
-      ...props.programs.map((it) => props.client.deleteProgram(it._id)),
+      ...programs.map((it) => props.client.deleteProgram(it._id)),
+      ...deletedPrograms.map((it) => props.client.deleteProgram(it._id)),
       ...packages.map((it) => props.client.deletePackage(it._id)),
       ...groups.map((it) => props.client.deleteGroup(it._id)),
       ...rules.map((it) => props.client.deleteRule(it._id)),
@@ -31,7 +33,7 @@ export default function Settings(props) {
   return (
     <>
       <Container fluid>
-        <Export programs={props.programs} />
+        <Export />
         {props.userLevel >= level.ADMIN && <Import client={props.client} />}
         {props.userLevel >= level.ADMIN && (
           <Form.Group>

@@ -1,6 +1,6 @@
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   formatDay,
   getOnlyDate,
@@ -10,15 +10,21 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byOrder } from "../helpers/Sorting";
+import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
 export default function Timetable(props) {
+  const dispatch = useDispatch();
+  const { programs } = useSelector((state) => state.programs);
+
   function onDroppableDrop(item, begin) {
-    var prog = props.programs.find((program) => program._id === item.id);
+    var prog = programs.find((program) => program._id === item.id);
     if (prog) {
       prog.begin = begin;
-      props.updateProgram(prog);
+      props.client
+        .updateProgram(prog)
+        .then((resp) => dispatch(updateProgram(resp)), props.handleError);
     }
   }
 
@@ -36,9 +42,10 @@ export default function Timetable(props) {
             rect={rect}
             onEdit={props.onEdit}
             viewSettings={viewSettings}
-            clone={props.clone}
             activeRange={props.activeRange}
             userLevel={props.userLevel}
+            client={props.client}
+            handleError={props.handleError}
           />
         );
       else
@@ -52,11 +59,7 @@ export default function Timetable(props) {
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings
   );
-  const settings = getSettings(
-    props.programs,
-    groups,
-    timetableSettings.timeStep
-  );
+  const settings = getSettings(programs, groups, timetableSettings.timeStep);
   const timeIndicatorRect = getTimeIndicatorRect(settings);
 
   return (
@@ -82,7 +85,7 @@ export default function Timetable(props) {
         {[...getGroupHeaders(settings)]}
         {[
           ...getPrograms(
-            props.programs,
+            programs,
             settings,
             props.viewSettings,
             props.userLevel

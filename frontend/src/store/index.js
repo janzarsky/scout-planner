@@ -7,6 +7,7 @@ import packagesReducer from "./packagesSlice";
 import rulesReducer from "./rulesSlice";
 import settingsReducer from "./settingsSlice";
 import usersReducer from "./usersSlice";
+import programsReducer from "./programsSlice";
 
 const composedEnhancer = applyMiddleware(thunkMiddleware);
 
@@ -19,6 +20,7 @@ export default configureStore(
       rules: rulesReducer,
       settings: settingsReducer,
       users: usersReducer,
+      programs: programsReducer,
     },
   },
   composedEnhancer

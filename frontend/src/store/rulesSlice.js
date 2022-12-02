@@ -7,7 +7,7 @@ export const getRules = createAsyncThunk(
 
 export const rulesSlice = createSlice({
   name: "rules",
-  initialState: { rules: [], loading: "idle", error: null },
+  initialState: { rules: [], loading: "idle", error: null, loaded: false },
   reducers: {
     addRule: (state, action) => {
       state.rules.push(action.payload);
@@ -33,6 +33,7 @@ export const rulesSlice = createSlice({
       if (state.loading === "pending") {
         state.rules = action.payload;
         state.loading = "idle";
+        state.loaded = true;
       }
     });
 
