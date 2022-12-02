@@ -37,25 +37,21 @@ import RangesSettings from "./RangesSettings";
 const config = require("../config.json");
 
 export default function App(props) {
-  const [this_state_violations, set_this_state_violations] = useState(
-    new Map()
-  );
-  const [this_state_otherProblems, set_this_state_otherProblems] = useState([]);
-  const [this_state_satisfied, set_this_state_satisfied] = useState(true);
-  const [this_state_addProgram, set_this_state_addProgram] = useState(false);
-  const [this_state_addProgramOptions, set_this_state_addProgramOptions] =
-    useState({});
-  const [this_state_editProgramId, set_this_state_editProgramId] =
-    useState(undefined);
+  const [violations, setViolations] = useState(new Map());
+  const [otherProblems, setOtherProblems] = useState([]);
+  const [rulesSatisfied, setRulesSatisfied] = useState(true);
+  const [addModalEnabled, setAddModalEnabled] = useState(false);
+  const [addProgramOptions, setAddProgramOptions] = useState({});
+  const [editProgramId, setEditProgramId] = useState(undefined);
   const [this_state_client, set_this_state_client] = useState(
     new Client(null, props.table)
   );
-  const [this_state_userLevel, set_this_state_userLevel] = useState(level.NONE);
-  const [this_state_loaded, set_this_state_loaded] = useState(false);
-  const [this_state_errors, set_this_state_errors] = useState([]);
+  const [userLevel, setUserLevel] = useState(level.NONE);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [errors, setErrors] = useState([]);
 
-  const [this_auth, set_this_auth] = useState();
-  const [this_provider, set_this_provider] = useState();
+  const [auth, setAuth] = useState();
+  const [provider, setProvider] = useState();
 
   const { groups: this_state_groups, loaded: groupsLoaded } = useSelector(
     (state) => state.groups
@@ -76,19 +72,19 @@ export default function App(props) {
   const dispatch = useDispatch();
 
   async function login() {
-    await signInWithPopup(this_auth, this_provider).catch((error) =>
+    await signInWithPopup(auth, provider).catch((error) =>
       console.error(error)
     );
   }
 
   async function logout() {
-    await signOut(this_auth)
+    await signOut(auth)
       .catch((error) => console.error(error))
       .finally(() => set_this_state_client(new Client(null, props.table)));
   }
 
   function handleError(error) {
-    set_this_state_errors([error.message, ...this_state_errors]);
+    setErrors([error.message, ...errors]);
   }
 
   useEffect(() => {
@@ -102,8 +98,8 @@ export default function App(props) {
       const token = user ? await user.getIdToken() : null;
       set_this_state_client(new Client(token, props.table));
     });
-    set_this_provider(provider);
-    set_this_auth(auth);
+    setProvider(provider);
+    setAuth(auth);
   }, [props.table]);
 
   useEffect(() => {
@@ -119,7 +115,7 @@ export default function App(props) {
       if (permissions.level >= level.ADMIN)
         dispatch(getUsers(this_state_client));
 
-      set_this_state_userLevel(permissions.level);
+      setUserLevel(permissions.level);
     }
     reloadData();
   }, [this_state_client, dispatch]);
@@ -127,16 +123,16 @@ export default function App(props) {
   useEffect(() => {
     const problems = checkRules(this_state_rules, this_state_programs);
 
-    set_this_state_violations(problems.violations);
-    set_this_state_otherProblems(problems.other);
-    set_this_state_satisfied(
+    setViolations(problems.violations);
+    setOtherProblems(problems.other);
+    setRulesSatisfied(
       [...problems.violations.values()].reduce(
         (acc, curr) => acc && curr.satisfied,
         true
       ) && problems.other.length === 0
     );
   }, [
-    this_state_loaded,
+    dataLoaded,
     this_state_programs,
     this_state_groups,
     this_state_pkgs,
@@ -152,11 +148,11 @@ export default function App(props) {
       packagesLoaded &&
       rulesLoaded
     )
-      set_this_state_loaded(true);
+      setDataLoaded(true);
   }, [programsLoaded, rangesLoaded, groupsLoaded, packagesLoaded, rulesLoaded]);
 
   var violationsPerProgram = new Map();
-  [...this_state_violations.values()]
+  [...violations.values()]
     .filter((val) => !val.satisfied)
     .map((val) => [val.program, val.msg])
     .forEach(([programId, msg]) => {
@@ -164,7 +160,7 @@ export default function App(props) {
         violationsPerProgram.set(programId, []);
       violationsPerProgram.get(programId).push(msg);
     });
-  this_state_otherProblems.forEach((problem) => {
+  otherProblems.forEach((problem) => {
     if (!violationsPerProgram.get(problem.program))
       violationsPerProgram.set(problem.program, []);
     violationsPerProgram.get(problem.program).push(problem.msg);
@@ -176,35 +172,35 @@ export default function App(props) {
 
   return (
     <div className="App">
-      {this_state_errors.length > 0 && (
+      {errors.length > 0 && (
         <Container fluid className="notifications">
           <Alert
             variant="danger"
             dismissible
-            onClose={() => set_this_state_errors(this_state_errors.slice(1))}
+            onClose={() => setErrors(errors.slice(1))}
           >
             <i className="fa fa-exclamation-triangle" />
-            &nbsp; {this_state_errors[0]}
+            &nbsp; {errors[0]}
           </Alert>
         </Container>
       )}
-      {this_state_addProgram && (
+      {addModalEnabled && (
         <AddProgramModal
           client={this_state_client}
           handleError={handleError}
-          options={this_state_addProgramOptions}
+          options={addProgramOptions}
           people={people}
-          handleClose={() => set_this_state_addProgram(false)}
+          handleClose={() => setAddModalEnabled(false)}
         />
       )}
-      {this_state_editProgramId && (
+      {editProgramId && (
         <EditProgramModal
           client={this_state_client}
           handleError={handleError}
-          programId={this_state_editProgramId}
+          programId={editProgramId}
           people={people}
-          handleClose={() => set_this_state_editProgramId(undefined)}
-          userLevel={this_state_userLevel}
+          handleClose={() => setEditProgramId(undefined)}
+          userLevel={userLevel}
         />
       )}
       <Tab.Container defaultActiveKey={"timetable"}>
@@ -214,11 +210,11 @@ export default function App(props) {
               Harmonogram
             </Nav.Link>
           </Nav.Item>
-          {this_state_userLevel >= level.VIEW && (
+          {userLevel >= level.VIEW && (
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="rules">
                 Pravidla{" "}
-                {this_state_satisfied ? (
+                {rulesSatisfied ? (
                   <i className="fa fa-check text-success" />
                 ) : (
                   <i className="fa fa-times text-danger" />
@@ -226,78 +222,74 @@ export default function App(props) {
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="packages">
                 Balíčky
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="groups">
                 Skupiny
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="ranges">
                 Linky
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.VIEW && (
+          {userLevel >= level.VIEW && (
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="stats">
                 Statistiky
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.ADMIN && (
+          {userLevel >= level.ADMIN && (
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="users">
                 Uživatelé
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.VIEW && (
+          {userLevel >= level.VIEW && (
             <Nav.Item>
               <Nav.Link as={Button} variant="light" eventKey="settings">
                 Nastavení
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.VIEW && <Filters />}
-          {this_state_userLevel >= level.VIEW && <ViewSettings />}
-          {this_state_userLevel >= level.VIEW && <RangesSettings />}
+          {userLevel >= level.VIEW && <Filters />}
+          {userLevel >= level.VIEW && <ViewSettings />}
+          {userLevel >= level.VIEW && <RangesSettings />}
           <GoogleLogin
-            authenticated={this_auth && this_auth.currentUser}
-            name={
-              this_auth &&
-              this_auth.currentUser &&
-              this_auth.currentUser.displayName
-            }
+            authenticated={auth && auth.currentUser}
+            name={auth && auth.currentUser && auth.currentUser.displayName}
             login={login}
             logout={logout}
           />
         </Nav>
         <Tab.Content>
           <Tab.Pane eventKey="timetable">
-            {this_state_userLevel >= level.VIEW && this_state_loaded && (
+            {userLevel >= level.VIEW && dataLoaded && (
               <Timetable
                 violations={violationsPerProgram}
                 addProgramModal={(options) => {
-                  set_this_state_addProgram(true);
-                  set_this_state_addProgramOptions(options);
+                  setAddModalEnabled(true);
+                  setAddProgramOptions(options);
                 }}
-                onEdit={(program) => set_this_state_editProgramId(program._id)}
-                userLevel={this_state_userLevel}
+                onEdit={(program) => setEditProgramId(program._id)}
+                userLevel={userLevel}
                 client={this_state_client}
                 handleError={handleError}
               />
             )}
-            {!this_state_loaded && (
+            {!dataLoaded && (
               <Container fluid>
                 <Alert variant="primary">
                   <i className="fa fa-spinner fa-pulse" />
@@ -305,7 +297,7 @@ export default function App(props) {
                 </Alert>
               </Container>
             )}
-            {this_state_userLevel === level.NONE && this_state_loaded && (
+            {userLevel === level.NONE && dataLoaded && (
               <Container fluid>
                 <Alert variant="danger">
                   <i className="fa fa-exclamation-triangle" />
@@ -315,44 +307,42 @@ export default function App(props) {
               </Container>
             )}
           </Tab.Pane>
-          {this_state_userLevel >= level.VIEW && (
+          {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="rules">
               <Rules
                 client={this_state_client}
                 handleError={handleError}
-                violations={this_state_violations}
-                userLevel={this_state_userLevel}
+                violations={violations}
+                userLevel={userLevel}
               />
             </Tab.Pane>
           )}
-          {this_state_userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="packages" title="Balíčky">
               <Packages client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
-          {this_state_userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="groups" title="Skupiny">
               <Groups client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
-          {this_state_userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="ranges" title="Linky">
               <Ranges client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
-          {this_state_userLevel >= level.VIEW && (
+          {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="stats" title="Statistiky">
               <Stats people={people} />
             </Tab.Pane>
           )}
-          {this_state_userLevel >= level.ADMIN && (
+          {userLevel >= level.ADMIN && (
             <Tab.Pane eventKey="users" title="Uživatelé">
               <Users
                 client={this_state_client}
                 handleError={handleError}
-                userEmail={
-                  this_auth.currentUser ? this_auth.currentUser.email : null
-                }
+                userEmail={auth.currentUser ? auth.currentUser.email : null}
               />
             </Tab.Pane>
           )}
@@ -360,7 +350,7 @@ export default function App(props) {
             <Settings
               client={this_state_client}
               handleError={handleError}
-              userLevel={this_state_userLevel}
+              userLevel={userLevel}
             />
           </Tab.Pane>
         </Tab.Content>
