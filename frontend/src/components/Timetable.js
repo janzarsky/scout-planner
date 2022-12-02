@@ -27,7 +27,7 @@ export default function Timetable(props) {
     }
   }
 
-  function* getPrograms(programs, settings, viewSettings, userLevel) {
+  function* getPrograms(programs, settings, userLevel) {
     for (const prog of programs) {
       const rect = getProgramRect(prog, settings);
 
@@ -39,7 +39,6 @@ export default function Timetable(props) {
             violations={props.violations.get(prog._id)}
             rect={rect}
             onEdit={props.onEdit}
-            viewSettings={viewSettings}
             activeRange={props.activeRange}
             userLevel={props.userLevel}
             client={props.client}
@@ -81,14 +80,7 @@ export default function Timetable(props) {
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[
-          ...getPrograms(
-            programs,
-            settings,
-            props.viewSettings,
-            props.userLevel
-          ),
-        ]}
+        {[...getPrograms(programs, settings, props.userLevel)]}
         {timeIndicatorRect && <TimeIndicator rect={timeIndicatorRect} />}
       </div>
     </DndProvider>

@@ -31,6 +31,12 @@ import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import Filters from "./Filters";
+import {
+  toggleViewPeople,
+  toggleViewPkg,
+  toggleViewTime,
+  toggleViewViolations,
+} from "../store/viewSlice";
 
 const config = require("../config.json");
 
@@ -46,13 +52,6 @@ export default function App(props) {
   const [this_state_editProgramId, set_this_state_editProgramId] =
     useState(undefined);
   const [this_state_activeRange, set_this_state_activeRange] = useState(null);
-  const [this_state_viewSettingsActive, set_this_state_viewSettingsActive] =
-    useState(false);
-  const [this_state_viewPkg, set_this_state_viewPkg] = useState(true);
-  const [this_state_viewTime, set_this_state_viewTime] = useState(false);
-  const [this_state_viewPeople, set_this_state_viewPeople] = useState(true);
-  const [this_state_viewViolations, set_this_state_viewViolations] =
-    useState(true);
   const [this_state_viewRanges, set_this_state_viewRanges] = useState(false);
   const [this_state_client, set_this_state_client] = useState(
     new Client(null, props.table)
@@ -81,68 +80,6 @@ export default function App(props) {
   );
 
   const dispatch = useDispatch();
-
-  function getViewSettings() {
-    return (
-      <>
-        <Nav.Item>
-          <Nav.Link
-            as={Button}
-            variant={this_state_viewSettingsActive ? "dark" : "light"}
-            onClick={() =>
-              set_this_state_viewSettingsActive(!this_state_viewSettingsActive)
-            }
-          >
-            <i className="fa fa-eye" />
-          </Nav.Link>
-        </Nav.Item>
-        {this_state_viewSettingsActive && (
-          <>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this_state_viewPkg ? "dark" : "light"}
-                onClick={() => set_this_state_viewPkg(!this_state_viewPkg)}
-              >
-                Balíček
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this_state_viewTime ? "dark" : "light"}
-                onClick={() => set_this_state_viewTime(!this_state_viewTime)}
-              >
-                Čas
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this_state_viewPeople ? "dark" : "light"}
-                onClick={() =>
-                  set_this_state_viewPeople(!this_state_viewPeople)
-                }
-              >
-                Lidi
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                as={Button}
-                variant={this_state_viewViolations ? "dark" : "light"}
-                onClick={() =>
-                  set_this_state_viewViolations(!this_state_viewViolations)
-                }
-              >
-                Porušení pravidel
-              </Nav.Link>
-            </Nav.Item>
-          </>
-        )}
-      </>
-    );
-  }
 
   function getRangesElements() {
     return (
@@ -387,7 +324,7 @@ export default function App(props) {
             </Nav.Item>
           )}
           {this_state_userLevel >= level.VIEW && <Filters />}
-          {this_state_userLevel >= level.VIEW && getViewSettings()}
+          {this_state_userLevel >= level.VIEW && <ViewSettings />}
           {this_state_userLevel >= level.VIEW && getRangesElements()}
           {getGoogleLogin()}
         </Nav>
@@ -401,12 +338,6 @@ export default function App(props) {
                   set_this_state_addProgramOptions(options);
                 }}
                 onEdit={(program) => set_this_state_editProgramId(program._id)}
-                viewSettings={{
-                  viewPkg: this_state_viewPkg,
-                  viewTime: this_state_viewTime,
-                  viewPeople: this_state_viewPeople,
-                  viewViolations: this_state_viewViolations,
-                }}
                 activeRange={
                   this_state_viewRanges ? this_state_activeRange : null
                 }
@@ -484,5 +415,67 @@ export default function App(props) {
         </Tab.Content>
       </Tab.Container>
     </div>
+  );
+}
+
+function ViewSettings() {
+  const dispatch = useDispatch();
+  const [active, setActive] = useState(false);
+  const { viewPkg, viewTime, viewPeople, viewViolations } = useSelector(
+    (state) => state.view
+  );
+
+  return (
+    <>
+      <Nav.Item>
+        <Nav.Link
+          as={Button}
+          variant={active ? "dark" : "light"}
+          onClick={() => setActive(!active)}
+        >
+          <i className="fa fa-eye" />
+        </Nav.Link>
+      </Nav.Item>
+      {active && (
+        <>
+          <Nav.Item>
+            <Nav.Link
+              as={Button}
+              variant={viewPkg ? "dark" : "light"}
+              onClick={() => dispatch(toggleViewPkg())}
+            >
+              Balíček
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              as={Button}
+              variant={viewTime ? "dark" : "light"}
+              onClick={() => dispatch(toggleViewTime())}
+            >
+              Čas
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              as={Button}
+              variant={viewPeople ? "dark" : "light"}
+              onClick={() => dispatch(toggleViewPeople())}
+            >
+              Lidi
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              as={Button}
+              variant={viewViolations ? "dark" : "light"}
+              onClick={() => dispatch(toggleViewViolations())}
+            >
+              Porušení pravidel
+            </Nav.Link>
+          </Nav.Item>
+        </>
+      )}
+    </>
   );
 }

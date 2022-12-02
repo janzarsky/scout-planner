@@ -2,9 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const viewSlice = createSlice({
   name: "view",
-  initialState: { highlightingEnabled: false, highlightedPackages: [] },
+  initialState: {
+    highlightingEnabled: false,
+    highlightedPackages: [],
+    viewPkg: true,
+    viewTime: false,
+    viewPeople: true,
+    viewViolations: true,
+  },
   reducers: {
-    toggleHighlighting(state, action) {
+    toggleHighlighting(state) {
       state.highlightingEnabled = !state.highlightingEnabled;
     },
     toggleHighlightedPackage(state, action) {
@@ -16,10 +23,28 @@ export const viewSlice = createSlice({
           1
         );
     },
+    toggleViewPkg(state) {
+      state.viewPkg = !state.viewPkg;
+    },
+    toggleViewTime(state) {
+      state.viewTime = !state.viewTime;
+    },
+    toggleViewPeople(state) {
+      state.viewPeople = !state.viewPeople;
+    },
+    toggleViewViolations(state) {
+      state.viewViolations = !state.viewViolations;
+    },
   },
 });
 
-export const { toggleHighlighting, toggleHighlightedPackage } =
-  viewSlice.actions;
+export const {
+  toggleHighlighting,
+  toggleHighlightedPackage,
+  toggleViewPkg,
+  toggleViewTime,
+  toggleViewPeople,
+  toggleViewViolations,
+} = viewSlice.actions;
 
 export default viewSlice.reducer;

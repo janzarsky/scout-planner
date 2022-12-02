@@ -34,7 +34,6 @@ export default function Program(props) {
         program={props.program}
         violations={props.violations}
         pkg={packages.find((p) => p._id === props.program.pkg)}
-        viewSettings={props.viewSettings}
         activeRange={props.activeRange}
       />
       <ProgramEdit
@@ -60,6 +59,7 @@ function ProgramBody(props) {
       state.view.highlightingEnabled &&
       state.view.highlightedPackages.indexOf(props.program.pkg) !== -1
   );
+  const viewViolations = useSelector((state) => state.view.viewViolations);
   let rangeValue =
     props.activeRange && props.program.ranges
       ? props.program.ranges[props.activeRange]
@@ -70,9 +70,7 @@ function ProgramBody(props) {
     <div
       className={
         "program" +
-        (props.violations && props.viewSettings.viewViolations
-          ? " violation"
-          : "") +
+        (props.violations && viewViolations ? " violation" : "") +
         (highlighted ? " highlighted" : "") +
         (props.activeRange ? " range range-" + rangeValue : "")
       }
@@ -89,7 +87,6 @@ function ProgramBody(props) {
         begin={props.program.begin}
         duration={props.program.duration}
         pkgName={props.pkg ? props.pkg.name : ""}
-        viewSettings={props.viewSettings}
         violations={props.violations}
       />
     </div>
@@ -97,23 +94,22 @@ function ProgramBody(props) {
 }
 
 function ProgramText(props) {
+  const { viewPkg, viewTime, viewPeople, viewViolations } = useSelector(
+    (state) => state.view
+  );
   return (
     <div className="program-text">
       {!isHidden(props.title) && <h3>{props.title}</h3>}
-      {props.viewSettings.viewPkg && !isHidden(props.pkgName) && (
+      {viewPkg && !isHidden(props.pkgName) && (
         <p className="program-package">{props.pkgName}</p>
       )}
-      {props.viewSettings.viewTime && (
+      {viewTime && (
         <ProgramTime begin={props.begin} end={props.begin + props.duration} />
       )}
-      {props.viewSettings.viewPeople && (
-        <ProgramPeople
-          people={props.people}
-          viewViolations={props.viewSettings.viewViolations}
-          violations={props.violations}
-        />
+      {viewPeople && (
+        <ProgramPeople people={props.people} violations={props.violations} />
       )}
-      {props.viewSettings.viewViolations && props.violations && (
+      {viewViolations && props.violations && (
         <ProgramViolations violations={props.violations} />
       )}
     </div>
@@ -130,6 +126,8 @@ function ProgramTime(props) {
 }
 
 function ProgramPeople(props) {
+  const viewViolations = useSelector((state) => state.view.viewViolations);
+
   return (
     <p className="program-people">
       {[...props.people]
@@ -139,7 +137,7 @@ function ProgramPeople(props) {
             key={person}
             className={
               // dirty hack
-              props.viewViolations &&
+              viewViolations &&
               props.violations &&
               props.violations.join().includes(person)
                 ? "program-violated"
