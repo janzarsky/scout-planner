@@ -14,12 +14,16 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "./store";
+import { setTable } from "./store/authSlice";
 
 function AppWrapper(props) {
+  const dispatch = useDispatch();
   let { table } = useParams();
-  return <App table={table} />;
+  dispatch(setTable(table));
+
+  return <App />;
 }
 
 const Homepage = () => {

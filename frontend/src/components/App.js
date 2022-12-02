@@ -30,6 +30,7 @@ import { getPackages } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
+import { setToken } from "../store/authSlice";
 import Filters from "./Filters";
 import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
@@ -43,9 +44,6 @@ export default function App(props) {
   const [addModalEnabled, setAddModalEnabled] = useState(false);
   const [addProgramOptions, setAddProgramOptions] = useState({});
   const [editProgramId, setEditProgramId] = useState(undefined);
-  const [this_state_client, set_this_state_client] = useState(
-    new Client(null, props.table)
-  );
   const [userLevel, setUserLevel] = useState(level.NONE);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -68,6 +66,7 @@ export default function App(props) {
   const { programs: this_state_programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs
   );
+  const { token, table } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
 
@@ -80,7 +79,7 @@ export default function App(props) {
   async function logout() {
     await signOut(auth)
       .catch((error) => console.error(error))
-      .finally(() => set_this_state_client(new Client(null, props.table)));
+      .finally(() => dispatch(setToken(undefined)));
   }
 
   function handleError(error) {
@@ -96,29 +95,30 @@ export default function App(props) {
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
       const token = user ? await user.getIdToken() : null;
-      set_this_state_client(new Client(token, props.table));
+      dispatch(setToken(token));
     });
     setProvider(provider);
     setAuth(auth);
-  }, [props.table]);
+  }, []);
 
   useEffect(() => {
     async function reloadData() {
-      const permissions = await this_state_client.getPermissions();
+      const client = new Client(token, table);
 
-      dispatch(getPrograms(this_state_client));
-      dispatch(getRanges(this_state_client));
-      dispatch(getGroups(this_state_client));
-      dispatch(getPackages(this_state_client));
-      dispatch(getRules(this_state_client));
+      const permissions = await client.getPermissions();
 
-      if (permissions.level >= level.ADMIN)
-        dispatch(getUsers(this_state_client));
+      dispatch(getPrograms(client));
+      dispatch(getRanges(client));
+      dispatch(getGroups(client));
+      dispatch(getPackages(client));
+      dispatch(getRules(client));
+
+      if (permissions.level >= level.ADMIN) dispatch(getUsers(client));
 
       setUserLevel(permissions.level);
     }
     reloadData();
-  }, [this_state_client, dispatch]);
+  }, [token, table, dispatch]);
 
   useEffect(() => {
     const problems = checkRules(this_state_rules, this_state_programs);
@@ -186,7 +186,7 @@ export default function App(props) {
       )}
       {addModalEnabled && (
         <AddProgramModal
-          client={this_state_client}
+          client={new Client(token, table)}
           handleError={handleError}
           options={addProgramOptions}
           people={people}
@@ -195,7 +195,7 @@ export default function App(props) {
       )}
       {editProgramId && (
         <EditProgramModal
-          client={this_state_client}
+          client={new Client(token, table)}
           handleError={handleError}
           programId={editProgramId}
           people={people}
@@ -285,7 +285,7 @@ export default function App(props) {
                 }}
                 onEdit={(program) => setEditProgramId(program._id)}
                 userLevel={userLevel}
-                client={this_state_client}
+                client={new Client(token, table)}
                 handleError={handleError}
               />
             )}
@@ -310,7 +310,7 @@ export default function App(props) {
           {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="rules">
               <Rules
-                client={this_state_client}
+                client={new Client(token, table)}
                 handleError={handleError}
                 violations={violations}
                 userLevel={userLevel}
@@ -319,17 +319,26 @@ export default function App(props) {
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="packages" title="Balíčky">
-              <Packages client={this_state_client} handleError={handleError} />
+              <Packages
+                client={new Client(token, table)}
+                handleError={handleError}
+              />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="groups" title="Skupiny">
-              <Groups client={this_state_client} handleError={handleError} />
+              <Groups
+                client={new Client(token, table)}
+                handleError={handleError}
+              />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="ranges" title="Linky">
-              <Ranges client={this_state_client} handleError={handleError} />
+              <Ranges
+                client={new Client(token, table)}
+                handleError={handleError}
+              />
             </Tab.Pane>
           )}
           {userLevel >= level.VIEW && (
@@ -340,7 +349,7 @@ export default function App(props) {
           {userLevel >= level.ADMIN && (
             <Tab.Pane eventKey="users" title="Uživatelé">
               <Users
-                client={this_state_client}
+                client={new Client(token, table)}
                 handleError={handleError}
                 userEmail={auth.currentUser ? auth.currentUser.email : null}
               />
@@ -348,7 +357,7 @@ export default function App(props) {
           )}
           <Tab.Pane eventKey="settings" title="Nastavení">
             <Settings
-              client={this_state_client}
+              client={new Client(token, table)}
               handleError={handleError}
               userLevel={userLevel}
             />

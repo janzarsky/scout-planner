@@ -9,6 +9,7 @@ import settingsReducer from "./settingsSlice";
 import usersReducer from "./usersSlice";
 import programsReducer from "./programsSlice";
 import viewReducer from "./viewSlice";
+import authReducer from "./authSlice";
 
 const composedEnhancer = applyMiddleware(thunkMiddleware);
 
@@ -23,6 +24,7 @@ export default configureStore(
       users: usersReducer,
       programs: programsReducer,
       view: viewReducer,
+      auth: authReducer,
     },
   },
   composedEnhancer
