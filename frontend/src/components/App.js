@@ -32,6 +32,7 @@ import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import Filters from "./Filters";
 import ViewSettings from "./ViewSettings";
+import { setActiveRange, toggleRangesEnabled } from "../store/viewSlice";
 
 const config = require("../config.json");
 
@@ -46,8 +47,6 @@ export default function App(props) {
     useState({});
   const [this_state_editProgramId, set_this_state_editProgramId] =
     useState(undefined);
-  const [this_state_activeRange, set_this_state_activeRange] = useState(null);
-  const [this_state_viewRanges, set_this_state_viewRanges] = useState(false);
   const [this_state_client, set_this_state_client] = useState(
     new Client(null, props.table)
   );
@@ -75,37 +74,6 @@ export default function App(props) {
   );
 
   const dispatch = useDispatch();
-
-  function getRangesElements() {
-    return (
-      <>
-        <Nav.Item>
-          <Nav.Link
-            as={Button}
-            variant={this_state_viewRanges ? "dark" : "light"}
-            onClick={() => set_this_state_viewRanges(!this_state_viewRanges)}
-          >
-            <i className="fa fa-area-chart" />
-          </Nav.Link>
-        </Nav.Item>
-        {this_state_viewRanges
-          ? this_state_ranges.map((range) => (
-              <Nav.Item key={range._id}>
-                <Nav.Link
-                  as={Button}
-                  variant={
-                    this_state_activeRange === range._id ? "dark" : "light"
-                  }
-                  onClick={() => set_this_state_activeRange(range._id)}
-                >
-                  {range.name}
-                </Nav.Link>
-              </Nav.Item>
-            ))
-          : null}
-      </>
-    );
-  }
 
   function getGoogleLogin() {
     return this_auth && this_auth.currentUser ? (
@@ -320,7 +288,7 @@ export default function App(props) {
           )}
           {this_state_userLevel >= level.VIEW && <Filters />}
           {this_state_userLevel >= level.VIEW && <ViewSettings />}
-          {this_state_userLevel >= level.VIEW && getRangesElements()}
+          {this_state_userLevel >= level.VIEW && <RangesSettings />}
           {getGoogleLogin()}
         </Nav>
         <Tab.Content>
@@ -333,9 +301,6 @@ export default function App(props) {
                   set_this_state_addProgramOptions(options);
                 }}
                 onEdit={(program) => set_this_state_editProgramId(program._id)}
-                activeRange={
-                  this_state_viewRanges ? this_state_activeRange : null
-                }
                 userLevel={this_state_userLevel}
                 client={this_state_client}
                 handleError={handleError}
@@ -410,5 +375,38 @@ export default function App(props) {
         </Tab.Content>
       </Tab.Container>
     </div>
+  );
+}
+
+function RangesSettings() {
+  const dispatch = useDispatch();
+  const { rangesEnabled, activeRange } = useSelector((state) => state.view);
+  const ranges = useSelector((state) => state.ranges.ranges);
+
+  return (
+    <>
+      <Nav.Item>
+        <Nav.Link
+          as={Button}
+          variant={rangesEnabled ? "dark" : "light"}
+          onClick={() => dispatch(toggleRangesEnabled())}
+        >
+          <i className="fa fa-area-chart" />
+        </Nav.Link>
+      </Nav.Item>
+      {rangesEnabled
+        ? ranges.map((range) => (
+            <Nav.Item key={range._id}>
+              <Nav.Link
+                as={Button}
+                variant={activeRange === range._id ? "dark" : "light"}
+                onClick={() => dispatch(setActiveRange(range._id))}
+              >
+                {range.name}
+              </Nav.Link>
+            </Nav.Item>
+          ))
+        : null}
+    </>
   );
 }

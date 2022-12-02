@@ -9,6 +9,8 @@ export const viewSlice = createSlice({
     viewTime: false,
     viewPeople: true,
     viewViolations: true,
+    rangesEnabled: false,
+    activeRange: undefined,
   },
   reducers: {
     toggleHighlighting(state) {
@@ -35,6 +37,12 @@ export const viewSlice = createSlice({
     toggleViewViolations(state) {
       state.viewViolations = !state.viewViolations;
     },
+    toggleRangesEnabled(state) {
+      state.rangesEnabled = !state.rangesEnabled;
+    },
+    setActiveRange(state, action) {
+      state.activeRange = action.payload;
+    },
   },
 });
 
@@ -45,6 +53,8 @@ export const {
   toggleViewTime,
   toggleViewPeople,
   toggleViewViolations,
+  toggleRangesEnabled,
+  setActiveRange,
 } = viewSlice.actions;
 
 export default viewSlice.reducer;

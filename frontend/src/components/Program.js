@@ -34,7 +34,6 @@ export default function Program(props) {
         program={props.program}
         violations={props.violations}
         pkg={packages.find((p) => p._id === props.program.pkg)}
-        activeRange={props.activeRange}
       />
       <ProgramEdit
         program={props.program}
@@ -60,10 +59,9 @@ function ProgramBody(props) {
       state.view.highlightedPackages.indexOf(props.program.pkg) !== -1
   );
   const viewViolations = useSelector((state) => state.view.viewViolations);
+  const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   let rangeValue =
-    props.activeRange && props.program.ranges
-      ? props.program.ranges[props.activeRange]
-      : 0;
+    activeRange && props.program.ranges ? props.program.ranges[activeRange] : 0;
   if (rangeValue === undefined) rangeValue = 0;
 
   return (
@@ -72,10 +70,10 @@ function ProgramBody(props) {
         "program" +
         (props.violations && viewViolations ? " violation" : "") +
         (highlighted ? " highlighted" : "") +
-        (props.activeRange ? " range range-" + rangeValue : "")
+        (rangesEnabled ? " range range-" + rangeValue : "")
       }
       style={
-        !highlighted && !props.activeRange && props.pkg
+        !highlighted && !rangesEnabled && props.pkg
           ? { backgroundColor: props.pkg.color }
           : {}
       }

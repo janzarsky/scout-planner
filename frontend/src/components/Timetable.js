@@ -39,7 +39,6 @@ export default function Timetable(props) {
             violations={props.violations.get(prog._id)}
             rect={rect}
             onEdit={props.onEdit}
-            activeRange={props.activeRange}
             userLevel={props.userLevel}
             client={props.client}
             handleError={props.handleError}
