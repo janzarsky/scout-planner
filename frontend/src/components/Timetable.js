@@ -36,7 +36,6 @@ export default function Timetable(props) {
           <Program
             key={prog._id}
             program={prog}
-            highlighted={props.highlightedPackages.indexOf(prog.pkg) !== -1}
             violations={props.violations.get(prog._id)}
             rect={rect}
             onEdit={props.onEdit}

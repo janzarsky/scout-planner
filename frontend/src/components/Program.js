@@ -34,7 +34,6 @@ export default function Program(props) {
         program={props.program}
         violations={props.violations}
         pkg={packages.find((p) => p._id === props.program.pkg)}
-        highlighted={props.highlighted}
         viewSettings={props.viewSettings}
         activeRange={props.activeRange}
       />
@@ -56,6 +55,11 @@ export default function Program(props) {
 }
 
 function ProgramBody(props) {
+  const highlighted = useSelector(
+    (state) =>
+      state.view.highlightingEnabled &&
+      state.view.highlightedPackages.indexOf(props.program.pkg) !== -1
+  );
   let rangeValue =
     props.activeRange && props.program.ranges
       ? props.program.ranges[props.activeRange]
@@ -69,11 +73,11 @@ function ProgramBody(props) {
         (props.violations && props.viewSettings.viewViolations
           ? " violation"
           : "") +
-        (props.highlighted ? " highlighted" : "") +
+        (highlighted ? " highlighted" : "") +
         (props.activeRange ? " range range-" + rangeValue : "")
       }
       style={
-        !props.highlighted && !props.activeRange && props.pkg
+        !highlighted && !props.activeRange && props.pkg
           ? { backgroundColor: props.pkg.color }
           : {}
       }
