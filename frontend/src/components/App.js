@@ -244,7 +244,7 @@ export default function App(props) {
       set_this_state_userLevel(permissions.level);
     }
     reloadData();
-  }, [this_state_client]);
+  }, [this_state_client, dispatch]);
 
   useEffect(() => {
     const problems = checkRules(this_state_rules, this_state_programs);
