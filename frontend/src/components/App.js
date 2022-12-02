@@ -32,7 +32,7 @@ import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import Filters from "./Filters";
 import ViewSettings from "./ViewSettings";
-import { setActiveRange, toggleRangesEnabled } from "../store/viewSlice";
+import RangesSettings from "./RangesSettings";
 
 const config = require("../config.json");
 
@@ -375,38 +375,5 @@ export default function App(props) {
         </Tab.Content>
       </Tab.Container>
     </div>
-  );
-}
-
-function RangesSettings() {
-  const dispatch = useDispatch();
-  const { rangesEnabled, activeRange } = useSelector((state) => state.view);
-  const ranges = useSelector((state) => state.ranges.ranges);
-
-  return (
-    <>
-      <Nav.Item>
-        <Nav.Link
-          as={Button}
-          variant={rangesEnabled ? "dark" : "light"}
-          onClick={() => dispatch(toggleRangesEnabled())}
-        >
-          <i className="fa fa-area-chart" />
-        </Nav.Link>
-      </Nav.Item>
-      {rangesEnabled
-        ? ranges.map((range) => (
-            <Nav.Item key={range._id}>
-              <Nav.Link
-                as={Button}
-                variant={activeRange === range._id ? "dark" : "light"}
-                onClick={() => dispatch(setActiveRange(range._id))}
-              >
-                {range.name}
-              </Nav.Link>
-            </Nav.Item>
-          ))
-        : null}
-    </>
   );
 }
