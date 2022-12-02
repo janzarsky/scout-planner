@@ -1,13 +1,21 @@
 import Form from "react-bootstrap/Form";
+import { useSelector } from "react-redux";
 
 export default function Export(props) {
+  const { groups } = useSelector((state) => state.groups);
+  const { ranges } = useSelector((state) => state.ranges);
+  const { packages } = useSelector((state) => state.packages);
+  const { rules } = useSelector((state) => state.rules);
+  const { users } = useSelector((state) => state.users);
+  const { programs, deletedPrograms } = useSelector((state) => state.programs);
+
   const data = JSON.stringify({
-    programs: props.programs,
-    pkgs: props.pkgs,
-    groups: props.groups,
-    rules: props.rules,
-    ranges: props.ranges,
-    users: props.users,
+    programs: [...programs, ...deletedPrograms],
+    pkgs: packages,
+    groups,
+    rules,
+    ranges,
+    users,
   });
 
   return (

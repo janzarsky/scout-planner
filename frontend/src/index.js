@@ -14,6 +14,8 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
+import { Provider } from "react-redux";
+import store from "./store";
 
 function AppWrapper(props) {
   let { table } = useParams();
@@ -61,14 +63,16 @@ const Homepage = () => {
 const root = createRoot(document.getElementById("root"));
 
 root.render(
-  <BrowserRouter>
-    <Switch>
-      <Route path="/" exact>
-        <Homepage />
-      </Route>
-      <Route path="/:table">
-        <AppWrapper />
-      </Route>
-    </Switch>
-  </BrowserRouter>
+  <Provider store={store}>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/" exact>
+          <Homepage />
+        </Route>
+        <Route path="/:table">
+          <AppWrapper />
+        </Route>
+      </Switch>
+    </BrowserRouter>
+  </Provider>
 );

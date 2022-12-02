@@ -3,30 +3,38 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byOrder } from "../helpers/Sorting";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addGroup, deleteGroup, updateGroup } from "../store/groupsSlice";
 
-export default function Groups(props) {
+export default function Groups({ client, handleError }) {
   const [newName, setNewName] = useState("Nová skupina");
   const [newOrder, setNewOrder] = useState(0);
   const [editedName, setEditedName] = useState();
   const [editedOrder, setEditedOrder] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
+  const { groups } = useSelector((state) => state.groups);
+  const dispatch = useDispatch();
+
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editKey) {
-      props
+      client
         .updateGroup({
           _id: editKey,
           name: editedName,
           order: editedOrder,
         })
-        .then(() => setEditKey(undefined));
+        .then((resp) => dispatch(updateGroup(resp)), handleError);
+      setEditKey(undefined);
     } else {
-      props.addGroup({
-        name: newName,
-        order: newOrder,
-      });
+      client
+        .addGroup({
+          name: newName,
+          order: newOrder,
+        })
+        .then((resp) => dispatch(addGroup(resp)), handleError);
     }
   }
 
@@ -35,7 +43,7 @@ export default function Groups(props) {
       <Table bordered hover responsive>
         <GroupsHeader />
         <tbody>
-          {[...props.groups].sort(byOrder).map((group) =>
+          {[...groups].sort(byOrder).map((group) =>
             group._id === editKey ? (
               <EditedGroup
                 key={group._id}
@@ -49,7 +57,11 @@ export default function Groups(props) {
                 key={group._id}
                 name={group.name}
                 order={group.order}
-                deleteGroup={() => props.deleteGroup(group._id)}
+                deleteGroup={() =>
+                  client
+                    .deleteGroup(group._id)
+                    .then(() => dispatch(deleteGroup(group._id)), handleError)
+                }
                 editGroup={() => {
                   setEditKey(group._id);
                   setEditedName(group.name);

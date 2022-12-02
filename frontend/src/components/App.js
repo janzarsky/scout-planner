@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
@@ -24,19 +25,16 @@ import {
 import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { byName } from "../helpers/Sorting";
+import { getRanges } from "../store/rangesSlice";
+import { getGroups } from "../store/groupsSlice";
+import { getPackages } from "../store/packagesSlice";
+import { getRules } from "../store/rulesSlice";
+import { getUsers } from "../store/usersSlice";
+import { getPrograms } from "../store/programsSlice";
 
 const config = require("../config.json");
 
 export default function App(props) {
-  const [this_state_programs, set_this_state_programs] = useState([]);
-  const [this_state_deletedPrograms, set_this_state_deletedPrograms] = useState(
-    []
-  );
-  const [this_state_pkgs, set_this_state_pkgs] = useState([]);
-  const [this_state_groups, set_this_state_groups] = useState([]);
-  const [this_state_rules, set_this_state_rules] = useState([]);
-  const [this_state_ranges, set_this_state_ranges] = useState([]);
-  const [this_state_users, set_this_state_users] = useState([]);
   const [this_state_violations, set_this_state_violations] = useState(
     new Map()
   );
@@ -45,10 +43,8 @@ export default function App(props) {
   const [this_state_addProgram, set_this_state_addProgram] = useState(false);
   const [this_state_addProgramOptions, set_this_state_addProgramOptions] =
     useState({});
-  const [this_state_editProgram, set_this_state_editProgram] = useState(false);
-  const [this_state_editProgramData, set_this_state_editProgramData] = useState(
-    {}
-  );
+  const [this_state_editProgramId, set_this_state_editProgramId] =
+    useState(undefined);
   const [this_state_highlightingEnabled, set_this_state_highlightingEnabled] =
     useState(false);
   const [this_state_highlightedPackages, set_this_state_highlightedPackages] =
@@ -66,60 +62,29 @@ export default function App(props) {
     new Client(null, props.table)
   );
   const [this_state_userLevel, set_this_state_userLevel] = useState(level.NONE);
-  const [this_state_settings, set_this_state_settings] = useState({});
   const [this_state_loaded, set_this_state_loaded] = useState(false);
   const [this_state_errors, set_this_state_errors] = useState([]);
 
   const [this_auth, set_this_auth] = useState();
   const [this_provider, set_this_provider] = useState();
 
-  function getFilters() {
-    const toggle = (id) => {
-      let highlightedPackages = this_state_highlightedPackages;
-      if (highlightedPackages.indexOf(id) === -1) highlightedPackages.push(id);
-      else highlightedPackages.splice(highlightedPackages.indexOf(id), 1);
-      set_this_state_highlightedPackages(highlightedPackages);
-    };
+  const { groups: this_state_groups, loaded: groupsLoaded } = useSelector(
+    (state) => state.groups
+  );
+  const { ranges: this_state_ranges, loaded: rangesLoaded } = useSelector(
+    (state) => state.ranges
+  );
+  const { packages: this_state_pkgs, loaded: packagesLoaded } = useSelector(
+    (state) => state.packages
+  );
+  const { rules: this_state_rules, loaded: rulesLoaded } = useSelector(
+    (state) => state.rules
+  );
+  const { programs: this_state_programs, loaded: programsLoaded } = useSelector(
+    (state) => state.programs
+  );
 
-    return (
-      <>
-        <Nav.Item>
-          <Nav.Link
-            as={Button}
-            variant={this_state_highlightingEnabled ? "dark" : "light"}
-            onClick={() =>
-              set_this_state_highlightingEnabled(
-                !this_state_highlightingEnabled
-              )
-            }
-          >
-            <i className="fa fa-filter" />
-          </Nav.Link>
-        </Nav.Item>
-        {this_state_highlightingEnabled &&
-          [...this_state_pkgs].sort(byName).map((pkg) => (
-            <Nav.Item key={pkg._id}>
-              <Nav.Link
-                as={Button}
-                variant={
-                  this_state_highlightedPackages.indexOf(pkg._id) === -1
-                    ? "light"
-                    : "dark"
-                }
-                style={
-                  this_state_highlightedPackages.indexOf(pkg._id) === -1
-                    ? { backgroundColor: pkg.color }
-                    : {}
-                }
-                onClick={() => toggle(pkg._id)}
-              >
-                {pkg.name}
-              </Nav.Link>
-            </Nav.Item>
-          ))}
-      </>
-    );
-  }
+  const dispatch = useDispatch();
 
   function getViewSettings() {
     return (
@@ -183,7 +148,7 @@ export default function App(props) {
     );
   }
 
-  function getRanges() {
+  function getRangesElements() {
     return (
       <>
         <Nav.Item>
@@ -232,42 +197,6 @@ export default function App(props) {
     );
   }
 
-  async function addProgram(program) {
-    await this_state_client
-      .addProgram(program)
-      .then(
-        (program) => set_this_state_programs([...this_state_programs, program]),
-        handleError
-      );
-  }
-
-  async function updateProgram(program) {
-    await this_state_client
-      .updateProgram(program)
-      .then(
-        (program) =>
-          set_this_state_programs([
-            ...this_state_programs.filter((p) => p._id !== program._id),
-            program,
-          ]),
-        handleError
-      );
-  }
-
-  async function deleteProgram(program) {
-    await this_state_client
-      .updateProgram({ ...program, deleted: true })
-      .then(() => {
-        set_this_state_programs([
-          ...this_state_programs.filter((p) => p._id !== program._id),
-        ]);
-        set_this_state_deletedPrograms([
-          ...this_state_deletedPrograms,
-          program,
-        ]);
-      }, handleError);
-  }
-
   async function login() {
     await signInWithPopup(this_auth, this_provider).catch((error) =>
       console.error(error)
@@ -303,40 +232,14 @@ export default function App(props) {
     async function reloadData() {
       const permissions = await this_state_client.getPermissions();
 
-      const viewData =
-        permissions.level > level.NONE
-          ? Promise.all([
-              this_state_client.getPrograms(),
-              this_state_client.getPackages(),
-              this_state_client.getRules(),
-              this_state_client.getGroups(),
-              this_state_client.getRanges(),
-              this_state_client.getSettings(),
-            ])
-          : Promise.resolve([[], [], [], [], [], []]);
+      dispatch(getPrograms(this_state_client));
+      dispatch(getRanges(this_state_client));
+      dispatch(getGroups(this_state_client));
+      dispatch(getPackages(this_state_client));
+      dispatch(getRules(this_state_client));
 
-      const adminData =
-        permissions.level >= level.ADMIN
-          ? this_state_client.getUsers()
-          : Promise.resolve([]);
-
-      Promise.all([viewData, adminData]).then(
-        ([[allPrograms, pkgs, rules, groups, ranges, settings], users]) => {
-          set_this_state_programs(
-            [...allPrograms].filter((program) => !program.deleted)
-          );
-          set_this_state_deletedPrograms(
-            [...allPrograms].filter((program) => program.deleted)
-          );
-          set_this_state_pkgs(pkgs);
-          set_this_state_rules(rules);
-          set_this_state_groups(groups);
-          set_this_state_ranges(ranges);
-          set_this_state_users(users);
-          set_this_state_settings(settings);
-          set_this_state_loaded(true);
-        }
-      );
+      if (permissions.level >= level.ADMIN)
+        dispatch(getUsers(this_state_client));
 
       set_this_state_userLevel(permissions.level);
     }
@@ -355,16 +258,24 @@ export default function App(props) {
       ) && problems.other.length === 0
     );
   }, [
-    this_state_programs,
-    this_state_deletedPrograms,
-    this_state_pkgs,
-    this_state_rules,
-    this_state_groups,
-    this_state_ranges,
-    this_state_users,
-    this_state_settings,
     this_state_loaded,
+    this_state_programs,
+    this_state_groups,
+    this_state_pkgs,
+    this_state_ranges,
+    this_state_rules,
   ]);
+
+  useEffect(() => {
+    if (
+      programsLoaded &&
+      rangesLoaded &&
+      groupsLoaded &&
+      packagesLoaded &&
+      rulesLoaded
+    )
+      set_this_state_loaded(true);
+  }, [programsLoaded, rangesLoaded, groupsLoaded, packagesLoaded, rulesLoaded]);
 
   var violationsPerProgram = new Map();
   [...this_state_violations.values()]
@@ -401,25 +312,20 @@ export default function App(props) {
       )}
       {this_state_addProgram && (
         <AddProgramModal
-          addProgram={addProgram}
+          client={this_state_client}
+          handleError={handleError}
           options={this_state_addProgramOptions}
-          pkgs={this_state_pkgs}
           people={people}
           handleClose={() => set_this_state_addProgram(false)}
-          groups={this_state_groups}
-          ranges={this_state_ranges}
         />
       )}
-      {this_state_editProgram && (
+      {this_state_editProgramId && (
         <EditProgramModal
-          updateProgram={updateProgram}
-          deleteProgram={deleteProgram}
-          program={this_state_editProgramData}
-          pkgs={this_state_pkgs}
-          groups={this_state_groups}
-          ranges={this_state_ranges}
+          client={this_state_client}
+          handleError={handleError}
+          programId={this_state_editProgramId}
           people={people}
-          handleClose={() => set_this_state_editProgram(false)}
+          handleClose={() => set_this_state_editProgramId(undefined)}
           userLevel={this_state_userLevel}
         />
       )}
@@ -484,50 +390,45 @@ export default function App(props) {
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.VIEW && getFilters()}
+          {this_state_userLevel >= level.VIEW && (
+            <Filters
+              highlightedPackages={this_state_highlightedPackages}
+              highlightingEnabled={this_state_highlightingEnabled}
+              setHighlightedPackages={set_this_state_highlightedPackages}
+              setHighlightingEnabled={set_this_state_highlightingEnabled}
+            />
+          )}
           {this_state_userLevel >= level.VIEW && getViewSettings()}
-          {this_state_userLevel >= level.VIEW && getRanges()}
+          {this_state_userLevel >= level.VIEW && getRangesElements()}
           {getGoogleLogin()}
         </Nav>
         <Tab.Content>
           <Tab.Pane eventKey="timetable">
             {this_state_userLevel >= level.VIEW && this_state_loaded && (
               <Timetable
-                programs={this_state_programs}
-                pkgs={this_state_pkgs}
-                groups={this_state_groups}
-                settings={this_state_settings}
-                timeStep={
-                  this_state_settings.timeStep
-                    ? this_state_settings.timeStep
-                    : 15 * 60 * 1000
-                }
                 violations={violationsPerProgram}
                 highlightedPackages={
                   this_state_highlightingEnabled
                     ? this_state_highlightedPackages
                     : []
                 }
-                updateProgram={updateProgram}
                 addProgramModal={(options) => {
                   set_this_state_addProgram(true);
                   set_this_state_addProgramOptions(options);
                 }}
-                onEdit={(program) => {
-                  set_this_state_editProgram(true);
-                  set_this_state_editProgramData(program);
-                }}
+                onEdit={(program) => set_this_state_editProgramId(program._id)}
                 viewSettings={{
                   viewPkg: this_state_viewPkg,
                   viewTime: this_state_viewTime,
                   viewPeople: this_state_viewPeople,
                   viewViolations: this_state_viewViolations,
                 }}
-                clone={(program) => addProgram(program)}
                 activeRange={
                   this_state_viewRanges ? this_state_activeRange : null
                 }
                 userLevel={this_state_userLevel}
+                client={this_state_client}
+                handleError={handleError}
               />
             )}
             {!this_state_loaded && (
@@ -551,249 +452,104 @@ export default function App(props) {
           {this_state_userLevel >= level.VIEW && (
             <Tab.Pane eventKey="rules">
               <Rules
-                programs={this_state_programs}
-                groups={this_state_groups}
-                rules={this_state_rules}
+                client={this_state_client}
+                handleError={handleError}
                 violations={this_state_violations}
                 userLevel={this_state_userLevel}
-                addRule={(rule) =>
-                  this_state_client
-                    .addRule(rule)
-                    .then(
-                      (rule) =>
-                        set_this_state_rules([...this_state_rules, rule]),
-                      handleError
-                    )
-                }
-                updateRule={(rule) =>
-                  this_state_client
-                    .updateRule(rule)
-                    .then(
-                      (rule) =>
-                        set_this_state_rules([
-                          ...this_state_rules.filter((r) => r._id !== rule._id),
-                          rule,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteRule={(id) =>
-                  this_state_client
-                    .deleteRule(id)
-                    .then(
-                      (msg) =>
-                        set_this_state_rules(
-                          this_state_rules.filter((r) => r._id !== id)
-                        ),
-                      handleError
-                    )
-                }
               />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.EDIT && (
             <Tab.Pane eventKey="packages" title="Balíčky">
-              <Packages
-                pkgs={this_state_pkgs}
-                addPkg={(pkg) =>
-                  this_state_client
-                    .addPackage(pkg)
-                    .then(
-                      (pkg) => set_this_state_pkgs([...this_state_pkgs, pkg]),
-                      handleError
-                    )
-                }
-                updatePkg={(pkg) =>
-                  this_state_client
-                    .updatePackage(pkg)
-                    .then(
-                      (pkg) =>
-                        set_this_state_pkgs([
-                          ...this_state_pkgs.filter((p) => p._id !== pkg._id),
-                          pkg,
-                        ]),
-                      handleError
-                    )
-                }
-                deletePkg={(id) =>
-                  this_state_client
-                    .deletePackage(id)
-                    .then(
-                      (msg) =>
-                        set_this_state_pkgs(
-                          this_state_pkgs.filter((p) => p._id !== id)
-                        ),
-                      handleError
-                    )
-                }
-              />
+              <Packages client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.EDIT && (
             <Tab.Pane eventKey="groups" title="Skupiny">
-              <Groups
-                groups={this_state_groups}
-                addGroup={(group) =>
-                  this_state_client
-                    .addGroup(group)
-                    .then(
-                      (group) =>
-                        set_this_state_groups([...this_state_groups, group]),
-                      handleError
-                    )
-                }
-                updateGroup={(group) =>
-                  this_state_client
-                    .updateGroup(group)
-                    .then(
-                      (group) =>
-                        set_this_state_groups([
-                          ...this_state_groups.filter(
-                            (g) => g._id !== group._id
-                          ),
-                          group,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteGroup={(id) =>
-                  this_state_client
-                    .deleteGroup(id)
-                    .then(
-                      () =>
-                        set_this_state_groups([
-                          ...this_state_groups.filter((g) => g._id !== id),
-                        ]),
-                      handleError
-                    )
-                }
-              />
+              <Groups client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.EDIT && (
             <Tab.Pane eventKey="ranges" title="Linky">
-              <Ranges
-                ranges={this_state_ranges}
-                addRange={(range) =>
-                  this_state_client
-                    .addRange(range)
-                    .then(
-                      (range) =>
-                        set_this_state_ranges([...this_state_ranges, range]),
-                      handleError
-                    )
-                }
-                updateRange={(range) =>
-                  this_state_client
-                    .updateRange(range)
-                    .then(
-                      (range) =>
-                        set_this_state_ranges([
-                          ...this_state_ranges.filter(
-                            (r) => r._id !== range._id
-                          ),
-                          range,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteRange={(id) =>
-                  this_state_client
-                    .deleteRange(id)
-                    .then(
-                      () =>
-                        set_this_state_ranges([
-                          ...this_state_ranges.filter((r) => r._id !== id),
-                        ]),
-                      handleError
-                    )
-                }
-              />
+              <Ranges client={this_state_client} handleError={handleError} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.VIEW && (
             <Tab.Pane eventKey="stats" title="Statistiky">
-              <Stats
-                programs={this_state_programs}
-                people={people}
-                groups={this_state_groups}
-                packages={this_state_pkgs}
-              />
+              <Stats people={people} />
             </Tab.Pane>
           )}
           {this_state_userLevel >= level.ADMIN && (
             <Tab.Pane eventKey="users" title="Uživatelé">
               <Users
-                users={this_state_users}
+                client={this_state_client}
+                handleError={handleError}
                 userEmail={
                   this_auth.currentUser ? this_auth.currentUser.email : null
-                }
-                addUser={(user) =>
-                  this_state_client
-                    .addUser(user)
-                    .then(
-                      (user) =>
-                        set_this_state_users([...this_state_users, user]),
-                      handleError
-                    )
-                }
-                updateUser={(user) =>
-                  this_state_client
-                    .updateUser(user)
-                    .then(
-                      (user) =>
-                        set_this_state_users([
-                          ...this_state_users.filter((u) => u._id !== user._id),
-                          user,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteUser={(id) =>
-                  this_state_client
-                    .deleteUser(id)
-                    .then(
-                      () =>
-                        set_this_state_users([
-                          ...this_state_users.filter((u) => u._id !== id),
-                        ]),
-                      handleError
-                    )
                 }
               />
             </Tab.Pane>
           )}
           <Tab.Pane eventKey="settings" title="Nastavení">
             <Settings
-              programs={[...this_state_programs, ...this_state_deletedPrograms]}
-              pkgs={this_state_pkgs}
-              groups={this_state_groups}
-              rules={this_state_rules}
-              ranges={this_state_ranges}
-              users={this_state_users}
               client={this_state_client}
+              handleError={handleError}
               userLevel={this_state_userLevel}
-              timeStep={
-                this_state_settings.timeStep
-                  ? this_state_settings.timeStep
-                  : 15 * 60 * 1000
-              }
-              updateTimeStep={(timeStep) => {
-                this_state_client
-                  .updateSettings({ ...this_state_settings, timeStep })
-                  .then(
-                    () =>
-                      set_this_state_settings({
-                        ...this_state_settings,
-                        timeStep,
-                      }),
-                    handleError
-                  );
-              }}
             />
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>
     </div>
+  );
+}
+
+// TODO: move to separate file
+// TODO: move highlighting to a slice
+function Filters({
+  highlightedPackages,
+  highlightingEnabled,
+  setHighlightedPackages,
+  setHighlightingEnabled,
+}) {
+  const packages = useSelector((state) => state.packages.packages);
+
+  const toggle = (id) => {
+    let pkgs = [...highlightedPackages];
+    if (pkgs.indexOf(id) === -1) pkgs.push(id);
+    else pkgs.splice(pkgs.indexOf(id), 1);
+    setHighlightedPackages(pkgs);
+  };
+
+  return (
+    <>
+      <Nav.Item>
+        <Nav.Link
+          as={Button}
+          variant={highlightingEnabled ? "dark" : "light"}
+          onClick={() => setHighlightingEnabled(!highlightingEnabled)}
+        >
+          <i className="fa fa-filter" />
+        </Nav.Link>
+      </Nav.Item>
+      {highlightingEnabled &&
+        [...packages].sort(byName).map((pkg) => (
+          <Nav.Item key={pkg._id}>
+            <Nav.Link
+              as={Button}
+              variant={
+                highlightedPackages.indexOf(pkg._id) === -1 ? "light" : "dark"
+              }
+              style={
+                highlightedPackages.indexOf(pkg._id) === -1
+                  ? { backgroundColor: pkg.color }
+                  : {}
+              }
+              onClick={() => toggle(pkg._id)}
+            >
+              {pkg.name}
+            </Nav.Link>
+          </Nav.Item>
+        ))}
+    </>
   );
 }

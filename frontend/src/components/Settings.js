@@ -7,30 +7,33 @@ import { level } from "../helpers/Level";
 import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
+import { useDispatch, useSelector } from "react-redux";
+import { updateSettings } from "../store/settingsSlice";
 
 export default function Settings(props) {
+  const { groups } = useSelector((state) => state.groups);
+  const { ranges } = useSelector((state) => state.ranges);
+  const { packages } = useSelector((state) => state.packages);
+  const { rules } = useSelector((state) => state.rules);
+  const { users } = useSelector((state) => state.users);
+  const { programs, deletedPrograms } = useSelector((state) => state.programs);
+
   async function deleteAll() {
     await Promise.all([
-      ...props.programs.map((it) => props.client.deleteProgram(it._id)),
-      ...props.pkgs.map((it) => props.client.deletePackage(it._id)),
-      ...props.groups.map((it) => props.client.deleteGroup(it._id)),
-      ...props.rules.map((it) => props.client.deleteRule(it._id)),
-      ...props.ranges.map((it) => props.client.deleteRange(it._id)),
-      ...props.users.map((it) => props.client.deleteUser(it._id)),
+      ...programs.map((it) => props.client.deleteProgram(it._id)),
+      ...deletedPrograms.map((it) => props.client.deleteProgram(it._id)),
+      ...packages.map((it) => props.client.deletePackage(it._id)),
+      ...groups.map((it) => props.client.deleteGroup(it._id)),
+      ...rules.map((it) => props.client.deleteRule(it._id)),
+      ...ranges.map((it) => props.client.deleteRange(it._id)),
+      ...users.map((it) => props.client.deleteUser(it._id)),
     ]).then(() => window.location.reload());
   }
 
   return (
     <>
       <Container fluid>
-        <Export
-          programs={props.programs}
-          pkgs={props.pkgs}
-          groups={props.groups}
-          rules={props.rules}
-          ranges={props.ranges}
-          users={props.users}
-        />
+        <Export />
         {props.userLevel >= level.ADMIN && <Import client={props.client} />}
         {props.userLevel >= level.ADMIN && (
           <Form.Group>
@@ -38,25 +41,28 @@ export default function Settings(props) {
           </Form.Group>
         )}
         {props.userLevel >= level.EDIT && (
-          <TimeStep
-            timeStep={props.timeStep}
-            setTimeStep={props.updateTimeStep}
-          />
+          <TimeStep client={props.client} handleError={props.handleError} />
         )}
       </Container>
     </>
   );
 }
 
-function TimeStep({ timeStep, setTimeStep }) {
-  const [step, setStep] = useState(timeStep);
+function TimeStep({ client, handleError }) {
+  const { settings } = useSelector((state) => state.settings);
+  const dispatch = useDispatch();
+
+  const [step, setStep] = useState(settings.timeStep);
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editing) {
-      setTimeStep(step);
+      const data = { ...settings, timeStep: step };
+      client
+        .updateSettings(data)
+        .then(() => dispatch(updateSettings(data)), handleError);
       setEditing(false);
     } else {
       setEditing(true);
@@ -81,7 +87,7 @@ function TimeStep({ timeStep, setTimeStep }) {
               <option value={5 * 60 * 1000}>5 min</option>
             </Form.Control>
           ) : (
-            formatDurationInMinutes(timeStep)
+            formatDurationInMinutes(settings.timeStep)
           )}
         </Col>
         <Col>

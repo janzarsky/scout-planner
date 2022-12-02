@@ -3,28 +3,42 @@ import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addPackage,
+  deletePackage,
+  updatePackage,
+} from "../store/packagesSlice";
 
-export default function Packages({ pkgs, addPkg, updatePkg, deletePkg }) {
+export default function Packages({ client, handleError }) {
   const [newName, setNewName] = useState("Nový balíček");
   const [newColor, setNewColor] = useState("#81d4fa");
   const [editedName, setEditedName] = useState();
   const [editedColor, setEditedColor] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
+  const { packages } = useSelector((state) => state.packages);
+  const dispatch = useDispatch();
+
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editKey) {
-      updatePkg({
-        _id: editKey,
-        name: editedName,
-        color: editedColor,
-      }).then(() => setEditKey(undefined));
+      client
+        .updatePackage({
+          _id: editKey,
+          name: editedName,
+          color: editedColor,
+        })
+        .then((resp) => dispatch(updatePackage(resp)), handleError);
+      setEditKey(undefined);
     } else {
-      addPkg({
-        name: newName,
-        color: newColor,
-      });
+      client
+        .addPackage({
+          name: newName,
+          color: newColor,
+        })
+        .then((resp) => dispatch(addPackage(resp)), handleError);
     }
   }
 
@@ -33,7 +47,7 @@ export default function Packages({ pkgs, addPkg, updatePkg, deletePkg }) {
       <Table bordered hover responsive>
         <PackagesHeader />
         <tbody>
-          {[...pkgs].sort(byName).map((pkg, index) =>
+          {[...packages].sort(byName).map((pkg, index) =>
             pkg._id === editKey ? (
               <EditedPackage
                 key={pkg._id}
@@ -50,7 +64,9 @@ export default function Packages({ pkgs, addPkg, updatePkg, deletePkg }) {
                 color={pkg.color}
                 cnt={index + 1}
                 deletePkg={() => {
-                  deletePkg(pkg._id);
+                  client
+                    .deletePackage(pkg._id)
+                    .then(() => dispatch(deletePackage(pkg._id)), handleError);
                   setEditKey(undefined);
                 }}
                 editPkg={() => {

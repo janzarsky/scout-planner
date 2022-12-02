@@ -1,5 +1,6 @@
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useDispatch, useSelector } from "react-redux";
 import {
   formatDay,
   getOnlyDate,
@@ -9,15 +10,20 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byOrder } from "../helpers/Sorting";
+import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
 export default function Timetable(props) {
-  function onDroppableDrop(item, begin) {
-    var prog = props.programs.find((program) => program._id === item.id);
+  const dispatch = useDispatch();
+  const { programs } = useSelector((state) => state.programs);
+
+  function onDroppableDrop(item, begin, currentPrograms) {
+    var prog = currentPrograms.find((program) => program._id === item.id);
     if (prog) {
-      prog.begin = begin;
-      props.updateProgram(prog);
+      props.client
+        .updateProgram({ ...prog, begin })
+        .then((resp) => dispatch(updateProgram(resp)), props.handleError);
     }
   }
 
@@ -33,12 +39,12 @@ export default function Timetable(props) {
             highlighted={props.highlightedPackages.indexOf(prog.pkg) !== -1}
             violations={props.violations.get(prog._id)}
             rect={rect}
-            pkgs={props.pkgs}
             onEdit={props.onEdit}
             viewSettings={viewSettings}
-            clone={props.clone}
             activeRange={props.activeRange}
             userLevel={props.userLevel}
+            client={props.client}
+            handleError={props.handleError}
           />
         );
       else
@@ -48,7 +54,11 @@ export default function Timetable(props) {
     }
   }
 
-  const settings = getSettings(props.programs, props.groups, props.timeStep);
+  const { groups } = useSelector((state) => state.groups);
+  const { settings: timetableSettings } = useSelector(
+    (state) => state.settings
+  );
+  const settings = getSettings(programs, groups, timetableSettings.timeStep);
   const timeIndicatorRect = getTimeIndicatorRect(settings);
 
   return (
@@ -74,7 +84,7 @@ export default function Timetable(props) {
         {[...getGroupHeaders(settings)]}
         {[
           ...getPrograms(
-            props.programs,
+            programs,
             settings,
             props.viewSettings,
             props.userLevel
@@ -178,11 +188,11 @@ function* getDroppables(settings, onDrop, addProgramModal) {
         const begin = date + time + idxSpan * settings.timeStep;
         yield (
           <Droppable
-            key={[idxTime, idxDate, idxSpan]}
+            key={begin}
             x={3 + idxTime * settings.timeSpan + idxSpan}
             y={2 + idxDate * settings.groupCnt}
             height={settings.groupCnt}
-            onDrop={(item) => onDrop(item, begin)}
+            onDrop={(item, programs) => onDrop(item, begin, programs)}
             addProgramModal={() => addProgramModal({ begin })}
           />
         );
@@ -280,13 +290,18 @@ function getTimeIndicatorRect(settings) {
 }
 
 function Droppable(props) {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: "program",
-    drop: (item) => props.onDrop(item),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
+  const { programs } = useSelector((state) => state.programs);
+
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => props.onDrop(item, programs),
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+      }),
     }),
-  }));
+    [programs]
+  );
 
   return (
     <div

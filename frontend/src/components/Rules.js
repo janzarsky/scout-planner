@@ -11,21 +11,19 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import { useDispatch, useSelector } from "react-redux";
+import { addRule, deleteRule } from "../store/rulesSlice";
 
-export default function Settings({
-  rules,
-  addRule,
-  deleteRule,
-  userLevel,
-  programs,
-  groups,
-  violations,
-}) {
+export default function Rules({ client, handleError, userLevel, violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
   const [condition, setCondition] = useState("is_before_program");
   const [time, setTime] = useState(formatTime(Date.now()));
   const [date, setDate] = useState(formatDate(Date.now()));
   const [secondProgram, setSecondProgram] = useState("Žádný program");
+
+  const { rules } = useSelector((state) => state.rules);
+  const { programs } = useSelector((state) => state.programs);
+  const dispatch = useDispatch();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -44,11 +42,13 @@ export default function Settings({
         value = null;
     }
 
-    addRule({
-      program: firstProgram,
-      condition: condition,
-      value: value,
-    });
+    client
+      .addRule({
+        program: firstProgram,
+        condition: condition,
+        value: value,
+      })
+      .then((resp) => dispatch(addRule(resp)), handleError);
   }
 
   return (
@@ -64,16 +64,18 @@ export default function Settings({
                 cnt={index + 1}
                 rule={rule}
                 programs={programs}
-                groups={groups}
                 violation={violations.get(rule._id)}
-                deleteRule={() => deleteRule(rule._id)}
+                deleteRule={() =>
+                  client
+                    .deleteRule(rule._id)
+                    .then(() => dispatch(deleteRule(rule._id)), handleError)
+                }
                 userLevel={userLevel}
               />
             ))}
           {userLevel >= level.EDIT && (
             <NewRule
               programs={programs}
-              groups={groups}
               condition={condition}
               setCondition={setCondition}
               firstProgram={firstProgram}
@@ -114,15 +116,9 @@ function RulesHeader({ userLevel }) {
   );
 }
 
-function Rule({
-  cnt,
-  rule,
-  programs,
-  groups,
-  violation,
-  userLevel,
-  deleteRule,
-}) {
+function Rule({ cnt, rule, programs, violation, userLevel, deleteRule }) {
+  const { groups } = useSelector((state) => state.groups);
+
   return (
     <tr>
       <td>{cnt}</td>
@@ -162,8 +158,9 @@ function NewRule({
   date,
   setDate,
   programs,
-  groups,
 }) {
+  const { groups } = useSelector((state) => state.groups);
+
   return (
     <tr>
       <td></td>

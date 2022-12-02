@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -14,34 +15,44 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byName } from "../helpers/Sorting";
+import {
+  addProgram,
+  deleteProgram,
+  updateProgram,
+} from "../store/programsSlice";
 
 export function EditProgramModal(props) {
+  const program = useSelector((state) =>
+    state.programs.programs.find((p) => p._id === props.programId)
+  );
+
   const [submitInProgress, setSubmitInProgress] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
 
-  const [title, setTitle] = useState(props.program.title);
-  const [date, setDate] = useState(formatDate(props.program.begin));
-  const [time, setTime] = useState(formatTime(props.program.begin));
-  const [duration, setDuration] = useState(
-    formatDuration(props.program.duration)
-  );
-  const [pkg, setPkg] = useState(props.program.pkg);
-  const [groups, setGroups] = useState(props.program.groups);
-  const [people, setPeople] = useState(props.program.people);
-  const [url, setUrl] = useState(props.program.url);
-  const [notes, setNotes] = useState(props.program.notes);
-  const [locked, setLocked] = useState(props.program.locked);
-  const [ranges, setRanges] = useState(props.program.ranges);
+  const [title, setTitle] = useState(program.title);
+  const [date, setDate] = useState(formatDate(program.begin));
+  const [time, setTime] = useState(formatTime(program.begin));
+  const [duration, setDuration] = useState(formatDuration(program.duration));
+  const [pkg, setPkg] = useState(program.pkg);
+  const [groups, setGroups] = useState(program.groups);
+  const [people, setPeople] = useState(program.people);
+  const [url, setUrl] = useState(program.url);
+  const [notes, setNotes] = useState(program.notes);
+  const [locked, setLocked] = useState(program.locked);
+  const [ranges, setRanges] = useState(program.ranges);
+
+  const dispatch = useDispatch();
 
   function handleDelete(event) {
     event.preventDefault();
 
     setDeleteInProgress(true);
 
-    props.deleteProgram(props.program).then(() => {
+    props.client.updateProgram({ ...program, deleted: true }).then(() => {
+      dispatch(deleteProgram(program._id));
       setDeleteInProgress(false);
       props.handleClose();
-    });
+    }, props.handleError);
   }
 
   function handleSubmit(event) {
@@ -49,9 +60,9 @@ export function EditProgramModal(props) {
 
     setSubmitInProgress(true);
 
-    props
+    props.client
       .updateProgram({
-        ...props.program,
+        ...program,
         begin: parseDate(date) + parseTime(time),
         duration: parseDuration(duration),
         title: title,
@@ -63,10 +74,11 @@ export function EditProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then(() => {
+      .then((resp) => {
+        dispatch(updateProgram(resp));
         setSubmitInProgress(false);
         props.handleClose();
-      });
+      }, props.handleError);
   }
 
   return (
@@ -100,12 +112,10 @@ export function EditProgramModal(props) {
           <ProgramPackage
             pkg={pkg}
             setPkg={setPkg}
-            packages={props.pkgs}
             disabled={props.userLevel < level.EDIT}
           />
           <ProgramGroups
             programGroups={groups}
-            allGroups={props.groups}
             addGroup={(group) => setGroups([...groups, group])}
             removeGroup={(group) =>
               setGroups(groups.filter((g) => g !== group))
@@ -129,7 +139,6 @@ export function EditProgramModal(props) {
           <ProgramRanges
             programRanges={ranges}
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
-            allRanges={props.ranges}
             disabled={props.userLevel < level.EDIT}
           />
           <ProgramNotes
@@ -275,7 +284,9 @@ function ProgramDuration({
   );
 }
 
-function ProgramPackage({ pkg, setPkg, packages, disabled = false }) {
+function ProgramPackage({ pkg, setPkg, disabled = false }) {
+  const { packages } = useSelector((state) => state.packages);
+
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -302,11 +313,12 @@ function ProgramPackage({ pkg, setPkg, packages, disabled = false }) {
 
 function ProgramGroups({
   programGroups,
-  allGroups,
   addGroup,
   removeGroup,
   disabled = false,
 }) {
+  const { groups: allGroups } = useSelector((state) => state.groups);
+
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -423,12 +435,9 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
   );
 }
 
-function ProgramRanges({
-  programRanges,
-  updateRange,
-  allRanges,
-  disabled = false,
-}) {
+function ProgramRanges({ programRanges, updateRange, disabled = false }) {
+  const { ranges: allRanges } = useSelector((state) => state.ranges);
+
   return [...allRanges].sort(byName).map((range) => (
     <Form.Group as={Row} key={range._id}>
       <Form.Label column sm="2">
@@ -488,12 +497,14 @@ export function AddProgramModal(props) {
   const [locked, setLocked] = useState(false);
   const [ranges, setRanges] = useState({});
 
+  const dispatch = useDispatch();
+
   function handleSubmit(event) {
     event.preventDefault();
 
     setSubmitInProgress(true);
 
-    props
+    props.client
       .addProgram({
         begin: parseDate(date) + parseTime(time),
         duration: parseDuration(duration),
@@ -506,10 +517,11 @@ export function AddProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then(() => {
+      .then((resp) => {
+        dispatch(addProgram(resp));
         setSubmitInProgress(false);
         props.handleClose();
-      });
+      }, props.handleError);
   }
 
   return (
@@ -532,10 +544,9 @@ export function AddProgramModal(props) {
             locked={locked}
             setLocked={setLocked}
           />
-          <ProgramPackage pkg={pkg} setPkg={setPkg} packages={props.pkgs} />
+          <ProgramPackage pkg={pkg} setPkg={setPkg} />
           <ProgramGroups
             programGroups={groups}
-            allGroups={props.groups}
             addGroup={(group) => setGroups([...groups, group])}
             removeGroup={(group) =>
               setGroups(groups.filter((g) => g !== group))
@@ -553,7 +564,6 @@ export function AddProgramModal(props) {
           <ProgramRanges
             programRanges={ranges}
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
-            allRanges={props.ranges}
           />
           <ProgramNotes notes={notes} setNotes={setNotes} />
         </Modal.Body>

@@ -1,23 +1,31 @@
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
+import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
 
-export default function Ranges({ addRange, updateRange, deleteRange, ranges }) {
+export default function Ranges({ client, handleError }) {
   const [newName, setNewName] = useState("Nová linka");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
+
+  const { ranges } = useSelector((state) => state.ranges);
+  const dispatch = useDispatch();
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editKey) {
-      updateRange({ _id: editKey, name: editedName }).then(() =>
-        setEditKey(undefined)
-      );
+      client
+        .updateRange({ _id: editKey, name: editedName })
+        .then((resp) => dispatch(updateRange(resp)), handleError);
+      setEditKey(undefined);
     } else {
-      addRange({ name: newName });
+      client
+        .addRange({ name: newName })
+        .then((resp) => dispatch(addRange(resp)), handleError);
     }
   }
 
@@ -37,7 +45,11 @@ export default function Ranges({ addRange, updateRange, deleteRange, ranges }) {
               <Range
                 key={range._id}
                 name={range.name}
-                deleteRange={() => deleteRange(range._id)}
+                deleteRange={() =>
+                  client
+                    .deleteRange(range._id)
+                    .then(() => dispatch(deleteRange(range._id)), handleError)
+                }
                 editRange={() => {
                   setEditKey(range._id);
                   setEditedName(range.name);
