@@ -15,6 +15,7 @@ export default function Settings(props) {
   const { ranges } = useSelector((state) => state.ranges);
   const { packages } = useSelector((state) => state.packages);
   const { rules } = useSelector((state) => state.rules);
+  const { users } = useSelector((state) => state.users);
 
   async function deleteAll() {
     await Promise.all([
@@ -23,14 +24,14 @@ export default function Settings(props) {
       ...groups.map((it) => props.client.deleteGroup(it._id)),
       ...rules.map((it) => props.client.deleteRule(it._id)),
       ...ranges.map((it) => props.client.deleteRange(it._id)),
-      ...props.users.map((it) => props.client.deleteUser(it._id)),
+      ...users.map((it) => props.client.deleteUser(it._id)),
     ]).then(() => window.location.reload());
   }
 
   return (
     <>
       <Container fluid>
-        <Export programs={props.programs} users={props.users} />
+        <Export programs={props.programs} />
         {props.userLevel >= level.ADMIN && <Import client={props.client} />}
         {props.userLevel >= level.ADMIN && (
           <Form.Group>

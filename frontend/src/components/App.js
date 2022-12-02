@@ -29,6 +29,7 @@ import { getRanges } from "../store/rangesSlice";
 import { getGroups } from "../store/groupsSlice";
 import { getPackages } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
+import { getUsers } from "../store/usersSlice";
 
 const config = require("../config.json");
 
@@ -37,7 +38,6 @@ export default function App(props) {
   const [this_state_deletedPrograms, set_this_state_deletedPrograms] = useState(
     []
   );
-  const [this_state_users, set_this_state_users] = useState([]);
   const [this_state_violations, set_this_state_violations] = useState(
     new Map()
   );
@@ -319,19 +319,16 @@ export default function App(props) {
       dispatch(getPackages(this_state_client));
       dispatch(getRules(this_state_client));
 
-      const adminData =
-        permissions.level >= level.ADMIN
-          ? this_state_client.getUsers()
-          : Promise.resolve([]);
+      if (permissions.level >= level.ADMIN)
+        dispatch(getUsers(this_state_client));
 
-      Promise.all([viewData, adminData]).then(([[allPrograms], users]) => {
+      Promise.all([viewData]).then(([[allPrograms]]) => {
         set_this_state_programs(
           [...allPrograms].filter((program) => !program.deleted)
         );
         set_this_state_deletedPrograms(
           [...allPrograms].filter((program) => program.deleted)
         );
-        set_this_state_users(users);
         set_this_state_loaded(true);
       });
 
@@ -351,12 +348,7 @@ export default function App(props) {
         true
       ) && problems.other.length === 0
     );
-  }, [
-    this_state_programs,
-    this_state_deletedPrograms,
-    this_state_users,
-    this_state_loaded,
-  ]);
+  }, [this_state_programs, this_state_deletedPrograms, this_state_loaded]);
 
   var violationsPerProgram = new Map();
   [...this_state_violations.values()]
@@ -560,41 +552,10 @@ export default function App(props) {
           {this_state_userLevel >= level.ADMIN && (
             <Tab.Pane eventKey="users" title="Uživatelé">
               <Users
-                users={this_state_users}
+                client={this_state_client}
+                handleError={handleError}
                 userEmail={
                   this_auth.currentUser ? this_auth.currentUser.email : null
-                }
-                addUser={(user) =>
-                  this_state_client
-                    .addUser(user)
-                    .then(
-                      (user) =>
-                        set_this_state_users([...this_state_users, user]),
-                      handleError
-                    )
-                }
-                updateUser={(user) =>
-                  this_state_client
-                    .updateUser(user)
-                    .then(
-                      (user) =>
-                        set_this_state_users([
-                          ...this_state_users.filter((u) => u._id !== user._id),
-                          user,
-                        ]),
-                      handleError
-                    )
-                }
-                deleteUser={(id) =>
-                  this_state_client
-                    .deleteUser(id)
-                    .then(
-                      () =>
-                        set_this_state_users([
-                          ...this_state_users.filter((u) => u._id !== id),
-                        ]),
-                      handleError
-                    )
                 }
               />
             </Tab.Pane>
@@ -602,7 +563,6 @@ export default function App(props) {
           <Tab.Pane eventKey="settings" title="Nastavení">
             <Settings
               programs={[...this_state_programs, ...this_state_deletedPrograms]}
-              users={this_state_users}
               client={this_state_client}
               handleError={handleError}
               userLevel={this_state_userLevel}
