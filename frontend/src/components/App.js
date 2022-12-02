@@ -313,6 +313,7 @@ export default function App(props) {
     this_state_groups,
     this_state_pkgs,
     this_state_ranges,
+    this_state_rules,
   ]);
 
   useEffect(() => {
