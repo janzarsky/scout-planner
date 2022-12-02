@@ -75,24 +75,6 @@ export default function App(props) {
 
   const dispatch = useDispatch();
 
-  function getGoogleLogin() {
-    return this_auth && this_auth.currentUser ? (
-      <Nav.Item>
-        <Nav.Link as={Button} variant="light" onClick={logout}>
-          {this_auth.currentUser.displayName}
-          &nbsp;
-          <i className="fa fa-sign-out" />
-        </Nav.Link>
-      </Nav.Item>
-    ) : (
-      <Nav.Item>
-        <Nav.Link as={Button} variant="light" onClick={login}>
-          <i className="fa fa-sign-in" />
-        </Nav.Link>
-      </Nav.Item>
-    );
-  }
-
   async function login() {
     await signInWithPopup(this_auth, this_provider).catch((error) =>
       console.error(error)
@@ -289,7 +271,16 @@ export default function App(props) {
           {this_state_userLevel >= level.VIEW && <Filters />}
           {this_state_userLevel >= level.VIEW && <ViewSettings />}
           {this_state_userLevel >= level.VIEW && <RangesSettings />}
-          {getGoogleLogin()}
+          <GoogleLogin
+            authenticated={this_auth && this_auth.currentUser}
+            name={
+              this_auth &&
+              this_auth.currentUser &&
+              this_auth.currentUser.displayName
+            }
+            login={login}
+            logout={logout}
+          />
         </Nav>
         <Tab.Content>
           <Tab.Pane eventKey="timetable">
@@ -375,5 +366,23 @@ export default function App(props) {
         </Tab.Content>
       </Tab.Container>
     </div>
+  );
+}
+
+function GoogleLogin({ authenticated, name, login, logout }) {
+  return authenticated ? (
+    <Nav.Item>
+      <Nav.Link as={Button} variant="light" onClick={logout}>
+        {name}
+        &nbsp;
+        <i className="fa fa-sign-out" />
+      </Nav.Link>
+    </Nav.Item>
+  ) : (
+    <Nav.Item>
+      <Nav.Link as={Button} variant="light" onClick={login}>
+        <i className="fa fa-sign-in" />
+      </Nav.Link>
+    </Nav.Item>
   );
 }
