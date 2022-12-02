@@ -189,7 +189,7 @@ function* getDroppables(settings, onDrop, addProgramModal) {
         const begin = date + time + idxSpan * settings.timeStep;
         yield (
           <Droppable
-            key={[idxTime, idxDate, idxSpan]}
+            key={begin}
             x={3 + idxTime * settings.timeSpan + idxSpan}
             y={2 + idxDate * settings.groupCnt}
             height={settings.groupCnt}
