@@ -82,11 +82,9 @@ export default function App(props) {
   const { rules: this_state_rules, loaded: rulesLoaded } = useSelector(
     (state) => state.rules
   );
-  const {
-    programs: this_state_programs,
-    deletedPrograms: this_state_deletedPrograms,
-    loaded: programsLoaded,
-  } = useSelector((state) => state.programs);
+  const { programs: this_state_programs, loaded: programsLoaded } = useSelector(
+    (state) => state.programs
+  );
 
   const dispatch = useDispatch();
 
