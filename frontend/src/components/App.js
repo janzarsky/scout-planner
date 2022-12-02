@@ -86,54 +86,6 @@ export default function App(props) {
 
   const dispatch = useDispatch();
 
-  function getFilters() {
-    const toggle = (id) => {
-      let highlightedPackages = this_state_highlightedPackages;
-      if (highlightedPackages.indexOf(id) === -1) highlightedPackages.push(id);
-      else highlightedPackages.splice(highlightedPackages.indexOf(id), 1);
-      set_this_state_highlightedPackages(highlightedPackages);
-    };
-
-    return (
-      <>
-        <Nav.Item>
-          <Nav.Link
-            as={Button}
-            variant={this_state_highlightingEnabled ? "dark" : "light"}
-            onClick={() =>
-              set_this_state_highlightingEnabled(
-                !this_state_highlightingEnabled
-              )
-            }
-          >
-            <i className="fa fa-filter" />
-          </Nav.Link>
-        </Nav.Item>
-        {this_state_highlightingEnabled &&
-          [...this_state_pkgs].sort(byName).map((pkg) => (
-            <Nav.Item key={pkg._id}>
-              <Nav.Link
-                as={Button}
-                variant={
-                  this_state_highlightedPackages.indexOf(pkg._id) === -1
-                    ? "light"
-                    : "dark"
-                }
-                style={
-                  this_state_highlightedPackages.indexOf(pkg._id) === -1
-                    ? { backgroundColor: pkg.color }
-                    : {}
-                }
-                onClick={() => toggle(pkg._id)}
-              >
-                {pkg.name}
-              </Nav.Link>
-            </Nav.Item>
-          ))}
-      </>
-    );
-  }
-
   function getViewSettings() {
     return (
       <>
@@ -438,7 +390,14 @@ export default function App(props) {
               </Nav.Link>
             </Nav.Item>
           )}
-          {this_state_userLevel >= level.VIEW && getFilters()}
+          {this_state_userLevel >= level.VIEW && (
+            <Filters
+              highlightedPackages={this_state_highlightedPackages}
+              highlightingEnabled={this_state_highlightingEnabled}
+              setHighlightedPackages={set_this_state_highlightedPackages}
+              setHighlightingEnabled={set_this_state_highlightingEnabled}
+            />
+          )}
           {this_state_userLevel >= level.VIEW && getViewSettings()}
           {this_state_userLevel >= level.VIEW && getRangesElements()}
           {getGoogleLogin()}
@@ -541,5 +500,56 @@ export default function App(props) {
         </Tab.Content>
       </Tab.Container>
     </div>
+  );
+}
+
+// TODO: move to separate file
+// TODO: move highlighting to a slice
+function Filters({
+  highlightedPackages,
+  highlightingEnabled,
+  setHighlightedPackages,
+  setHighlightingEnabled,
+}) {
+  const packages = useSelector((state) => state.packages.packages);
+
+  const toggle = (id) => {
+    let pkgs = [...highlightedPackages];
+    if (pkgs.indexOf(id) === -1) pkgs.push(id);
+    else pkgs.splice(pkgs.indexOf(id), 1);
+    setHighlightedPackages(pkgs);
+  };
+
+  return (
+    <>
+      <Nav.Item>
+        <Nav.Link
+          as={Button}
+          variant={highlightingEnabled ? "dark" : "light"}
+          onClick={() => setHighlightingEnabled(!highlightingEnabled)}
+        >
+          <i className="fa fa-filter" />
+        </Nav.Link>
+      </Nav.Item>
+      {highlightingEnabled &&
+        [...packages].sort(byName).map((pkg) => (
+          <Nav.Item key={pkg._id}>
+            <Nav.Link
+              as={Button}
+              variant={
+                highlightedPackages.indexOf(pkg._id) === -1 ? "light" : "dark"
+              }
+              style={
+                highlightedPackages.indexOf(pkg._id) === -1
+                  ? { backgroundColor: pkg.color }
+                  : {}
+              }
+              onClick={() => toggle(pkg._id)}
+            >
+              {pkg.name}
+            </Nav.Link>
+          </Nav.Item>
+        ))}
+    </>
   );
 }
