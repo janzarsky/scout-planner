@@ -19,7 +19,7 @@ export default function Timetable(props) {
   const { programs } = useSelector((state) => state.programs);
 
   function onDroppableDrop(item, begin) {
-    var prog = programs.find((program) => program._id === item.id);
+    var prog = { ...programs.find((program) => program._id === item.id) };
     if (prog) {
       prog.begin = begin;
       props.client
