@@ -18,12 +18,11 @@ export default function Timetable(props) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
-  function onDroppableDrop(item, begin) {
-    var prog = { ...programs.find((program) => program._id === item.id) };
+  function onDroppableDrop(item, begin, currentPrograms) {
+    var prog = currentPrograms.find((program) => program._id === item.id);
     if (prog) {
-      prog.begin = begin;
       props.client
-        .updateProgram(prog)
+        .updateProgram({ ...prog, begin })
         .then((resp) => dispatch(updateProgram(resp)), props.handleError);
     }
   }
@@ -193,7 +192,7 @@ function* getDroppables(settings, onDrop, addProgramModal) {
             x={3 + idxTime * settings.timeSpan + idxSpan}
             y={2 + idxDate * settings.groupCnt}
             height={settings.groupCnt}
-            onDrop={(item) => onDrop(item, begin)}
+            onDrop={(item, programs) => onDrop(item, begin, programs)}
             addProgramModal={() => addProgramModal({ begin })}
           />
         );
@@ -291,13 +290,18 @@ function getTimeIndicatorRect(settings) {
 }
 
 function Droppable(props) {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: "program",
-    drop: (item) => props.onDrop(item),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
+  const { programs } = useSelector((state) => state.programs);
+
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => props.onDrop(item, programs),
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+      }),
     }),
-  }));
+    [programs]
+  );
 
   return (
     <div
