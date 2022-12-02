@@ -41,6 +41,18 @@ export function formatDuration(ms) {
   }${date.getUTCMinutes()}`;
 }
 
+export function formatDurationInMinutes(ms) {
+  const date = new Date(parseInt(ms));
+
+  if (isNaN(date.getTime())) return "(chybná délka)";
+
+  return `${
+    24 * 60 * (date.getUTCDate() - 1) +
+    60 * date.getUTCHours() +
+    date.getUTCMinutes()
+  } min`;
+}
+
 export function formatDay(ms) {
   const date = new Date(parseInt(ms));
 

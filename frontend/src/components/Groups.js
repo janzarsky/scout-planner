@@ -1,75 +1,74 @@
-import React from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byOrder } from "../helpers/Sorting";
+import { useState } from "react";
 
-export default class Groups extends React.Component {
-  constructor(props) {
-    super(props);
-    ["nameAddRef", "orderAddRef", "nameEditRef", "orderEditRef"].forEach(
-      (field) => (this[field] = React.createRef())
-    );
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { editKey: undefined };
-  }
+export default function Groups(props) {
+  const [newName, setNewName] = useState("Nová skupina");
+  const [newOrder, setNewOrder] = useState(0);
+  const [editedName, setEditedName] = useState();
+  const [editedOrder, setEditedOrder] = useState();
+  const [editKey, setEditKey] = useState(undefined);
 
-  render() {
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Table bordered hover responsive>
-          <GroupsHeader />
-          <tbody>
-            {[...this.props.groups]
-              .sort(byOrder)
-              .map((group) =>
-                group._id === this.state.editKey ? (
-                  <EditedGroup
-                    key={group._id}
-                    group={group}
-                    nameRef={this.nameEditRef}
-                    orderRef={this.orderEditRef}
-                  />
-                ) : (
-                  <Group
-                    key={group._id}
-                    group={group}
-                    deleteGroup={() => this.props.deleteGroup(group._id)}
-                    editGroup={() => this.setState({ editKey: group._id })}
-                  />
-                )
-              )}
-            <NewGroup nameRef={this.nameAddRef} orderRef={this.orderAddRef} />
-          </tbody>
-        </Table>
-      </Form>
-    );
-  }
-
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
-    if (this.state.editKey) {
-      let order = parseInt(this.orderEditRef.current.value);
-      if (isNaN(order)) order = 0;
-
-      this.props
+    if (editKey) {
+      props
         .updateGroup({
-          _id: this.state.editKey,
-          name: this.nameEditRef.current.value,
-          order: order,
+          _id: editKey,
+          name: editedName,
+          order: editedOrder,
         })
-        .then(() => this.setState({ editKey: undefined }));
+        .then(() => setEditKey(undefined));
     } else {
-      let order = parseInt(this.orderAddRef.current.value);
-      if (isNaN(order)) order = 0;
-
-      this.props.addGroup({
-        name: this.nameAddRef.current.value,
-        order: order,
+      props.addGroup({
+        name: newName,
+        order: newOrder,
       });
     }
   }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Table bordered hover responsive>
+        <GroupsHeader />
+        <tbody>
+          {[...props.groups].sort(byOrder).map((group) =>
+            group._id === editKey ? (
+              <EditedGroup
+                key={group._id}
+                name={editedName}
+                order={editedOrder}
+                setName={setEditedName}
+                setOrder={setEditedOrder}
+              />
+            ) : (
+              <Group
+                key={group._id}
+                name={group.name}
+                order={group.order}
+                deleteGroup={() => props.deleteGroup(group._id)}
+                editGroup={() => {
+                  setEditKey(group._id);
+                  setEditedName(group.name);
+                  setEditedOrder(group.order);
+                }}
+              />
+            )
+          )}
+          <EditedGroup
+            name={newName}
+            order={newOrder}
+            setName={setNewName}
+            setOrder={setNewOrder}
+            isNew={false}
+          />
+        </tbody>
+      </Table>
+    </Form>
+  );
 }
 
 function GroupsHeader() {
@@ -84,18 +83,18 @@ function GroupsHeader() {
   );
 }
 
-function Group(props) {
+function Group({ name, order, editGroup, deleteGroup }) {
   return (
     <tr>
-      <td>{props.group.name}</td>
-      <td>{props.group.order}</td>
+      <td>{name}</td>
+      <td>{order}</td>
       <td>
         <span>
-          <Button variant="link" onClick={props.editGroup}>
+          <Button variant="link" onClick={editGroup}>
             <i className="fa fa-pencil" /> Upravit
           </Button>
           &nbsp;
-          <Button variant="link text-danger" onClick={props.deleteGroup}>
+          <Button variant="link text-danger" onClick={deleteGroup}>
             <i className="fa fa-trash" /> Smazat
           </Button>
         </span>
@@ -104,40 +103,30 @@ function Group(props) {
   );
 }
 
-function EditedGroup(props) {
+function EditedGroup({ name, order, setName, setOrder, isNew = false }) {
   return (
     <tr>
       <td>
-        <Form.Control ref={props.nameRef} defaultValue={props.group.name} />
+        <Form.Control value={name} onChange={(e) => setName(e.target.value)} />
       </td>
       <td>
         <Form.Control
           type="number"
-          ref={props.orderRef}
-          defaultValue={props.group.order}
+          value={order}
+          onChange={(e) => setOrder(e.target.value)}
         />
       </td>
       <td>
         <Button variant="primary" type="submit">
-          <i className="fa fa-check" /> Uložit
-        </Button>
-      </td>
-    </tr>
-  );
-}
-
-function NewGroup(props) {
-  return (
-    <tr key="new_pkg">
-      <td>
-        <Form.Control ref={props.nameRef} defaultValue="Nová skupina" />
-      </td>
-      <td>
-        <Form.Control type="number" ref={props.orderRef} defaultValue="1" />
-      </td>
-      <td>
-        <Button variant="success" type="submit">
-          <i className="fa fa-plus" /> Přidat
+          {isNew ? (
+            <>
+              <i className="fa fa-plus" /> Přidat
+            </>
+          ) : (
+            <>
+              <i className="fa fa-check" /> Uložit
+            </>
+          )}
         </Button>
       </td>
     </tr>

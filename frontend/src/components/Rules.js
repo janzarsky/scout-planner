@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -12,37 +12,41 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 
-export default function Settings(props) {
-  const firstProgramRef = useRef();
-  const conditionRef = useRef();
-  const timeRef = useRef();
-  const dateRef = useRef();
-  const secondProgramRef = useRef();
+export default function Settings({
+  rules,
+  addRule,
+  deleteRule,
+  userLevel,
+  programs,
+  groups,
+  violations,
+}) {
+  const [firstProgram, setFirstProgram] = useState("Žádný program");
   const [condition, setCondition] = useState("is_before_program");
+  const [time, setTime] = useState(formatTime(Date.now()));
+  const [date, setDate] = useState(formatDate(Date.now()));
+  const [secondProgram, setSecondProgram] = useState("Žádný program");
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    const conditionVal = conditionRef.current.value;
-
     var value;
-    switch (conditionVal) {
+    switch (condition) {
       case "is_before_date":
       case "is_after_date":
-        value =
-          parseDate(dateRef.current.value) + parseTime(timeRef.current.value);
+        value = parseDate(date) + parseTime(time);
         break;
       case "is_before_program":
       case "is_after_program":
-        value = secondProgramRef.current.value;
+        value = secondProgram;
         break;
       default:
         value = null;
     }
 
-    props.addRule({
-      program: firstProgramRef.current.value,
-      condition: conditionVal,
+    addRule({
+      program: firstProgram,
+      condition: condition,
       value: value,
     });
   }
@@ -50,33 +54,36 @@ export default function Settings(props) {
   return (
     <Form onSubmit={handleSubmit}>
       <Table bordered hover responsive>
-        <RulesHeader userLevel={props.userLevel} />
+        <RulesHeader userLevel={userLevel} />
         <tbody>
-          {[...props.rules]
-            .sort((a, b) => ruleSort(a, b, props.programs))
+          {[...rules]
+            .sort((a, b) => ruleSort(a, b, programs))
             .map((rule, index) => (
               <Rule
                 key={rule._id}
                 cnt={index + 1}
                 rule={rule}
-                programs={props.programs}
-                groups={props.groups}
-                violation={props.violations.get(rule._id)}
-                deleteRule={() => props.deleteRule(rule._id)}
-                userLevel={props.userLevel}
+                programs={programs}
+                groups={groups}
+                violation={violations.get(rule._id)}
+                deleteRule={() => deleteRule(rule._id)}
+                userLevel={userLevel}
               />
             ))}
-          {props.userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <NewRule
-              programs={props.programs}
-              groups={props.groups}
+              programs={programs}
+              groups={groups}
               condition={condition}
-              setCondition={(condition) => setCondition(condition)}
-              firstProgramRef={firstProgramRef}
-              secondProgramRef={secondProgramRef}
-              conditionRef={conditionRef}
-              timeRef={timeRef}
-              dateRef={dateRef}
+              setCondition={setCondition}
+              firstProgram={firstProgram}
+              setFirstProgram={setFirstProgram}
+              secondProgram={secondProgram}
+              setSecondProgram={setSecondProgram}
+              time={time}
+              setTime={setTime}
+              date={date}
+              setDate={setDate}
             />
           )}
         </tbody>
@@ -94,39 +101,47 @@ function ruleSort(a, b, programs) {
   return 0;
 }
 
-function RulesHeader(props) {
+function RulesHeader({ userLevel }) {
   return (
     <thead>
       <tr>
         <th>#</th>
         <th>Pravidlo</th>
         <th>Splněno</th>
-        {props.userLevel >= level.EDIT && <th>Akce</th>}
+        {userLevel >= level.EDIT && <th>Akce</th>}
       </tr>
     </thead>
   );
 }
 
-function Rule(props) {
+function Rule({
+  cnt,
+  rule,
+  programs,
+  groups,
+  violation,
+  userLevel,
+  deleteRule,
+}) {
   return (
     <tr>
-      <td>{props.cnt}</td>
-      <td>{formatRule(props.rule, props.programs, props.groups)}</td>
+      <td>{cnt}</td>
+      <td>{formatRule(rule, programs, groups)}</td>
       <td>
-        {props.violation &&
-          (props.violation.satisfied ? (
+        {violation &&
+          (violation.satisfied ? (
             <span className="text-success">
               <i className="fa fa-check" /> ano
             </span>
           ) : (
             <span className="text-danger">
-              <i className="fa fa-times" /> {props.violation.msg}
+              <i className="fa fa-times" /> {violation.msg}
             </span>
           ))}
       </td>
-      {props.userLevel >= level.EDIT && (
+      {userLevel >= level.EDIT && (
         <td>
-          <Button variant="link text-danger" onClick={props.deleteRule}>
+          <Button variant="link text-danger" onClick={deleteRule}>
             <i className="fa fa-trash"></i> Smazat
           </Button>
         </td>
@@ -135,7 +150,20 @@ function Rule(props) {
   );
 }
 
-function NewRule(props) {
+function NewRule({
+  firstProgram,
+  setFirstProgram,
+  condition,
+  setCondition,
+  secondProgram,
+  setSecondProgram,
+  time,
+  setTime,
+  date,
+  setDate,
+  programs,
+  groups,
+}) {
   return (
     <tr>
       <td></td>
@@ -144,13 +172,13 @@ function NewRule(props) {
           <Col sm="3">
             <Form.Control
               as="select"
-              defaultValue="Žádný program"
-              ref={props.firstProgramRef}
+              value={firstProgram}
+              onChange={(e) => setFirstProgram(e.target.value)}
             >
               <option>Žádný program</option>
-              {[...props.programs].sort(programSort).map((prog) => (
+              {[...programs].sort(programSort).map((prog) => (
                 <option key={prog._id} value={prog._id}>
-                  {formatProgram(prog, props.groups)}
+                  {formatProgram(prog, groups)}
                 </option>
               ))}
             </Form.Control>
@@ -158,9 +186,8 @@ function NewRule(props) {
           <Col>
             <Form.Control
               as="select"
-              ref={props.conditionRef}
-              onChange={(ev) => props.setCondition(ev.target.value)}
-              defaultValue="is_before_program"
+              value={condition}
+              onChange={(e) => setCondition(e.target.value)}
             >
               <option value="is_before_date">musí proběhnout před</option>
               <option value="is_after_date">musí proběhnout po</option>
@@ -173,21 +200,21 @@ function NewRule(props) {
             </Form.Control>
           </Col>
           {(() => {
-            switch (props.condition) {
+            switch (condition) {
               case "is_before_date":
               case "is_after_date":
                 return (
                   <>
                     <Col sm="2">
                       <Form.Control
-                        ref={props.timeRef}
-                        defaultValue={formatTime(Date.now())}
+                        value={time}
+                        onChange={(e) => setTime(e.target.value)}
                       />
                     </Col>
                     <Col sm="2">
                       <Form.Control
-                        ref={props.dateRef}
-                        defaultValue={formatDate(Date.now())}
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
                       />
                     </Col>
                   </>
@@ -198,13 +225,13 @@ function NewRule(props) {
                   <Col>
                     <Form.Control
                       as="select"
-                      defaultValue="Žádný program"
-                      ref={props.secondProgramRef}
+                      value={secondProgram}
+                      onChange={(e) => setSecondProgram(e.target.value)}
                     >
                       <option>Žádný program</option>
-                      {[...props.programs].sort(programSort).map((prog) => (
+                      {[...programs].sort(programSort).map((prog) => (
                         <option key={prog._id} value={prog._id}>
-                          {formatProgram(prog, props.groups)}
+                          {formatProgram(prog, groups)}
                         </option>
                       ))}
                     </Form.Control>

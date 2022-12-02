@@ -1,6 +1,6 @@
 import { formatDateTime } from "./helpers/DateUtils";
 
-export async function checkRules(rules, programs) {
+export function checkRules(rules, programs) {
   const violations = new Map();
 
   for (const rule of rules) {

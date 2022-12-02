@@ -1,71 +1,76 @@
-import React from "react";
+import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 
-export default class Packages extends React.Component {
-  constructor(props) {
-    super(props);
-    ["nameAddRef", "colorAddRef", "nameEditRef", "colorEditRef"].forEach(
-      (field) => (this[field] = React.createRef())
-    );
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { editKey: undefined };
-  }
+export default function Packages({ pkgs, addPkg, updatePkg, deletePkg }) {
+  const [newName, setNewName] = useState("Nový balíček");
+  const [newColor, setNewColor] = useState("#81d4fa");
+  const [editedName, setEditedName] = useState();
+  const [editedColor, setEditedColor] = useState();
+  const [editKey, setEditKey] = useState(undefined);
 
-  render() {
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Table bordered hover responsive>
-          <PackagesHeader />
-          <tbody>
-            {[...this.props.pkgs]
-              .sort(byName)
-              .map((pkg, index) =>
-                pkg._id === this.state.editKey ? (
-                  <EditedPackage
-                    key={pkg._id}
-                    pkg={pkg}
-                    cnt={index + 1}
-                    nameRef={this.nameEditRef}
-                    colorRef={this.colorEditRef}
-                  />
-                ) : (
-                  <Package
-                    key={pkg._id}
-                    pkg={pkg}
-                    cnt={index + 1}
-                    deletePkg={() => this.props.deletePkg(pkg._id)}
-                    editPkg={() => this.setState({ editKey: pkg._id })}
-                  />
-                )
-              )}
-            <NewPackage nameRef={this.nameAddRef} colorRef={this.colorAddRef} />
-          </tbody>
-        </Table>
-      </Form>
-    );
-  }
-
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
-    if (this.state.editKey) {
-      this.props
-        .updatePkg({
-          _id: this.state.editKey,
-          name: this.nameEditRef.current.value,
-          color: this.colorEditRef.current.value,
-        })
-        .then(() => this.setState({ editKey: undefined }));
+    if (editKey) {
+      updatePkg({
+        _id: editKey,
+        name: editedName,
+        color: editedColor,
+      }).then(() => setEditKey(undefined));
     } else {
-      this.props.addPkg({
-        name: this.nameAddRef.current.value,
-        color: this.colorAddRef.current.value,
+      addPkg({
+        name: newName,
+        color: newColor,
       });
     }
   }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Table bordered hover responsive>
+        <PackagesHeader />
+        <tbody>
+          {[...pkgs].sort(byName).map((pkg, index) =>
+            pkg._id === editKey ? (
+              <EditedPackage
+                key={pkg._id}
+                name={editedName}
+                color={editedColor}
+                cnt={index + 1}
+                setName={setEditedName}
+                setColor={setEditedColor}
+              />
+            ) : (
+              <Package
+                key={pkg._id}
+                name={pkg.name}
+                color={pkg.color}
+                cnt={index + 1}
+                deletePkg={() => {
+                  deletePkg(pkg._id);
+                  setEditKey(undefined);
+                }}
+                editPkg={() => {
+                  setEditKey(pkg._id);
+                  setEditedName(pkg.name);
+                  setEditedColor(pkg.color);
+                }}
+              />
+            )
+          )}
+          <NewPackage
+            name={newName}
+            color={newColor}
+            setName={setNewName}
+            setColor={setNewColor}
+          />
+        </tbody>
+      </Table>
+    </Form>
+  );
 }
 
 function PackagesHeader() {
@@ -81,27 +86,24 @@ function PackagesHeader() {
   );
 }
 
-function Package(props) {
+function Package({ cnt, name, setName, color, setColor, editPkg, deletePkg }) {
   return (
     <tr>
-      <td>{props.cnt}</td>
-      <td>{props.pkg.name}</td>
+      <td>{cnt}</td>
+      <td>{name}</td>
       <td>
-        <span
-          className="color-sample"
-          style={{ backgroundColor: props.pkg.color }}
-        >
+        <span className="color-sample" style={{ backgroundColor: color }}>
           &nbsp;
         </span>{" "}
-        {props.pkg.color}
+        {color}
       </td>
       <td>
         <span>
-          <Button variant="link" onClick={props.editPkg}>
+          <Button variant="link" onClick={editPkg}>
             <i className="fa fa-pencil" /> Upravit
           </Button>
           &nbsp;
-          <Button variant="link text-danger" onClick={props.deletePkg}>
+          <Button variant="link text-danger" onClick={deletePkg}>
             <i className="fa fa-trash" /> Smazat
           </Button>
         </span>
@@ -110,18 +112,18 @@ function Package(props) {
   );
 }
 
-function EditedPackage(props) {
+function EditedPackage({ cnt, name, setName, color, setColor }) {
   return (
     <tr>
-      <td>{props.cnt}</td>
+      <td>{cnt}</td>
       <td>
-        <Form.Control ref={props.nameRef} defaultValue={props.pkg.name} />
+        <Form.Control value={name} onChange={(e) => setName(e.target.value)} />
       </td>
       <td>
         <Form.Control
           type="color"
-          ref={props.colorRef}
-          defaultValue={props.pkg.color}
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
         />
       </td>
       <td>
@@ -133,18 +135,18 @@ function EditedPackage(props) {
   );
 }
 
-function NewPackage(props) {
+function NewPackage({ name, setName, color, setColor }) {
   return (
     <tr key="new_pkg">
       <td></td>
       <td>
-        <Form.Control ref={props.nameRef} defaultValue="Nový balíček" />
+        <Form.Control value={name} onChange={(e) => setName(e.target.value)} />
       </td>
       <td>
         <Form.Control
           type="color"
-          ref={props.colorRef}
-          defaultValue="#81d4fa"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
         />
       </td>
       <td>

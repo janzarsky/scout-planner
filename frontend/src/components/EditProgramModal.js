@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -15,203 +15,164 @@ import {
 import { level } from "../helpers/Level";
 import { byName } from "../helpers/Sorting";
 
-export class EditProgramModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      groups: this.props.program.groups,
-      people: this.props.program.people,
-      submitInProgress: false,
-      deleteInProgress: false,
-    };
-    [
-      "title",
-      "date",
-      "time",
-      "duration",
-      "pkg",
-      "groups",
-      "people",
-      "url",
-      "notes",
-      "locked",
-    ].forEach((field) => (this[field] = React.createRef()));
-    this.rangeRefs = Object.fromEntries(
-      props.ranges.map((range) => [range._id, React.createRef()])
-    );
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-  }
+export function EditProgramModal(props) {
+  const [submitInProgress, setSubmitInProgress] = useState(false);
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
 
-  render() {
-    return (
-      <Modal show={true} onHide={this.props.handleClose}>
-        <Form onSubmit={this.handleSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>
-              {this.props.userLevel >= level.EDIT
-                ? "Upravit program"
-                : "Program"}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <ProgramTitle
-              title={this.props.program.title}
-              controlRef={this.title}
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramBeginning
-              begin={this.props.program.begin}
-              timeRef={this.time}
-              dateRef={this.date}
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramDuration
-              duration={this.props.program.duration}
-              controlRef={this.duration}
-              locked={this.props.program.locked}
-              lockedRef={this.locked}
-              setDuration={(duration) =>
-                (this.duration.current.value = duration)
-              }
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramPackage
-              package={this.props.program.pkg}
-              packages={this.props.pkgs}
-              controlRef={this.pkg}
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramGroups
-              programGroups={this.state.groups}
-              allGroups={this.props.groups}
-              addGroup={(group) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  groups: [...prev.groups, group],
-                }))
-              }
-              removeGroup={(group) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  groups: prev.groups.filter((g) => g !== group),
-                }))
-              }
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramPeople
-              programPeople={this.state.people}
-              allPeople={this.props.people}
-              addPerson={(person) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  people: [...prev.people, person],
-                }))
-              }
-              removePerson={(person) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  people: prev.people.filter((p) => p !== person),
-                }))
-              }
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramUrl
-              url={this.props.program.url}
-              controlRef={this.url}
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramRanges
-              ranges={this.props.ranges}
-              values={this.props.program.ranges}
-              controlRefs={this.rangeRefs}
-              disabled={this.props.userLevel < level.EDIT}
-            />
-            <ProgramNotes
-              notes={this.props.program.notes}
-              controlRef={this.notes}
-              disabled={this.props.userLevel < level.EDIT}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            {this.props.userLevel >= level.EDIT && (
-              <Button
-                variant="link text-danger"
-                onClick={this.handleDelete}
-                style={{ marginRight: "auto" }}
-              >
-                {this.state.deleteInProgress ? (
-                  <i className="fa fa-spinner fa-pulse" />
-                ) : (
-                  <i className="fa fa-trash" />
-                )}
-                &nbsp; Smazat
-              </Button>
-            )}
-            <Button variant="link" onClick={this.props.handleClose}>
-              {this.userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
-            </Button>
-            {this.props.userLevel >= level.EDIT && (
-              <Button variant="primary" type="submit">
-                {this.state.submitInProgress ? (
-                  <i className="fa fa-spinner fa-pulse" />
-                ) : (
-                  <i className="fa fa-save" />
-                )}
-                &nbsp; Uložit
-              </Button>
-            )}
-          </Modal.Footer>
-        </Form>
-      </Modal>
-    );
-  }
+  const [title, setTitle] = useState(props.program.title);
+  const [date, setDate] = useState(formatDate(props.program.begin));
+  const [time, setTime] = useState(formatTime(props.program.begin));
+  const [duration, setDuration] = useState(
+    formatDuration(props.program.duration)
+  );
+  const [pkg, setPkg] = useState(props.program.pkg);
+  const [groups, setGroups] = useState(props.program.groups);
+  const [people, setPeople] = useState(props.program.people);
+  const [url, setUrl] = useState(props.program.url);
+  const [notes, setNotes] = useState(props.program.notes);
+  const [locked, setLocked] = useState(props.program.locked);
+  const [ranges, setRanges] = useState(props.program.ranges);
 
-  handleDelete(event) {
+  function handleDelete(event) {
     event.preventDefault();
 
-    this.setState({ deleteInProgress: true });
+    setDeleteInProgress(true);
 
-    this.props.deleteProgram(this.props.program).then(() => {
-      this.setState({ deleteInProgress: false });
-      this.props.handleClose();
+    props.deleteProgram(props.program).then(() => {
+      setDeleteInProgress(false);
+      props.handleClose();
     });
   }
 
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
-    this.setState({ submitInProgress: true });
+    setSubmitInProgress(true);
 
-    this.props
+    props
       .updateProgram({
-        ...this.props.program,
-        begin:
-          parseDate(this.date.current.value) +
-          parseTime(this.time.current.value),
-        duration: parseDuration(this.duration.current.value),
-        title: this.title.current.value,
-        pkg: this.pkg.current.value,
-        groups: this.state.groups,
-        people: this.state.people,
-        ranges: Object.fromEntries(
-          this.props.ranges.map((range) => {
-            let val = parseInt(this.rangeRefs[range._id].current.value);
-            return [range._id, isNaN(val) ? 0 : val];
-          })
-        ),
-        url: this.url.current.value,
-        notes: this.notes.current.value,
-        locked: this.locked.current.checked,
+        ...props.program,
+        begin: parseDate(date) + parseTime(time),
+        duration: parseDuration(duration),
+        title: title,
+        pkg: pkg,
+        groups: groups,
+        people: people,
+        ranges: ranges,
+        url: url,
+        notes: notes,
+        locked: locked,
       })
       .then(() => {
-        this.setState({ submitInProgress: false });
-        this.props.handleClose();
+        setSubmitInProgress(false);
+        props.handleClose();
       });
   }
+
+  return (
+    <Modal show={true} onHide={props.handleClose}>
+      <Form onSubmit={handleSubmit}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {props.userLevel >= level.EDIT ? "Upravit program" : "Program"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ProgramTitle
+            title={title}
+            setTitle={setTitle}
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramBeginning
+            time={time}
+            setTime={setTime}
+            date={date}
+            setDate={setDate}
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramDuration
+            duration={duration}
+            setDuration={setDuration}
+            locked={locked}
+            setLocked={setLocked}
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramPackage
+            pkg={pkg}
+            setPkg={setPkg}
+            packages={props.pkgs}
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramGroups
+            programGroups={groups}
+            allGroups={props.groups}
+            addGroup={(group) => setGroups([...groups, group])}
+            removeGroup={(group) =>
+              setGroups(groups.filter((g) => g !== group))
+            }
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramPeople
+            programPeople={people}
+            allPeople={props.people}
+            addPerson={(person) => setPeople([...people, person])}
+            removePerson={(person) =>
+              setPeople(people.filter((p) => p !== person))
+            }
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramUrl
+            url={url}
+            setUrl={setUrl}
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramRanges
+            programRanges={ranges}
+            updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
+            allRanges={props.ranges}
+            disabled={props.userLevel < level.EDIT}
+          />
+          <ProgramNotes
+            notes={notes}
+            setNotes={setNotes}
+            disabled={props.userLevel < level.EDIT}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          {props.userLevel >= level.EDIT && (
+            <Button
+              variant="link text-danger"
+              onClick={handleDelete}
+              style={{ marginRight: "auto" }}
+            >
+              {deleteInProgress ? (
+                <i className="fa fa-spinner fa-pulse" />
+              ) : (
+                <i className="fa fa-trash" />
+              )}
+              &nbsp; Smazat
+            </Button>
+          )}
+          <Button variant="link" onClick={props.handleClose}>
+            {props.userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
+          </Button>
+          {props.userLevel >= level.EDIT && (
+            <Button variant="primary" type="submit">
+              {submitInProgress ? (
+                <i className="fa fa-spinner fa-pulse" />
+              ) : (
+                <i className="fa fa-save" />
+              )}
+              &nbsp; Uložit
+            </Button>
+          )}
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
 }
 
-function ProgramTitle(props) {
+function ProgramTitle({ title, setTitle, disabled = false }) {
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -220,16 +181,16 @@ function ProgramTitle(props) {
       <Col>
         <Form.Control
           type="text"
-          defaultValue={props.title}
-          ref={props.controlRef}
-          disabled={props.disabled}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={disabled}
         />
       </Col>
     </Form.Group>
   );
 }
 
-function ProgramBeginning(props) {
+function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -238,26 +199,32 @@ function ProgramBeginning(props) {
       <Col>
         <Form.Control
           type="text"
-          defaultValue={formatTime(props.begin)}
-          ref={props.timeRef}
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
           placeholder="MM:HH"
-          disabled={props.disabled}
+          disabled={disabled}
         />
       </Col>
       <Col>
         <Form.Control
           type="text"
-          defaultValue={formatDate(props.begin)}
-          ref={props.dateRef}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
           placeholder="YYYY-MM-DD"
-          disabled={props.disabled}
+          disabled={disabled}
         />
       </Col>
     </Form.Group>
   );
 }
 
-function ProgramDuration(props) {
+function ProgramDuration({
+  duration,
+  setDuration,
+  locked,
+  setLocked,
+  disabled = false,
+}) {
   return (
     <>
       <Form.Group as={Row}>
@@ -267,24 +234,24 @@ function ProgramDuration(props) {
         <Col>
           <Form.Control
             type="text"
-            defaultValue={formatDuration(props.duration)}
-            ref={props.controlRef}
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
             placeholder="MM:HH"
-            disabled={props.disabled}
+            disabled={disabled}
           />
         </Col>
         <Col>
           <Form.Check
             type="checkbox"
             label="Zamknout"
-            ref={props.lockedRef}
-            defaultChecked={props.locked}
+            checked={locked}
+            onChange={(e) => setLocked(e.target.checked)}
             id="locked"
-            disabled={props.disabled}
+            disabled={disabled}
           />
         </Col>
       </Form.Group>
-      {!props.disabled && (
+      {!disabled && (
         <Form.Group>
           {[
             ["0:15", "15 min"],
@@ -297,7 +264,7 @@ function ProgramDuration(props) {
             <Button
               variant={"outline-secondary"}
               key={value}
-              onClick={() => props.setDuration(value)}
+              onClick={() => setDuration(value)}
             >
               {text}
             </Button>
@@ -308,7 +275,7 @@ function ProgramDuration(props) {
   );
 }
 
-function ProgramPackage(props) {
+function ProgramPackage({ pkg, setPkg, packages, disabled = false }) {
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -317,14 +284,14 @@ function ProgramPackage(props) {
       <Col>
         <Form.Control
           as="select"
-          defaultValue={props.package}
-          ref={props.controlRef}
-          disabled={props.disabled}
+          value={pkg}
+          onChange={(e) => setPkg(e.target.value)}
+          disabled={disabled}
         >
           <option>žádný</option>
-          {[...props.packages].sort(byName).map((pkg) => (
-            <option key={pkg._id} value={pkg._id}>
-              {pkg.name}
+          {[...packages].sort(byName).map((p) => (
+            <option key={p._id} value={p._id}>
+              {p.name}
             </option>
           ))}
         </Form.Control>
@@ -333,7 +300,13 @@ function ProgramPackage(props) {
   );
 }
 
-function ProgramGroups(props) {
+function ProgramGroups({
+  programGroups,
+  allGroups,
+  addGroup,
+  removeGroup,
+  disabled = false,
+}) {
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -341,19 +314,19 @@ function ProgramGroups(props) {
       </Form.Label>
       <Col>
         <Row>
-          {[...props.allGroups].sort(byName).map((group) => (
+          {[...allGroups].sort(byName).map((group) => (
             <Col key={group._id}>
               <Form.Check
                 type="checkbox"
                 label={group.name}
                 id={group._id}
-                defaultChecked={props.programGroups.includes(group._id)}
-                disabled={props.disabled}
-                onClick={(e) => {
+                checked={programGroups.includes(group._id)}
+                disabled={disabled}
+                onChange={(e) => {
                   if (e.target.checked) {
-                    props.addGroup(group._id);
+                    addGroup(group._id);
                   } else {
-                    props.removeGroup(group._id);
+                    removeGroup(group._id);
                   }
                 }}
               />
@@ -365,7 +338,13 @@ function ProgramGroups(props) {
   );
 }
 
-function ProgramPeople(props) {
+function ProgramPeople({
+  programPeople,
+  allPeople,
+  addPerson,
+  removePerson,
+  disabled = false,
+}) {
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
@@ -375,7 +354,7 @@ function ProgramPeople(props) {
         <Row>
           {[
             ...new Set(
-              [...props.allPeople, ...props.programPeople].sort((a, b) =>
+              [...allPeople, ...programPeople].sort((a, b) =>
                 a.localeCompare(b)
               )
             ),
@@ -385,26 +364,26 @@ function ProgramPeople(props) {
                 type="checkbox"
                 label={person}
                 id={person}
-                defaultChecked={props.programPeople.includes(person)}
-                disabled={props.disabled}
-                onClick={(e) => {
+                checked={programPeople.includes(person)}
+                disabled={disabled}
+                onChange={(e) => {
                   if (e.target.checked) {
-                    props.addPerson(person);
+                    addPerson(person);
                   } else {
-                    props.removePerson(person);
+                    removePerson(person);
                   }
                 }}
               />
             </Col>
           ))}
         </Row>
-        {!props.disabled && (
+        {!disabled && (
           <Button
             variant="outline-secondary"
             onClick={() => {
               const name = window.prompt("Jméno");
               if (name) {
-                props.addPerson(name);
+                addPerson(name);
               }
             }}
           >
@@ -416,27 +395,27 @@ function ProgramPeople(props) {
   );
 }
 
-function ProgramUrl(props) {
+function ProgramUrl({ url, setUrl, disabled = false }) {
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
         URL
       </Form.Label>
       <Col>
-        {props.disabled ? (
+        {disabled ? (
           <a
-            href={props.url}
+            href={url}
             style={{ wordBreak: "break-all" }}
             target="_blank"
             rel="noreferrer noopener"
           >
-            {props.url}
+            {url}
           </a>
         ) : (
           <Form.Control
             type="text"
-            defaultValue={props.url}
-            ref={props.controlRef}
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
           />
         )}
       </Col>
@@ -444,8 +423,13 @@ function ProgramUrl(props) {
   );
 }
 
-function ProgramRanges(props) {
-  return props.ranges.sort(byName).map((range) => (
+function ProgramRanges({
+  programRanges,
+  updateRange,
+  allRanges,
+  disabled = false,
+}) {
+  return [...allRanges].sort(byName).map((range) => (
     <Form.Group as={Row} key={range._id}>
       <Form.Label column sm="2">
         {range.name}
@@ -455,33 +439,33 @@ function ProgramRanges(props) {
           type="range"
           min="0"
           max="3"
-          ref={props.controlRefs[range._id]}
-          defaultValue={
-            props.values && props.values[range._id]
-              ? props.values[range._id]
+          value={
+            programRanges && programRanges[range._id]
+              ? programRanges[range._id]
               : 0
           }
-          disabled={props.disabled}
+          onChange={(e) => updateRange(range._id, e.target.value)}
+          disabled={disabled}
         />
       </Col>
     </Form.Group>
   ));
 }
 
-function ProgramNotes(props) {
+function ProgramNotes({ notes, setNotes, disabled = false }) {
   return (
     <Form.Group as={Row}>
       <Form.Label column sm="2">
         Poznámky
       </Form.Label>
       <Col>
-        {props.disabled ? (
-          <p>{props.notes}</p>
+        {disabled ? (
+          <p>{notes}</p>
         ) : (
           <Form.Control
             as="textarea"
-            defaultValue={props.notes}
-            ref={props.controlRef}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
           />
         )}
       </Col>
@@ -489,139 +473,104 @@ function ProgramNotes(props) {
   );
 }
 
-export class AddProgramModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { groups: [], people: [], submitInProgress: false };
-    [
-      "title",
-      "date",
-      "time",
-      "duration",
-      "pkg",
-      "people",
-      "url",
-      "notes",
-      "locked",
-    ].forEach((field) => (this[field] = React.createRef()));
-    this.rangeRefs = Object.fromEntries(
-      props.ranges.map((range) => [range._id, React.createRef()])
-    );
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+export function AddProgramModal(props) {
+  const [submitInProgress, setSubmitInProgress] = useState(false);
 
-  render() {
-    return (
-      <Modal show={true} onHide={this.props.handleClose}>
-        <Form onSubmit={this.handleSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Nový program</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <ProgramTitle title="Nový program" controlRef={this.title} />
-            <ProgramBeginning
-              begin={this.props.options.begin}
-              timeRef={this.time}
-              dateRef={this.date}
-            />
-            <ProgramDuration
-              duration={60 * 60 * 1000}
-              controlRef={this.duration}
-              locked={false}
-              lockedRef={this.locked}
-              setDuration={(duration) =>
-                (this.duration.current.value = duration)
-              }
-            />
-            <ProgramPackage packages={this.props.pkgs} controlRef={this.pkg} />
-            <ProgramGroups
-              programGroups={this.state.groups}
-              allGroups={this.props.groups}
-              addGroup={(group) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  groups: [...prev.groups, group],
-                }))
-              }
-              removeGroup={(group) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  groups: prev.groups.filter((g) => g !== group),
-                }))
-              }
-            />
-            <ProgramPeople
-              programPeople={this.state.people}
-              allPeople={this.props.people}
-              addPerson={(person) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  people: [...prev.people, person],
-                }))
-              }
-              removePerson={(person) =>
-                this.setState((prev) => ({
-                  ...prev,
-                  people: prev.people.filter((p) => p !== person),
-                }))
-              }
-            />
-            <ProgramUrl controlRef={this.url} />
-            <ProgramRanges
-              ranges={this.props.ranges}
-              values={Object.fromEntries(
-                this.props.ranges.map((range) => [range._id, 0])
-              )}
-              controlRefs={this.rangeRefs}
-            />
-            <ProgramNotes controlRef={this.notes} />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="link" onClick={this.props.handleClose}>
-              Zrušit
-            </Button>
-            <Button variant="primary" type="submit">
-              {this.state.submitInProgress ? (
-                <i className="fa fa-spinner fa-pulse" />
-              ) : (
-                <i className="fa fa-plus" />
-              )}
-              &nbsp; Přidat
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-    );
-  }
+  const [title, setTitle] = useState("Nový program");
+  const [date, setDate] = useState(formatDate(props.options.begin));
+  const [time, setTime] = useState(formatTime(props.options.begin));
+  const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
+  const [pkg, setPkg] = useState(undefined);
+  const [groups, setGroups] = useState([]);
+  const [people, setPeople] = useState([]);
+  const [url, setUrl] = useState("");
+  const [notes, setNotes] = useState("");
+  const [locked, setLocked] = useState(false);
+  const [ranges, setRanges] = useState({});
 
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
 
-    this.setState({ submitInProgress: true });
+    setSubmitInProgress(true);
 
-    this.props
+    props
       .addProgram({
-        begin:
-          parseDate(this.date.current.value) +
-          parseTime(this.time.current.value),
-        duration: parseDuration(this.duration.current.value),
-        title: this.title.current.value,
-        pkg: this.pkg.current.value,
-        groups: this.state.groups,
-        ranges: Object.fromEntries(
-          this.props.ranges.map((range) => {
-            let val = parseInt(this.rangeRefs[range._id].current.value);
-            return [range._id, isNaN(val) ? 0 : val];
-          })
-        ),
-        people: this.state.people,
-        url: this.url.current.value,
-        notes: this.notes.current.value,
-        locked: this.locked.current.checked,
+        begin: parseDate(date) + parseTime(time),
+        duration: parseDuration(duration),
+        title: title,
+        pkg: pkg,
+        groups: groups,
+        people: people,
+        ranges: ranges,
+        url: url,
+        notes: notes,
+        locked: locked,
       })
       .then(() => {
-        this.setState({ submitInProgress: false });
-        this.props.handleClose();
+        setSubmitInProgress(false);
+        props.handleClose();
       });
   }
+
+  return (
+    <Modal show={true} onHide={props.handleClose}>
+      <Form onSubmit={handleSubmit}>
+        <Modal.Header closeButton>
+          <Modal.Title>Nový program</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ProgramTitle title={title} setTitle={setTitle} />
+          <ProgramBeginning
+            time={time}
+            setTime={setTime}
+            date={date}
+            setDate={setDate}
+          />
+          <ProgramDuration
+            duration={duration}
+            setDuration={setDuration}
+            locked={locked}
+            setLocked={setLocked}
+          />
+          <ProgramPackage pkg={pkg} setPkg={setPkg} packages={props.pkgs} />
+          <ProgramGroups
+            programGroups={groups}
+            allGroups={props.groups}
+            addGroup={(group) => setGroups([...groups, group])}
+            removeGroup={(group) =>
+              setGroups(groups.filter((g) => g !== group))
+            }
+          />
+          <ProgramPeople
+            programPeople={people}
+            allPeople={props.people}
+            addPerson={(person) => setPeople([...people, person])}
+            removePerson={(person) =>
+              setPeople(people.filter((p) => p !== person))
+            }
+          />
+          <ProgramUrl url={url} setUrl={setUrl} />
+          <ProgramRanges
+            programRanges={ranges}
+            updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
+            allRanges={props.ranges}
+          />
+          <ProgramNotes notes={notes} setNotes={setNotes} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="link" onClick={props.handleClose}>
+            Zrušit
+          </Button>
+          <Button variant="primary" type="submit">
+            {submitInProgress ? (
+              <i className="fa fa-spinner fa-pulse" />
+            ) : (
+              <i className="fa fa-plus" />
+            )}
+            &nbsp; Přidat
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
 }

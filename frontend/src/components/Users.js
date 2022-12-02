@@ -1,81 +1,74 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { level } from "../helpers/Level";
+import { parseIntOrZero } from "../helpers/Parsing";
 
-export default function Users(props) {
-  const emailAddRef = useRef();
-  const emailEditRef = useRef();
-  const levelAddRef = useRef();
-  const levelEditRef = useRef();
-  const publicLevelRef = useRef();
+export default function Users({
+  users,
+  addUser,
+  updateUser,
+  deleteUser,
+  userEmail,
+}) {
+  const [newEmail, setNewEmail] = useState("E-mailová adresa");
+  const [newLevel, setNewLevel] = useState(0);
+  const [editedEmail, setEditedEmail] = useState();
+  const [editedLevel, setEditedLevel] = useState();
   const [editKey, setEditKey] = useState(undefined);
+
+  const publicUser = users.find((user) => user.email === "public");
+
+  const [publicLevel, setPublicLevel] = useState(
+    publicUser ? publicUser.level : 3
+  );
 
   function handleSubmit(event) {
     event.preventDefault();
 
     // TODO refactor
     if (editKey && editKey === "public_user") {
-      let level = parseInt(publicLevelRef.current.value);
-      if (isNaN(level)) level = 0;
-
-      const publicUser = props.users.find((user) => user.email === "public");
+      const publicUser = users.find((user) => user.email === "public");
 
       if (publicUser) {
-        props
-          .updateUser({
-            _id: publicUser._id,
-            email: publicUser.email,
-            level: level,
-          })
-          .then(() => setEditKey(undefined));
+        updateUser({
+          _id: publicUser._id,
+          email: publicUser.email,
+          level: publicLevel,
+        }).then(() => setEditKey(undefined));
       } else {
-        props
-          .addUser({
-            email: "public",
-            level: level,
-          })
-          .then(() => setEditKey(undefined));
+        addUser({
+          email: "public",
+          level: publicLevel,
+        }).then(() => setEditKey(undefined));
       }
     } else if (editKey) {
-      let level = parseInt(levelEditRef.current.value);
-      if (isNaN(level)) level = 0;
-
-      props
-        .updateUser({
-          _id: editKey,
-          email: emailEditRef.current.value,
-          level: level,
-        })
-        .then(() => setEditKey(undefined));
+      updateUser({
+        _id: editKey,
+        email: editedEmail,
+        level: editedLevel,
+      }).then(() => setEditKey(undefined));
     } else {
-      let level = parseInt(levelAddRef.current.value);
-      if (isNaN(level)) level = 0;
-
-      props.addUser({
-        email: emailAddRef.current.value,
-        level: level,
+      addUser({
+        email: newEmail,
+        level: newLevel,
       });
     }
   }
 
-  const publicUser = props.users.find((user) => user.email === "public");
-
   // allow editing of public user only in case the current user has ADMIN rights
   const publicUserEditable =
-    props.userEmail &&
-    props.users.some(
-      (user) => user.email === props.userEmail && user.level >= level.ADMIN
-    );
+    userEmail &&
+    users.some((user) => user.email === userEmail && user.level >= level.ADMIN);
 
   // allow editing of current user only in case they are other users with ADMIN rights
   // (or there is a implicit public user which also has ADMIN rights)
   const currentUserEditable =
-    props.userEmail &&
+    userEmail &&
     (!publicUser ||
-      props.users.some(
-        (user) => user.email !== props.userEmail && user.level >= level.ADMIN
+      users.some(
+        (user) => user.email !== userEmail && user.level >= level.ADMIN
       ));
 
   // when it is allowed to edit current user, there is a warning about losing access,
@@ -91,45 +84,54 @@ export default function Users(props) {
           {editKey === "public_user" ? (
             <PublicEditedUser
               key="public_user"
-              level={publicUser ? publicUser.level : 3}
-              levelRef={publicLevelRef}
+              level={publicLevel}
+              setLevel={setPublicLevel}
             />
           ) : (
             <PublicUser
               key="public_user"
-              level={publicUser ? publicUser.level : 3}
-              userEmail={props.userEmail}
+              level={publicLevel}
+              userEmail={userEmail}
               editable={publicUserEditable}
               editUser={() => setEditKey("public_user")}
             />
           )}
-          {[...props.users]
+          {[...users]
             .sort((a, b) => a.email.localeCompare(b.email))
             .filter((user) => user.email !== "public")
             .map((user) =>
               user._id === editKey ? (
                 <EditedUser
                   key={user._id}
-                  user={user}
-                  emailRef={emailEditRef}
-                  levelRef={levelEditRef}
+                  email={editedEmail}
+                  level={editedLevel}
+                  setEmail={setEditedEmail}
+                  setLevel={setEditedLevel}
                 />
               ) : (
                 <User
                   key={user._id}
-                  user={user}
-                  editable={
-                    user.email !== props.userEmail || currentUserEditable
-                  }
+                  email={user.email}
+                  level={user.level}
+                  editable={user.email !== userEmail || currentUserEditable}
                   currentUserWarning={
-                    user.email === props.userEmail && currentUserWarning
+                    user.email === userEmail && currentUserWarning
                   }
-                  deleteUser={() => props.deleteUser(user._id)}
-                  editUser={() => setEditKey(user._id)}
+                  deleteUser={() => deleteUser(user._id)}
+                  editUser={() => {
+                    setEditKey(user._id);
+                    setEditedEmail(user.email);
+                    setEditedLevel(user.level);
+                  }}
                 />
               )
             )}
-          <NewUser emailRef={emailAddRef} levelRef={levelAddRef} />
+          <NewUser
+            email={newEmail}
+            level={newLevel}
+            setEmail={setNewEmail}
+            setLevel={setNewLevel}
+          />
         </tbody>
       </Table>
     </Form>
@@ -163,22 +165,29 @@ function formatLevel(level) {
   }
 }
 
-function User(props) {
+function User({
+  email,
+  level,
+  editable,
+  editUser,
+  deleteUser,
+  currentUserWarning,
+}) {
   return (
     <tr>
-      <td>{props.user.email}</td>
-      <td>{formatLevel(props.user.level)}</td>
+      <td>{email}</td>
+      <td>{formatLevel(level)}</td>
       <td>
-        {props.editable ? (
+        {editable ? (
           <span>
-            <Button variant="link" onClick={props.editUser}>
+            <Button variant="link" onClick={editUser}>
               <i className="fa fa-pencil" /> Upravit
             </Button>
             &nbsp;
-            <Button variant="link text-danger" onClick={props.deleteUser}>
+            <Button variant="link text-danger" onClick={deleteUser}>
               <i className="fa fa-trash" /> Smazat
             </Button>
-            {props.currentUserWarning &&
+            {currentUserWarning &&
               "Upozornění: pokud změníte vlastní oprávnění, ztratíte přístup ke správě uživatelů."}
           </span>
         ) : (
@@ -189,17 +198,20 @@ function User(props) {
   );
 }
 
-function EditedUser(props) {
+function EditedUser({ email, setEmail, level, setLevel }) {
   return (
     <tr>
       <td>
-        <Form.Control ref={props.emailRef} defaultValue={props.user.email} />
+        <Form.Control
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </td>
       <td>
         <Form.Control
           as="select"
-          defaultValue={props.user.level}
-          ref={props.levelRef}
+          value={level}
+          onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
           {[0, 1, 2, 3].map((level) => (
             <option key={level} value={level}>
@@ -217,14 +229,21 @@ function EditedUser(props) {
   );
 }
 
-function NewUser(props) {
+function NewUser({ email, setEmail, level, setLevel }) {
   return (
     <tr>
       <td>
-        <Form.Control ref={props.emailRef} defaultValue="Nový uživatel" />
+        <Form.Control
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </td>
       <td>
-        <Form.Control as="select" defaultValue={0} ref={props.levelRef}>
+        <Form.Control
+          as="select"
+          value={level}
+          onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
+        >
           {[0, 1, 2, 3].map((level) => (
             <option key={level} value={level}>
               {formatLevel(level)}
@@ -241,37 +260,37 @@ function NewUser(props) {
   );
 }
 
-function PublicUser(props) {
+function PublicUser({ level, editable, editUser, userEmail }) {
   return (
     <tr>
       <td>Kdokoliv</td>
-      <td>{formatLevel(props.level)}</td>
+      <td>{formatLevel(level)}</td>
       <td>
-        {props.editable && (
-          <Button variant="link" onClick={props.editUser}>
+        {editable && (
+          <Button variant="link" onClick={editUser}>
             <i className="fa fa-pencil" /> Upravit
           </Button>
         )}
-        {!props.editable &&
-          !props.userEmail &&
+        {!editable &&
+          !userEmail &&
           "Pro změnu veřejného přístupu se přihlaste."}
-        {!props.editable &&
-          props.userEmail &&
-          `Pro změnu veřejného přístupu nejdříve nastavte oprávnění "spravovat uživatele" pro e-mailovou adresu "${props.userEmail}".`}
+        {!editable &&
+          userEmail &&
+          `Pro změnu veřejného přístupu nejdříve nastavte oprávnění "spravovat uživatele" pro e-mailovou adresu "${userEmail}".`}
       </td>
     </tr>
   );
 }
 
-function PublicEditedUser(props) {
+function PublicEditedUser({ level, setLevel }) {
   return (
     <tr>
       <td>Kdokoliv</td>
       <td>
         <Form.Control
           as="select"
-          defaultValue={props.level}
-          ref={props.levelRef}
+          value={level}
+          onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
           {[0, 1, 2, 3].map((level) => (
             <option key={level} value={level}>

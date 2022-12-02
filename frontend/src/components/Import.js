@@ -1,32 +1,14 @@
-import React from "react";
+import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-export default class Import extends React.Component {
-  constructor(props) {
-    super(props);
-    this.importData = React.createRef();
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+export default function Import({ client }) {
+  const [importData, setImportData] = useState();
 
-  render() {
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Form.Group>
-          <Form.Label>Data k importu:</Form.Label>
-          <Form.Control as="textarea" ref={this.importData} />
-        </Form.Group>
-        <Form.Group>
-          <Button type="submit">Importovat</Button>
-        </Form.Group>
-      </Form>
-    );
-  }
-
-  async handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    const data = JSON.parse(this.importData.current.value);
+    const data = JSON.parse(importData);
 
     // data fix
     if (data.ranges === undefined) data.ranges = [];
@@ -36,7 +18,7 @@ export default class Import extends React.Component {
       // add all packages
       Promise.all([
         ...data.pkgs.map((pkg) =>
-          this.props.client.addPackage({ ...pkg, _id: undefined }).then(
+          client.addPackage({ ...pkg, _id: undefined }).then(
             // create package ID replacement map
             (newPkg) => [pkg._id, newPkg._id]
           )
@@ -45,7 +27,7 @@ export default class Import extends React.Component {
       // add all groups
       Promise.all([
         ...data.groups.map((group) =>
-          this.props.client.addGroup({ ...group, _id: undefined }).then(
+          client.addGroup({ ...group, _id: undefined }).then(
             // create group ID replacement map
             (newGroup) => [group._id, newGroup._id]
           )
@@ -54,7 +36,7 @@ export default class Import extends React.Component {
       // add all ranges
       Promise.all([
         ...data.ranges.map((range) =>
-          this.props.client.addRange({ ...range, _id: undefined }).then(
+          client.addRange({ ...range, _id: undefined }).then(
             // create range ID replacement map
             (newRange) => [range._id, newRange._id]
           )
@@ -83,7 +65,7 @@ export default class Import extends React.Component {
       .then((programs) =>
         Promise.all(
           programs.map((prog) =>
-            this.props.client
+            client
               .addProgram({
                 ...prog,
                 _id: undefined,
@@ -115,19 +97,33 @@ export default class Import extends React.Component {
       // add all rules
       .then((rules) =>
         Promise.all(
-          rules.map((rule) =>
-            this.props.client.addRule({ ...rule, _id: undefined })
-          )
+          rules.map((rule) => client.addRule({ ...rule, _id: undefined }))
         )
       )
       // add all users (at the end, so there are no issues with permissions)
       .then(() =>
         Promise.all([
           ...data.users.map((user) =>
-            this.props.client.addUser({ ...user, _id: undefined })
+            client.addUser({ ...user, _id: undefined })
           ),
         ])
       )
       .then(() => window.location.reload());
   }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Form.Group>
+        <Form.Label>Data k importu:</Form.Label>
+        <Form.Control
+          as="textarea"
+          value={importData}
+          onChange={(e) => setImportData(e.target.value)}
+        />
+      </Form.Group>
+      <Form.Group>
+        <Button type="submit">Importovat</Button>
+      </Form.Group>
+    </Form>
+  );
 }
