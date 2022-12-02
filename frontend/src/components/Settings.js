@@ -7,7 +7,8 @@ import { level } from "../helpers/Level";
 import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateSettings } from "../store/settingsSlice";
 
 export default function Settings(props) {
   const { groups } = useSelector((state) => state.groups);
@@ -37,25 +38,28 @@ export default function Settings(props) {
           </Form.Group>
         )}
         {props.userLevel >= level.EDIT && (
-          <TimeStep
-            timeStep={props.timeStep}
-            setTimeStep={props.updateTimeStep}
-          />
+          <TimeStep client={props.client} handleError={props.handleError} />
         )}
       </Container>
     </>
   );
 }
 
-function TimeStep({ timeStep, setTimeStep }) {
-  const [step, setStep] = useState(timeStep);
+function TimeStep({ client, handleError }) {
+  const { settings } = useSelector((state) => state.settings);
+  const dispatch = useDispatch();
+
+  const [step, setStep] = useState(settings.timeStep);
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editing) {
-      setTimeStep(step);
+      const data = { ...settings, timeStep: step };
+      client
+        .updateSettings(data)
+        .then(() => dispatch(updateSettings(data)), handleError);
       setEditing(false);
     } else {
       setEditing(true);
@@ -80,7 +84,7 @@ function TimeStep({ timeStep, setTimeStep }) {
               <option value={5 * 60 * 1000}>5 min</option>
             </Form.Control>
           ) : (
-            formatDurationInMinutes(timeStep)
+            formatDurationInMinutes(settings.timeStep)
           )}
         </Col>
         <Col>

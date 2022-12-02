@@ -49,7 +49,14 @@ export default function Timetable(props) {
   }
 
   const { groups } = useSelector((state) => state.groups);
-  const settings = getSettings(props.programs, groups, props.timeStep);
+  const { settings: timetableSettings } = useSelector(
+    (state) => state.settings
+  );
+  const settings = getSettings(
+    props.programs,
+    groups,
+    timetableSettings.timeStep
+  );
   const timeIndicatorRect = getTimeIndicatorRect(settings);
 
   return (

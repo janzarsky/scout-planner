@@ -5,6 +5,7 @@ import rangesReducer from "./rangesSlice";
 import groupsReducer from "./groupsSlice";
 import packagesReducer from "./packagesSlice";
 import rulesReducer from "./rulesSlice";
+import settingsReducer from "./settingsSlice";
 
 const composedEnhancer = applyMiddleware(thunkMiddleware);
 
@@ -15,6 +16,7 @@ export default configureStore(
       groups: groupsReducer,
       packages: packagesReducer,
       rules: rulesReducer,
+      settings: settingsReducer,
     },
   },
   composedEnhancer

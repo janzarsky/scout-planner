@@ -67,7 +67,6 @@ export default function App(props) {
     new Client(null, props.table)
   );
   const [this_state_userLevel, set_this_state_userLevel] = useState(level.NONE);
-  const [this_state_settings, set_this_state_settings] = useState({});
   const [this_state_loaded, set_this_state_loaded] = useState(false);
   const [this_state_errors, set_this_state_errors] = useState([]);
 
@@ -312,11 +311,8 @@ export default function App(props) {
 
       const viewData =
         permissions.level > level.NONE
-          ? Promise.all([
-              this_state_client.getPrograms(),
-              this_state_client.getSettings(),
-            ])
-          : Promise.resolve([[], []]);
+          ? Promise.all([this_state_client.getPrograms()])
+          : Promise.resolve([[]]);
 
       dispatch(getRanges(this_state_client));
       dispatch(getGroups(this_state_client));
@@ -328,19 +324,16 @@ export default function App(props) {
           ? this_state_client.getUsers()
           : Promise.resolve([]);
 
-      Promise.all([viewData, adminData]).then(
-        ([[allPrograms, settings], users]) => {
-          set_this_state_programs(
-            [...allPrograms].filter((program) => !program.deleted)
-          );
-          set_this_state_deletedPrograms(
-            [...allPrograms].filter((program) => program.deleted)
-          );
-          set_this_state_users(users);
-          set_this_state_settings(settings);
-          set_this_state_loaded(true);
-        }
-      );
+      Promise.all([viewData, adminData]).then(([[allPrograms], users]) => {
+        set_this_state_programs(
+          [...allPrograms].filter((program) => !program.deleted)
+        );
+        set_this_state_deletedPrograms(
+          [...allPrograms].filter((program) => program.deleted)
+        );
+        set_this_state_users(users);
+        set_this_state_loaded(true);
+      });
 
       set_this_state_userLevel(permissions.level);
     }
@@ -362,7 +355,6 @@ export default function App(props) {
     this_state_programs,
     this_state_deletedPrograms,
     this_state_users,
-    this_state_settings,
     this_state_loaded,
   ]);
 
@@ -488,12 +480,6 @@ export default function App(props) {
             {this_state_userLevel >= level.VIEW && this_state_loaded && (
               <Timetable
                 programs={this_state_programs}
-                settings={this_state_settings}
-                timeStep={
-                  this_state_settings.timeStep
-                    ? this_state_settings.timeStep
-                    : 15 * 60 * 1000
-                }
                 violations={violationsPerProgram}
                 highlightedPackages={
                   this_state_highlightingEnabled
@@ -618,24 +604,8 @@ export default function App(props) {
               programs={[...this_state_programs, ...this_state_deletedPrograms]}
               users={this_state_users}
               client={this_state_client}
+              handleError={handleError}
               userLevel={this_state_userLevel}
-              timeStep={
-                this_state_settings.timeStep
-                  ? this_state_settings.timeStep
-                  : 15 * 60 * 1000
-              }
-              updateTimeStep={(timeStep) => {
-                this_state_client
-                  .updateSettings({ ...this_state_settings, timeStep })
-                  .then(
-                    () =>
-                      set_this_state_settings({
-                        ...this_state_settings,
-                        timeStep,
-                      }),
-                    handleError
-                  );
-              }}
             />
           </Tab.Pane>
         </Tab.Content>
