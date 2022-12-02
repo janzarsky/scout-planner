@@ -31,12 +31,7 @@ import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import Filters from "./Filters";
-import {
-  toggleViewPeople,
-  toggleViewPkg,
-  toggleViewTime,
-  toggleViewViolations,
-} from "../store/viewSlice";
+import ViewSettings from "./ViewSettings";
 
 const config = require("../config.json");
 
@@ -415,67 +410,5 @@ export default function App(props) {
         </Tab.Content>
       </Tab.Container>
     </div>
-  );
-}
-
-function ViewSettings() {
-  const dispatch = useDispatch();
-  const [active, setActive] = useState(false);
-  const { viewPkg, viewTime, viewPeople, viewViolations } = useSelector(
-    (state) => state.view
-  );
-
-  return (
-    <>
-      <Nav.Item>
-        <Nav.Link
-          as={Button}
-          variant={active ? "dark" : "light"}
-          onClick={() => setActive(!active)}
-        >
-          <i className="fa fa-eye" />
-        </Nav.Link>
-      </Nav.Item>
-      {active && (
-        <>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewPkg ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewPkg())}
-            >
-              Balíček
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewTime ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewTime())}
-            >
-              Čas
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewPeople ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewPeople())}
-            >
-              Lidi
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewViolations ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewViolations())}
-            >
-              Porušení pravidel
-            </Nav.Link>
-          </Nav.Item>
-        </>
-      )}
-    </>
   );
 }
