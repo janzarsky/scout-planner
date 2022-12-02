@@ -43,10 +43,8 @@ export default function App(props) {
   const [this_state_addProgram, set_this_state_addProgram] = useState(false);
   const [this_state_addProgramOptions, set_this_state_addProgramOptions] =
     useState({});
-  const [this_state_editProgram, set_this_state_editProgram] = useState(false);
-  const [this_state_editProgramData, set_this_state_editProgramData] = useState(
-    {}
-  );
+  const [this_state_editProgramId, set_this_state_editProgramId] =
+    useState(undefined);
   const [this_state_highlightingEnabled, set_this_state_highlightingEnabled] =
     useState(false);
   const [this_state_highlightedPackages, set_this_state_highlightedPackages] =
@@ -369,13 +367,13 @@ export default function App(props) {
           handleClose={() => set_this_state_addProgram(false)}
         />
       )}
-      {this_state_editProgram && (
+      {this_state_editProgramId && (
         <EditProgramModal
           client={this_state_client}
           handleError={handleError}
-          program={this_state_editProgramData}
+          programId={this_state_editProgramId}
           people={people}
-          handleClose={() => set_this_state_editProgram(false)}
+          handleClose={() => set_this_state_editProgramId(undefined)}
           userLevel={this_state_userLevel}
         />
       )}
@@ -459,10 +457,7 @@ export default function App(props) {
                   set_this_state_addProgram(true);
                   set_this_state_addProgramOptions(options);
                 }}
-                onEdit={(program) => {
-                  set_this_state_editProgram(true);
-                  set_this_state_editProgramData(program);
-                }}
+                onEdit={(program) => set_this_state_editProgramId(program._id)}
                 viewSettings={{
                   viewPkg: this_state_viewPkg,
                   viewTime: this_state_viewTime,

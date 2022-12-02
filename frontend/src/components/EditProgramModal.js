@@ -22,22 +22,24 @@ import {
 } from "../store/programsSlice";
 
 export function EditProgramModal(props) {
+  const program = useSelector((state) =>
+    state.programs.programs.find((p) => p._id === props.programId)
+  );
+
   const [submitInProgress, setSubmitInProgress] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
 
-  const [title, setTitle] = useState(props.program.title);
-  const [date, setDate] = useState(formatDate(props.program.begin));
-  const [time, setTime] = useState(formatTime(props.program.begin));
-  const [duration, setDuration] = useState(
-    formatDuration(props.program.duration)
-  );
-  const [pkg, setPkg] = useState(props.program.pkg);
-  const [groups, setGroups] = useState(props.program.groups);
-  const [people, setPeople] = useState(props.program.people);
-  const [url, setUrl] = useState(props.program.url);
-  const [notes, setNotes] = useState(props.program.notes);
-  const [locked, setLocked] = useState(props.program.locked);
-  const [ranges, setRanges] = useState(props.program.ranges);
+  const [title, setTitle] = useState(program.title);
+  const [date, setDate] = useState(formatDate(program.begin));
+  const [time, setTime] = useState(formatTime(program.begin));
+  const [duration, setDuration] = useState(formatDuration(program.duration));
+  const [pkg, setPkg] = useState(program.pkg);
+  const [groups, setGroups] = useState(program.groups);
+  const [people, setPeople] = useState(program.people);
+  const [url, setUrl] = useState(program.url);
+  const [notes, setNotes] = useState(program.notes);
+  const [locked, setLocked] = useState(program.locked);
+  const [ranges, setRanges] = useState(program.ranges);
 
   const dispatch = useDispatch();
 
@@ -46,8 +48,8 @@ export function EditProgramModal(props) {
 
     setDeleteInProgress(true);
 
-    props.client.updateProgram({ ...props.program, deleted: true }).then(() => {
-      dispatch(deleteProgram(props.program._id));
+    props.client.updateProgram({ ...program, deleted: true }).then(() => {
+      dispatch(deleteProgram(program._id));
       setDeleteInProgress(false);
       props.handleClose();
     }, props.handleError);
@@ -60,7 +62,7 @@ export function EditProgramModal(props) {
 
     props.client
       .updateProgram({
-        ...props.program,
+        ...program,
         begin: parseDate(date) + parseTime(time),
         duration: parseDuration(duration),
         title: title,
@@ -73,7 +75,7 @@ export function EditProgramModal(props) {
         locked: locked,
       })
       .then((resp) => {
-        dispatch(updateProgram(props.program));
+        dispatch(updateProgram(resp));
         setSubmitInProgress(false);
         props.handleClose();
       }, props.handleError);
