@@ -38,7 +38,7 @@ import { addError, removeError } from "../store/errorsSlice";
 
 const config = require("../config.json");
 
-export default function App(props) {
+export default function App() {
   const [violations, setViolations] = useState(new Map());
   const [otherProblems, setOtherProblems] = useState([]);
   const [rulesSatisfied, setRulesSatisfied] = useState(true);

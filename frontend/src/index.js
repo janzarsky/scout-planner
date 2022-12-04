@@ -18,7 +18,7 @@ import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import { setTable } from "./store/authSlice";
 
-function AppWrapper(props) {
+function AppWrapper() {
   const dispatch = useDispatch();
   let { table } = useParams();
   dispatch(setTable(table));

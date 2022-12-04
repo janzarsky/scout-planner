@@ -23,9 +23,9 @@ import {
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
 
-export function EditProgramModal(props) {
+export function EditProgramModal({ programId, handleClose, allPeople }) {
   const program = useSelector((state) => {
-    const prog = state.programs.programs.find((p) => p._id === props.programId);
+    const prog = state.programs.programs.find((p) => p._id === programId);
     return prog ? prog : {};
   });
 
@@ -58,7 +58,7 @@ export function EditProgramModal(props) {
       () => {
         dispatch(deleteProgram(program._id));
         setDeleteInProgress(false);
-        props.handleClose();
+        handleClose();
       },
       (e) => dispatch(addError(e.message))
     );
@@ -87,14 +87,14 @@ export function EditProgramModal(props) {
         (resp) => {
           dispatch(updateProgram(resp));
           setSubmitInProgress(false);
-          props.handleClose();
+          handleClose();
         },
         (e) => dispatch(addError(e.message))
       );
   }
 
   return (
-    <Modal show={true} onHide={props.handleClose}>
+    <Modal show={true} onHide={handleClose}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -136,7 +136,7 @@ export function EditProgramModal(props) {
           />
           <ProgramPeople
             programPeople={people}
-            allPeople={props.people}
+            allPeople={allPeople}
             addPerson={(person) => setPeople([...people, person])}
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
@@ -174,7 +174,7 @@ export function EditProgramModal(props) {
               &nbsp; Smazat
             </Button>
           )}
-          <Button variant="link" onClick={props.handleClose}>
+          <Button variant="link" onClick={handleClose}>
             {userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
           </Button>
           {userLevel >= level.EDIT && (
@@ -494,12 +494,12 @@ function ProgramNotes({ notes, setNotes, disabled = false }) {
   );
 }
 
-export function AddProgramModal(props) {
+export function AddProgramModal({ options, handleClose, allPeople }) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
   const [title, setTitle] = useState("Nový program");
-  const [date, setDate] = useState(formatDate(props.options.begin));
-  const [time, setTime] = useState(formatTime(props.options.begin));
+  const [date, setDate] = useState(formatDate(options.begin));
+  const [time, setTime] = useState(formatTime(options.begin));
   const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
   const [pkg, setPkg] = useState(undefined);
   const [groups, setGroups] = useState([]);
@@ -536,14 +536,14 @@ export function AddProgramModal(props) {
         (resp) => {
           dispatch(addProgram(resp));
           setSubmitInProgress(false);
-          props.handleClose();
+          handleClose();
         },
         (e) => dispatch(addError(e.message))
       );
   }
 
   return (
-    <Modal show={true} onHide={props.handleClose}>
+    <Modal show={true} onHide={handleClose}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>Nový program</Modal.Title>
@@ -572,7 +572,7 @@ export function AddProgramModal(props) {
           />
           <ProgramPeople
             programPeople={people}
-            allPeople={props.people}
+            allPeople={allPeople}
             addPerson={(person) => setPeople([...people, person])}
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
@@ -586,7 +586,7 @@ export function AddProgramModal(props) {
           <ProgramNotes notes={notes} setNotes={setNotes} />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="link" onClick={props.handleClose}>
+          <Button variant="link" onClick={handleClose}>
             Zrušit
           </Button>
           <Button variant="primary" type="submit">
