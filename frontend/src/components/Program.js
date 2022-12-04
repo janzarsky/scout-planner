@@ -9,7 +9,7 @@ import { addProgram } from "../store/programsSlice";
 export default function Program(props) {
   const { packages } = useSelector((state) => state.packages);
 
-  const { token, table } = useSelector((state) => state.auth);
+  const { token, table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(token, table);
 
   const [, drag] = useDrag(() => ({
@@ -41,17 +41,11 @@ export default function Program(props) {
         violations={props.violations}
         pkg={packages.find((p) => p._id === props.program.pkg)}
       />
-      <ProgramEdit
-        program={props.program}
-        onEdit={props.onEdit}
-        userLevel={props.userLevel}
-      />
+      <ProgramEdit program={props.program} onEdit={props.onEdit} />
       {props.program.locked && <ProgramLock />}
-      {!props.program.locked && props.userLevel >= level.EDIT && (
-        <ProgramMove />
-      )}
+      {!props.program.locked && userLevel >= level.EDIT && <ProgramMove />}
       {props.program.url && <ProgramUrl url={props.program.url} />}
-      {props.userLevel >= level.EDIT && (
+      {userLevel >= level.EDIT && (
         <ProgramClone clone={() => clone(props.program)} />
       )}
     </div>
@@ -170,9 +164,11 @@ function ProgramViolations(props) {
 }
 
 function ProgramEdit(props) {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+
   return (
     <div className="program-edit" onClick={() => props.onEdit(props.program)}>
-      {props.userLevel >= level.EDIT ? (
+      {userLevel >= level.EDIT ? (
         <i className="fa fa-pencil" />
       ) : (
         <i className="fa fa-eye" />

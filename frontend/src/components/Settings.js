@@ -12,7 +12,7 @@ import { updateSettings } from "../store/settingsSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
 
-export default function Settings({ userLevel }) {
+export default function Settings() {
   const { groups } = useSelector((state) => state.groups);
   const { ranges } = useSelector((state) => state.ranges);
   const { packages } = useSelector((state) => state.packages);
@@ -20,7 +20,7 @@ export default function Settings({ userLevel }) {
   const { users } = useSelector((state) => state.users);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
-  const { token, table } = useSelector((state) => state.auth);
+  const { token, table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(token, table);
 
   async function deleteAll() {

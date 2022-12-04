@@ -46,7 +46,7 @@ export function EditProgramModal(props) {
 
   const dispatch = useDispatch();
 
-  const { token, table } = useSelector((state) => state.auth);
+  const { token, table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(token, table);
 
   function handleDelete(event) {
@@ -98,33 +98,33 @@ export function EditProgramModal(props) {
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {props.userLevel >= level.EDIT ? "Upravit program" : "Program"}
+            {userLevel >= level.EDIT ? "Upravit program" : "Program"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <ProgramTitle
             title={title}
             setTitle={setTitle}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramBeginning
             time={time}
             setTime={setTime}
             date={date}
             setDate={setDate}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramDuration
             duration={duration}
             setDuration={setDuration}
             locked={locked}
             setLocked={setLocked}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramPackage
             pkg={pkg}
             setPkg={setPkg}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramGroups
             programGroups={groups}
@@ -132,7 +132,7 @@ export function EditProgramModal(props) {
             removeGroup={(group) =>
               setGroups(groups.filter((g) => g !== group))
             }
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramPeople
             programPeople={people}
@@ -141,26 +141,26 @@ export function EditProgramModal(props) {
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
             }
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramUrl
             url={url}
             setUrl={setUrl}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramRanges
             programRanges={ranges}
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramNotes
             notes={notes}
             setNotes={setNotes}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
         </Modal.Body>
         <Modal.Footer>
-          {props.userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Button
               variant="link text-danger"
               onClick={handleDelete}
@@ -175,9 +175,9 @@ export function EditProgramModal(props) {
             </Button>
           )}
           <Button variant="link" onClick={props.handleClose}>
-            {props.userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
+            {userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
           </Button>
-          {props.userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Button variant="primary" type="submit">
               {submitInProgress ? (
                 <i className="fa fa-spinner fa-pulse" />

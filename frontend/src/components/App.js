@@ -30,11 +30,11 @@ import { getPackages } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
-import { setToken } from "../store/authSlice";
+import { getPermissions, setToken } from "../store/authSlice";
 import Filters from "./Filters";
 import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
-import { removeError } from "../store/errorsSlice";
+import { addError, removeError } from "../store/errorsSlice";
 
 const config = require("../config.json");
 
@@ -45,7 +45,6 @@ export default function App(props) {
   const [addModalEnabled, setAddModalEnabled] = useState(false);
   const [addProgramOptions, setAddProgramOptions] = useState({});
   const [editProgramId, setEditProgramId] = useState(undefined);
-  const [userLevel, setUserLevel] = useState(level.NONE);
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const [auth, setAuth] = useState();
@@ -66,21 +65,23 @@ export default function App(props) {
   const { programs: this_state_programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs
   );
-  const { token, table } = useSelector((state) => state.auth);
+  const { token, table, userLevel, permissionsLoaded } = useSelector(
+    (state) => state.auth
+  );
   const errors = useSelector((state) => state.errors);
 
   const dispatch = useDispatch();
 
   async function login() {
-    await signInWithPopup(auth, provider).catch((error) =>
-      console.error(error)
+    await signInWithPopup(auth, provider).catch((e) =>
+      dispatch(addError(e.message))
     );
   }
 
   async function logout() {
     await signOut(auth)
-      .catch((error) => console.error(error))
-      .finally(() => dispatch(setToken(undefined)));
+      .catch((e) => dispatch(addError(e.message)))
+      .finally(() => dispatch(setToken(null)));
   }
 
   useEffect(() => {
@@ -99,23 +100,27 @@ export default function App(props) {
   }, []);
 
   useEffect(() => {
-    async function reloadData() {
+    if (!permissionsLoaded) {
+      const client = new Client(token, table);
+      dispatch(getPermissions(client));
+    }
+  }, [token, table, permissionsLoaded, dispatch]);
+
+  useEffect(() => {
+    if (permissionsLoaded) {
       const client = new Client(token, table);
 
-      const permissions = await client.getPermissions();
+      if (userLevel >= level.NONE) {
+        dispatch(getPrograms(client));
+        dispatch(getRanges(client));
+        dispatch(getGroups(client));
+        dispatch(getPackages(client));
+        dispatch(getRules(client));
+      }
 
-      dispatch(getPrograms(client));
-      dispatch(getRanges(client));
-      dispatch(getGroups(client));
-      dispatch(getPackages(client));
-      dispatch(getRules(client));
-
-      if (permissions.level >= level.ADMIN) dispatch(getUsers(client));
-
-      setUserLevel(permissions.level);
+      if (userLevel >= level.ADMIN) dispatch(getUsers(client));
     }
-    reloadData();
-  }, [token, table, dispatch]);
+  }, [token, table, userLevel, permissionsLoaded, dispatch]);
 
   useEffect(() => {
     const problems = checkRules(this_state_rules, this_state_programs);
@@ -193,7 +198,6 @@ export default function App(props) {
           programId={editProgramId}
           people={people}
           handleClose={() => setEditProgramId(undefined)}
-          userLevel={userLevel}
         />
       )}
       <Tab.Container defaultActiveKey={"timetable"}>
@@ -277,7 +281,6 @@ export default function App(props) {
                   setAddProgramOptions(options);
                 }}
                 onEdit={(program) => setEditProgramId(program._id)}
-                userLevel={userLevel}
               />
             )}
             {!dataLoaded && (
@@ -300,7 +303,7 @@ export default function App(props) {
           </Tab.Pane>
           {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="rules">
-              <Rules violations={violations} userLevel={userLevel} />
+              <Rules violations={violations} />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
@@ -331,7 +334,7 @@ export default function App(props) {
             </Tab.Pane>
           )}
           <Tab.Pane eventKey="settings" title="Nastavení">
-            <Settings userLevel={userLevel} />
+            <Settings />
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>

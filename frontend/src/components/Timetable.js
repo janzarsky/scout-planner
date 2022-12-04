@@ -20,7 +20,7 @@ export default function Timetable(props) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
-  const { token, table } = useSelector((state) => state.auth);
+  const { token, table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(token, table);
 
   function onDroppableDrop(item, begin, currentPrograms) {
@@ -33,7 +33,7 @@ export default function Timetable(props) {
     }
   }
 
-  function* getPrograms(programs, settings, userLevel) {
+  function* getPrograms(programs, settings) {
     for (const prog of programs) {
       const rect = getProgramRect(prog, settings);
 
@@ -45,7 +45,6 @@ export default function Timetable(props) {
             violations={props.violations.get(prog._id)}
             rect={rect}
             onEdit={props.onEdit}
-            userLevel={props.userLevel}
           />
         );
       else
@@ -77,13 +76,13 @@ export default function Timetable(props) {
             ", minmax(20px, 1fr))",
         }}
       >
-        {props.userLevel >= level.EDIT && [
+        {userLevel >= level.EDIT && [
           ...getDroppables(settings, onDroppableDrop, props.addProgramModal),
         ]}
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[...getPrograms(programs, settings, props.userLevel)]}
+        {[...getPrograms(programs, settings, userLevel)]}
         {timeIndicatorRect && <TimeIndicator rect={timeIndicatorRect} />}
       </div>
     </DndProvider>
