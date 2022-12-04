@@ -11,6 +11,7 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byOrder } from "../helpers/Sorting";
+import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
@@ -25,9 +26,10 @@ export default function Timetable(props) {
   function onDroppableDrop(item, begin, currentPrograms) {
     var prog = currentPrograms.find((program) => program._id === item.id);
     if (prog) {
-      client
-        .updateProgram({ ...prog, begin })
-        .then((resp) => dispatch(updateProgram(resp)), props.handleError);
+      client.updateProgram({ ...prog, begin }).then(
+        (resp) => dispatch(updateProgram(resp)),
+        (e) => dispatch(addError(e.message))
+      );
     }
   }
 
@@ -44,7 +46,6 @@ export default function Timetable(props) {
             rect={rect}
             onEdit={props.onEdit}
             userLevel={props.userLevel}
-            handleError={props.handleError}
           />
         );
       else

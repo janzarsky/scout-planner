@@ -14,8 +14,9 @@ import { level } from "../helpers/Level";
 import { useDispatch, useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
 import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Rules({ handleError, userLevel, violations }) {
+export default function Rules({ userLevel, violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
   const [condition, setCondition] = useState("is_before_program");
   const [time, setTime] = useState(formatTime(Date.now()));
@@ -52,7 +53,10 @@ export default function Rules({ handleError, userLevel, violations }) {
         condition: condition,
         value: value,
       })
-      .then((resp) => dispatch(addRule(resp)), handleError);
+      .then(
+        (resp) => dispatch(addRule(resp)),
+        (e) => dispatch(addError(e.message))
+      );
   }
 
   return (
@@ -70,9 +74,10 @@ export default function Rules({ handleError, userLevel, violations }) {
                 programs={programs}
                 violation={violations.get(rule._id)}
                 deleteRule={() =>
-                  client
-                    .deleteRule(rule._id)
-                    .then(() => dispatch(deleteRule(rule._id)), handleError)
+                  client.deleteRule(rule._id).then(
+                    () => dispatch(deleteRule(rule._id)),
+                    (e) => dispatch(addError(e.message))
+                  )
                 }
                 userLevel={userLevel}
               />

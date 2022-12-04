@@ -34,6 +34,7 @@ import { setToken } from "../store/authSlice";
 import Filters from "./Filters";
 import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
+import { removeError } from "../store/errorsSlice";
 
 const config = require("../config.json");
 
@@ -46,7 +47,6 @@ export default function App(props) {
   const [editProgramId, setEditProgramId] = useState(undefined);
   const [userLevel, setUserLevel] = useState(level.NONE);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [errors, setErrors] = useState([]);
 
   const [auth, setAuth] = useState();
   const [provider, setProvider] = useState();
@@ -67,6 +67,7 @@ export default function App(props) {
     (state) => state.programs
   );
   const { token, table } = useSelector((state) => state.auth);
+  const errors = useSelector((state) => state.errors);
 
   const dispatch = useDispatch();
 
@@ -80,10 +81,6 @@ export default function App(props) {
     await signOut(auth)
       .catch((error) => console.error(error))
       .finally(() => dispatch(setToken(undefined)));
-  }
-
-  function handleError(error) {
-    setErrors([error.message, ...errors]);
   }
 
   useEffect(() => {
@@ -177,7 +174,7 @@ export default function App(props) {
           <Alert
             variant="danger"
             dismissible
-            onClose={() => setErrors(errors.slice(1))}
+            onClose={() => dispatch(removeError())}
           >
             <i className="fa fa-exclamation-triangle" />
             &nbsp; {errors[0]}
@@ -186,7 +183,6 @@ export default function App(props) {
       )}
       {addModalEnabled && (
         <AddProgramModal
-          handleError={handleError}
           options={addProgramOptions}
           people={people}
           handleClose={() => setAddModalEnabled(false)}
@@ -194,7 +190,6 @@ export default function App(props) {
       )}
       {editProgramId && (
         <EditProgramModal
-          handleError={handleError}
           programId={editProgramId}
           people={people}
           handleClose={() => setEditProgramId(undefined)}
@@ -283,7 +278,6 @@ export default function App(props) {
                 }}
                 onEdit={(program) => setEditProgramId(program._id)}
                 userLevel={userLevel}
-                handleError={handleError}
               />
             )}
             {!dataLoaded && (
@@ -306,26 +300,22 @@ export default function App(props) {
           </Tab.Pane>
           {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="rules">
-              <Rules
-                handleError={handleError}
-                violations={violations}
-                userLevel={userLevel}
-              />
+              <Rules violations={violations} userLevel={userLevel} />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="packages" title="Balíčky">
-              <Packages handleError={handleError} />
+              <Packages />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="groups" title="Skupiny">
-              <Groups handleError={handleError} />
+              <Groups />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="ranges" title="Linky">
-              <Ranges handleError={handleError} />
+              <Ranges />
             </Tab.Pane>
           )}
           {userLevel >= level.VIEW && (
@@ -336,13 +326,12 @@ export default function App(props) {
           {userLevel >= level.ADMIN && (
             <Tab.Pane eventKey="users" title="Uživatelé">
               <Users
-                handleError={handleError}
                 userEmail={auth.currentUser ? auth.currentUser.email : null}
               />
             </Tab.Pane>
           )}
           <Tab.Pane eventKey="settings" title="Nastavení">
-            <Settings handleError={handleError} userLevel={userLevel} />
+            <Settings userLevel={userLevel} />
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>

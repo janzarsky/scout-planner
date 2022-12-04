@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Client from "../Client";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import { addError } from "../store/errorsSlice";
 import { addProgram } from "../store/programsSlice";
 
 export default function Program(props) {
@@ -18,9 +19,10 @@ export default function Program(props) {
 
   const dispatch = useDispatch();
   const clone = (p) =>
-    client
-      .addProgram(p)
-      .then((resp) => dispatch(addProgram(resp)), props.handleError);
+    client.addProgram(p).then(
+      (resp) => dispatch(addProgram(resp)),
+      (e) => dispatch(addError(e.message))
+    );
 
   return (
     <div

@@ -21,6 +21,7 @@ import {
   updateProgram,
 } from "../store/programsSlice";
 import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
 export function EditProgramModal(props) {
   const program = useSelector((state) =>
@@ -52,11 +53,14 @@ export function EditProgramModal(props) {
 
     setDeleteInProgress(true);
 
-    client.updateProgram({ ...program, deleted: true }).then(() => {
-      dispatch(deleteProgram(program._id));
-      setDeleteInProgress(false);
-      props.handleClose();
-    }, props.handleError);
+    client.updateProgram({ ...program, deleted: true }).then(
+      () => {
+        dispatch(deleteProgram(program._id));
+        setDeleteInProgress(false);
+        props.handleClose();
+      },
+      (e) => dispatch(addError(e.message))
+    );
   }
 
   function handleSubmit(event) {
@@ -78,11 +82,14 @@ export function EditProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then((resp) => {
-        dispatch(updateProgram(resp));
-        setSubmitInProgress(false);
-        props.handleClose();
-      }, props.handleError);
+      .then(
+        (resp) => {
+          dispatch(updateProgram(resp));
+          setSubmitInProgress(false);
+          props.handleClose();
+        },
+        (e) => dispatch(addError(e.message))
+      );
   }
 
   return (
@@ -524,11 +531,14 @@ export function AddProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then((resp) => {
-        dispatch(addProgram(resp));
-        setSubmitInProgress(false);
-        props.handleClose();
-      }, props.handleError);
+      .then(
+        (resp) => {
+          dispatch(addProgram(resp));
+          setSubmitInProgress(false);
+          props.handleClose();
+        },
+        (e) => dispatch(addError(e.message))
+      );
   }
 
   return (

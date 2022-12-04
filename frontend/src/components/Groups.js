@@ -6,8 +6,9 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addGroup, deleteGroup, updateGroup } from "../store/groupsSlice";
 import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Groups({ handleError }) {
+export default function Groups() {
   const [newName, setNewName] = useState("Nová skupina");
   const [newOrder, setNewOrder] = useState(0);
   const [editedName, setEditedName] = useState();
@@ -30,7 +31,10 @@ export default function Groups({ handleError }) {
           name: editedName,
           order: editedOrder,
         })
-        .then((resp) => dispatch(updateGroup(resp)), handleError);
+        .then(
+          (resp) => dispatch(updateGroup(resp)),
+          (e) => dispatch(addError(e.message))
+        );
       setEditKey(undefined);
     } else {
       client
@@ -38,7 +42,10 @@ export default function Groups({ handleError }) {
           name: newName,
           order: newOrder,
         })
-        .then((resp) => dispatch(addGroup(resp)), handleError);
+        .then(
+          (resp) => dispatch(addGroup(resp)),
+          (e) => dispatch(addError(e.message))
+        );
     }
   }
 
@@ -62,9 +69,10 @@ export default function Groups({ handleError }) {
                 name={group.name}
                 order={group.order}
                 deleteGroup={() =>
-                  client
-                    .deleteGroup(group._id)
-                    .then(() => dispatch(deleteGroup(group._id)), handleError)
+                  client.deleteGroup(group._id).then(
+                    () => dispatch(deleteGroup(group._id)),
+                    (e) => dispatch(addError(e.message))
+                  )
                 }
                 editGroup={() => {
                   setEditKey(group._id);

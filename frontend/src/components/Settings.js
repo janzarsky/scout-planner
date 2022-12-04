@@ -10,8 +10,9 @@ import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSettings } from "../store/settingsSlice";
 import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Settings({ userLevel, handleError }) {
+export default function Settings({ userLevel }) {
   const { groups } = useSelector((state) => state.groups);
   const { ranges } = useSelector((state) => state.ranges);
   const { packages } = useSelector((state) => state.packages);
@@ -44,13 +45,13 @@ export default function Settings({ userLevel, handleError }) {
             <Button onClick={deleteAll}>Smazat vše</Button>
           </Form.Group>
         )}
-        {userLevel >= level.EDIT && <TimeStep handleError={handleError} />}
+        {userLevel >= level.EDIT && <TimeStep />}
       </Container>
     </>
   );
 }
 
-function TimeStep({ handleError }) {
+function TimeStep() {
   const { settings } = useSelector((state) => state.settings);
   const dispatch = useDispatch();
 
@@ -65,9 +66,10 @@ function TimeStep({ handleError }) {
 
     if (editing) {
       const data = { ...settings, timeStep: step };
-      client
-        .updateSettings(data)
-        .then(() => dispatch(updateSettings(data)), handleError);
+      client.updateSettings(data).then(
+        () => dispatch(updateSettings(data)),
+        (e) => dispatch(addError(e.message))
+      );
       setEditing(false);
     } else {
       setEditing(true);
