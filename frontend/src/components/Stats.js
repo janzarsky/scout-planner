@@ -3,16 +3,16 @@ import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
 
-export default function Stats(props) {
+export default function Stats({ people }) {
   return (
     <>
-      <PackageStats programs={props.programs} packages={props.packages} />
-      <PeopleStats programs={props.programs} people={props.people} />
+      <PackageStats />
+      <PeopleStats people={people} />
     </>
   );
 }
 
-function PackageStats(props) {
+function PackageStats() {
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
   const { programs } = useSelector((state) => state.programs);
@@ -53,7 +53,7 @@ function PackageStats(props) {
   );
 }
 
-function PeopleStats(props) {
+function PeopleStats({ people }) {
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
   const { programs } = useSelector((state) => state.programs);
@@ -74,7 +74,7 @@ function PeopleStats(props) {
         </tr>
       </thead>
       <tbody>
-        {[...props.people]
+        {[...people]
           .sort((a, b) => a.localeCompare(b))
           .map((person) => (
             <tr key={person}>

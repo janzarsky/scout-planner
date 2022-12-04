@@ -9,20 +9,20 @@ export const groupsSlice = createSlice({
   name: "groups",
   initialState: { groups: [], loading: "idle", error: null, loaded: false },
   reducers: {
-    addGroup: (state, action) => {
+    addGroup(state, action) {
       state.groups.push(action.payload);
     },
-    updateGroup: (state, action) => {
+    updateGroup(state, action) {
       state.groups = [
         ...state.groups.filter((g) => g._id !== action.payload._id),
         action.payload,
       ];
     },
-    deleteGroup: (state, action) => {
+    deleteGroup(state, action) {
       state.groups = state.groups.filter((g) => g._id !== action.payload);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getGroups.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";

@@ -15,23 +15,23 @@ export const programsSlice = createSlice({
     loaded: false,
   },
   reducers: {
-    addProgram: (state, action) => {
+    addProgram(state, action) {
       state.programs.push(action.payload);
     },
-    updateProgram: (state, action) => {
+    updateProgram(state, action) {
       state.programs = [
         ...state.programs.filter((p) => p._id !== action.payload._id),
         action.payload,
       ];
     },
-    deleteProgram: (state, action) => {
+    deleteProgram(state, action) {
       state.deletedPrograms.push(
         state.programs.find((p) => p._id === action.payload)
       );
       state.programs = state.programs.filter((p) => p._id !== action.payload);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getPrograms.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";

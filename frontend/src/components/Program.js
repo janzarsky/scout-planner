@@ -1,143 +1,135 @@
 import { useDrag } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
+import Client from "../Client";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import { addError } from "../store/errorsSlice";
 import { addProgram } from "../store/programsSlice";
 
-export default function Program(props) {
+export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
+
+  const { token, table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   const [, drag] = useDrag(() => ({
     type: "program",
-    item: { id: props.program._id },
+    item: { id: program._id },
   }));
 
   const dispatch = useDispatch();
   const clone = (p) =>
-    props.client
-      .addProgram(p)
-      .then((resp) => dispatch(addProgram(resp)), props.handleError);
+    client.addProgram(p).then(
+      (resp) => dispatch(addProgram(resp)),
+      (e) => dispatch(addError(e.message))
+    );
 
   return (
     <div
       ref={drag}
       className={"program-wrapper"}
       style={{
-        gridColumnStart: props.rect.x + 3,
-        gridRowStart: props.rect.y + 2,
-        gridColumnEnd: "span " + props.rect.width,
-        gridRowEnd: "span " + props.rect.height,
+        gridColumnStart: rect.x + 3,
+        gridRowStart: rect.y + 2,
+        gridColumnEnd: "span " + rect.width,
+        gridRowEnd: "span " + rect.height,
       }}
-      draggable={!props.program.locked}
+      draggable={!program.locked}
     >
       <ProgramBody
-        program={props.program}
-        violations={props.violations}
-        pkg={packages.find((p) => p._id === props.program.pkg)}
-        highlighted={props.highlighted}
-        viewSettings={props.viewSettings}
-        activeRange={props.activeRange}
+        program={program}
+        violations={violations}
+        pkg={packages.find((p) => p._id === program.pkg)}
       />
-      <ProgramEdit
-        program={props.program}
-        onEdit={props.onEdit}
-        userLevel={props.userLevel}
-      />
-      {props.program.locked && <ProgramLock />}
-      {!props.program.locked && props.userLevel >= level.EDIT && (
-        <ProgramMove />
-      )}
-      {props.program.url && <ProgramUrl url={props.program.url} />}
-      {props.userLevel >= level.EDIT && (
-        <ProgramClone clone={() => clone(props.program)} />
-      )}
+      <ProgramEdit program={program} onEdit={onEdit} />
+      {program.locked && <ProgramLock />}
+      {!program.locked && userLevel >= level.EDIT && <ProgramMove />}
+      {program.url && <ProgramUrl url={program.url} />}
+      {userLevel >= level.EDIT && <ProgramClone clone={() => clone(program)} />}
     </div>
   );
 }
 
-function ProgramBody(props) {
+function ProgramBody({ program, pkg, violations }) {
+  const highlighted = useSelector(
+    (state) =>
+      state.view.highlightingEnabled &&
+      state.view.highlightedPackages.indexOf(program.pkg) !== -1
+  );
+  const viewViolations = useSelector((state) => state.view.viewViolations);
+  const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   let rangeValue =
-    props.activeRange && props.program.ranges
-      ? props.program.ranges[props.activeRange]
-      : 0;
+    activeRange && program.ranges ? program.ranges[activeRange] : 0;
   if (rangeValue === undefined) rangeValue = 0;
 
   return (
     <div
       className={
         "program" +
-        (props.violations && props.viewSettings.viewViolations
-          ? " violation"
-          : "") +
-        (props.highlighted ? " highlighted" : "") +
-        (props.activeRange ? " range range-" + rangeValue : "")
+        (violations && viewViolations ? " violation" : "") +
+        (highlighted ? " highlighted" : "") +
+        (rangesEnabled ? " range range-" + rangeValue : "")
       }
       style={
-        !props.highlighted && !props.activeRange && props.pkg
-          ? { backgroundColor: props.pkg.color }
+        !highlighted && !rangesEnabled && pkg
+          ? { backgroundColor: pkg.color }
           : {}
       }
-      title={props.violations && props.violations.join(", ")}
+      title={violations && violations.join(", ")}
     >
       <ProgramText
-        people={props.program.people}
-        title={props.program.title}
-        begin={props.program.begin}
-        duration={props.program.duration}
-        pkgName={props.pkg ? props.pkg.name : ""}
-        viewSettings={props.viewSettings}
-        violations={props.violations}
+        people={program.people}
+        title={program.title}
+        begin={program.begin}
+        duration={program.duration}
+        pkgName={pkg ? pkg.name : ""}
+        violations={violations}
       />
     </div>
   );
 }
 
-function ProgramText(props) {
+function ProgramText({ title, pkgName, begin, duration, people, violations }) {
+  const { viewPkg, viewTime, viewPeople, viewViolations } = useSelector(
+    (state) => state.view
+  );
   return (
     <div className="program-text">
-      {!isHidden(props.title) && <h3>{props.title}</h3>}
-      {props.viewSettings.viewPkg && !isHidden(props.pkgName) && (
-        <p className="program-package">{props.pkgName}</p>
+      {!isHidden(title) && <h3>{title}</h3>}
+      {viewPkg && !isHidden(pkgName) && (
+        <p className="program-package">{pkgName}</p>
       )}
-      {props.viewSettings.viewTime && (
-        <ProgramTime begin={props.begin} end={props.begin + props.duration} />
-      )}
-      {props.viewSettings.viewPeople && (
-        <ProgramPeople
-          people={props.people}
-          viewViolations={props.viewSettings.viewViolations}
-          violations={props.violations}
-        />
-      )}
-      {props.viewSettings.viewViolations && props.violations && (
-        <ProgramViolations violations={props.violations} />
+      {viewTime && <ProgramTime begin={begin} end={begin + duration} />}
+      {viewPeople && <ProgramPeople people={people} violations={violations} />}
+      {viewViolations && violations && (
+        <ProgramViolations violations={violations} />
       )}
     </div>
   );
 }
 
-function ProgramTime(props) {
+function ProgramTime({ begin, end }) {
   return (
     <p className="program-time">
-      {formatTime(props.begin)}&ndash;
-      {formatTime(props.end)}
+      {formatTime(begin)}&ndash;
+      {formatTime(end)}
     </p>
   );
 }
 
-function ProgramPeople(props) {
+function ProgramPeople({ people, violations }) {
+  const viewViolations = useSelector((state) => state.view.viewViolations);
+
   return (
     <p className="program-people">
-      {[...props.people]
+      {[...people]
         .sort((a, b) => a.localeCompare(b))
         .map((person) => (
           <span
             key={person}
             className={
               // dirty hack
-              props.viewViolations &&
-              props.violations &&
-              props.violations.join().includes(person)
+              viewViolations && violations && violations.join().includes(person)
                 ? "program-violated"
                 : ""
             }
@@ -152,10 +144,10 @@ function ProgramPeople(props) {
   );
 }
 
-function ProgramViolations(props) {
+function ProgramViolations({ violations }) {
   return (
     <p className="program-violations">
-      {props.violations
+      {violations
         // dirty hack
         .filter((violation) => !violation.includes("Jeden člověk na více"))
         .join(", ")}
@@ -163,10 +155,12 @@ function ProgramViolations(props) {
   );
 }
 
-function ProgramEdit(props) {
+function ProgramEdit({ onEdit, program }) {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+
   return (
-    <div className="program-edit" onClick={() => props.onEdit(props.program)}>
-      {props.userLevel >= level.EDIT ? (
+    <div className="program-edit" onClick={() => onEdit(program)}>
+      {userLevel >= level.EDIT ? (
         <i className="fa fa-pencil" />
       ) : (
         <i className="fa fa-eye" />
@@ -191,19 +185,19 @@ function ProgramLock() {
   );
 }
 
-function ProgramUrl(props) {
+function ProgramUrl({ url }) {
   return (
     <div className="program-url">
-      <a href={props.url} rel="noopener noreferrer" target="_blank">
+      <a href={url} rel="noopener noreferrer" target="_blank">
         <i className="fa fa-link" />
       </a>
     </div>
   );
 }
 
-function ProgramClone(props) {
+function ProgramClone({ clone }) {
   return (
-    <div className="program-clone" onClick={props.clone}>
+    <div className="program-clone" onClick={clone}>
       <i className="fa fa-clone" />
     </div>
   );

@@ -9,8 +9,10 @@ import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSettings } from "../store/settingsSlice";
+import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Settings(props) {
+export default function Settings() {
   const { groups } = useSelector((state) => state.groups);
   const { ranges } = useSelector((state) => state.ranges);
   const { packages } = useSelector((state) => state.packages);
@@ -18,15 +20,18 @@ export default function Settings(props) {
   const { users } = useSelector((state) => state.users);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
+  const { token, table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
+
   async function deleteAll() {
     await Promise.all([
-      ...programs.map((it) => props.client.deleteProgram(it._id)),
-      ...deletedPrograms.map((it) => props.client.deleteProgram(it._id)),
-      ...packages.map((it) => props.client.deletePackage(it._id)),
-      ...groups.map((it) => props.client.deleteGroup(it._id)),
-      ...rules.map((it) => props.client.deleteRule(it._id)),
-      ...ranges.map((it) => props.client.deleteRange(it._id)),
-      ...users.map((it) => props.client.deleteUser(it._id)),
+      ...programs.map((it) => client.deleteProgram(it._id)),
+      ...deletedPrograms.map((it) => client.deleteProgram(it._id)),
+      ...packages.map((it) => client.deletePackage(it._id)),
+      ...groups.map((it) => client.deleteGroup(it._id)),
+      ...rules.map((it) => client.deleteRule(it._id)),
+      ...ranges.map((it) => client.deleteRange(it._id)),
+      ...users.map((it) => client.deleteUser(it._id)),
     ]).then(() => window.location.reload());
   }
 
@@ -34,23 +39,24 @@ export default function Settings(props) {
     <>
       <Container fluid>
         <Export />
-        {props.userLevel >= level.ADMIN && <Import client={props.client} />}
-        {props.userLevel >= level.ADMIN && (
+        {userLevel >= level.ADMIN && <Import />}
+        {userLevel >= level.ADMIN && (
           <Form.Group>
             <Button onClick={deleteAll}>Smazat vše</Button>
           </Form.Group>
         )}
-        {props.userLevel >= level.EDIT && (
-          <TimeStep client={props.client} handleError={props.handleError} />
-        )}
+        {userLevel >= level.EDIT && <TimeStep />}
       </Container>
     </>
   );
 }
 
-function TimeStep({ client, handleError }) {
+function TimeStep() {
   const { settings } = useSelector((state) => state.settings);
   const dispatch = useDispatch();
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   const [step, setStep] = useState(settings.timeStep);
   const [editing, setEditing] = useState(false);
@@ -60,9 +66,10 @@ function TimeStep({ client, handleError }) {
 
     if (editing) {
       const data = { ...settings, timeStep: step };
-      client
-        .updateSettings(data)
-        .then(() => dispatch(updateSettings(data)), handleError);
+      client.updateSettings(data).then(
+        () => dispatch(updateSettings(data)),
+        (e) => dispatch(addError(e.message))
+      );
       setEditing(false);
     } else {
       setEditing(true);

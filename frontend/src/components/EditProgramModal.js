@@ -20,11 +20,14 @@ import {
   deleteProgram,
   updateProgram,
 } from "../store/programsSlice";
+import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export function EditProgramModal(props) {
-  const program = useSelector((state) =>
-    state.programs.programs.find((p) => p._id === props.programId)
-  );
+export function EditProgramModal({ programId, handleClose, allPeople }) {
+  const program = useSelector((state) => {
+    const prog = state.programs.programs.find((p) => p._id === programId);
+    return prog ? prog : {};
+  });
 
   const [submitInProgress, setSubmitInProgress] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
@@ -43,16 +46,22 @@ export function EditProgramModal(props) {
 
   const dispatch = useDispatch();
 
+  const { token, table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
+
   function handleDelete(event) {
     event.preventDefault();
 
     setDeleteInProgress(true);
 
-    props.client.updateProgram({ ...program, deleted: true }).then(() => {
-      dispatch(deleteProgram(program._id));
-      setDeleteInProgress(false);
-      props.handleClose();
-    }, props.handleError);
+    client.updateProgram({ ...program, deleted: true }).then(
+      () => {
+        dispatch(deleteProgram(program._id));
+        setDeleteInProgress(false);
+        handleClose();
+      },
+      (e) => dispatch(addError(e.message))
+    );
   }
 
   function handleSubmit(event) {
@@ -60,7 +69,7 @@ export function EditProgramModal(props) {
 
     setSubmitInProgress(true);
 
-    props.client
+    client
       .updateProgram({
         ...program,
         begin: parseDate(date) + parseTime(time),
@@ -74,45 +83,48 @@ export function EditProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then((resp) => {
-        dispatch(updateProgram(resp));
-        setSubmitInProgress(false);
-        props.handleClose();
-      }, props.handleError);
+      .then(
+        (resp) => {
+          dispatch(updateProgram(resp));
+          setSubmitInProgress(false);
+          handleClose();
+        },
+        (e) => dispatch(addError(e.message))
+      );
   }
 
   return (
-    <Modal show={true} onHide={props.handleClose}>
+    <Modal show={true} onHide={handleClose}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {props.userLevel >= level.EDIT ? "Upravit program" : "Program"}
+            {userLevel >= level.EDIT ? "Upravit program" : "Program"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <ProgramTitle
             title={title}
             setTitle={setTitle}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramBeginning
             time={time}
             setTime={setTime}
             date={date}
             setDate={setDate}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramDuration
             duration={duration}
             setDuration={setDuration}
             locked={locked}
             setLocked={setLocked}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramPackage
             pkg={pkg}
             setPkg={setPkg}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramGroups
             programGroups={groups}
@@ -120,35 +132,35 @@ export function EditProgramModal(props) {
             removeGroup={(group) =>
               setGroups(groups.filter((g) => g !== group))
             }
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramPeople
             programPeople={people}
-            allPeople={props.people}
+            allPeople={allPeople}
             addPerson={(person) => setPeople([...people, person])}
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
             }
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramUrl
             url={url}
             setUrl={setUrl}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramRanges
             programRanges={ranges}
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
           <ProgramNotes
             notes={notes}
             setNotes={setNotes}
-            disabled={props.userLevel < level.EDIT}
+            disabled={userLevel < level.EDIT}
           />
         </Modal.Body>
         <Modal.Footer>
-          {props.userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Button
               variant="link text-danger"
               onClick={handleDelete}
@@ -162,10 +174,10 @@ export function EditProgramModal(props) {
               &nbsp; Smazat
             </Button>
           )}
-          <Button variant="link" onClick={props.handleClose}>
-            {props.userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
+          <Button variant="link" onClick={handleClose}>
+            {userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
           </Button>
-          {props.userLevel >= level.EDIT && (
+          {userLevel >= level.EDIT && (
             <Button variant="primary" type="submit">
               {submitInProgress ? (
                 <i className="fa fa-spinner fa-pulse" />
@@ -482,12 +494,12 @@ function ProgramNotes({ notes, setNotes, disabled = false }) {
   );
 }
 
-export function AddProgramModal(props) {
+export function AddProgramModal({ options, handleClose, allPeople }) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
   const [title, setTitle] = useState("Nový program");
-  const [date, setDate] = useState(formatDate(props.options.begin));
-  const [time, setTime] = useState(formatTime(props.options.begin));
+  const [date, setDate] = useState(formatDate(options.begin));
+  const [time, setTime] = useState(formatTime(options.begin));
   const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
   const [pkg, setPkg] = useState(undefined);
   const [groups, setGroups] = useState([]);
@@ -499,12 +511,15 @@ export function AddProgramModal(props) {
 
   const dispatch = useDispatch();
 
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
+
   function handleSubmit(event) {
     event.preventDefault();
 
     setSubmitInProgress(true);
 
-    props.client
+    client
       .addProgram({
         begin: parseDate(date) + parseTime(time),
         duration: parseDuration(duration),
@@ -517,15 +532,18 @@ export function AddProgramModal(props) {
         notes: notes,
         locked: locked,
       })
-      .then((resp) => {
-        dispatch(addProgram(resp));
-        setSubmitInProgress(false);
-        props.handleClose();
-      }, props.handleError);
+      .then(
+        (resp) => {
+          dispatch(addProgram(resp));
+          setSubmitInProgress(false);
+          handleClose();
+        },
+        (e) => dispatch(addError(e.message))
+      );
   }
 
   return (
-    <Modal show={true} onHide={props.handleClose}>
+    <Modal show={true} onHide={handleClose}>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>Nový program</Modal.Title>
@@ -554,7 +572,7 @@ export function AddProgramModal(props) {
           />
           <ProgramPeople
             programPeople={people}
-            allPeople={props.people}
+            allPeople={allPeople}
             addPerson={(person) => setPeople([...people, person])}
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
@@ -568,7 +586,7 @@ export function AddProgramModal(props) {
           <ProgramNotes notes={notes} setNotes={setNotes} />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="link" onClick={props.handleClose}>
+          <Button variant="link" onClick={handleClose}>
             Zrušit
           </Button>
           <Button variant="primary" type="submit">

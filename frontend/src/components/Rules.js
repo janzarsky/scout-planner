@@ -13,8 +13,10 @@ import {
 import { level } from "../helpers/Level";
 import { useDispatch, useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
+import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Rules({ client, handleError, userLevel, violations }) {
+export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
   const [condition, setCondition] = useState("is_before_program");
   const [time, setTime] = useState(formatTime(Date.now()));
@@ -24,6 +26,9 @@ export default function Rules({ client, handleError, userLevel, violations }) {
   const { rules } = useSelector((state) => state.rules);
   const { programs } = useSelector((state) => state.programs);
   const dispatch = useDispatch();
+
+  const { token, table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -48,13 +53,16 @@ export default function Rules({ client, handleError, userLevel, violations }) {
         condition: condition,
         value: value,
       })
-      .then((resp) => dispatch(addRule(resp)), handleError);
+      .then(
+        (resp) => dispatch(addRule(resp)),
+        (e) => dispatch(addError(e.message))
+      );
   }
 
   return (
     <Form onSubmit={handleSubmit}>
       <Table bordered hover responsive>
-        <RulesHeader userLevel={userLevel} />
+        <RulesHeader />
         <tbody>
           {[...rules]
             .sort((a, b) => ruleSort(a, b, programs))
@@ -66,11 +74,11 @@ export default function Rules({ client, handleError, userLevel, violations }) {
                 programs={programs}
                 violation={violations.get(rule._id)}
                 deleteRule={() =>
-                  client
-                    .deleteRule(rule._id)
-                    .then(() => dispatch(deleteRule(rule._id)), handleError)
+                  client.deleteRule(rule._id).then(
+                    () => dispatch(deleteRule(rule._id)),
+                    (e) => dispatch(addError(e.message))
+                  )
                 }
-                userLevel={userLevel}
               />
             ))}
           {userLevel >= level.EDIT && (
@@ -103,7 +111,9 @@ function ruleSort(a, b, programs) {
   return 0;
 }
 
-function RulesHeader({ userLevel }) {
+function RulesHeader() {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+
   return (
     <thead>
       <tr>
@@ -116,8 +126,9 @@ function RulesHeader({ userLevel }) {
   );
 }
 
-function Rule({ cnt, rule, programs, violation, userLevel, deleteRule }) {
+function Rule({ cnt, rule, programs, violation, deleteRule }) {
   const { groups } = useSelector((state) => state.groups);
+  const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
     <tr>

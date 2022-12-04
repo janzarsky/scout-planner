@@ -1,12 +1,11 @@
-export default function TimeIndicator(props) {
+export default function TimeIndicator({ x, y, height }) {
   return (
     <div
       className="timeindicator"
       style={{
-        gridColumnStart: props.rect.x + 3,
-        gridRowStart: props.rect.y + 2,
-        gridColumnEnd: "span " + props.rect.width,
-        gridRowEnd: "span " + props.rect.height,
+        gridColumnStart: x + 3,
+        gridRowStart: y + 2,
+        gridRowEnd: "span " + height,
       }}
     ></div>
   );

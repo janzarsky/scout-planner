@@ -9,8 +9,10 @@ import {
   deletePackage,
   updatePackage,
 } from "../store/packagesSlice";
+import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Packages({ client, handleError }) {
+export default function Packages() {
   const [newName, setNewName] = useState("Nový balíček");
   const [newColor, setNewColor] = useState("#81d4fa");
   const [editedName, setEditedName] = useState();
@@ -19,6 +21,9 @@ export default function Packages({ client, handleError }) {
 
   const { packages } = useSelector((state) => state.packages);
   const dispatch = useDispatch();
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -30,7 +35,10 @@ export default function Packages({ client, handleError }) {
           name: editedName,
           color: editedColor,
         })
-        .then((resp) => dispatch(updatePackage(resp)), handleError);
+        .then(
+          (resp) => dispatch(updatePackage(resp)),
+          (e) => dispatch(addError(e.message))
+        );
       setEditKey(undefined);
     } else {
       client
@@ -38,7 +46,10 @@ export default function Packages({ client, handleError }) {
           name: newName,
           color: newColor,
         })
-        .then((resp) => dispatch(addPackage(resp)), handleError);
+        .then(
+          (resp) => dispatch(addPackage(resp)),
+          (e) => dispatch(addError(e.message))
+        );
     }
   }
 
@@ -64,9 +75,10 @@ export default function Packages({ client, handleError }) {
                 color={pkg.color}
                 cnt={index + 1}
                 deletePkg={() => {
-                  client
-                    .deletePackage(pkg._id)
-                    .then(() => dispatch(deletePackage(pkg._id)), handleError);
+                  client.deletePackage(pkg._id).then(
+                    () => dispatch(deletePackage(pkg._id)),
+                    (e) => dispatch(addError(e.message))
+                  );
                   setEditKey(undefined);
                 }}
                 editPkg={() => {

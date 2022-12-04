@@ -6,8 +6,10 @@ import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, deleteUser, updateUser } from "../store/usersSlice";
+import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Users({ client, handleError, userEmail }) {
+export default function Users({ userEmail }) {
   const [newEmail, setNewEmail] = useState("E-mailová adresa");
   const [newLevel, setNewLevel] = useState(0);
   const [editedEmail, setEditedEmail] = useState();
@@ -16,6 +18,9 @@ export default function Users({ client, handleError, userEmail }) {
 
   const { users } = useSelector((state) => state.users);
   const dispatch = useDispatch();
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   const publicUser = users.find((user) => user.email === "public");
 
@@ -37,7 +42,10 @@ export default function Users({ client, handleError, userEmail }) {
             email: publicUser.email,
             level: publicLevel,
           })
-          .then((resp) => dispatch(updateUser(resp)), handleError);
+          .then(
+            (resp) => dispatch(updateUser(resp)),
+            (e) => dispatch(addError(e.message))
+          );
         setEditKey(undefined);
       } else {
         client
@@ -45,7 +53,10 @@ export default function Users({ client, handleError, userEmail }) {
             email: "public",
             level: publicLevel,
           })
-          .then((resp) => dispatch(addUser(resp)), handleError);
+          .then(
+            (resp) => dispatch(addUser(resp)),
+            (e) => dispatch(addError(e.message))
+          );
         setEditKey(undefined);
       }
     } else if (editKey) {
@@ -55,7 +66,10 @@ export default function Users({ client, handleError, userEmail }) {
           email: editedEmail,
           level: editedLevel,
         })
-        .then((resp) => dispatch(updateUser(resp)), handleError);
+        .then(
+          (resp) => dispatch(updateUser(resp)),
+          (e) => dispatch(addError(e.message))
+        );
       setEditKey(undefined);
     } else {
       client
@@ -63,7 +77,10 @@ export default function Users({ client, handleError, userEmail }) {
           email: newEmail,
           level: newLevel,
         })
-        .then((resp) => dispatch(addUser(resp)), handleError);
+        .then(
+          (resp) => dispatch(addUser(resp)),
+          (e) => dispatch(addError(e.message))
+        );
     }
   }
 
@@ -128,9 +145,10 @@ export default function Users({ client, handleError, userEmail }) {
                     user.email === userEmail && currentUserWarning
                   }
                   deleteUser={() =>
-                    client
-                      .deleteUser(user._id)
-                      .then(() => dispatch(deleteUser(user._id)), handleError)
+                    client.deleteUser(user._id).then(
+                      () => dispatch(deleteUser(user._id)),
+                      (e) => dispatch(addError(e.message))
+                    )
                   }
                   editUser={() => {
                     setEditKey(user._id);

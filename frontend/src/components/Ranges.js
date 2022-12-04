@@ -5,8 +5,10 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
+import Client from "../Client";
+import { addError } from "../store/errorsSlice";
 
-export default function Ranges({ client, handleError }) {
+export default function Ranges() {
   const [newName, setNewName] = useState("Nová linka");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
@@ -14,18 +16,23 @@ export default function Ranges({ client, handleError }) {
   const { ranges } = useSelector((state) => state.ranges);
   const dispatch = useDispatch();
 
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
+
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editKey) {
-      client
-        .updateRange({ _id: editKey, name: editedName })
-        .then((resp) => dispatch(updateRange(resp)), handleError);
+      client.updateRange({ _id: editKey, name: editedName }).then(
+        (resp) => dispatch(updateRange(resp)),
+        (e) => dispatch(addError(e.message))
+      );
       setEditKey(undefined);
     } else {
-      client
-        .addRange({ name: newName })
-        .then((resp) => dispatch(addRange(resp)), handleError);
+      client.addRange({ name: newName }).then(
+        (resp) => dispatch(addRange(resp)),
+        (e) => dispatch(addError(e.message))
+      );
     }
   }
 
@@ -46,9 +53,10 @@ export default function Ranges({ client, handleError }) {
                 key={range._id}
                 name={range.name}
                 deleteRange={() =>
-                  client
-                    .deleteRange(range._id)
-                    .then(() => dispatch(deleteRange(range._id)), handleError)
+                  client.deleteRange(range._id).then(
+                    () => dispatch(deleteRange(range._id)),
+                    (e) => dispatch(addError(e.message))
+                  )
                 }
                 editRange={() => {
                   setEditKey(range._id);

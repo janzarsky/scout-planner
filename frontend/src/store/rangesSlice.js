@@ -9,20 +9,20 @@ export const rangesSlice = createSlice({
   name: "ranges",
   initialState: { ranges: [], loading: "idle", error: null, loaded: false },
   reducers: {
-    addRange: (state, action) => {
+    addRange(state, action) {
       state.ranges.push(action.payload);
     },
-    updateRange: (state, action) => {
+    updateRange(state, action) {
       state.ranges = [
         ...state.ranges.filter((r) => r._id !== action.payload._id),
         action.payload,
       ];
     },
-    deleteRange: (state, action) => {
+    deleteRange(state, action) {
       state.ranges = state.ranges.filter((r) => r._id !== action.payload);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getRanges.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";

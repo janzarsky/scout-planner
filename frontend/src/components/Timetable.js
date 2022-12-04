@@ -1,6 +1,7 @@
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
+import Client from "../Client";
 import {
   formatDay,
   getOnlyDate,
@@ -10,24 +11,29 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byOrder } from "../helpers/Sorting";
+import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
-export default function Timetable(props) {
+export default function Timetable({ violations, addProgramModal, onEdit }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
+
+  const { token, table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   function onDroppableDrop(item, begin, currentPrograms) {
     var prog = currentPrograms.find((program) => program._id === item.id);
     if (prog) {
-      props.client
-        .updateProgram({ ...prog, begin })
-        .then((resp) => dispatch(updateProgram(resp)), props.handleError);
+      client.updateProgram({ ...prog, begin }).then(
+        (resp) => dispatch(updateProgram(resp)),
+        (e) => dispatch(addError(e.message))
+      );
     }
   }
 
-  function* getPrograms(programs, settings, viewSettings, userLevel) {
+  function* getPrograms(programs, settings) {
     for (const prog of programs) {
       const rect = getProgramRect(prog, settings);
 
@@ -36,15 +42,9 @@ export default function Timetable(props) {
           <Program
             key={prog._id}
             program={prog}
-            highlighted={props.highlightedPackages.indexOf(prog.pkg) !== -1}
-            violations={props.violations.get(prog._id)}
+            violations={violations.get(prog._id)}
             rect={rect}
-            onEdit={props.onEdit}
-            viewSettings={viewSettings}
-            activeRange={props.activeRange}
-            userLevel={props.userLevel}
-            client={props.client}
-            handleError={props.handleError}
+            onEdit={onEdit}
           />
         );
       else
@@ -76,21 +76,20 @@ export default function Timetable(props) {
             ", minmax(20px, 1fr))",
         }}
       >
-        {props.userLevel >= level.EDIT && [
-          ...getDroppables(settings, onDroppableDrop, props.addProgramModal),
+        {userLevel >= level.EDIT && [
+          ...getDroppables(settings, onDroppableDrop, addProgramModal),
         ]}
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[
-          ...getPrograms(
-            programs,
-            settings,
-            props.viewSettings,
-            props.userLevel
-          ),
-        ]}
-        {timeIndicatorRect && <TimeIndicator rect={timeIndicatorRect} />}
+        {[...getPrograms(programs, settings, userLevel)]}
+        {timeIndicatorRect && (
+          <TimeIndicator
+            x={timeIndicatorRect.x}
+            y={timeIndicatorRect.y}
+            height={timeIndicatorRect.height}
+          />
+        )}
       </div>
     </DndProvider>
   );
@@ -284,18 +283,17 @@ function getTimeIndicatorRect(settings) {
   return {
     x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
     y: settings.days.indexOf(currDate) * settings.groupCnt,
-    width: 1,
     height: settings.groupCnt,
   };
 }
 
-function Droppable(props) {
+function Droppable({ onDrop, x, y, height, addProgramModal }) {
   const { programs } = useSelector((state) => state.programs);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => props.onDrop(item, programs),
+      drop: (item) => onDrop(item, programs),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
@@ -308,55 +306,50 @@ function Droppable(props) {
       ref={drop}
       className={"droppable " + (isOver ? "drag-over" : "")}
       style={{
-        gridColumnStart: props.x,
-        gridRowStart: props.y,
-        gridRowEnd: "span " + props.height,
+        gridColumnStart: x,
+        gridRowStart: y,
+        gridRowEnd: "span " + height,
       }}
-      onClick={(_) => props.addProgramModal()}
+      onClick={(_) => addProgramModal()}
     />
   );
 }
 
-function TimeHeader(props) {
+function TimeHeader({ time, pos, span }) {
   return (
     <div
       className="timeheader"
       style={{
-        gridColumnStart: props.pos,
-        gridColumnEnd: "span " + props.span,
+        gridColumnStart: pos,
+        gridColumnEnd: "span " + span,
       }}
     >
-      {props.time.getUTCHours()}
+      {time.getUTCHours()}
     </div>
   );
 }
 
-function DateHeader(props) {
+function DateHeader({ date, pos, span }) {
   return (
     <div
       className="dateheader"
       style={{
-        gridRowStart: props.pos,
-        gridRowEnd: "span " + props.span,
+        gridRowStart: pos,
+        gridRowEnd: "span " + span,
       }}
     >
-      {formatDay(props.date.getTime())}
+      {formatDay(date.getTime())}
       <br />
-      {props.date.getUTCDate()}.<br />
-      {props.date.getUTCMonth() + 1}.
+      {date.getUTCDate()}.<br />
+      {date.getUTCMonth() + 1}.
     </div>
   );
 }
 
-function GroupHeader(props) {
+function GroupHeader({ pos, name }) {
   return (
-    <div
-      className="groupheader"
-      style={{
-        gridRowStart: props.pos,
-      }}
-    >
-      {props.name}
+    <div className="groupheader" style={{ gridRowStart: pos }}>
+      {name}
     </div>
   );
 }

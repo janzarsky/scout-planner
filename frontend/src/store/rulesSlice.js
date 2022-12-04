@@ -9,20 +9,20 @@ export const rulesSlice = createSlice({
   name: "rules",
   initialState: { rules: [], loading: "idle", error: null, loaded: false },
   reducers: {
-    addRule: (state, action) => {
+    addRule(state, action) {
       state.rules.push(action.payload);
     },
-    updateRule: (state, action) => {
+    updateRule(state, action) {
       state.rules = [
         ...state.rules.filter((r) => r._id !== action.payload._id),
         action.payload,
       ];
     },
-    deleteRule: (state, action) => {
+    deleteRule(state, action) {
       state.rules = state.rules.filter((r) => r._id !== action.payload);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getRules.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";
