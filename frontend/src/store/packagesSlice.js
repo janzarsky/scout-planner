@@ -9,20 +9,20 @@ export const packagesSlice = createSlice({
   name: "packages",
   initialState: { packages: [], loading: "idle", error: null, loaded: false },
   reducers: {
-    addPackage: (state, action) => {
+    addPackage(state, action) {
       state.packages.push(action.payload);
     },
-    updatePackage: (state, action) => {
+    updatePackage(state, action) {
       state.packages = [
         ...state.packages.filter((p) => p._id !== action.payload._id),
         action.payload,
       ];
     },
-    deletePackage: (state, action) => {
+    deletePackage(state, action) {
       state.packages = state.packages.filter((p) => p._id !== action.payload);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getPackages.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";

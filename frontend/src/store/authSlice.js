@@ -17,15 +17,15 @@ export const authSlice = createSlice({
     error: null,
   },
   reducers: {
-    setTable: (state, action) => {
+    setTable(state, action) {
       state.table = action.payload;
     },
-    setToken: (state, action) => {
+    setToken(state, action) {
       state.token = action.payload;
       state.permissionsLoaded = false;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getPermissions.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";

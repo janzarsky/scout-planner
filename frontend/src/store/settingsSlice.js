@@ -13,11 +13,11 @@ export const settingsSlice = createSlice({
     error: null,
   },
   reducers: {
-    updateSettings: (state, action) => {
+    updateSettings(state, action) {
       state.settings = action.payload;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getSettings.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";

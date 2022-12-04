@@ -9,20 +9,20 @@ export const usersSlice = createSlice({
   name: "users",
   initialState: { users: [], loading: "idle", error: null },
   reducers: {
-    addUser: (state, action) => {
+    addUser(state, action) {
       state.users.push(action.payload);
     },
-    updateUser: (state, action) => {
+    updateUser(state, action) {
       state.users = [
         ...state.users.filter((r) => r._id !== action.payload._id),
         action.payload,
       ];
     },
-    deleteUser: (state, action) => {
+    deleteUser(state, action) {
       state.users = state.users.filter((r) => r._id !== action.payload);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(getUsers.pending, (state) => {
       if (state.loading === "idle") {
         state.loading = "pending";
