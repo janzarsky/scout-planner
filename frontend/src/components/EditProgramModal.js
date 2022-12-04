@@ -24,14 +24,14 @@ import Client from "../Client";
 import { addError } from "../store/errorsSlice";
 
 export function EditProgramModal(props) {
-  const program = useSelector((state) =>
-    state.programs.programs.find((p) => p._id === props.programId)
-  );
+  const program = useSelector((state) => {
+    const prog = state.programs.programs.find((p) => p._id === props.programId);
+    return prog ? prog : {};
+  });
 
   const [submitInProgress, setSubmitInProgress] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
 
-  // FIXME: what to do in case program is undefined?
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDate(program.begin));
   const [time, setTime] = useState(formatTime(program.begin));
