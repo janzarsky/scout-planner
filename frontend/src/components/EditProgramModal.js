@@ -31,6 +31,7 @@ export function EditProgramModal(props) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
 
+  // FIXME: what to do in case program is undefined?
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDate(program.begin));
   const [time, setTime] = useState(formatTime(program.begin));
