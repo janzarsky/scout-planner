@@ -6,8 +6,9 @@ import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, deleteUser, updateUser } from "../store/usersSlice";
+import Client from "../Client";
 
-export default function Users({ client, handleError, userEmail }) {
+export default function Users({ handleError, userEmail }) {
   const [newEmail, setNewEmail] = useState("E-mailová adresa");
   const [newLevel, setNewLevel] = useState(0);
   const [editedEmail, setEditedEmail] = useState();
@@ -16,6 +17,9 @@ export default function Users({ client, handleError, userEmail }) {
 
   const { users } = useSelector((state) => state.users);
   const dispatch = useDispatch();
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   const publicUser = users.find((user) => user.email === "public");
 

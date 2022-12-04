@@ -9,8 +9,9 @@ import {
   deletePackage,
   updatePackage,
 } from "../store/packagesSlice";
+import Client from "../Client";
 
-export default function Packages({ client, handleError }) {
+export default function Packages({ handleError }) {
   const [newName, setNewName] = useState("Nový balíček");
   const [newColor, setNewColor] = useState("#81d4fa");
   const [editedName, setEditedName] = useState();
@@ -19,6 +20,9 @@ export default function Packages({ client, handleError }) {
 
   const { packages } = useSelector((state) => state.packages);
   const dispatch = useDispatch();
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   function handleSubmit(event) {
     event.preventDefault();

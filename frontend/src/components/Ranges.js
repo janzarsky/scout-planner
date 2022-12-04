@@ -5,14 +5,18 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
+import Client from "../Client";
 
-export default function Ranges({ client, handleError }) {
+export default function Ranges({ handleError }) {
   const [newName, setNewName] = useState("Nová linka");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
   const { ranges } = useSelector((state) => state.ranges);
   const dispatch = useDispatch();
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   function handleSubmit(event) {
     event.preventDefault();

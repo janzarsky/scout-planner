@@ -1,6 +1,7 @@
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
+import Client from "../Client";
 import {
   formatDay,
   getOnlyDate,
@@ -18,10 +19,13 @@ export default function Timetable(props) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
+
   function onDroppableDrop(item, begin, currentPrograms) {
     var prog = currentPrograms.find((program) => program._id === item.id);
     if (prog) {
-      props.client
+      client
         .updateProgram({ ...prog, begin })
         .then((resp) => dispatch(updateProgram(resp)), props.handleError);
     }
@@ -40,7 +44,6 @@ export default function Timetable(props) {
             rect={rect}
             onEdit={props.onEdit}
             userLevel={props.userLevel}
-            client={props.client}
             handleError={props.handleError}
           />
         );

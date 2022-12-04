@@ -186,7 +186,6 @@ export default function App(props) {
       )}
       {addModalEnabled && (
         <AddProgramModal
-          client={new Client(token, table)}
           handleError={handleError}
           options={addProgramOptions}
           people={people}
@@ -195,7 +194,6 @@ export default function App(props) {
       )}
       {editProgramId && (
         <EditProgramModal
-          client={new Client(token, table)}
           handleError={handleError}
           programId={editProgramId}
           people={people}
@@ -285,7 +283,6 @@ export default function App(props) {
                 }}
                 onEdit={(program) => setEditProgramId(program._id)}
                 userLevel={userLevel}
-                client={new Client(token, table)}
                 handleError={handleError}
               />
             )}
@@ -310,7 +307,6 @@ export default function App(props) {
           {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="rules">
               <Rules
-                client={new Client(token, table)}
                 handleError={handleError}
                 violations={violations}
                 userLevel={userLevel}
@@ -319,26 +315,17 @@ export default function App(props) {
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="packages" title="Balíčky">
-              <Packages
-                client={new Client(token, table)}
-                handleError={handleError}
-              />
+              <Packages handleError={handleError} />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="groups" title="Skupiny">
-              <Groups
-                client={new Client(token, table)}
-                handleError={handleError}
-              />
+              <Groups handleError={handleError} />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="ranges" title="Linky">
-              <Ranges
-                client={new Client(token, table)}
-                handleError={handleError}
-              />
+              <Ranges handleError={handleError} />
             </Tab.Pane>
           )}
           {userLevel >= level.VIEW && (
@@ -349,18 +336,13 @@ export default function App(props) {
           {userLevel >= level.ADMIN && (
             <Tab.Pane eventKey="users" title="Uživatelé">
               <Users
-                client={new Client(token, table)}
                 handleError={handleError}
                 userEmail={auth.currentUser ? auth.currentUser.email : null}
               />
             </Tab.Pane>
           )}
           <Tab.Pane eventKey="settings" title="Nastavení">
-            <Settings
-              client={new Client(token, table)}
-              handleError={handleError}
-              userLevel={userLevel}
-            />
+            <Settings handleError={handleError} userLevel={userLevel} />
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>

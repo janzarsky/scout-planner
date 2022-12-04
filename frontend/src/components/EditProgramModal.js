@@ -20,6 +20,7 @@ import {
   deleteProgram,
   updateProgram,
 } from "../store/programsSlice";
+import Client from "../Client";
 
 export function EditProgramModal(props) {
   const program = useSelector((state) =>
@@ -43,12 +44,15 @@ export function EditProgramModal(props) {
 
   const dispatch = useDispatch();
 
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
+
   function handleDelete(event) {
     event.preventDefault();
 
     setDeleteInProgress(true);
 
-    props.client.updateProgram({ ...program, deleted: true }).then(() => {
+    client.updateProgram({ ...program, deleted: true }).then(() => {
       dispatch(deleteProgram(program._id));
       setDeleteInProgress(false);
       props.handleClose();
@@ -60,7 +64,7 @@ export function EditProgramModal(props) {
 
     setSubmitInProgress(true);
 
-    props.client
+    client
       .updateProgram({
         ...program,
         begin: parseDate(date) + parseTime(time),
@@ -499,12 +503,15 @@ export function AddProgramModal(props) {
 
   const dispatch = useDispatch();
 
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
+
   function handleSubmit(event) {
     event.preventDefault();
 
     setSubmitInProgress(true);
 
-    props.client
+    client
       .addProgram({
         begin: parseDate(date) + parseTime(time),
         duration: parseDuration(duration),

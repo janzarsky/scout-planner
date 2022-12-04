@@ -5,8 +5,9 @@ import { byOrder } from "../helpers/Sorting";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addGroup, deleteGroup, updateGroup } from "../store/groupsSlice";
+import Client from "../Client";
 
-export default function Groups({ client, handleError }) {
+export default function Groups({ handleError }) {
   const [newName, setNewName] = useState("Nová skupina");
   const [newOrder, setNewOrder] = useState(0);
   const [editedName, setEditedName] = useState();
@@ -15,6 +16,9 @@ export default function Groups({ client, handleError }) {
 
   const { groups } = useSelector((state) => state.groups);
   const dispatch = useDispatch();
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   function handleSubmit(event) {
     event.preventDefault();

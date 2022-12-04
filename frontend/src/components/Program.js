@@ -1,11 +1,15 @@
 import { useDrag } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
+import Client from "../Client";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { addProgram } from "../store/programsSlice";
 
 export default function Program(props) {
   const { packages } = useSelector((state) => state.packages);
+
+  const { token, table } = useSelector((state) => state.auth);
+  const client = new Client(token, table);
 
   const [, drag] = useDrag(() => ({
     type: "program",
@@ -14,7 +18,7 @@ export default function Program(props) {
 
   const dispatch = useDispatch();
   const clone = (p) =>
-    props.client
+    client
       .addProgram(p)
       .then((resp) => dispatch(addProgram(resp)), props.handleError);
 
