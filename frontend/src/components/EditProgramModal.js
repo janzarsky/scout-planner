@@ -39,6 +39,7 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
   const [pkg, setPkg] = useState(program.pkg);
   const [groups, setGroups] = useState(program.groups);
   const [people, setPeople] = useState(program.people);
+  const [place, setPlace] = useState(program.place);
   const [url, setUrl] = useState(program.url);
   const [notes, setNotes] = useState(program.notes);
   const [locked, setLocked] = useState(program.locked);
@@ -79,6 +80,7 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
         groups: groups,
         people: people,
         ranges: ranges,
+        place: place,
         url: url,
         notes: notes,
         locked: locked,
@@ -141,6 +143,11 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
             }
+            disabled={userLevel < level.EDIT}
+          />
+          <ProgramPlace
+            place={place}
+            setPlace={setPlace}
             disabled={userLevel < level.EDIT}
           />
           <ProgramUrl
@@ -419,6 +426,27 @@ function ProgramPeople({
   );
 }
 
+function ProgramPlace({ place, setPlace, disabled = false }) {
+  return (
+    <Form.Group as={Row}>
+      <Form.Label column sm="2">
+        Místo
+      </Form.Label>
+      <Col>
+        {disabled ? (
+          place
+        ) : (
+          <Form.Control
+            type="text"
+            value={place}
+            onChange={(e) => setPlace(e.target.value)}
+          />
+        )}
+      </Col>
+    </Form.Group>
+  );
+}
+
 function ProgramUrl({ url, setUrl, disabled = false }) {
   return (
     <Form.Group as={Row}>
@@ -504,6 +532,7 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
   const [pkg, setPkg] = useState(undefined);
   const [groups, setGroups] = useState([]);
   const [people, setPeople] = useState([]);
+  const [place, setPlace] = useState("");
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [locked, setLocked] = useState(false);
@@ -528,6 +557,7 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
         groups: groups,
         people: people,
         ranges: ranges,
+        place: place,
         url: url,
         notes: notes,
         locked: locked,
@@ -578,6 +608,7 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
               setPeople(people.filter((p) => p !== person))
             }
           />
+          <ProgramPlace place={place} setPlace={setPlace} />
           <ProgramUrl url={url} setUrl={setUrl} />
           <ProgramRanges
             programRanges={ranges}
