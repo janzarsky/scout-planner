@@ -39,7 +39,7 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
   const [pkg, setPkg] = useState(program.pkg);
   const [groups, setGroups] = useState(program.groups);
   const [people, setPeople] = useState(program.people);
-  const [place, setPlace] = useState(program.place);
+  const [place, setPlace] = useState(program.place ? program.place : ""); // data fix
   const [url, setUrl] = useState(program.url);
   const [notes, setNotes] = useState(program.notes);
   const [locked, setLocked] = useState(program.locked);
