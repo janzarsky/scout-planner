@@ -121,6 +121,9 @@ p {
   margin-bottom: 0.2em;
   color: #37474f;
 }
+.program-place {
+  font-style: italic;
+}
 p.program-violations {
   color: #b71c1c;
 }

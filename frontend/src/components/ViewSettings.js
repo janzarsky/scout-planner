@@ -5,6 +5,7 @@ import Nav from "react-bootstrap/Nav";
 import {
   toggleViewPeople,
   toggleViewPkg,
+  toggleViewPlace,
   toggleViewTime,
   toggleViewViolations,
 } from "../store/viewSlice";
@@ -12,9 +13,8 @@ import {
 export default function ViewSettings() {
   const dispatch = useDispatch();
   const [active, setActive] = useState(false);
-  const { viewPkg, viewTime, viewPeople, viewViolations } = useSelector(
-    (state) => state.view
-  );
+  const { viewPkg, viewTime, viewPeople, viewPlace, viewViolations } =
+    useSelector((state) => state.view);
 
   return (
     <>
@@ -54,6 +54,15 @@ export default function ViewSettings() {
               onClick={() => dispatch(toggleViewPeople())}
             >
               Lidi
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              as={Button}
+              variant={viewPlace ? "dark" : "light"}
+              onClick={() => dispatch(toggleViewPlace())}
+            >
+              Místo
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>

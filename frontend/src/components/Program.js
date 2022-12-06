@@ -79,6 +79,7 @@ function ProgramBody({ program, pkg, violations }) {
     >
       <ProgramText
         people={program.people}
+        place={program.place}
         title={program.title}
         begin={program.begin}
         duration={program.duration}
@@ -89,10 +90,17 @@ function ProgramBody({ program, pkg, violations }) {
   );
 }
 
-function ProgramText({ title, pkgName, begin, duration, people, violations }) {
-  const { viewPkg, viewTime, viewPeople, viewViolations } = useSelector(
-    (state) => state.view
-  );
+function ProgramText({
+  title,
+  pkgName,
+  begin,
+  duration,
+  people,
+  place,
+  violations,
+}) {
+  const { viewPkg, viewTime, viewPeople, viewPlace, viewViolations } =
+    useSelector((state) => state.view);
   return (
     <div className="program-text">
       {!isHidden(title) && <h3>{title}</h3>}
@@ -100,6 +108,7 @@ function ProgramText({ title, pkgName, begin, duration, people, violations }) {
         <p className="program-package">{pkgName}</p>
       )}
       {viewTime && <ProgramTime begin={begin} end={begin + duration} />}
+      {viewPlace && <ProgramPlace place={place} />}
       {viewPeople && <ProgramPeople people={people} violations={violations} />}
       {viewViolations && violations && (
         <ProgramViolations violations={violations} />
@@ -142,6 +151,10 @@ function ProgramPeople({ people, violations }) {
         }, null)}
     </p>
   );
+}
+
+function ProgramPlace({ place }) {
+  return <p className="program-place">{place}</p>;
 }
 
 function ProgramViolations({ violations }) {

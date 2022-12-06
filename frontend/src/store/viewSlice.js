@@ -8,6 +8,7 @@ export const viewSlice = createSlice({
     viewPkg: true,
     viewTime: false,
     viewPeople: true,
+    viewPlace: true,
     viewViolations: true,
     rangesEnabled: false,
     activeRange: undefined,
@@ -34,6 +35,9 @@ export const viewSlice = createSlice({
     toggleViewPeople(state) {
       state.viewPeople = !state.viewPeople;
     },
+    toggleViewPlace(state) {
+      state.viewPlace = !state.viewPlace;
+    },
     toggleViewViolations(state) {
       state.viewViolations = !state.viewViolations;
     },
@@ -52,6 +56,7 @@ export const {
   toggleViewPkg,
   toggleViewTime,
   toggleViewPeople,
+  toggleViewPlace,
   toggleViewViolations,
   toggleRangesEnabled,
   setActiveRange,
