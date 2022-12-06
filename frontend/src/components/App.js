@@ -189,14 +189,14 @@ export default function App() {
       {addModalEnabled && (
         <AddProgramModal
           options={addProgramOptions}
-          people={people}
+          allPeople={people}
           handleClose={() => setAddModalEnabled(false)}
         />
       )}
       {editProgramId && (
         <EditProgramModal
           programId={editProgramId}
-          people={people}
+          allPeople={people}
           handleClose={() => setEditProgramId(undefined)}
         />
       )}
