@@ -253,6 +253,34 @@ function ProgramDuration({
   setLocked,
   disabled = false,
 }) {
+  const timeStep = useSelector((state) => state.settings.settings.timeStep);
+  const defaultDurations = {
+    [15 * 60 * 1000]: [
+      ["0:15", "15 min"],
+      ["0:30", "30 min"],
+      ["0:45", "45 min"],
+      ["1:00", "1 hod"],
+      ["1:30", "1,5 hod"],
+      ["2:00", "2 hod"],
+    ],
+    [10 * 60 * 1000]: [
+      ["0:10", "10 min"],
+      ["0:20", "20 min"],
+      ["0:30", "30 min"],
+      ["1:00", "1 hod"],
+      ["1:30", "1,5 hod"],
+      ["2:00", "2 hod"],
+    ],
+    [5 * 60 * 1000]: [
+      ["0:10", "10 min"],
+      ["0:15", "15 min"],
+      ["0:30", "30 min"],
+      ["1:00", "1 hod"],
+      ["1:30", "1,5 hod"],
+      ["2:00", "2 hod"],
+    ],
+  }[timeStep];
+
   return (
     <>
       <Form.Group as={Row}>
@@ -279,16 +307,9 @@ function ProgramDuration({
           />
         </Col>
       </Form.Group>
-      {!disabled && (
+      {!disabled && defaultDurations && (
         <Form.Group>
-          {[
-            ["0:15", "15 min"],
-            ["0:30", "30 min"],
-            ["0:45", "45 min"],
-            ["1:00", "1 hod"],
-            ["1:30", "1,5 hod"],
-            ["2:00", "2 hod"],
-          ].map(([value, text]) => (
+          {defaultDurations.map(([value, text]) => (
             <Button
               variant={"outline-secondary"}
               key={value}
