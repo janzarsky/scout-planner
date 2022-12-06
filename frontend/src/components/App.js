@@ -97,7 +97,7 @@ export default function App() {
     });
     setProvider(provider);
     setAuth(auth);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!permissionsLoaded) {
