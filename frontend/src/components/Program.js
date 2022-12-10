@@ -103,13 +103,19 @@ function ProgramText({
     useSelector((state) => state.view);
   return (
     <div className="program-text">
-      {!isHidden(title) && <h3>{title}</h3>}
-      {viewPkg && !isHidden(pkgName) && (
-        <p className="program-package">{pkgName}</p>
+      {!isHidden(title) && <h3 className="program-title">{title}</h3>}
+      {viewPkg && pkgName !== "" && !isHidden(pkgName) && (
+        <div className="program-package">
+          <i className="fa fa-folder-o" />
+          &nbsp;
+          {pkgName}
+        </div>
       )}
       {viewTime && <ProgramTime begin={begin} end={begin + duration} />}
-      {viewPlace && <ProgramPlace place={place} />}
-      {viewPeople && <ProgramPeople people={people} violations={violations} />}
+      {viewPlace && place && <ProgramPlace place={place} />}
+      {viewPeople && people.length > 0 && (
+        <ProgramPeople people={people} violations={violations} />
+      )}
       {viewViolations && violations && (
         <ProgramViolations violations={violations} />
       )}
@@ -119,10 +125,12 @@ function ProgramText({
 
 function ProgramTime({ begin, end }) {
   return (
-    <p className="program-time">
+    <div className="program-time">
+      <i className="fa fa-clock-o" />
+      &nbsp;
       {formatTime(begin)}&ndash;
       {formatTime(end)}
-    </p>
+    </div>
   );
 }
 
@@ -130,7 +138,9 @@ function ProgramPeople({ people, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
 
   return (
-    <p className="program-people">
+    <div className="program-people">
+      <i className="fa fa-user-o" />
+      &nbsp;
       {[...people]
         .sort((a, b) => a.localeCompare(b))
         .map((person) => (
@@ -149,22 +159,30 @@ function ProgramPeople({ people, violations }) {
         .reduce((accu, elem) => {
           return accu === null ? [elem] : [...accu, ", ", elem];
         }, null)}
-    </p>
+    </div>
   );
 }
 
 function ProgramPlace({ place }) {
-  return <p className="program-place">{place}</p>;
+  return (
+    <div className="program-place">
+      <i className="fa fa-map-marker" />
+      &nbsp;
+      {place}
+    </div>
+  );
 }
 
 function ProgramViolations({ violations }) {
   return (
-    <p className="program-violations">
+    <div className="program-violations">
+      <i className="fa fa-exclamation-triangle" />
+      &nbsp;
       {violations
         // dirty hack
         .filter((violation) => !violation.includes("Jeden člověk na více"))
         .join(", ")}
-    </p>
+    </div>
   );
 }
 
