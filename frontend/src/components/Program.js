@@ -58,6 +58,7 @@ function ProgramBody({ program, pkg, violations }) {
   );
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
+  const timeStep = useSelector((state) => state.settings.settings.timeStep);
   let rangeValue =
     activeRange && program.ranges ? program.ranges[activeRange] : 0;
   if (rangeValue === undefined) rangeValue = 0;
@@ -68,7 +69,8 @@ function ProgramBody({ program, pkg, violations }) {
         "program" +
         (violations && viewViolations ? " violation" : "") +
         (highlighted ? " highlighted" : "") +
-        (rangesEnabled ? " range range-" + rangeValue : "")
+        (rangesEnabled ? " range range-" + rangeValue : "") +
+        (program.duration <= 2 * timeStep ? " narrow" : "")
       }
       style={
         !highlighted && !rangesEnabled && pkg

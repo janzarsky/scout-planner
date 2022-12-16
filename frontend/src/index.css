@@ -101,6 +101,11 @@ p {
 .program.highlighted {
   background-color: #343a40;
 }
+.program.narrow {
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+}
 
 .program-text {
   flex: 1;
@@ -121,6 +126,9 @@ p {
   margin: 0.2rem 0 0.2rem 0;
   font-size: 1rem;
   text-transform: uppercase;
+}
+.program.narrow .program-title {
+  flex: 1 0 0;
 }
 .program-package,
 .program-time,
