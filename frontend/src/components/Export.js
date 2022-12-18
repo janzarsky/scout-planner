@@ -7,6 +7,7 @@ export default function Export() {
   const packages = useSelector((state) => state.packages.packages);
   const rules = useSelector((state) => state.rules.rules);
   const users = useSelector((state) => state.users.users);
+  const settings = useSelector((state) => state.settings.settings);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const data = JSON.stringify({
@@ -16,6 +17,7 @@ export default function Export() {
     rules,
     ranges,
     users,
+    settings,
   });
 
   return (
