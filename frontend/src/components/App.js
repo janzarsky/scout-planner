@@ -35,6 +35,7 @@ import Filters from "./Filters";
 import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
+import { getSettings } from "../store/settingsSlice";
 
 const config = require("../config.json");
 
@@ -64,6 +65,9 @@ export default function App() {
   );
   const { programs: this_state_programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs
+  );
+  const { settings: this_state_settings, loaded: settingsLoaded } = useSelector(
+    (state) => state.settings
   );
   const { token, table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth
@@ -116,6 +120,7 @@ export default function App() {
         dispatch(getGroups(client));
         dispatch(getPackages(client));
         dispatch(getRules(client));
+        dispatch(getSettings(client));
       }
 
       if (userLevel >= level.ADMIN) dispatch(getUsers(client));
@@ -140,6 +145,7 @@ export default function App() {
     this_state_pkgs,
     this_state_ranges,
     this_state_rules,
+    this_state_settings,
   ]);
 
   useEffect(() => {
@@ -148,7 +154,8 @@ export default function App() {
       rangesLoaded &&
       groupsLoaded &&
       packagesLoaded &&
-      rulesLoaded
+      rulesLoaded &&
+      settingsLoaded
     )
       setDataLoaded(true);
   }, [programsLoaded, rangesLoaded, groupsLoaded, packagesLoaded, rulesLoaded]);
