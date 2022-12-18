@@ -18,6 +18,7 @@ export default function Import() {
     // data fix
     if (data.ranges === undefined) data.ranges = [];
     if (data.users === undefined) data.users = [];
+    if (data.settings === undefined) data.settings = {};
 
     await Promise.all([
       // add all packages
@@ -47,6 +48,7 @@ export default function Import() {
           )
         ),
       ]).then((ranges) => new Map(ranges)),
+      client.updateSettings(data.settings),
     ])
       // replace package, group, and range IDs in programs
       .then(([pkgs, groups, ranges]) =>

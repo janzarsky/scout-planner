@@ -11,6 +11,7 @@ export const settingsSlice = createSlice({
     settings: { timeStep: 15 * 60 * 1000 },
     loading: "idle",
     error: null,
+    loaded: false,
   },
   reducers: {
     updateSettings(state, action) {
@@ -28,6 +29,7 @@ export const settingsSlice = createSlice({
       if (state.loading === "pending") {
         state.settings = action.payload;
         state.loading = "idle";
+        state.loaded = true;
       }
     });
 
