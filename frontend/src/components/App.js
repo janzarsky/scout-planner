@@ -158,7 +158,14 @@ export default function App() {
       settingsLoaded
     )
       setDataLoaded(true);
-  }, [programsLoaded, rangesLoaded, groupsLoaded, packagesLoaded, rulesLoaded]);
+  }, [
+    programsLoaded,
+    rangesLoaded,
+    groupsLoaded,
+    packagesLoaded,
+    rulesLoaded,
+    settingsLoaded,
+  ]);
 
   var violationsPerProgram = new Map();
   [...violations.values()]
