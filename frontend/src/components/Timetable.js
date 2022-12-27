@@ -37,6 +37,31 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
     for (const prog of programs) {
       const rect = getProgramRect(prog, settings);
 
+      if (prog.shared) continue;
+
+      if (rect.x >= 0 && rect.y >= 0)
+        yield (
+          <Program
+            key={prog._id}
+            program={prog}
+            violations={violations.get(prog._id)}
+            rect={rect}
+            onEdit={onEdit}
+          />
+        );
+      else
+        console.warn(
+          `The computed rectangle ${rect} for program ${prog._id} is invalid`
+        );
+    }
+  }
+
+  function* getSharedPrograms(programs, settings) {
+    for (const prog of programs) {
+      const rect = getProgramRect(prog, settings);
+
+      if (!prog.shared) continue;
+
       if (rect.x >= 0 && rect.y >= 0)
         yield (
           <Program
@@ -83,6 +108,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
         {[...getPrograms(programs, settings)]}
+        {[...getSharedPrograms(programs, settings)]}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
