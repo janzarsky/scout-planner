@@ -42,7 +42,7 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
   const [place, setPlace] = useState(program.place ? program.place : ""); // data fix
   const [url, setUrl] = useState(program.url);
   const [notes, setNotes] = useState(program.notes);
-  const [locked, setLocked] = useState(program.locked);
+  const [locked, setLocked] = useState(!!program.locked);
   const [ranges, setRanges] = useState(program.ranges);
 
   const dispatch = useDispatch();
