@@ -44,6 +44,7 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
   const [notes, setNotes] = useState(program.notes);
   const [locked, setLocked] = useState(!!program.locked);
   const [ranges, setRanges] = useState(program.ranges);
+  const [shared, setShared] = useState(!!program.shared);
 
   const dispatch = useDispatch();
 
@@ -84,6 +85,7 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
         url: url,
         notes: notes,
         locked: locked,
+        shared: shared,
       })
       .then(
         (resp) => {
@@ -163,6 +165,11 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
           <ProgramNotes
             notes={notes}
             setNotes={setNotes}
+            disabled={userLevel < level.EDIT}
+          />
+          <ProgramShared
+            shared={shared}
+            setShared={setShared}
             disabled={userLevel < level.EDIT}
           />
         </Modal.Body>
@@ -543,6 +550,34 @@ function ProgramNotes({ notes, setNotes, disabled = false }) {
   );
 }
 
+function ProgramShared({ shared, setShared, disabled = false }) {
+  return (
+    <Form.Group as={Row}>
+      <Form.Label column sm="2">
+        {disabled ? "Dělený" : ""}
+      </Form.Label>
+      <Col>
+        {disabled ? (
+          shared ? (
+            "Ano (experimentální funkce)"
+          ) : (
+            "Ne (experimentální funkce)"
+          )
+        ) : (
+          <Form.Check
+            type="checkbox"
+            label="Dělený program (experimentální funkce)"
+            checked={shared}
+            onChange={(e) => setShared(e.target.checked)}
+            id="shared"
+            disabled={disabled}
+          />
+        )}
+      </Col>
+    </Form.Group>
+  );
+}
+
 export function AddProgramModal({ options, handleClose, allPeople }) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
@@ -558,6 +593,7 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
   const [notes, setNotes] = useState("");
   const [locked, setLocked] = useState(false);
   const [ranges, setRanges] = useState({});
+  const [shared, setShared] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -582,6 +618,7 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
         url: url,
         notes: notes,
         locked: locked,
+        shared: shared,
       })
       .then(
         (resp) => {
@@ -636,6 +673,7 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
           />
           <ProgramNotes notes={notes} setNotes={setNotes} />
+          <ProgramShared shared={shared} setShared={setShared} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="link" onClick={handleClose}>
