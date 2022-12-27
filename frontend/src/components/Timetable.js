@@ -82,7 +82,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[...getPrograms(programs, settings, userLevel)]}
+        {[...getPrograms(programs, settings)]}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
