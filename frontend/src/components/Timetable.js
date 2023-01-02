@@ -57,10 +57,41 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
   }
 
   function* getSharedPrograms(programs, settings) {
+    const hasGroupOverlap = (prog1, prog2) =>
+      prog1.groups.length === 0 ||
+      prog2.groups.length === 0 ||
+      prog1.groups.filter((group) => prog2.groups.indexOf(group) !== -1)
+        .length > 0;
+
+    function getBlocks(programs) {
+      const blocks = [];
+      const sorted = [...programs].sort((a, b) => (a.begin < b.begin ? -1 : 1));
+
+      sorted.forEach((prog1, idx1) => {
+        for (let idx2 = idx1 + 1; idx2 < sorted.length; idx2++) {
+          const prog2 = sorted[idx2];
+
+          if (prog2.begin >= prog1.begin + prog1.duration) break;
+
+          if (hasGroupOverlap(prog1, prog2)) {
+            overlaps.push({
+              program: prog1._id,
+            });
+            overlaps.push({
+              program: prog2._id,
+            });
+          }
+        }
+      });
+
+      return overlaps;
+    }
+
+    const sharedPrograms = programs.filter((p) => p.shared);
+    const blocks = getBlocks(sharedPrograms);
+
     for (const prog of programs) {
       const rect = getProgramRect(prog, settings);
-
-      if (!prog.shared) continue;
 
       if (rect.x >= 0 && rect.y >= 0)
         yield (
