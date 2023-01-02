@@ -2,7 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getSettings = createAsyncThunk(
   "settings/getSettings",
-  async (client) => await client.getSettings()
+  async (client) => ({
+    timeStep: 15 * 60 * 1000,
+    ...(await client.getSettings()),
+  })
 );
 
 export const settingsSlice = createSlice({
