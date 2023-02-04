@@ -44,11 +44,16 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
   const [notes, setNotes] = useState(program.notes);
   const [locked, setLocked] = useState(!!program.locked);
   const [ranges, setRanges] = useState(program.ranges);
+  const [blockOrder, setBlockOrder] = useState(
+    program.blockOrder ? program.blockOrder : 0 // data fix
+  );
 
   const dispatch = useDispatch();
 
   const { token, table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(token, table);
+
+  const { blockDivisionFeature } = useSelector((state) => state.config);
 
   function handleDelete(event) {
     event.preventDefault();
@@ -84,6 +89,7 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
         url: url,
         notes: notes,
         locked: locked,
+        blockOrder: blockOrder,
       })
       .then(
         (resp) => {
@@ -165,6 +171,13 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
             setNotes={setNotes}
             disabled={userLevel < level.EDIT}
           />
+          {blockDivisionFeature && (
+            <ProgramBlockOrder
+              blockOrder={blockOrder}
+              setBlockOrder={setBlockOrder}
+              disabled={userLevel < level.EDIT}
+            />
+          )}
         </Modal.Body>
         <Modal.Footer>
           {userLevel >= level.EDIT && (
@@ -543,6 +556,27 @@ function ProgramNotes({ notes, setNotes, disabled = false }) {
   );
 }
 
+function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
+  return (
+    <Form.Group as={Row}>
+      <Form.Label column sm="2">
+        Pořadí v bloku
+      </Form.Label>
+      <Col>
+        {disabled ? (
+          <p>{blockOrder}</p>
+        ) : (
+          <Form.Control
+            type="number"
+            value={blockOrder}
+            onChange={(e) => setBlockOrder(e.target.value)}
+          />
+        )}
+      </Col>
+    </Form.Group>
+  );
+}
+
 export function AddProgramModal({ options, handleClose, allPeople }) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
@@ -558,11 +592,14 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
   const [notes, setNotes] = useState("");
   const [locked, setLocked] = useState(false);
   const [ranges, setRanges] = useState({});
+  const [blockOrder, setBlockOrder] = useState(0);
 
   const dispatch = useDispatch();
 
   const { token, table } = useSelector((state) => state.auth);
   const client = new Client(token, table);
+
+  const { blockDivisionFeature } = useSelector((state) => state.config);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -582,6 +619,7 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
         url: url,
         notes: notes,
         locked: locked,
+        blockOrder: blockOrder,
       })
       .then(
         (resp) => {
@@ -636,6 +674,12 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
           />
           <ProgramNotes notes={notes} setNotes={setNotes} />
+          {blockDivisionFeature && (
+            <ProgramBlockOrder
+              blockOrder={blockOrder}
+              setBlockOrder={setBlockOrder}
+            />
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="link" onClick={handleClose}>
