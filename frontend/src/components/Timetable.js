@@ -77,8 +77,18 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
 
 function* getPrograms(programs, settings, violations, onEdit) {
   for (const prog of programs) {
-    const blockRect = getProgramRect(prog, settings);
-    const programRect = getProgramRect(prog, settings);
+    const blockRect = getProgramRect(
+      prog.begin,
+      prog.duration,
+      prog.groups,
+      settings
+    );
+    const programRect = getProgramRect(
+      prog.begin,
+      prog.duration,
+      prog.groups,
+      settings
+    );
 
     if (blockRect.x >= 0 && blockRect.y >= 0) {
       const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
@@ -250,15 +260,15 @@ function* getGroupHeaders(settings) {
   }
 }
 
-function getProgramRect(program, settings) {
-  const date = getOnlyDate(program.begin);
-  const time = getOnlyTime(program.begin);
+function getProgramRect(begin, duration, groups, settings) {
+  const date = getOnlyDate(begin);
+  const time = getOnlyTime(begin);
 
   var [first, last] = [0, settings.groupCnt - 1];
 
-  if (program.groups && program.groups.length > 0) {
+  if (groups && groups.length > 0) {
     const groupMap = settings.groups.map(
-      (group) => program.groups.findIndex((idx) => idx === group._id) !== -1
+      (group) => groups.findIndex((idx) => idx === group._id) !== -1
     );
     first = groupMap.reduce(
       (acc, cur, idx) => (cur && idx < acc ? idx : acc),
@@ -273,7 +283,7 @@ function getProgramRect(program, settings) {
   return {
     x: Math.ceil((time - settings.dayStart) / settings.timeStep),
     y: settings.days.indexOf(date) * settings.groupCnt + first,
-    width: Math.ceil(program.duration / settings.timeStep),
+    width: Math.ceil(duration / settings.timeStep),
     height: last - first + 1,
   };
 }
