@@ -1,3 +1,4 @@
+import { Children } from "react";
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,13 +81,14 @@ function* getPrograms(programs, settings, violations, onEdit) {
 
     if (rect.x >= 0 && rect.y >= 0)
       yield (
-        <Program
-          key={prog._id}
-          program={prog}
-          violations={violations.get(prog._id)}
-          rect={rect}
-          onEdit={onEdit}
-        />
+        <Block key={prog._id} rect={rect}>
+          <Program
+            key={prog._id}
+            program={prog}
+            violations={violations.get(prog._id)}
+            onEdit={onEdit}
+          />
+        </Block>
       );
     else
       console.warn(
@@ -350,6 +352,22 @@ function GroupHeader({ pos, name }) {
   return (
     <div className="groupheader" style={{ gridRowStart: pos }}>
       {name}
+    </div>
+  );
+}
+
+function Block({ rect, children }) {
+  return (
+    <div
+      className="block"
+      style={{
+        gridColumnStart: rect.x + 3,
+        gridRowStart: rect.y + 2,
+        gridColumnEnd: "span " + rect.width,
+        gridRowEnd: "span " + rect.height,
+      }}
+    >
+      {Children.map(children, (child) => child)}
     </div>
   );
 }

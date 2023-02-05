@@ -6,7 +6,7 @@ import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { addProgram } from "../store/programsSlice";
 
-export default function Program({ program, rect, violations, onEdit }) {
+export default function Program({ program, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
 
   const { token, table, userLevel } = useSelector((state) => state.auth);
@@ -25,17 +25,7 @@ export default function Program({ program, rect, violations, onEdit }) {
     );
 
   return (
-    <div
-      ref={drag}
-      className={"program-wrapper"}
-      style={{
-        gridColumnStart: rect.x + 3,
-        gridRowStart: rect.y + 2,
-        gridColumnEnd: "span " + rect.width,
-        gridRowEnd: "span " + rect.height,
-      }}
-      draggable={!program.locked}
-    >
+    <div ref={drag} className={"program-wrapper"} draggable={!program.locked}>
       <ProgramBody
         program={program}
         violations={violations}

@@ -65,7 +65,16 @@ p {
   text-align: right;
 }
 
+.block {
+  display: flex;
+  align-items: stretch;
+  align-content: stretch;
+  overflow: hidden;
+  position: relative;
+}
+
 .program-wrapper {
+  flex: 1;
   padding: 2px;
   text-align: center;
   display: flex;
