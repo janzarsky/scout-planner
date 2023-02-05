@@ -22,6 +22,7 @@ import {
 } from "../store/programsSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
+import { parseIntOrZero } from "../helpers/Parsing";
 
 export function EditProgramModal({ programId, handleClose, allPeople }) {
   const program = useSelector((state) => {
@@ -569,7 +570,7 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
           <Form.Control
             type="number"
             value={blockOrder}
-            onChange={(e) => setBlockOrder(e.target.value)}
+            onChange={(e) => setBlockOrder(parseIntOrZero(e.target.value))}
           />
         )}
       </Col>
