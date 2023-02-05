@@ -33,27 +33,6 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
     }
   }
 
-  function* getPrograms(programs, settings) {
-    for (const prog of programs) {
-      const rect = getProgramRect(prog, settings);
-
-      if (rect.x >= 0 && rect.y >= 0)
-        yield (
-          <Program
-            key={prog._id}
-            program={prog}
-            violations={violations.get(prog._id)}
-            rect={rect}
-            onEdit={onEdit}
-          />
-        );
-      else
-        console.warn(
-          `The computed rectangle ${rect} for program ${prog._id} is invalid`
-        );
-    }
-  }
-
   const { groups } = useSelector((state) => state.groups);
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings
@@ -82,7 +61,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[...getPrograms(programs, settings)]}
+        {[...getPrograms(programs, settings, violations, onEdit)]}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -93,6 +72,27 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
       </div>
     </DndProvider>
   );
+}
+
+function* getPrograms(programs, settings, violations, onEdit) {
+  for (const prog of programs) {
+    const rect = getProgramRect(prog, settings);
+
+    if (rect.x >= 0 && rect.y >= 0)
+      yield (
+        <Program
+          key={prog._id}
+          program={prog}
+          violations={violations.get(prog._id)}
+          rect={rect}
+          onEdit={onEdit}
+        />
+      );
+    else
+      console.warn(
+        `The computed rectangle ${rect} for program ${prog._id} is invalid`
+      );
+  }
 }
 
 function getSettings(programs, groups, timeStep) {
