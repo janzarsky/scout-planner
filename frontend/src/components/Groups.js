@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addGroup, deleteGroup, updateGroup } from "../store/groupsSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
+import { parseIntOrZero } from "../helpers/Parsing";
 
 export default function Groups() {
   const [newName, setNewName] = useState("Nová skupina");
@@ -137,7 +138,7 @@ function EditedGroup({ name, order, setName, setOrder, isNew = false }) {
         <Form.Control
           type="number"
           value={order}
-          onChange={(e) => setOrder(e.target.value)}
+          onChange={(e) => setOrder(parseIntOrZero(e.target.value))}
         />
       </td>
       <td>
