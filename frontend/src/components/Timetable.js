@@ -77,13 +77,8 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
 
 function* getPrograms(programs, settings, violations, onEdit) {
   for (const prog of programs) {
-    const blockRect = getProgramRect(
-      prog.begin,
-      prog.duration,
-      prog.groups,
-      settings
-    );
-    const programRect = getProgramRect(
+    const blockRect = getRect(prog.begin, prog.duration, prog.groups, settings);
+    const programRect = getRect(
       prog.begin,
       prog.duration,
       prog.groups,
@@ -260,7 +255,7 @@ function* getGroupHeaders(settings) {
   }
 }
 
-function getProgramRect(begin, duration, groups, settings) {
+function getRect(begin, duration, groups, settings) {
   const date = getOnlyDate(begin);
   const time = getOnlyTime(begin);
 
