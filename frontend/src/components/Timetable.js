@@ -96,7 +96,7 @@ function* getPrograms(programs, settings, violations, onEdit) {
       const columnCnt = blockRect.width;
 
       yield (
-        <Block key={prog._id} externalRect={blockRect} columnCnt={columnCnt}>
+        <Block key={prog._id} rect={blockRect} columnCnt={columnCnt}>
           <Program
             key={prog._id}
             rect={relativeRect}
@@ -369,15 +369,15 @@ function GroupHeader({ pos, name }) {
   );
 }
 
-function Block({ externalRect, columnCnt, children }) {
+function Block({ rect, columnCnt, children }) {
   return (
     <div
       className="block"
       style={{
-        gridColumnStart: externalRect.x + 3,
-        gridRowStart: externalRect.y + 2,
-        gridColumnEnd: "span " + externalRect.width,
-        gridRowEnd: "span " + externalRect.height,
+        gridColumnStart: rect.x + 3,
+        gridRowStart: rect.y + 2,
+        gridColumnEnd: "span " + rect.width,
+        gridRowEnd: "span " + rect.height,
         gridTemplateColumns: "repeat(" + columnCnt + ", minmax(20px, 1fr))",
       }}
     >
