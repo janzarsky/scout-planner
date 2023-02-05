@@ -69,12 +69,13 @@ p {
   display: flex;
   align-items: stretch;
   align-content: stretch;
+  flex-wrap: wrap;
   overflow: hidden;
   position: relative;
 }
 
 .program-wrapper {
-  flex: 1;
+  flex: 1 1 100%;
   padding: 2px;
   text-align: center;
   display: flex;
