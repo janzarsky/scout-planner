@@ -81,15 +81,23 @@ function* getPrograms(programs, settings, violations, onEdit) {
     const programRect = getProgramRect(prog, settings);
 
     if (blockRect.x >= 0 && blockRect.y >= 0) {
+      const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
       const relativeRect = {
         x: programRect.x - blockRect.x,
-        y: programRect.y - blockRect.y,
+        y: programRect.y - blockRect.y + blockOrder,
         width: programRect.width,
-        height: programRect.height,
+        height: 1,
       };
+      const rowCnt = 1; // FIXME
+      const columnCnt = blockRect.width;
 
       yield (
-        <Block key={prog._id} rect={programRect}>
+        <Block
+          key={prog._id}
+          externalRect={blockRect}
+          columnCnt={columnCnt}
+          rowCnt={rowCnt}
+        >
           <Program
             key={prog._id}
             rect={relativeRect}
@@ -362,17 +370,17 @@ function GroupHeader({ pos, name }) {
   );
 }
 
-function Block({ rect, children }) {
+function Block({ externalRect, columnCnt, rowCnt, children }) {
   return (
     <div
       className="block"
       style={{
-        gridColumnStart: rect.x + 3,
-        gridRowStart: rect.y + 2,
-        gridColumnEnd: "span " + rect.width,
-        gridRowEnd: "span " + rect.height,
-        gridTemplateColumns: "repeat(" + rect.width + ", minmax(20px, 1fr))",
-        gridTemplateRows: "repeat(" + rect.height + ", auto)",
+        gridColumnStart: externalRect.x + 3,
+        gridRowStart: externalRect.y + 2,
+        gridColumnEnd: "span " + externalRect.width,
+        gridRowEnd: "span " + externalRect.height,
+        gridTemplateColumns: "repeat(" + columnCnt + ", minmax(20px, 1fr))",
+        gridTemplateRows: "repeat(" + rowCnt + ", auto)",
       }}
     >
       {Children.map(children, (child) => child)}
