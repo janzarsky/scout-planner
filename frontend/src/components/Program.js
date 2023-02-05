@@ -30,8 +30,8 @@ export default function Program({ program, violations, rect, onEdit }) {
       className={"program-wrapper"}
       draggable={!program.locked}
       style={{
-        gridColumnStart: rect.x,
-        gridRowStart: rect.y,
+        gridColumnStart: rect.x + 1,
+        gridRowStart: rect.y + 1,
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
       }}
