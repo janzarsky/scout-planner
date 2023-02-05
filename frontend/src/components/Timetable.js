@@ -62,7 +62,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[...getPrograms(programs, settings, violations, onEdit)]}
+        {[...getBlocks(programs, settings, violations, onEdit)]}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -75,7 +75,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
   );
 }
 
-function* getPrograms(programs, settings, violations, onEdit) {
+function* getBlocks(programs, settings, violations, onEdit) {
   for (const prog of programs) {
     const blockRect = getRect(prog.begin, prog.duration, prog.groups, settings);
     const programRect = getRect(
