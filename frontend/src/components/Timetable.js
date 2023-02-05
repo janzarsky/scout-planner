@@ -88,16 +88,10 @@ function* getPrograms(programs, settings, violations, onEdit) {
         width: programRect.width,
         height: 1,
       };
-      const rowCnt = 1; // FIXME
       const columnCnt = blockRect.width;
 
       yield (
-        <Block
-          key={prog._id}
-          externalRect={blockRect}
-          columnCnt={columnCnt}
-          rowCnt={rowCnt}
-        >
+        <Block key={prog._id} externalRect={blockRect} columnCnt={columnCnt}>
           <Program
             key={prog._id}
             rect={relativeRect}
@@ -370,7 +364,7 @@ function GroupHeader({ pos, name }) {
   );
 }
 
-function Block({ externalRect, columnCnt, rowCnt, children }) {
+function Block({ externalRect, columnCnt, children }) {
   return (
     <div
       className="block"
@@ -380,7 +374,6 @@ function Block({ externalRect, columnCnt, rowCnt, children }) {
         gridColumnEnd: "span " + externalRect.width,
         gridRowEnd: "span " + externalRect.height,
         gridTemplateColumns: "repeat(" + columnCnt + ", minmax(20px, 1fr))",
-        gridTemplateRows: "repeat(" + rowCnt + ", auto)",
       }}
     >
       {Children.map(children, (child) => child)}
