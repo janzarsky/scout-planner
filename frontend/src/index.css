@@ -66,12 +66,7 @@ p {
 }
 
 .block {
-  display: flex;
-  align-items: stretch;
-  align-content: stretch;
-  flex-wrap: wrap;
-  overflow: hidden;
-  position: relative;
+  display: grid;
 }
 
 .program-wrapper {

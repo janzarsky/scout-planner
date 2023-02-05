@@ -77,23 +77,29 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
 
 function* getPrograms(programs, settings, violations, onEdit) {
   for (const prog of programs) {
-    const rect = getProgramRect(prog, settings);
+    const blockRect = getProgramRect(prog, settings);
+    const programRect = getProgramRect(prog, settings);
 
-    if (rect.x >= 0 && rect.y >= 0)
+    if (blockRect.x >= 0 && blockRect.y >= 0) {
+      const relativeRect = {
+        x: programRect.x - blockRect.x,
+        y: programRect.y - blockRect.y,
+        width: programRect.width,
+        height: programRect.height,
+      };
+
       yield (
-        <Block key={prog._id} rect={rect}>
+        <Block key={prog._id} rect={programRect}>
           <Program
             key={prog._id}
+            rect={relativeRect}
             program={prog}
             violations={violations.get(prog._id)}
             onEdit={onEdit}
           />
         </Block>
       );
-    else
-      console.warn(
-        `The computed rectangle ${rect} for program ${prog._id} is invalid`
-      );
+    } else console.warn(`The computed rectangle ${blockRect} is invalid`);
   }
 }
 
@@ -365,6 +371,8 @@ function Block({ rect, children }) {
         gridRowStart: rect.y + 2,
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
+        gridTemplateColumns: "repeat(" + rect.width + ", minmax(20px, 1fr))",
+        gridTemplateRows: "repeat(" + rect.height + ", auto)",
       }}
     >
       {Children.map(children, (child) => child)}
