@@ -88,23 +88,21 @@ function* getBlocks(programs, settings, violations, onEdit) {
     if (block.rect.x >= 0 && block.rect.y >= 0) {
       yield (
         <Block key={block.key} rect={block.rect} columnCnt={columnCnt}>
-          {[
-            ...getPrograms(
-              block.programs,
-              block.rect,
-              settings,
-              violations,
-              onEdit
-            ),
-          ]}
+          {getPrograms(
+            block.programs,
+            block.rect,
+            settings,
+            violations,
+            onEdit
+          )}
         </Block>
       );
     } else console.warn(`The computed rectangle ${block.rect} is invalid`);
   }
 }
 
-function* getPrograms(programs, blockRect, settings, violations, onEdit) {
-  for (const prog of programs) {
+function getPrograms(programs, blockRect, settings, violations, onEdit) {
+  return programs.map((prog) => {
     const programRect = getRect(
       prog.begin,
       prog.duration,
@@ -120,7 +118,7 @@ function* getPrograms(programs, blockRect, settings, violations, onEdit) {
       height: 1,
     };
 
-    yield (
+    return (
       <Program
         key={prog._id}
         rect={relativeRect}
@@ -129,7 +127,7 @@ function* getPrograms(programs, blockRect, settings, violations, onEdit) {
         onEdit={onEdit}
       />
     );
-  }
+  });
 }
 
 function getSettings(programs, groups, timeStep) {
