@@ -28,13 +28,13 @@ export default function Program({ program, rect, violations, onEdit }) {
     <div
       ref={drag}
       className={"program-wrapper"}
-      draggable={!program.locked}
       style={{
         gridColumnStart: rect.x + 1,
         gridRowStart: rect.y + 1,
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
       }}
+      draggable={!program.locked}
     >
       <ProgramBody
         program={program}
