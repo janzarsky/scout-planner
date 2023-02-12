@@ -6,7 +6,9 @@ import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { addProgram } from "../store/programsSlice";
 
-// just testing
+// break the build
+const asdf = require("asdf");
+
 export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
 
