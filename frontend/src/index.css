@@ -65,7 +65,12 @@ p {
   text-align: right;
 }
 
+.block {
+  display: grid;
+}
+
 .program-wrapper {
+  flex: 1 1 100%;
   padding: 2px;
   text-align: center;
   display: flex;

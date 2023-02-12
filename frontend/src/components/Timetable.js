@@ -1,3 +1,4 @@
+import { Children } from "react";
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,27 +34,6 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
     }
   }
 
-  function* getPrograms(programs, settings) {
-    for (const prog of programs) {
-      const rect = getProgramRect(prog, settings);
-
-      if (rect.x >= 0 && rect.y >= 0)
-        yield (
-          <Program
-            key={prog._id}
-            program={prog}
-            violations={violations.get(prog._id)}
-            rect={rect}
-            onEdit={onEdit}
-          />
-        );
-      else
-        console.warn(
-          `The computed rectangle ${rect} for program ${prog._id} is invalid`
-        );
-    }
-  }
-
   const { groups } = useSelector((state) => state.groups);
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings
@@ -82,7 +62,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[...getPrograms(programs, settings)]}
+        {[...getBlocks(programs, settings, violations, onEdit)]}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -93,6 +73,61 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
       </div>
     </DndProvider>
   );
+}
+
+function* getBlocks(programs, settings, violations, onEdit) {
+  const blocks = programs.map((program) => ({
+    programs: [program],
+    rect: getRect(program.begin, program.duration, program.groups, settings),
+    key: program._id,
+  }));
+
+  for (const block of blocks) {
+    const columnCnt = block.rect.width;
+
+    if (block.rect.x >= 0 && block.rect.y >= 0) {
+      yield (
+        <Block key={block.key} rect={block.rect} columnCnt={columnCnt}>
+          {getPrograms(
+            block.programs,
+            block.rect,
+            settings,
+            violations,
+            onEdit
+          )}
+        </Block>
+      );
+    } else console.warn(`The computed rectangle ${block.rect} is invalid`);
+  }
+}
+
+function getPrograms(programs, blockRect, settings, violations, onEdit) {
+  return programs.map((prog) => {
+    const programRect = getRect(
+      prog.begin,
+      prog.duration,
+      prog.groups,
+      settings
+    );
+
+    const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
+    const relativeRect = {
+      x: programRect.x - blockRect.x,
+      y: programRect.y - blockRect.y + blockOrder,
+      width: programRect.width,
+      height: 1,
+    };
+
+    return (
+      <Program
+        key={prog._id}
+        rect={relativeRect}
+        program={prog}
+        violations={violations.get(prog._id)}
+        onEdit={onEdit}
+      />
+    );
+  });
 }
 
 function getSettings(programs, groups, timeStep) {
@@ -240,15 +275,15 @@ function* getGroupHeaders(settings) {
   }
 }
 
-function getProgramRect(program, settings) {
-  const date = getOnlyDate(program.begin);
-  const time = getOnlyTime(program.begin);
+function getRect(begin, duration, groups, settings) {
+  const date = getOnlyDate(begin);
+  const time = getOnlyTime(begin);
 
   var [first, last] = [0, settings.groupCnt - 1];
 
-  if (program.groups && program.groups.length > 0) {
+  if (groups && groups.length > 0) {
     const groupMap = settings.groups.map(
-      (group) => program.groups.findIndex((idx) => idx === group._id) !== -1
+      (group) => groups.findIndex((idx) => idx === group._id) !== -1
     );
     first = groupMap.reduce(
       (acc, cur, idx) => (cur && idx < acc ? idx : acc),
@@ -263,7 +298,7 @@ function getProgramRect(program, settings) {
   return {
     x: Math.ceil((time - settings.dayStart) / settings.timeStep),
     y: settings.days.indexOf(date) * settings.groupCnt + first,
-    width: Math.ceil(program.duration / settings.timeStep),
+    width: Math.ceil(duration / settings.timeStep),
     height: last - first + 1,
   };
 }
@@ -350,6 +385,23 @@ function GroupHeader({ pos, name }) {
   return (
     <div className="groupheader" style={{ gridRowStart: pos }}>
       {name}
+    </div>
+  );
+}
+
+function Block({ rect, columnCnt, children }) {
+  return (
+    <div
+      className="block"
+      style={{
+        gridColumnStart: rect.x + 3,
+        gridRowStart: rect.y + 2,
+        gridColumnEnd: "span " + rect.width,
+        gridRowEnd: "span " + rect.height,
+        gridTemplateColumns: "repeat(" + columnCnt + ", minmax(20px, 1fr))",
+      }}
+    >
+      {Children.map(children, (child) => child)}
     </div>
   );
 }

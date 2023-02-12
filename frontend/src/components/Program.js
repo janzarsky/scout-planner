@@ -29,8 +29,8 @@ export default function Program({ program, rect, violations, onEdit }) {
       ref={drag}
       className={"program-wrapper"}
       style={{
-        gridColumnStart: rect.x + 3,
-        gridRowStart: rect.y + 2,
+        gridColumnStart: rect.x + 1,
+        gridRowStart: rect.y + 1,
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
       }}
