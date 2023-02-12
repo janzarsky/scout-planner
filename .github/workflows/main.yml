@@ -1,0 +1,12 @@
+on:
+  workflow_dispatch:
+jobs:
+  deploy_frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy
+      uses: 'google-github-actions/deploy-appengine@v1.1.0'
+      with:
+        deliverables: 'frontend/app.yaml'
+        version: 'v0-1-0'
