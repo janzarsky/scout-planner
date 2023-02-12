@@ -1,0 +1,22 @@
+on:
+  pull_request:
+
+jobs:
+  build_frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Add config file
+        run: "echo '{}' > src/config.local.json"
+
+      - name: Build
+        uses: actions/setup-node@v3
+      - run: npm ci
+      - run: npm run build
