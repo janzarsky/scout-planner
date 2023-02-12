@@ -6,7 +6,7 @@ import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { addProgram } from "../store/programsSlice";
 
-export default function Program({ program, violations, rect, onEdit }) {
+export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
 
   const { token, table, userLevel } = useSelector((state) => state.auth);
