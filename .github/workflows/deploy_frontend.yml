@@ -16,6 +16,10 @@ jobs:
       contents: read
       id-token: write
 
+    concurrency:
+      group: production
+      cancel-in-progress: true
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
