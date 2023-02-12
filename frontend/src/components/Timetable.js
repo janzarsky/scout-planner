@@ -76,8 +76,12 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
 }
 
 function* getBlocks(programs, settings, violations, onEdit) {
-  for (const program of programs) {
-    yield [...getPrograms([program], settings, violations, onEdit)];
+  const blocks = programs.map((program) => ({
+    programs: [program],
+  }));
+
+  for (const block of blocks) {
+    yield [...getPrograms(block.programs, settings, violations, onEdit)];
   }
 }
 
