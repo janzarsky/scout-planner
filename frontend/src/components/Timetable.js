@@ -94,24 +94,58 @@ function* getBlocks(programs, settings, violations, onEdit) {
 }
 
 function groupProgramsToBlocks(programs, settings) {
-  const programRects = Object.fromEntries(
-    programs.map((program) => [
-      program._id,
-      getRect(program.begin, program.duration, program.groups, settings),
-    ])
+  const sortedPrograms = [...programs].sort((a, b) =>
+    a.begin < b.begin ? -1 : 1
   );
+  const programRects = sortedPrograms.map((program) => ({
+    program,
+    rect: getRect(program.begin, program.duration, program.groups, settings),
+  }));
 
-  return programs.map((program) => {
-    const programs = [program];
-    const rect = programRects[program._id];
-    const key = `${rect.x}-${rect.y}`;
+  const blocks = [];
 
-    return {
-      programs,
-      rect,
-      key,
-    };
+  const overlaps = (a, b) =>
+    a.filter((i1) => b.find((i2) => i1 === i2)).length > 0;
+
+  const rectUnion = (rects) => ({
+    x: Math.min(...rects.map((r) => r.x)),
+    y: Math.min(...rects.map((r) => r.y)),
+    width: Math.max(...rects.map((r) => r.width)),
+    height: Math.max(...rects.map((r) => r.height)),
   });
+
+  for (let i = 0; i < programRects.length; i++) {
+    if (programRects[i].alreadyInBlock) continue;
+
+    const blockPrograms = [programRects[i]];
+    let blockEnd =
+      programRects[i].program.begin + programRects[i].program.duration;
+
+    for (let j = i + 1; j < programRects.length; j++) {
+      const progA = programRects[i].program;
+      const progB = programRects[j].program;
+
+      if (progB.begin >= blockEnd) break;
+
+      if (programRects[j].alreadyInBlock) continue;
+
+      if (overlaps(progA.groups, progB.groups)) {
+        blockPrograms.push(programRects[j]);
+        programRects[j].alreadyInBlock = true;
+        blockEnd = Math.max(blockEnd, progB.begin + progB.duration);
+      }
+    }
+
+    const rect = rectUnion(blockPrograms.map((p) => p.rect));
+
+    blocks.push({
+      programs: blockPrograms.map((b) => b.program),
+      rect: rect,
+      key: `${rect.x}-${rect.y}`,
+    });
+  }
+
+  return blocks;
 }
 
 function getProgram(prog, blockRect, settings, violations, onEdit) {
