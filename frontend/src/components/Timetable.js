@@ -76,11 +76,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
 }
 
 function* getBlocks(programs, settings, violations, onEdit) {
-  const blocks = programs.map((program) => ({
-    programs: [program],
-    rect: getRect(program.begin, program.duration, program.groups, settings),
-    key: program._id,
-  }));
+  const blocks = groupProgramsToBlocks(programs, settings);
 
   for (const block of blocks) {
     const columnCnt = block.rect.width;
@@ -95,6 +91,14 @@ function* getBlocks(programs, settings, violations, onEdit) {
       );
     } else console.warn(`The computed rectangle ${block.rect} is invalid`);
   }
+}
+
+function groupProgramsToBlocks(programs, settings) {
+  return programs.map((program) => ({
+    programs: [program],
+    rect: getRect(program.begin, program.duration, program.groups, settings),
+    key: program._id,
+  }));
 }
 
 function getProgram(prog, blockRect, settings, violations, onEdit) {
