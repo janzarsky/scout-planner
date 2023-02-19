@@ -102,7 +102,7 @@ function groupProgramsToBlocks(programs, settings) {
       program.groups,
       settings
     );
-    const key = program._id;
+    const key = `${rect.x}-${rect.y}`;
 
     return {
       programs,
