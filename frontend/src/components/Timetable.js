@@ -93,6 +93,15 @@ function* getBlocks(programs, settings, violations, onEdit) {
   }
 }
 
+function rectangleUnion(rects) {
+  return {
+    x: Math.min(...rects.map((r) => r.x)),
+    y: Math.min(...rects.map((r) => r.y)),
+    width: Math.max(...rects.map((r) => r.width)),
+    height: Math.max(...rects.map((r) => r.height)),
+  };
+}
+
 function groupProgramsToBlocks(programs, settings) {
   const sortedPrograms = [...programs].sort((a, b) =>
     a.begin < b.begin ? -1 : 1
@@ -106,13 +115,6 @@ function groupProgramsToBlocks(programs, settings) {
 
   const overlaps = (a, b) =>
     a.filter((i1) => b.find((i2) => i1 === i2)).length > 0;
-
-  const rectUnion = (rects) => ({
-    x: Math.min(...rects.map((r) => r.x)),
-    y: Math.min(...rects.map((r) => r.y)),
-    width: Math.max(...rects.map((r) => r.width)),
-    height: Math.max(...rects.map((r) => r.height)),
-  });
 
   for (let i = 0; i < programRects.length; i++) {
     if (programRects[i].alreadyInBlock) continue;
@@ -136,7 +138,7 @@ function groupProgramsToBlocks(programs, settings) {
       }
     }
 
-    const rect = rectUnion(blockPrograms.map((p) => p.rect));
+    const rect = rectangleUnion(blockPrograms.map((p) => p.rect));
 
     blocks.push({
       programs: blockPrograms.map((b) => b.program),
