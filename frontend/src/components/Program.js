@@ -51,11 +51,13 @@ export default function Program({ program, rect, violations, onEdit }) {
 }
 
 function ProgramBody({ program, pkg, violations }) {
-  const highlighted = useSelector(
-    (state) =>
+  const { highlighted, faded } = useSelector((state) => {
+    const highlighted =
       state.view.highlightingEnabled &&
-      state.view.highlightedPackages.indexOf(program.pkg) !== -1
-  );
+      state.view.highlightedPackages.indexOf(program.pkg) !== -1;
+    const faded = state.view.highlightingEnabled && !highlighted;
+    return { highlighted, faded };
+  });
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   const timeStep = useSelector((state) => state.settings.settings.timeStep);
@@ -69,6 +71,7 @@ function ProgramBody({ program, pkg, violations }) {
         "program" +
         (violations && viewViolations ? " violation" : "") +
         (highlighted ? " highlighted" : "") +
+        (faded ? " faded" : "") +
         (rangesEnabled ? " range range-" + rangeValue : "") +
         (program.duration <= 2 * timeStep ? " narrow" : "")
       }
