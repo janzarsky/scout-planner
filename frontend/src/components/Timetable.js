@@ -94,11 +94,22 @@ function* getBlocks(programs, settings, violations, onEdit) {
 }
 
 function groupProgramsToBlocks(programs, settings) {
-  return programs.map((program) => ({
-    programs: [program],
-    rect: getRect(program.begin, program.duration, program.groups, settings),
-    key: program._id,
-  }));
+  return programs.map((program) => {
+    const programs = [program];
+    const rect = getRect(
+      program.begin,
+      program.duration,
+      program.groups,
+      settings
+    );
+    const key = program._id;
+
+    return {
+      programs,
+      rect,
+      key,
+    };
+  });
 }
 
 function getProgram(prog, blockRect, settings, violations, onEdit) {
