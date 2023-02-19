@@ -106,6 +106,9 @@ p {
 .program.highlighted {
   background-color: #343a40;
 }
+.program.faded {
+  opacity: 0.7;
+}
 .program.narrow {
   writing-mode: vertical-rl;
   text-orientation: sideways;
