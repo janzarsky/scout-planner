@@ -75,6 +75,8 @@ function checkOverlaps(programs) {
 
       if (prog2.begin >= prog1.begin + prog1.duration) break;
 
+      if (prog1.blockOrder !== prog2.blockOrder) continue;
+
       if (prog1.groups.length === 0 || prog2.groups.length === 0) {
         overlaps.push({
           program: prog1._id,
