@@ -89,7 +89,13 @@ function* getBlocks(programs, settings, violations, onEdit) {
 
     if (blockRect.x >= 0 && blockRect.y >= 0) {
       yield (
-        <Block key={block.key} rect={blockRect} columnCnt={columnCnt}>
+        <Block
+          key={`${block.programs[0].begin}-${
+            block.programs[0].duration
+          }-${block.programs[0].groups.join("-")}`}
+          rect={blockRect}
+          columnCnt={columnCnt}
+        >
           {block.programs.map((program) =>
             getProgram(program, blockRect, settings, violations, onEdit)
           )}
@@ -141,9 +147,6 @@ function groupProgramsToBlocks(programs) {
       begin: blockPrograms[0].program.begin,
       duration: blockEnd - blockPrograms[0].program.begin,
       groups,
-      key: `${blockPrograms[0].program.begin}-${
-        blockPrograms[0].program.duration
-      }-${blockPrograms[0].program.groups.join("-")}`,
     });
   }
 
