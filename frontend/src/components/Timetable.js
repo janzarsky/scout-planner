@@ -86,20 +86,18 @@ function* getBlocks(programs, settings, violations, onEdit) {
       settings
     );
 
-    if (blockRect.x >= 0 && blockRect.y >= 0) {
-      yield (
-        <Block
-          key={`${block.programs[0].begin}-${
-            block.programs[0].duration
-          }-${block.programs[0].groups.join("-")}`}
-          rect={blockRect}
-        >
-          {block.programs.map((program) =>
-            getProgram(program, blockRect, settings, violations, onEdit)
-          )}
-        </Block>
-      );
-    } else console.warn(`The computed rectangle ${blockRect} is invalid`);
+    yield (
+      <Block
+        key={`${block.programs[0].begin}-${
+          block.programs[0].duration
+        }-${block.programs[0].groups.join("-")}`}
+        rect={blockRect}
+      >
+        {block.programs.map((program) =>
+          getProgram(program, blockRect, settings, violations, onEdit)
+        )}
+      </Block>
+    );
   }
 }
 
