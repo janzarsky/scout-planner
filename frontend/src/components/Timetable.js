@@ -62,7 +62,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[...getBlocks(programs, settings, violations, onEdit)]}
+        {getBlocks(programs, settings, violations, onEdit)}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -75,10 +75,10 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
   );
 }
 
-function* getBlocks(programs, settings, violations, onEdit) {
+function getBlocks(programs, settings, violations, onEdit) {
   const blocks = groupProgramsToBlocks(programs, settings);
 
-  for (const block of blocks) {
+  return blocks.map((block) => {
     const blockRect = getRect(
       block.begin,
       block.duration,
@@ -86,7 +86,7 @@ function* getBlocks(programs, settings, violations, onEdit) {
       settings
     );
 
-    yield (
+    return (
       <Block
         key={`${block.programs[0].begin}-${
           block.programs[0].duration
@@ -98,7 +98,7 @@ function* getBlocks(programs, settings, violations, onEdit) {
         )}
       </Block>
     );
-  }
+  });
 }
 
 function groupProgramsToBlocks(programs) {
