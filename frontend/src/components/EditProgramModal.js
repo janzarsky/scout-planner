@@ -574,6 +574,10 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
           />
         )}
       </Col>
+      <Col>
+        <i className="fa fa-flask" aria-hidden="true"></i>{" "}
+        <small>Experimentální funkce</small>
+      </Col>
     </Form.Group>
   );
 }
