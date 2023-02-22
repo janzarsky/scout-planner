@@ -108,6 +108,7 @@ function groupProgramsToBlocks(programs) {
   const programRects = sortedPrograms.map((program) => ({
     program,
   }));
+  const alreadyInBlock = new Array(programs.length).fill(false);
 
   const blocks = [];
 
@@ -115,7 +116,7 @@ function groupProgramsToBlocks(programs) {
     a.filter((i1) => b.find((i2) => i1 === i2)).length > 0;
 
   for (let i = 0; i < programRects.length; i++) {
-    if (programRects[i].alreadyInBlock) continue;
+    if (alreadyInBlock[i]) continue;
 
     const blockPrograms = [programRects[i]];
     let blockEnd =
@@ -128,12 +129,12 @@ function groupProgramsToBlocks(programs) {
 
       if (progB.begin >= blockEnd) break;
 
-      if (programRects[j].alreadyInBlock) continue;
+      if (alreadyInBlock[j]) continue;
 
       if (overlaps(progA.groups, progB.groups)) {
         blockPrograms.push(programRects[j]);
         groups = groups.concat(progB.groups);
-        programRects[j].alreadyInBlock = true;
+        alreadyInBlock[j] = true;
         blockEnd = Math.max(blockEnd, progB.begin + progB.duration);
       }
     }
