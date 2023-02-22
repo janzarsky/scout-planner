@@ -79,36 +79,32 @@ function* getBlocks(programs, settings, violations, onEdit) {
   const blocks = groupProgramsToBlocks(programs, settings);
 
   for (const block of blocks) {
-    const columnCnt = block.rect.width;
+    const blockRect = getRect(
+      block.begin,
+      block.duration,
+      block.groups,
+      settings
+    );
+    const columnCnt = blockRect.width;
 
-    if (block.rect.x >= 0 && block.rect.y >= 0) {
+    if (blockRect.x >= 0 && blockRect.y >= 0) {
       yield (
-        <Block key={block.key} rect={block.rect} columnCnt={columnCnt}>
+        <Block key={block.key} rect={blockRect} columnCnt={columnCnt}>
           {block.programs.map((program) =>
-            getProgram(program, block.rect, settings, violations, onEdit)
+            getProgram(program, blockRect, settings, violations, onEdit)
           )}
         </Block>
       );
-    } else console.warn(`The computed rectangle ${block.rect} is invalid`);
+    } else console.warn(`The computed rectangle ${blockRect} is invalid`);
   }
 }
 
-function rectangleUnion(rects) {
-  return {
-    x: Math.min(...rects.map((r) => r.x)),
-    y: Math.min(...rects.map((r) => r.y)),
-    width: Math.max(...rects.map((r) => r.width)),
-    height: Math.max(...rects.map((r) => r.height)),
-  };
-}
-
-function groupProgramsToBlocks(programs, settings) {
+function groupProgramsToBlocks(programs) {
   const sortedPrograms = [...programs].sort((a, b) =>
     a.begin < b.begin ? -1 : 1
   );
   const programRects = sortedPrograms.map((program) => ({
     program,
-    rect: getRect(program.begin, program.duration, program.groups, settings),
   }));
 
   const blocks = [];
@@ -122,6 +118,7 @@ function groupProgramsToBlocks(programs, settings) {
     const blockPrograms = [programRects[i]];
     let blockEnd =
       programRects[i].program.begin + programRects[i].program.duration;
+    let groups = programRects[i].program.groups;
 
     for (let j = i + 1; j < programRects.length; j++) {
       const progA = programRects[i].program;
@@ -133,17 +130,20 @@ function groupProgramsToBlocks(programs, settings) {
 
       if (overlaps(progA.groups, progB.groups)) {
         blockPrograms.push(programRects[j]);
+        groups = groups.concat(progB.groups);
         programRects[j].alreadyInBlock = true;
         blockEnd = Math.max(blockEnd, progB.begin + progB.duration);
       }
     }
 
-    const rect = rectangleUnion(blockPrograms.map((p) => p.rect));
-
     blocks.push({
       programs: blockPrograms.map((b) => b.program),
-      rect: rect,
-      key: `${rect.x}-${rect.y}`,
+      begin: blockPrograms[0].program.begin,
+      duration: blockEnd - blockPrograms[0].program.begin,
+      groups,
+      key: `${blockPrograms[0].program.begin}-${
+        blockPrograms[0].program.duration
+      }-${blockPrograms[0].program.groups.join("-")}`,
     });
   }
 
