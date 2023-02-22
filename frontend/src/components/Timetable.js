@@ -62,7 +62,7 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
         {[...getTimeHeaders(settings)]}
         {[...getDateHeaders(settings)]}
         {[...getGroupHeaders(settings)]}
-        {[...getBlocks(programs, settings, violations, onEdit)]}
+        {getBlocks(programs, settings, violations, onEdit)}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -75,59 +75,93 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
   );
 }
 
-function* getBlocks(programs, settings, violations, onEdit) {
-  const blocks = programs.map((program) => ({
-    programs: [program],
-    rect: getRect(program.begin, program.duration, program.groups, settings),
-    key: program._id,
-  }));
+function getBlocks(programs, settings, violations, onEdit) {
+  const blocks = groupProgramsToBlocks(programs, settings);
 
-  for (const block of blocks) {
-    const columnCnt = block.rect.width;
-
-    if (block.rect.x >= 0 && block.rect.y >= 0) {
-      yield (
-        <Block key={block.key} rect={block.rect} columnCnt={columnCnt}>
-          {getPrograms(
-            block.programs,
-            block.rect,
-            settings,
-            violations,
-            onEdit
-          )}
-        </Block>
-      );
-    } else console.warn(`The computed rectangle ${block.rect} is invalid`);
-  }
-}
-
-function getPrograms(programs, blockRect, settings, violations, onEdit) {
-  return programs.map((prog) => {
-    const programRect = getRect(
-      prog.begin,
-      prog.duration,
-      prog.groups,
+  return blocks.map((block) => {
+    const blockRect = getRect(
+      block.begin,
+      block.duration,
+      block.groups,
       settings
     );
 
-    const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
-    const relativeRect = {
-      x: programRect.x - blockRect.x,
-      y: programRect.y - blockRect.y + blockOrder,
-      width: programRect.width,
-      height: 1,
-    };
-
     return (
-      <Program
-        key={prog._id}
-        rect={relativeRect}
-        program={prog}
-        violations={violations.get(prog._id)}
-        onEdit={onEdit}
-      />
+      <Block
+        key={`${block.programs[0].begin}-${
+          block.programs[0].duration
+        }-${block.programs[0].groups.join("-")}`}
+        rect={blockRect}
+      >
+        {block.programs.map((program) =>
+          getProgram(program, blockRect, settings, violations, onEdit)
+        )}
+      </Block>
     );
   });
+}
+
+function groupProgramsToBlocks(unsortedPrograms) {
+  const programs = [...unsortedPrograms].sort((a, b) =>
+    a.begin < b.begin ? -1 : 1
+  );
+  const alreadyInBlock = new Array(programs.length).fill(false);
+  const blocks = [];
+
+  const overlaps = (a, b) =>
+    a.filter((i1) => b.find((i2) => i1 === i2)).length > 0;
+
+  for (let i = 0; i < programs.length; i++) {
+    if (alreadyInBlock[i]) continue;
+
+    const blockPrograms = [programs[i]];
+    let blockEnd = programs[i].begin + programs[i].duration;
+    let groups = programs[i].groups;
+
+    for (let j = i + 1; j < programs.length; j++) {
+      if (programs[j].begin >= blockEnd) break;
+
+      if (alreadyInBlock[j]) continue;
+
+      if (overlaps(programs[i].groups, programs[j].groups)) {
+        blockPrograms.push(programs[j]);
+        groups = groups.concat(programs[j].groups);
+        alreadyInBlock[j] = true;
+        blockEnd = Math.max(blockEnd, programs[j].begin + programs[j].duration);
+      }
+    }
+
+    blocks.push({
+      programs: [...blockPrograms],
+      begin: blockPrograms[0].begin,
+      duration: blockEnd - blockPrograms[0].begin,
+      groups: [...groups],
+    });
+  }
+
+  return blocks;
+}
+
+function getProgram(prog, blockRect, settings, violations, onEdit) {
+  const programRect = getRect(prog.begin, prog.duration, prog.groups, settings);
+
+  const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
+  const relativeRect = {
+    x: programRect.x - blockRect.x,
+    y: programRect.y - blockRect.y + blockOrder,
+    width: programRect.width,
+    height: 1,
+  };
+
+  return (
+    <Program
+      key={prog._id}
+      rect={relativeRect}
+      program={prog}
+      violations={violations.get(prog._id)}
+      onEdit={onEdit}
+    />
+  );
 }
 
 function getSettings(programs, groups, timeStep) {
@@ -389,7 +423,7 @@ function GroupHeader({ pos, name }) {
   );
 }
 
-function Block({ rect, columnCnt, children }) {
+function Block({ rect, children }) {
   return (
     <div
       className="block"
@@ -398,7 +432,7 @@ function Block({ rect, columnCnt, children }) {
         gridRowStart: rect.y + 2,
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
-        gridTemplateColumns: "repeat(" + columnCnt + ", minmax(20px, 1fr))",
+        gridTemplateColumns: "repeat(" + rect.width + ", minmax(20px, 1fr))",
       }}
     >
       {Children.map(children, (child) => child)}
