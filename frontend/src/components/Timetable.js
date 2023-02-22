@@ -85,7 +85,6 @@ function* getBlocks(programs, settings, violations, onEdit) {
       block.groups,
       settings
     );
-    const columnCnt = blockRect.width;
 
     if (blockRect.x >= 0 && blockRect.y >= 0) {
       yield (
@@ -94,7 +93,6 @@ function* getBlocks(programs, settings, violations, onEdit) {
             block.programs[0].duration
           }-${block.programs[0].groups.join("-")}`}
           rect={blockRect}
-          columnCnt={columnCnt}
         >
           {block.programs.map((program) =>
             getProgram(program, blockRect, settings, violations, onEdit)
