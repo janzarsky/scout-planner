@@ -431,7 +431,7 @@ function GroupHeader({ pos, name }) {
   );
 }
 
-function Block({ rect, columnCnt, children }) {
+function Block({ rect, children }) {
   return (
     <div
       className="block"
@@ -440,7 +440,7 @@ function Block({ rect, columnCnt, children }) {
         gridRowStart: rect.y + 2,
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
-        gridTemplateColumns: "repeat(" + columnCnt + ", minmax(20px, 1fr))",
+        gridTemplateColumns: "repeat(" + rect.width + ", minmax(20px, 1fr))",
       }}
     >
       {Children.map(children, (child) => child)}
