@@ -252,7 +252,7 @@ function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
           type="text"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          placeholder="YYYY-MM-DD"
+          placeholder="DD.MM.YYYY"
           disabled={disabled}
         />
       </Col>
