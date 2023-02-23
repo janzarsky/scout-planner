@@ -24,10 +24,17 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
   const { token, table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(token, table);
 
-  function onDroppableDrop(item, begin, currentPrograms) {
+  function onDroppableDrop(item, begin, groupId, currentPrograms) {
     var prog = currentPrograms.find((program) => program._id === item.id);
     if (prog) {
-      client.updateProgram({ ...prog, begin }).then(
+      // single-group programs should be always updated according to the target group,
+      // multi-group programs should be only updated in case they are dragged to a new group
+      const groups =
+        !groupId || prog.groups.indexOf(groupId) !== -1
+          ? prog.groups
+          : [groupId];
+
+      client.updateProgram({ ...prog, begin, groups }).then(
         (resp) => dispatch(updateProgram(resp)),
         (e) => dispatch(addError(e.message))
       );
@@ -252,20 +259,29 @@ function addEmptyDays(days) {
 }
 
 function* getDroppables(settings, onDrop, addProgramModal) {
+  // ensure there is always at least one group
+  const groups = settings.groups.length > 0 ? settings.groups : [{ _id: null }];
+
   for (const [idxDate, date] of settings.days.entries()) {
     for (const [idxTime, time] of settings.timeHeaders.entries()) {
       for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
         const begin = date + time + idxSpan * settings.timeStep;
-        yield (
-          <Droppable
-            key={begin}
-            x={3 + idxTime * settings.timeSpan + idxSpan}
-            y={2 + idxDate * settings.groupCnt}
-            height={settings.groupCnt}
-            onDrop={(item, programs) => onDrop(item, begin, programs)}
-            addProgramModal={() => addProgramModal({ begin })}
-          />
-        );
+
+        for (const [idxGroup, group] of groups.entries()) {
+          yield (
+            <Droppable
+              key={`${begin}-${group._id}`}
+              x={3 + idxTime * settings.timeSpan + idxSpan}
+              y={2 + idxDate * settings.groupCnt + idxGroup}
+              onDrop={(item, programs) =>
+                onDrop(item, begin, group._id, programs)
+              }
+              addProgramModal={() =>
+                addProgramModal({ begin, groupId: group._id })
+              }
+            />
+          );
+        }
       }
     }
   }
@@ -358,7 +374,7 @@ function getTimeIndicatorRect(settings) {
   };
 }
 
-function Droppable({ onDrop, x, y, height, addProgramModal }) {
+function Droppable({ onDrop, x, y, addProgramModal }) {
   const { programs } = useSelector((state) => state.programs);
 
   const [{ isOver }, drop] = useDrop(
@@ -376,11 +392,7 @@ function Droppable({ onDrop, x, y, height, addProgramModal }) {
     <div
       ref={drop}
       className={"droppable " + (isOver ? "drag-over" : "")}
-      style={{
-        gridColumnStart: x,
-        gridRowStart: y,
-        gridRowEnd: "span " + height,
-      }}
+      style={{ gridColumnStart: x, gridRowStart: y }}
       onClick={(_) => addProgramModal()}
     />
   );
