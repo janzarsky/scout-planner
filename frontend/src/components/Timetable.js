@@ -273,7 +273,6 @@ function* getDroppables(settings, onDrop, addProgramModal) {
               key={`${begin}-${group._id}`}
               x={3 + idxTime * settings.timeSpan + idxSpan}
               y={2 + idxDate * settings.groupCnt + idxGroup}
-              height={1}
               onDrop={(item, programs) =>
                 onDrop(item, begin, group._id, programs)
               }
@@ -375,7 +374,7 @@ function getTimeIndicatorRect(settings) {
   };
 }
 
-function Droppable({ onDrop, x, y, height, addProgramModal }) {
+function Droppable({ onDrop, x, y, addProgramModal }) {
   const { programs } = useSelector((state) => state.programs);
 
   const [{ isOver }, drop] = useDrop(
@@ -393,11 +392,7 @@ function Droppable({ onDrop, x, y, height, addProgramModal }) {
     <div
       ref={drop}
       className={"droppable " + (isOver ? "drag-over" : "")}
-      style={{
-        gridColumnStart: x,
-        gridRowStart: y,
-        gridRowEnd: "span " + height,
-      }}
+      style={{ gridColumnStart: x, gridRowStart: y }}
       onClick={(_) => addProgramModal()}
     />
   );
