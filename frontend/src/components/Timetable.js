@@ -83,7 +83,12 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
 }
 
 function getBlocks(programs, settings, violations, onEdit) {
-  const blocks = groupProgramsToBlocks(programs, settings);
+  const allGroups = settings.groups.map((g) => g._id);
+  const programsGroupFix = programs.map((p) => ({
+    ...p,
+    groups: p.groups.length > 0 ? p.groups : allGroups,
+  }));
+  const blocks = groupProgramsToBlocks(programsGroupFix);
 
   return blocks.map((block) => {
     const blockRect = getRect(
@@ -116,9 +121,7 @@ function groupProgramsToBlocks(unsortedPrograms) {
   const blocks = [];
 
   const overlaps = (a, b) =>
-    a.filter((i1) => b.find((i2) => i1 === i2)).length > 0 ||
-    a.length === 0 ||
-    b.length === 0;
+    a.filter((i1) => b.find((i2) => i1 === i2)).length > 0;
 
   for (let i = 0; i < programs.length; i++) {
     if (alreadyInBlock[i]) continue;
