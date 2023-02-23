@@ -109,7 +109,9 @@ function groupProgramsToBlocks(unsortedPrograms) {
   const blocks = [];
 
   const overlaps = (a, b) =>
-    a.filter((i1) => b.find((i2) => i1 === i2)).length > 0;
+    a.filter((i1) => b.find((i2) => i1 === i2)).length > 0 ||
+    a.length === 0 ||
+    b.length === 0;
 
   for (let i = 0; i < programs.length; i++) {
     if (alreadyInBlock[i]) continue;
