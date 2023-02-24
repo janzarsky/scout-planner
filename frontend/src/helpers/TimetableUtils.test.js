@@ -41,6 +41,16 @@ test("two programs with overlapping time", () => {
   ]);
 });
 
+test("two programs right after each other", () => {
+  const progA = { begin: 0, duration: 60, groups: ["first"] };
+  const progB = { begin: 60, duration: 60, groups: ["first"] };
+
+  expect(groupProgramsToBlocks([progA, progB])).toEqual([
+    { programs: [progA], begin: 0, duration: 60, groups: ["first"] },
+    { programs: [progB], begin: 60, duration: 60, groups: ["first"] },
+  ]);
+});
+
 test("two programs with overlapping times and groups", () => {
   const progA = { begin: 0, duration: 60, groups: ["first", "second"] };
   const progB = { begin: 0, duration: 60, groups: ["second", "third"] };
