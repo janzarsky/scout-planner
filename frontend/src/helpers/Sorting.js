@@ -21,3 +21,10 @@ export function arraysEqualWithSorting(a, b) {
   }
   return true;
 }
+
+export function arraysIntersect(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+
+  return a.filter((el) => b.indexOf(el) !== -1).length > 0;
+}
