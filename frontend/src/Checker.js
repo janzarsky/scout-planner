@@ -1,4 +1,5 @@
 import { formatDateTime } from "./helpers/DateUtils";
+import { arraysEqualWithSorting, arraysIntersect } from "./helpers/Sorting";
 
 export function checkRules(rules, programs) {
   const violations = new Map();
@@ -75,8 +76,6 @@ function checkOverlaps(programs) {
 
       if (prog2.begin >= prog1.begin + prog1.duration) break;
 
-      if (prog1.blockOrder !== prog2.blockOrder) continue;
-
       if (prog1.groups.length === 0 || prog2.groups.length === 0) {
         overlaps.push({
           program: prog1._id,
@@ -87,8 +86,9 @@ function checkOverlaps(programs) {
           msg: "Více programů pro jednu skupinu",
         });
       } else if (
-        prog1.groups.filter((group) => prog2.groups.indexOf(group) !== -1)
-          .length > 0
+        arraysIntersect(prog1.groups, prog2.groups) &&
+        (prog1.blockOrder === prog2.blockOrder ||
+          !arraysEqualWithSorting(prog1.groups, prog2.groups))
       ) {
         overlaps.push({
           program: prog1._id,
