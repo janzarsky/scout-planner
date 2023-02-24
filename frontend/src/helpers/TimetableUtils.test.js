@@ -5,11 +5,7 @@ test("empty", () => {
 });
 
 test("one program", () => {
-  const progA = {
-    begin: 0,
-    duration: 60,
-    groups: ["first"],
-  };
+  const progA = { begin: 0, duration: 60, groups: ["first"] };
 
   expect(groupProgramsToBlocks([progA])).toEqual([
     { programs: [progA], begin: 0, duration: 60, groups: ["first"] },
@@ -17,16 +13,8 @@ test("one program", () => {
 });
 
 test("two programs with non-overlapping time", () => {
-  const progA = {
-    begin: 0,
-    duration: 60,
-    groups: ["first"],
-  };
-  const progB = {
-    begin: 90,
-    duration: 60,
-    groups: ["first"],
-  };
+  const progA = { begin: 0, duration: 60, groups: ["first"] };
+  const progB = { begin: 90, duration: 60, groups: ["first"] };
 
   expect(groupProgramsToBlocks([progA, progB])).toEqual([
     { programs: [progA], begin: 0, duration: 60, groups: ["first"] },
@@ -35,16 +23,8 @@ test("two programs with non-overlapping time", () => {
 });
 
 test("two programs with different groups", () => {
-  const progA = {
-    begin: 0,
-    duration: 60,
-    groups: ["first"],
-  };
-  const progB = {
-    begin: 0,
-    duration: 60,
-    groups: ["second"],
-  };
+  const progA = { begin: 0, duration: 60, groups: ["first"] };
+  const progB = { begin: 0, duration: 60, groups: ["second"] };
 
   expect(groupProgramsToBlocks([progA, progB])).toEqual([
     { programs: [progA], begin: 0, duration: 60, groups: ["first"] },
@@ -53,16 +33,8 @@ test("two programs with different groups", () => {
 });
 
 test("two programs with overlapping time", () => {
-  const progA = {
-    begin: 0,
-    duration: 60,
-    groups: ["first"],
-  };
-  const progB = {
-    begin: 30,
-    duration: 60,
-    groups: ["first"],
-  };
+  const progA = { begin: 0, duration: 60, groups: ["first"] };
+  const progB = { begin: 30, duration: 60, groups: ["first"] };
 
   expect(groupProgramsToBlocks([progA, progB])).toEqual([
     { programs: [progA, progB], begin: 0, duration: 90, groups: ["first"] },
@@ -70,16 +42,8 @@ test("two programs with overlapping time", () => {
 });
 
 test("two programs with overlapping times and groups", () => {
-  const progA = {
-    begin: 0,
-    duration: 60,
-    groups: ["first", "second"],
-  };
-  const progB = {
-    begin: 0,
-    duration: 60,
-    groups: ["second", "third"],
-  };
+  const progA = { begin: 0, duration: 60, groups: ["first", "second"] };
+  const progB = { begin: 0, duration: 60, groups: ["second", "third"] };
 
   expect(groupProgramsToBlocks([progA, progB])).toEqual([
     { programs: [progA], begin: 0, duration: 60, groups: ["first", "second"] },
@@ -88,21 +52,9 @@ test("two programs with overlapping times and groups", () => {
 });
 
 test("three programs with overlapping time", () => {
-  const progA = {
-    begin: 0,
-    duration: 60,
-    groups: ["first"],
-  };
-  const progB = {
-    begin: 40,
-    duration: 60,
-    groups: ["first"],
-  };
-  const progC = {
-    begin: 80,
-    duration: 60,
-    groups: ["first"],
-  };
+  const progA = { begin: 0, duration: 60, groups: ["first"] };
+  const progB = { begin: 40, duration: 60, groups: ["first"] };
+  const progC = { begin: 80, duration: 60, groups: ["first"] };
 
   expect(groupProgramsToBlocks([progA, progB, progC])).toEqual([
     {
