@@ -52,7 +52,7 @@ test("two programs with different groups", () => {
   ]);
 });
 
-test.skip("two programs with overlapping time", () => {
+test("two programs with overlapping time", () => {
   const progA = {
     begin: 0,
     duration: 60,

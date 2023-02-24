@@ -22,7 +22,7 @@ export function groupProgramsToBlocks(unsortedPrograms) {
 
       if (overlaps(programs[i].groups, programs[j].groups)) {
         blockPrograms.push(programs[j]);
-        groups = groups.concat(programs[j].groups);
+        groups = [...new Set([...groups, ...programs[j].groups])];
         alreadyInBlock[j] = true;
         blockEnd = Math.max(blockEnd, programs[j].begin + programs[j].duration);
       }
