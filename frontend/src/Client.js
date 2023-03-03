@@ -1,7 +1,9 @@
+import { getAuth } from "firebase/auth";
+
 const config = require("./config.json");
 
 export default class Client {
-  constructor(token, timetable) {
+  constructor(timetable) {
     ["program", "package", "rule", "group", "range", "user"].forEach(
       (entity) => {
         const name = entity.charAt(0).toUpperCase() + entity.slice(1);
@@ -15,7 +17,13 @@ export default class Client {
     );
 
     this.basePath = `${config.host}/${timetable}`;
-    this.authHeader = token ? { Authorization: token } : {};
+  }
+
+  async getAuthHeader() {
+    const auth = getAuth();
+    const token =
+      auth && auth.currentUser ? await auth.currentUser.getIdToken() : null;
+    return token ? { Authorization: token } : {};
   }
 
   async updateSettings(data) {
@@ -23,7 +31,10 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/settings`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", ...this.authHeader },
+        headers: {
+          "Content-Type": "application/json",
+          ...(await this.getAuthHeader()),
+        },
         body: JSON.stringify(data),
       });
     } catch {
@@ -40,7 +51,7 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/settings`, {
         method: "GET",
-        headers: this.authHeader,
+        headers: await this.getAuthHeader(),
       });
     } catch {
       throw new Error(`Při načítání nastavení nastala chyba.`);
@@ -56,7 +67,7 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/permissions`, {
         method: "GET",
-        headers: this.authHeader,
+        headers: await this.getAuthHeader(),
       });
     } catch {
       throw new Error(`Při načítání uživatelských oprávnění nastala chyba.`);
@@ -72,7 +83,7 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/${path}/${id}`, {
         method: "GET",
-        headers: this.authHeader,
+        headers: await this.getAuthHeader(),
       });
     } catch {
       throw new Error(`Při načítání nastala chyba.`);
@@ -88,7 +99,7 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/${path}`, {
         method: "GET",
-        headers: this.authHeader,
+        headers: await this.getAuthHeader(),
       });
     } catch {
       throw new Error(`Při načítání nastala chyba.`);
@@ -104,7 +115,10 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/${path}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...this.authHeader },
+        headers: {
+          "Content-Type": "application/json",
+          ...(await this.getAuthHeader()),
+        },
         body: JSON.stringify(data),
       });
     } catch {
@@ -121,7 +135,10 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/${path}/${data._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", ...this.authHeader },
+        headers: {
+          "Content-Type": "application/json",
+          ...(await this.getAuthHeader()),
+        },
         body: JSON.stringify(data),
       });
     } catch {
@@ -138,7 +155,7 @@ export default class Client {
     try {
       resp = await fetch(`${this.basePath}/${path}/${id}`, {
         method: "DELETE",
-        headers: this.authHeader,
+        headers: await this.getAuthHeader(),
       });
     } catch {
       throw new Error(`Během odstraňování nastala chyba.`);

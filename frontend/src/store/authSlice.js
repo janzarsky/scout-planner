@@ -10,7 +10,7 @@ export const authSlice = createSlice({
   name: "auth",
   initialState: {
     table: undefined,
-    token: undefined,
+    authenticated: false,
     userLevel: level.NONE,
     permissionsLoaded: false,
     loading: "idle",
@@ -20,8 +20,8 @@ export const authSlice = createSlice({
     setTable(state, action) {
       state.table = action.payload;
     },
-    setToken(state, action) {
-      state.token = action.payload;
+    setAuthenticated(state, action) {
+      state.authenticated = action.payload;
       state.permissionsLoaded = false;
     },
     // for testing purposes only
@@ -54,7 +54,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setTable, setToken } = authSlice.actions;
+export const { setTable, setAuthenticated } = authSlice.actions;
 export const testing = { setUserLevel: authSlice.actions.setUserLevel };
 
 export default authSlice.reducer;

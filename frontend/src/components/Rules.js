@@ -27,8 +27,8 @@ export default function Rules({ violations }) {
   const { programs } = useSelector((state) => state.programs);
   const dispatch = useDispatch();
 
-  const { token, table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   function handleSubmit(event) {
     event.preventDefault();
