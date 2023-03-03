@@ -16,8 +16,8 @@ export default function Ranges() {
   const { ranges } = useSelector((state) => state.ranges);
   const dispatch = useDispatch();
 
-  const { token, table } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   function handleSubmit(event) {
     event.preventDefault();

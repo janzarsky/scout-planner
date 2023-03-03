@@ -51,8 +51,8 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
 
   const dispatch = useDispatch();
 
-  const { token, table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   const { blockDivisionFeature } = useSelector((state) => state.config);
 
@@ -601,8 +601,8 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
 
   const dispatch = useDispatch();
 
-  const { token, table } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   const { blockDivisionFeature } = useSelector((state) => state.config);
 

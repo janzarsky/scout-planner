@@ -22,8 +22,8 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
-  const { token, table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   function onDroppableDrop(item, begin, groupId, currentPrograms) {
     var prog = currentPrograms.find((program) => program._id === item.id);

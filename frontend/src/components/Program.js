@@ -9,8 +9,8 @@ import { addProgram } from "../store/programsSlice";
 export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
 
-  const { token, table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   const [, drag] = useDrag(() => ({
     type: "program",

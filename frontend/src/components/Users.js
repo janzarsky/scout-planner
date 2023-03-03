@@ -19,8 +19,8 @@ export default function Users({ userEmail }) {
   const { users } = useSelector((state) => state.users);
   const dispatch = useDispatch();
 
-  const { token, table } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   const publicUser = users.find((user) => user.email === "public");
 

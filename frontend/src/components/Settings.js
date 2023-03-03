@@ -20,8 +20,8 @@ export default function Settings() {
   const { users } = useSelector((state) => state.users);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
-  const { token, table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table, userLevel } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   async function deleteAll() {
     await Promise.all([
@@ -55,8 +55,8 @@ function TimeStep() {
   const { settings } = useSelector((state) => state.settings);
   const dispatch = useDispatch();
 
-  const { token, table } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   const [step, setStep] = useState(settings.timeStep);
   const [editing, setEditing] = useState(false);

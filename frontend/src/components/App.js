@@ -30,7 +30,7 @@ import { getPackages } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
-import { getPermissions, setToken } from "../store/authSlice";
+import { getPermissions, setAuthenticated } from "../store/authSlice";
 import Filters from "./Filters";
 import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
@@ -69,7 +69,7 @@ export default function App() {
   const { settings: this_state_settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings
   );
-  const { token, table, userLevel, permissionsLoaded } = useSelector(
+  const { authenticated, table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth
   );
   const errors = useSelector((state) => state.errors);
@@ -85,7 +85,7 @@ export default function App() {
   async function logout() {
     await signOut(auth)
       .catch((e) => dispatch(addError(e.message)))
-      .finally(() => dispatch(setToken(null)));
+      .finally(() => dispatch(setAuthenticated(false)));
   }
 
   useEffect(() => {
@@ -96,8 +96,7 @@ export default function App() {
     const provider = new GoogleAuthProvider();
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
-      const token = user ? await user.getIdToken() : null;
-      dispatch(setToken(token));
+      dispatch(setAuthenticated(!!user));
     });
     setProvider(provider);
     setAuth(auth);
@@ -105,14 +104,14 @@ export default function App() {
 
   useEffect(() => {
     if (!permissionsLoaded) {
-      const client = new Client(token, table);
+      const client = new Client(table);
       dispatch(getPermissions(client));
     }
-  }, [token, table, permissionsLoaded, dispatch]);
+  }, [table, permissionsLoaded, dispatch]);
 
   useEffect(() => {
     if (permissionsLoaded) {
-      const client = new Client(token, table);
+      const client = new Client(table);
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
@@ -125,7 +124,7 @@ export default function App() {
 
       if (userLevel >= level.ADMIN) dispatch(getUsers(client));
     }
-  }, [token, table, userLevel, permissionsLoaded, dispatch]);
+  }, [table, userLevel, permissionsLoaded, dispatch]);
 
   useEffect(() => {
     const problems = checkRules(this_state_rules, this_state_programs);

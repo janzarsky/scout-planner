@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 export default function Import() {
   const [importData, setImportData] = useState();
 
-  const { token, table } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   async function handleSubmit(event) {
     event.preventDefault();

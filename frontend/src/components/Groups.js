@@ -19,8 +19,8 @@ export default function Groups() {
   const { groups } = useSelector((state) => state.groups);
   const dispatch = useDispatch();
 
-  const { token, table } = useSelector((state) => state.auth);
-  const client = new Client(token, table);
+  const { table } = useSelector((state) => state.auth);
+  const client = new Client(table);
 
   function handleSubmit(event) {
     event.preventDefault();
