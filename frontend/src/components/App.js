@@ -69,7 +69,7 @@ export default function App() {
   const { settings: this_state_settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings
   );
-  const { authenticated, table, userLevel, permissionsLoaded } = useSelector(
+  const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth
   );
   const errors = useSelector((state) => state.errors);
