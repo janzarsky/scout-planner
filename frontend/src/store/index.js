@@ -15,21 +15,23 @@ import configReducer from "./configSlice";
 
 const composedEnhancer = applyMiddleware(thunkMiddleware);
 
-export default configureStore(
-  {
-    reducer: {
-      ranges: rangesReducer,
-      groups: groupsReducer,
-      packages: packagesReducer,
-      rules: rulesReducer,
-      settings: settingsReducer,
-      users: usersReducer,
-      programs: programsReducer,
-      view: viewReducer,
-      auth: authReducer,
-      errors: errorsReducer,
-      config: configReducer,
+export function getStore() {
+  return configureStore(
+    {
+      reducer: {
+        ranges: rangesReducer,
+        groups: groupsReducer,
+        packages: packagesReducer,
+        rules: rulesReducer,
+        settings: settingsReducer,
+        users: usersReducer,
+        programs: programsReducer,
+        view: viewReducer,
+        auth: authReducer,
+        errors: errorsReducer,
+        config: configReducer,
+      },
     },
-  },
-  composedEnhancer
-);
+    composedEnhancer
+  );
+}
