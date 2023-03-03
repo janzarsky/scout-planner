@@ -15,7 +15,7 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import { Provider, useDispatch } from "react-redux";
-import store from "./store";
+import { getStore } from "./store";
 import { setTable } from "./store/authSlice";
 
 function AppWrapper() {
@@ -65,6 +65,7 @@ const Homepage = () => {
 };
 
 const root = createRoot(document.getElementById("root"));
+const store = getStore();
 
 root.render(
   <Provider store={store}>

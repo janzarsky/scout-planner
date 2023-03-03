@@ -24,6 +24,11 @@ export const authSlice = createSlice({
       state.token = action.payload;
       state.permissionsLoaded = false;
     },
+    // for testing purposes only
+    setUserLevel(state, action) {
+      state.userLevel = action.payload;
+      state.permissionsLoaded = true;
+    },
   },
   extraReducers(builder) {
     builder.addCase(getPermissions.pending, (state) => {
@@ -50,5 +55,6 @@ export const authSlice = createSlice({
 });
 
 export const { setTable, setToken } = authSlice.actions;
+export const testing = { setUserLevel: authSlice.actions.setUserLevel };
 
 export default authSlice.reducer;
