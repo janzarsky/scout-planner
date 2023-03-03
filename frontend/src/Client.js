@@ -6,11 +6,11 @@ export default class Client {
       (entity) => {
         const name = entity.charAt(0).toUpperCase() + entity.slice(1);
 
-        this[`get${name}s`] = () => this.#getAll(`${entity}s`);
-        this[`get${name}`] = (id) => this.#get(`${entity}s`, id);
-        this[`add${name}`] = (data) => this.#post(`${entity}s`, data);
-        this[`update${name}`] = (data) => this.#put(`${entity}s`, data);
-        this[`delete${name}`] = (id) => this.#remove(`${entity}s`, id);
+        this[`get${name}s`] = () => this.getAll(`${entity}s`);
+        this[`get${name}`] = (id) => this.get(`${entity}s`, id);
+        this[`add${name}`] = (data) => this.post(`${entity}s`, data);
+        this[`update${name}`] = (data) => this.put(`${entity}s`, data);
+        this[`delete${name}`] = (id) => this.remove(`${entity}s`, id);
       }
     );
 
@@ -67,7 +67,7 @@ export default class Client {
     return await resp.json();
   }
 
-  async #get(path, id) {
+  async get(path, id) {
     let resp;
     try {
       resp = await fetch(`${this.basePath}/${path}/${id}`, {
@@ -83,7 +83,7 @@ export default class Client {
     return await resp.json();
   }
 
-  async #getAll(path) {
+  async getAll(path) {
     let resp;
     try {
       resp = await fetch(`${this.basePath}/${path}`, {
@@ -99,7 +99,7 @@ export default class Client {
     return await resp.json();
   }
 
-  async #post(path, data) {
+  async post(path, data) {
     let resp;
     try {
       resp = await fetch(`${this.basePath}/${path}`, {
@@ -116,7 +116,7 @@ export default class Client {
     return await resp.json();
   }
 
-  async #put(path, data) {
+  async put(path, data) {
     let resp;
     try {
       resp = await fetch(`${this.basePath}/${path}/${data._id}`, {
@@ -133,7 +133,7 @@ export default class Client {
     return await resp.json();
   }
 
-  async #remove(path, id) {
+  async remove(path, id) {
     let resp;
     try {
       resp = await fetch(`${this.basePath}/${path}/${id}`, {
