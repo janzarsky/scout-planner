@@ -18,7 +18,12 @@ import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 
-export default function Timetable({ violations, addProgramModal, onEdit }) {
+export default function Timetable({
+  violations,
+  addProgramModal,
+  onEdit,
+  timeProvider = () => Date.now(),
+}) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
@@ -46,8 +51,13 @@ export default function Timetable({ violations, addProgramModal, onEdit }) {
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings
   );
-  const settings = getSettings(programs, groups, timetableSettings.timeStep);
-  const timeIndicatorRect = getTimeIndicatorRect(settings);
+  const settings = getSettings(
+    programs,
+    groups,
+    timetableSettings.timeStep,
+    timeProvider()
+  );
+  const timeIndicatorRect = getTimeIndicatorRect(settings, timeProvider());
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -136,10 +146,10 @@ function getProgram(prog, blockRect, settings, violations, onEdit) {
   );
 }
 
-function getSettings(programs, groups, timeStep) {
+function getSettings(programs, groups, timeStep, now) {
   const hour = parseDuration("1:00");
 
-  if (programs.length === 0) programs = [{ begin: Date.now(), duration: hour }];
+  if (programs.length === 0) programs = [{ begin: now, duration: hour }];
 
   var settings = {};
 
@@ -318,8 +328,7 @@ function getRect(begin, duration, groups, settings) {
   };
 }
 
-function getTimeIndicatorRect(settings) {
-  const now = Date.now();
+function getTimeIndicatorRect(settings, now) {
   // the times in timetable are in UTC (we don't know the timezone of the actual event)
   // the indicator assumes that you are in the correct timezone
   const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
