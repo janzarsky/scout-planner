@@ -79,7 +79,7 @@ export default function Timetable({
           getDroppables(settings, onDroppableDrop, addProgramModal)}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
-        {[...getGroupHeaders(settings)]}
+        {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
         {timeIndicatorRect && (
           <TimeIndicator
@@ -234,18 +234,16 @@ function getDateHeaders(settings) {
   ));
 }
 
-function* getGroupHeaders(settings) {
-  for (const [idx, date] of settings.days.entries()) {
-    for (const [groupIdx, group] of settings.groups.entries()) {
-      yield (
-        <GroupHeader
-          key={`group,${date},${group._id}`}
-          pos={idx * settings.groupCnt + groupIdx + 2}
-          name={group.name}
-        />
-      );
-    }
-  }
+function getGroupHeaders(settings) {
+  return settings.days.flatMap((date, idx) =>
+    settings.groups.map((group, groupIdx) => (
+      <GroupHeader
+        key={`group,${date},${group._id}`}
+        pos={idx * settings.groupCnt + groupIdx + 2}
+        name={group.name}
+      />
+    ))
+  );
 }
 
 function getRect(begin, duration, groups, settings) {
