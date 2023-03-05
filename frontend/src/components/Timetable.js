@@ -75,12 +75,11 @@ export default function Timetable({
             ", minmax(20px, 1fr))",
         }}
       >
-        {userLevel >= level.EDIT && [
-          ...getDroppables(settings, onDroppableDrop, addProgramModal),
-        ]}
-        {[...getTimeHeaders(settings)]}
-        {[...getDateHeaders(settings)]}
-        {[...getGroupHeaders(settings)]}
+        {userLevel >= level.EDIT &&
+          getDroppables(settings, onDroppableDrop, addProgramModal)}
+        {getTimeHeaders(settings)}
+        {getDateHeaders(settings)}
+        {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
         {timeIndicatorRect && (
           <TimeIndicator
@@ -186,73 +185,65 @@ function getSettings(programs, groups, timeStep, now) {
   return settings;
 }
 
-function* getDroppables(settings, onDrop, addProgramModal) {
+function getDroppables(settings, onDrop, addProgramModal) {
   // ensure there is always at least one group
   const groups = settings.groups.length > 0 ? settings.groups : [{ _id: null }];
 
-  for (const [idxDate, date] of settings.days.entries()) {
-    for (const [idxTime, time] of settings.timeHeaders.entries()) {
-      for (let idxSpan = 0; idxSpan < settings.timeSpan; idxSpan++) {
+  return settings.days.flatMap((date, idxDate) =>
+    settings.timeHeaders.flatMap((time, idxTime) =>
+      [...Array(settings.timeSpan).keys()].flatMap((idxSpan) => {
         const begin = date + time + idxSpan * settings.timeStep;
 
-        for (const [idxGroup, group] of groups.entries()) {
-          yield (
-            <Droppable
-              key={`${begin}-${group._id}`}
-              x={3 + idxTime * settings.timeSpan + idxSpan}
-              y={2 + idxDate * settings.groupCnt + idxGroup}
-              onDrop={(item, programs) =>
-                onDrop(item, begin, group._id, programs)
-              }
-              addProgramModal={() =>
-                addProgramModal({ begin, groupId: group._id })
-              }
-            />
-          );
-        }
-      }
-    }
-  }
+        return groups.map((group, idxGroup) => (
+          <Droppable
+            key={`${begin}-${group._id}`}
+            x={3 + idxTime * settings.timeSpan + idxSpan}
+            y={2 + idxDate * settings.groupCnt + idxGroup}
+            onDrop={(item, programs) =>
+              onDrop(item, begin, group._id, programs)
+            }
+            addProgramModal={() =>
+              addProgramModal({ begin, groupId: group._id })
+            }
+          />
+        ));
+      })
+    )
+  );
 }
 
-function* getTimeHeaders(settings) {
-  for (const [idx, time] of settings.timeHeaders.entries()) {
-    yield (
-      <TimeHeader
-        key={time}
-        time={new Date(time)}
-        pos={idx * settings.timeSpan + 3}
-        span={settings.timeSpan}
+function getTimeHeaders(settings) {
+  return settings.timeHeaders.map((time, idx) => (
+    <TimeHeader
+      key={time}
+      time={new Date(time)}
+      pos={idx * settings.timeSpan + 3}
+      span={settings.timeSpan}
+    />
+  ));
+}
+
+function getDateHeaders(settings) {
+  return settings.days.map((date, idx) => (
+    <DateHeader
+      key={date}
+      date={new Date(date)}
+      pos={idx * settings.groupCnt + 2}
+      span={settings.groupCnt}
+    />
+  ));
+}
+
+function getGroupHeaders(settings) {
+  return settings.days.flatMap((date, idx) =>
+    settings.groups.map((group, groupIdx) => (
+      <GroupHeader
+        key={`group,${date},${group._id}`}
+        pos={idx * settings.groupCnt + groupIdx + 2}
+        name={group.name}
       />
-    );
-  }
-}
-
-function* getDateHeaders(settings) {
-  for (const [idx, date] of settings.days.entries()) {
-    yield (
-      <DateHeader
-        key={date}
-        date={new Date(date)}
-        pos={idx * settings.groupCnt + 2}
-        span={settings.groupCnt}
-      />
-    );
-  }
-}
-
-function* getGroupHeaders(settings) {
-  for (const [idx, date] of settings.days.entries()) {
-    for (const [groupIdx, group] of settings.groups.entries()) {
-      yield (
-        <GroupHeader
-          key={`group,${date},${group._id}`}
-          pos={idx * settings.groupCnt + groupIdx + 2}
-          name={group.name}
-        />
-      );
-    }
-  }
+    ))
+  );
 }
 
 function getRect(begin, duration, groups, settings) {
