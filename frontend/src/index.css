@@ -241,7 +241,6 @@ p {
 }
 
 .droppable {
-  margin: 2px;
   border-radius: 4px;
 }
 .droppable:hover {
