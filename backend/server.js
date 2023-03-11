@@ -144,18 +144,20 @@ app.use(async (req, res, next) => {
   next();
 });
 
-["programs", "packages", "rules", "groups", "ranges"].forEach((collection) => {
-  app
-    .route(`/api/:table/${collection}`)
-    .get(authorize(VIEW), getAllItems(collection))
-    .post(authorize(EDIT), createItem(collection));
+["programs", "packages", "rules", "groups", "ranges", "people"].forEach(
+  (collection) => {
+    app
+      .route(`/api/:table/${collection}`)
+      .get(authorize(VIEW), getAllItems(collection))
+      .post(authorize(EDIT), createItem(collection));
 
-  app
-    .route(`/api/:table/${collection}/:id`)
-    .get(authorize(VIEW), getItem(collection))
-    .put(authorize(EDIT), updateItem(collection))
-    .delete(authorize(EDIT), deleteItem(collection));
-});
+    app
+      .route(`/api/:table/${collection}/:id`)
+      .get(authorize(VIEW), getItem(collection))
+      .put(authorize(EDIT), updateItem(collection))
+      .delete(authorize(EDIT), deleteItem(collection));
+  }
+);
 
 app
   .route(`/api/:table/users`)
@@ -208,7 +210,12 @@ app.get("/api/:table/permissions", async (req, res) => {
   res.json({ level: userLevel > publicLevel ? userLevel : publicLevel });
 });
 
-app.use((err, _req, res) => res.status(500).json({ error: err.message }));
+app.use((err, _req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({ error: err.message });
+});
 
 app.use(function (req, res) {
   res.status(404).send({ url: req.originalUrl + " not found" });
