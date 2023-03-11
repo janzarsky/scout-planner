@@ -210,7 +210,12 @@ app.get("/api/:table/permissions", async (req, res) => {
   res.json({ level: userLevel > publicLevel ? userLevel : publicLevel });
 });
 
-app.use((err, _req, res) => res.status(500).json({ error: err.message }));
+app.use((err, _req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({ error: err.message });
+});
 
 app.use(function (req, res) {
   res.status(404).send({ url: req.originalUrl + " not found" });
