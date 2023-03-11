@@ -17,7 +17,7 @@ jobs:
       id-token: write
 
     concurrency:
-      group: production
+      group: backend
       cancel-in-progress: true
 
     steps:
