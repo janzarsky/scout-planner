@@ -122,12 +122,10 @@ function checkPeople(programs) {
       if (overlap.length > 0) {
         overlaps.push({
           program: prog1._id,
-          msg: `Jeden člověk na více programech (${overlap.join(", ")})`,
           people: overlap,
         });
         overlaps.push({
           program: prog2._id,
-          msg: `Jeden člověk na více programech (${overlap.join(", ")})`,
           people: overlap,
         });
       }

@@ -169,16 +169,16 @@ export default function App() {
   var violationsPerProgram = new Map();
   [...violations.values()]
     .filter((val) => !val.satisfied)
-    .map((val) => [val.program, val.msg])
-    .forEach(([programId, msg]) => {
+    .map((val) => [val.program, val])
+    .forEach(([programId, violation]) => {
       if (!violationsPerProgram.get(programId))
         violationsPerProgram.set(programId, []);
-      violationsPerProgram.get(programId).push(msg);
+      violationsPerProgram.get(programId).push(violation);
     });
   otherProblems.forEach((problem) => {
     if (!violationsPerProgram.get(problem.program))
       violationsPerProgram.set(problem.program, []);
-    violationsPerProgram.get(problem.program).push(problem.msg);
+    violationsPerProgram.get(problem.program).push(problem);
   });
 
   const people = new Set(
