@@ -80,7 +80,6 @@ function ProgramBody({ program, pkg, violations }) {
           ? { backgroundColor: pkg.color }
           : {}
       }
-      title={violations && violations.join(", ")}
     >
       <ProgramText
         people={program.people}
