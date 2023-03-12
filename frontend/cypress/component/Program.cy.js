@@ -5,6 +5,7 @@ import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
 import { testing } from "../../src/store/authSlice";
 import { addPackage } from "../../src/store/packagesSlice";
+import { addPerson } from "../../src/store/peopleSlice";
 import {
   toggleViewPeople,
   toggleViewPkg,
@@ -13,11 +14,20 @@ import {
 } from "../../src/store/viewSlice";
 
 describe("Program", () => {
+  const alice = {
+    _id: "testuseralice",
+    name: "Alice",
+  };
+  const bob = {
+    _id: "testuserbob",
+    name: "Bob",
+  };
+
   const prog = {
     _id: "testprogramid",
     title: "Test program",
     url: "https://some.program.url",
-    people: ["Alice", "Bob"],
+    people: [{ personId: alice._id }, { personId: bob._id }, "Cecil"],
     notes: "Test program notes",
     locked: false,
     duration: 16200000,
@@ -55,6 +65,9 @@ describe("Program", () => {
 
     // make time shown by default
     store.dispatch(toggleViewTime());
+
+    store.dispatch(addPerson(alice));
+    store.dispatch(addPerson(bob));
   });
 
   it("basic", () => {
@@ -62,7 +75,7 @@ describe("Program", () => {
 
     cy.contains("Test program");
     cy.contains("8:00\u201312:30");
-    cy.contains("Alice, Bob");
+    cy.contains("Alice, Bob, Cecil");
     cy.get(".program-url a").should(
       "have.attr",
       "href",
@@ -99,7 +112,7 @@ describe("Program", () => {
     const violations = [
       { msg: "First violation" },
       { msg: "Second violation" },
-      { people: ["Alice"] },
+      { people: [alice._id] },
     ];
     mountProgram(prog, violations);
 

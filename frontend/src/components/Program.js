@@ -138,30 +138,49 @@ function ProgramTime({ begin, end }) {
   );
 }
 
+function convertLegacyPeople(people, allPeople) {
+  return people.map((person) => {
+    if (typeof person === "object" && person)
+      return {
+        ...person,
+        person: allPeople.find((p) => p._id === person.personId),
+      };
+    else
+      return {
+        personId: person,
+        person: { _id: person, name: person, legacy: true },
+      };
+  });
+}
+
 function ProgramPeople({ people, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
+  const allPeople = useSelector((state) => state.people.people);
+
+  const peopleDataFix = convertLegacyPeople(people, allPeople);
 
   return (
     <div className="program-people">
       <i className="fa fa-user-o" />
       &nbsp;
-      {[...people]
-        .sort((a, b) => a.localeCompare(b))
+      {[...peopleDataFix]
+        .sort((a, b) => a.person.name.localeCompare(b.person.name))
         .map((person) => (
           <span
-            key={person}
+            key={person.person._id}
             className={
               viewViolations &&
               violations &&
               violations.find(
                 (violation) =>
-                  violation.people && violation.people.indexOf(person) !== -1
+                  violation.people &&
+                  violation.people.indexOf(person.person._id) !== -1
               )
                 ? "program-violated"
                 : ""
             }
           >
-            {person}
+            {person.person.name}
           </span>
         ))
         .reduce((accu, elem) => {

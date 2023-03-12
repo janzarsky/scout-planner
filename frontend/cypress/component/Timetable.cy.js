@@ -7,13 +7,23 @@ import { testing } from "../../src/store/authSlice";
 import { addProgram } from "../../src/store/programsSlice";
 import { parseDuration } from "../../src/helpers/DateUtils";
 import { addGroup } from "../../src/store/groupsSlice";
+import { addPerson } from "../../src/store/peopleSlice";
 
 describe("Timetable", () => {
+  const alice = {
+    _id: "testuseralice",
+    name: "Alice",
+  };
+  const bob = {
+    _id: "testuserbob",
+    name: "Bob",
+  };
+
   const prog = {
     _id: "testprogramid",
     title: "Test program",
     url: "https://some.program.url",
-    people: ["Alice", "Bob"],
+    people: [{ personId: alice._id }, { personId: bob._id }],
     notes: "Test program notes",
     locked: false,
     duration: 16200000,
@@ -40,6 +50,9 @@ describe("Timetable", () => {
 
   beforeEach(() => {
     store = getStore();
+
+    store.dispatch(addPerson(alice));
+    store.dispatch(addPerson(bob));
   });
 
   it("empty", () => {
