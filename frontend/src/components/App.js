@@ -182,13 +182,12 @@ export default function App() {
     violationsPerProgram.get(problem.program).push(problem);
   });
 
-  const people = [
-    ...new Set([...this_state_programs].flatMap((program) => program.people)),
-  ];
-
   useEffect(() => {
+    const people = [
+      ...new Set([...this_state_programs].flatMap((program) => program.people)),
+    ];
     dispatch(setLegacyPeople(people));
-  }, [people, dispatch]);
+  }, [this_state_programs, dispatch]);
 
   return (
     <div className="App">
