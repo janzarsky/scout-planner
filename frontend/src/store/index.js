@@ -8,6 +8,7 @@ import rulesReducer from "./rulesSlice";
 import settingsReducer from "./settingsSlice";
 import usersReducer from "./usersSlice";
 import programsReducer from "./programsSlice";
+import peopleReducer from "./peopleSlice";
 import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
 import errorsReducer from "./errorsSlice";
@@ -26,6 +27,7 @@ export function getStore() {
         settings: settingsReducer,
         users: usersReducer,
         programs: programsReducer,
+        people: peopleReducer,
         view: viewReducer,
         auth: authReducer,
         errors: errorsReducer,
