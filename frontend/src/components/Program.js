@@ -80,7 +80,6 @@ function ProgramBody({ program, pkg, violations }) {
           ? { backgroundColor: pkg.color }
           : {}
       }
-      title={violations && violations.join(", ")}
     >
       <ProgramText
         people={program.people}
@@ -152,8 +151,12 @@ function ProgramPeople({ people, violations }) {
           <span
             key={person}
             className={
-              // dirty hack
-              viewViolations && violations && violations.join().includes(person)
+              viewViolations &&
+              violations &&
+              violations.find(
+                (violation) =>
+                  violation.people && violation.people.indexOf(person) !== -1
+              )
                 ? "program-violated"
                 : ""
             }
@@ -184,8 +187,8 @@ function ProgramViolations({ violations }) {
       <i className="fa fa-exclamation-triangle" />
       &nbsp;
       {violations
-        // dirty hack
-        .filter((violation) => !violation.includes("Jeden člověk na více"))
+        .filter((violation) => violation.msg)
+        .map((violation) => violation.msg)
         .join(", ")}
     </div>
   );

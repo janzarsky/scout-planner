@@ -96,9 +96,14 @@ describe("Program", () => {
   });
 
   it("with violations", () => {
-    mountProgram(prog, ["First violation", "Second violation - Alice"]);
+    const violations = [
+      { msg: "First violation" },
+      { msg: "Second violation" },
+      { people: ["Alice"] },
+    ];
+    mountProgram(prog, violations);
 
-    cy.contains("First violation, Second violation - Alice");
+    cy.contains("First violation, Second violation");
     cy.get(".program")
       .should("have.css", "background-image")
       .should("match", /repeating-linear-gradient\(.*\)/);
