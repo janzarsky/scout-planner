@@ -188,7 +188,7 @@ export default function App() {
 
   useEffect(() => {
     dispatch(setLegacyPeople(people));
-  }, [people]);
+  }, [people, dispatch]);
 
   return (
     <div className="App">
