@@ -341,7 +341,7 @@ export default function App() {
           )}
           {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="stats" title="Statistiky">
-              <Stats people={people} />
+              <Stats />
             </Tab.Pane>
           )}
           {userLevel >= level.ADMIN && (
