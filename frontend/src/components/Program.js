@@ -138,11 +138,8 @@ function ProgramTime({ begin, end }) {
   );
 }
 
-function ProgramPeople({ people, violations }) {
-  const viewViolations = useSelector((state) => state.view.viewViolations);
-  const allPeople = useSelector((state) => state.people.people);
-
-  const peopleDataFix = people.map((person) => {
+function convertLegacyPeople(people, allPeople) {
+  return people.map((person) => {
     if (typeof person === "object" && person)
       return {
         ...person,
@@ -151,9 +148,16 @@ function ProgramPeople({ people, violations }) {
     else
       return {
         personId: person,
-        person: { _id: person, name: person },
+        person: { _id: person, name: person, legacy: true },
       };
   });
+}
+
+function ProgramPeople({ people, violations }) {
+  const viewViolations = useSelector((state) => state.view.viewViolations);
+  const allPeople = useSelector((state) => state.people.people);
+
+  const peopleDataFix = convertLegacyPeople(people, allPeople);
 
   return (
     <div className="program-people">
