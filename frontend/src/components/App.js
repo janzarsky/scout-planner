@@ -52,22 +52,16 @@ export default function App() {
   const [auth, setAuth] = useState();
   const [provider, setProvider] = useState();
 
-  const { groups: this_state_groups, loaded: groupsLoaded } = useSelector(
-    (state) => state.groups
-  );
-  const { ranges: this_state_ranges, loaded: rangesLoaded } = useSelector(
-    (state) => state.ranges
-  );
-  const { packages: this_state_pkgs, loaded: packagesLoaded } = useSelector(
+  const { groups, loaded: groupsLoaded } = useSelector((state) => state.groups);
+  const { ranges, loaded: rangesLoaded } = useSelector((state) => state.ranges);
+  const { packages, loaded: packagesLoaded } = useSelector(
     (state) => state.packages
   );
-  const { rules: this_state_rules, loaded: rulesLoaded } = useSelector(
-    (state) => state.rules
-  );
-  const { programs: this_state_programs, loaded: programsLoaded } = useSelector(
+  const { rules, loaded: rulesLoaded } = useSelector((state) => state.rules);
+  const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs
   );
-  const { settings: this_state_settings, loaded: settingsLoaded } = useSelector(
+  const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings
   );
   const { table, userLevel, permissionsLoaded } = useSelector(
@@ -128,7 +122,7 @@ export default function App() {
   }, [table, userLevel, permissionsLoaded, dispatch]);
 
   useEffect(() => {
-    const problems = checkRules(this_state_rules, this_state_programs);
+    const problems = checkRules(rules, programs);
 
     setViolations(problems.violations);
     setOtherProblems(problems.other);
@@ -138,15 +132,7 @@ export default function App() {
         true
       ) && problems.other.length === 0
     );
-  }, [
-    dataLoaded,
-    this_state_programs,
-    this_state_groups,
-    this_state_pkgs,
-    this_state_ranges,
-    this_state_rules,
-    this_state_settings,
-  ]);
+  }, [dataLoaded, programs, groups, packages, ranges, rules, settings]);
 
   useEffect(() => {
     if (
@@ -184,10 +170,10 @@ export default function App() {
 
   useEffect(() => {
     const people = [
-      ...new Set([...this_state_programs].flatMap((program) => program.people)),
+      ...new Set([...programs].flatMap((program) => program.people)),
     ];
     dispatch(setLegacyPeople(people));
-  }, [this_state_programs, dispatch]);
+  }, [programs, dispatch]);
 
   return (
     <div className="App">
