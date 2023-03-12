@@ -36,6 +36,7 @@ import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
+import { setLegacyPeople } from "../store/peopleSlice";
 
 const config = require("../config.json");
 
@@ -181,9 +182,13 @@ export default function App() {
     violationsPerProgram.get(problem.program).push(problem);
   });
 
-  const people = new Set(
-    [...this_state_programs].flatMap((program) => program.people)
-  );
+  const people = [
+    ...new Set([...this_state_programs].flatMap((program) => program.people)),
+  ];
+
+  useEffect(() => {
+    dispatch(setLegacyPeople(people));
+  }, [people]);
 
   return (
     <div className="App">
