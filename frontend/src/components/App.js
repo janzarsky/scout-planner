@@ -36,6 +36,7 @@ import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
+import { setLegacyPeople } from "../store/peopleSlice";
 
 const config = require("../config.json");
 
@@ -181,9 +182,12 @@ export default function App() {
     violationsPerProgram.get(problem.program).push(problem);
   });
 
-  const people = new Set(
-    [...this_state_programs].flatMap((program) => program.people)
-  );
+  useEffect(() => {
+    const people = [
+      ...new Set([...this_state_programs].flatMap((program) => program.people)),
+    ];
+    dispatch(setLegacyPeople(people));
+  }, [this_state_programs, dispatch]);
 
   return (
     <div className="App">
@@ -202,14 +206,12 @@ export default function App() {
       {addModalEnabled && (
         <AddProgramModal
           options={addProgramOptions}
-          allPeople={people}
           handleClose={() => setAddModalEnabled(false)}
         />
       )}
       {editProgramId && (
         <EditProgramModal
           programId={editProgramId}
-          allPeople={people}
           handleClose={() => setEditProgramId(undefined)}
         />
       )}
@@ -336,7 +338,7 @@ export default function App() {
           )}
           {userLevel >= level.VIEW && (
             <Tab.Pane eventKey="stats" title="Statistiky">
-              <Stats people={people} />
+              <Stats />
             </Tab.Pane>
           )}
           {userLevel >= level.ADMIN && (

@@ -3,11 +3,11 @@ import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
 
-export default function Stats({ people }) {
+export default function Stats() {
   return (
     <>
       <PackageStats />
-      <PeopleStats people={people} />
+      <PeopleStats />
     </>
   );
 }
@@ -53,7 +53,8 @@ function PackageStats() {
   );
 }
 
-function PeopleStats({ people }) {
+function PeopleStats() {
+  const people = useSelector((state) => state.people.legacyPeople);
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
   const { programs } = useSelector((state) => state.programs);

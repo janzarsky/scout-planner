@@ -24,7 +24,7 @@ import Client from "../Client";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 
-export function EditProgramModal({ programId, handleClose, allPeople }) {
+export function EditProgramModal({ programId, handleClose }) {
   const program = useSelector((state) => {
     const prog = state.programs.programs.find((p) => p._id === programId);
     return prog ? prog : {};
@@ -50,6 +50,8 @@ export function EditProgramModal({ programId, handleClose, allPeople }) {
   );
 
   const dispatch = useDispatch();
+
+  const allPeople = useSelector((state) => state.people.legacyPeople);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(table);
@@ -582,7 +584,7 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
   );
 }
 
-export function AddProgramModal({ options, handleClose, allPeople }) {
+export function AddProgramModal({ options, handleClose }) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
   const [title, setTitle] = useState("Nový program");
@@ -600,6 +602,8 @@ export function AddProgramModal({ options, handleClose, allPeople }) {
   const [blockOrder, setBlockOrder] = useState(0);
 
   const dispatch = useDispatch();
+
+  const allPeople = useSelector((state) => state.people.legacyPeople);
 
   const { table } = useSelector((state) => state.auth);
   const client = new Client(table);

@@ -1,7 +1,7 @@
 import reducer, { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 
 test("initial state", () => {
-  expect(reducer(undefined, { type: undefined })).toEqual({
+  expect(reducer(undefined, { type: undefined })).toMatchObject({
     people: [],
     loading: "idle",
     error: null,
