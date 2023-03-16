@@ -36,13 +36,49 @@ export default function Import() {
   );
 }
 
+function getLegacyPeopleFromPrograms(programs) {
+  const ID_PREFIX = "virtual_id_";
+
+  const peopleNames = [
+    ...new Set(
+      programs.flatMap((program) =>
+        program.people.filter((person) => typeof person === "string")
+      )
+    ),
+  ];
+
+  return peopleNames.map((name, idx) => ({
+    _id: ID_PREFIX + idx,
+    name,
+  }));
+}
+
+function replaceLegacyPeopleInPrograms(programs, people) {
+  return programs.map((program) => ({
+    ...program,
+    people: program.people.map((person) => {
+      if (typeof person === "string")
+        return { person: people.find((p) => p.name === person)._id };
+      else return person;
+    }),
+  }));
+}
+
 function fixLegacyData(data) {
+  const existingPeople = data.people !== undefined ? data.people : [];
+  const people = existingPeople.concat(
+    getLegacyPeopleFromPrograms(data.programs)
+  );
+
+  const programs = replaceLegacyPeopleInPrograms(data.programs, people);
+
   return {
     ...data,
     ranges: data.ranges !== undefined ? data.ranges : [],
     users: data.users !== undefined ? data.users : [],
     settings: data.settings !== undefined ? data.settings : {},
-    people: data.people !== undefined ? data.people : [],
+    people,
+    programs,
   };
 }
 
