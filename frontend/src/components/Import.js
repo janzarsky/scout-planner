@@ -138,3 +138,7 @@ async function importData(data, client) {
       ])
     );
 }
+
+export const testing = {
+  importData,
+};
