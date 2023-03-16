@@ -41,6 +41,7 @@ async function importData(data, client) {
   if (data.ranges === undefined) data.ranges = [];
   if (data.users === undefined) data.users = [];
   if (data.settings === undefined) data.settings = {};
+  if (data.people === undefined) data.people = [];
 
   return await Promise.all([
     // add all packages

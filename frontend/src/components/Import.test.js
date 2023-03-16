@@ -10,6 +10,7 @@ const emptyData = {
   ranges: [],
   users: [],
   settings: {},
+  people: [],
 };
 
 beforeEach(() => {
@@ -179,4 +180,11 @@ test("program with ranges", async () => {
       ranges: { range1_new: 42, range2_new: 23 },
     });
   });
+});
+
+test("data without people", () => {
+  const data = { ...emptyData };
+  delete data.people;
+
+  return testing.importData(data, client).resolves;
 });
