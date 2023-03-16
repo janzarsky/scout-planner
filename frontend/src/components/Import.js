@@ -5,7 +5,7 @@ import Client from "../Client";
 import { useSelector } from "react-redux";
 
 export default function Import() {
-  const [importData, setImportData] = useState();
+  const [dataToImport, setDataToImport] = useState();
 
   const { table } = useSelector((state) => state.auth);
   const client = new Client(table);
@@ -13,7 +13,7 @@ export default function Import() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const data = JSON.parse(importData);
+    const data = JSON.parse(dataToImport);
 
     // data fix
     if (data.ranges === undefined) data.ranges = [];
@@ -124,8 +124,8 @@ export default function Import() {
         <Form.Label>Data k importu:</Form.Label>
         <Form.Control
           as="textarea"
-          value={importData}
-          onChange={(e) => setImportData(e.target.value)}
+          value={dataToImport}
+          onChange={(e) => setDataToImport(e.target.value)}
         />
       </Form.Group>
       <Form.Group>
