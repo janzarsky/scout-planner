@@ -165,11 +165,10 @@ async function importData(legacyData, client) {
                 ])
               )
             : undefined,
-          people: prog.people.map((oldPerson) => {
-            if (typeof oldPerson === "object" && oldPerson)
-              return { ...oldPerson, person: people.get(oldPerson.person) };
-            else return oldPerson;
-          }),
+          people: prog.people.map((oldPerson) => ({
+            ...oldPerson,
+            person: people.get(oldPerson.person),
+          })),
         };
       })
     )
