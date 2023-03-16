@@ -265,3 +265,45 @@ test("program with people (as strings)", async () => {
     });
   });
 });
+
+test("two programs with same people (as strings)", async () => {
+  const data = {
+    ...emptyData,
+    programs: [
+      {
+        _id: "program1",
+        table: "table1",
+        title: "Program 1",
+        ranges: {},
+        groups: [],
+        pkg: undefined,
+        people: ["Person 1"],
+      },
+      {
+        _id: "program2",
+        table: "table1",
+        title: "Program 2",
+        ranges: {},
+        groups: [],
+        pkg: undefined,
+        people: ["Person 1"],
+      },
+    ],
+  };
+  return testing.importData(data, client).then(() => {
+    expect(client.addPerson).toHaveBeenCalledWith({
+      _id: undefined,
+      name: "Person 1",
+    });
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      _id: undefined,
+      people: [{ person: "person1_new" }],
+    });
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[1],
+      _id: undefined,
+      people: [{ person: "person1_new" }],
+    });
+  });
+});
