@@ -346,3 +346,38 @@ test("program with mixed people types", async () => {
     });
   });
 });
+
+test("program with mixed people types with conflicting names", async () => {
+  const data = {
+    ...emptyData,
+    programs: [
+      {
+        _id: "program1",
+        table: "table1",
+        title: "Program 1",
+        ranges: {},
+        groups: [],
+        pkg: undefined,
+        people: [{ person: "person1" }, "Person 1"],
+      },
+    ],
+    people: [
+      {
+        _id: "person1",
+        table: "table1",
+        name: "Person 1",
+      },
+    ],
+  };
+  return testing.importData(data, client).then(() => {
+    expect(client.addPerson).toHaveBeenCalledWith({
+      ...data.people[0],
+      _id: undefined,
+    });
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      _id: undefined,
+      people: [{ person: "person1_new" }],
+    });
+  });
+});

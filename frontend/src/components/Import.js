@@ -75,6 +75,16 @@ function replaceLegacyPeopleInPrograms(programs, people) {
   }));
 }
 
+function deleteDuplicatePeopleInPrograms(programs) {
+  return programs.map((program) => {
+    const uniqueIds = [...new Set(program.people.map((p) => p.person))];
+    const people = uniqueIds.map((id) =>
+      program.people.find((p) => p.person === id)
+    );
+    return { ...program, people };
+  });
+}
+
 function fixLegacyData(data) {
   const existingPeople = data.people !== undefined ? data.people : [];
   const people = uniquePeople(
@@ -82,7 +92,11 @@ function fixLegacyData(data) {
     getLegacyPeopleFromPrograms(data.programs)
   );
 
-  const programs = replaceLegacyPeopleInPrograms(data.programs, people);
+  const programsWithReplacedPeople = replaceLegacyPeopleInPrograms(
+    data.programs,
+    people
+  );
+  const programs = deleteDuplicatePeopleInPrograms(programsWithReplacedPeople);
 
   return {
     ...data,
