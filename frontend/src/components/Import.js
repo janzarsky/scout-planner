@@ -36,12 +36,18 @@ export default function Import() {
   );
 }
 
-async function importData(data, client) {
-  // data fixes
-  if (data.ranges === undefined) data.ranges = [];
-  if (data.users === undefined) data.users = [];
-  if (data.settings === undefined) data.settings = {};
-  if (data.people === undefined) data.people = [];
+function fixLegacyData(data) {
+  return {
+    ...data,
+    ranges: data.ranges !== undefined ? data.ranges : [],
+    users: data.users !== undefined ? data.users : [],
+    settings: data.settings !== undefined ? data.settings : {},
+    people: data.people !== undefined ? data.people : [],
+  };
+}
+
+async function importData(legacyData, client) {
+  const data = fixLegacyData(legacyData);
 
   return await Promise.all([
     // add all packages
