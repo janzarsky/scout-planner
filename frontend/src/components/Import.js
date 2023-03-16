@@ -53,6 +53,17 @@ function getLegacyPeopleFromPrograms(programs) {
   }));
 }
 
+function uniquePeople(existing, fromLegacy) {
+  return existing.concat(
+    fromLegacy.filter(
+      (person) =>
+        existing.find(
+          (existingPerson) => existingPerson.name === person.name
+        ) === undefined
+    )
+  );
+}
+
 function replaceLegacyPeopleInPrograms(programs, people) {
   return programs.map((program) => ({
     ...program,
@@ -66,7 +77,8 @@ function replaceLegacyPeopleInPrograms(programs, people) {
 
 function fixLegacyData(data) {
   const existingPeople = data.people !== undefined ? data.people : [];
-  const people = existingPeople.concat(
+  const people = uniquePeople(
+    existingPeople,
     getLegacyPeopleFromPrograms(data.programs)
   );
 
