@@ -11,6 +11,7 @@ export default class Client {
       ["groups", "Group", "Groups"],
       ["ranges", "Range", "Ranges"],
       ["users", "User", "Users"],
+      ["people", "Person", "People"],
     ].forEach(([path, nameSingular, namePlural]) => {
       this[`get${namePlural}`] = () => this.getAll(path);
       this[`get${nameSingular}`] = (id) => this.get(path, id);
