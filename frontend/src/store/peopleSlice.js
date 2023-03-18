@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getPeople = createAsyncThunk(
   "people/getPeople",
-  async (client) => await client.getPersons()
+  async (client) => await client.getPeople()
 );
 
 export const peopleSlice = createSlice({

@@ -36,7 +36,7 @@ import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
-import { setLegacyPeople } from "../store/peopleSlice";
+import { getPeople, setLegacyPeople } from "../store/peopleSlice";
 
 const config = require("../config.json");
 
@@ -61,6 +61,7 @@ export default function App() {
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs
   );
+  const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings
   );
@@ -114,6 +115,7 @@ export default function App() {
         dispatch(getGroups(client));
         dispatch(getPackages(client));
         dispatch(getRules(client));
+        dispatch(getPeople(client));
         dispatch(getSettings(client));
       }
 
@@ -132,7 +134,7 @@ export default function App() {
         true
       ) && problems.other.length === 0
     );
-  }, [dataLoaded, programs, groups, packages, ranges, rules, settings]);
+  }, [dataLoaded, programs, groups, packages, ranges, people, rules, settings]);
 
   useEffect(() => {
     if (
@@ -141,6 +143,7 @@ export default function App() {
       groupsLoaded &&
       packagesLoaded &&
       rulesLoaded &&
+      peopleLoaded &&
       settingsLoaded
     )
       setDataLoaded(true);
@@ -150,6 +153,7 @@ export default function App() {
     groupsLoaded,
     packagesLoaded,
     rulesLoaded,
+    peopleLoaded,
     settingsLoaded,
   ]);
 
