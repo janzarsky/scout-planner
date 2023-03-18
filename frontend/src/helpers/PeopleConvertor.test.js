@@ -1,89 +1,80 @@
-import { convertLegacyPeople } from "./PeopleConvertor";
+import {
+  convertLegacyPeople,
+  replaceLegacyPeopleInPrograms,
+} from "./PeopleConvertor";
 
-test("empty", () => {
-  expect(convertLegacyPeople([], [], [])).toEqual({
-    allPeople: [],
-    convertedPrograms: [],
-  });
-});
+describe("convertLegacyPeople()", () => {
+  it("returns empty array for empty inputs", () =>
+    expect(convertLegacyPeople([], [])).toEqual([]));
 
-test("string person", () => {
-  expect(convertLegacyPeople(["Person 1"], [], [])).toEqual({
-    allPeople: [{ _id: "virtual_id_Person 1", name: "Person 1" }],
-    convertedPrograms: [],
-  });
-});
+  it("creates virtual person object for string person", () =>
+    expect(convertLegacyPeople(["Person 1"], [])).toEqual([
+      { _id: "virtual_id_Person 1", name: "Person 1" },
+    ]));
 
-test("multiple string people", () => {
-  expect(convertLegacyPeople(["Person 1", "Person 2"], [], [])).toEqual({
-    allPeople: [
+  it("creates multiple virtual people objects for string people", () =>
+    expect(convertLegacyPeople(["Person 1", "Person 2"], [])).toEqual([
       { _id: "virtual_id_Person 1", name: "Person 1" },
       { _id: "virtual_id_Person 2", name: "Person 2" },
-    ],
-    convertedPrograms: [],
+    ]));
+
+  it("combines object person and string person", () => {
+    const person2 = { _id: "person2", name: "Person 2" };
+    expect(convertLegacyPeople(["Person 1"], [person2])).toEqual([
+      person2,
+      { _id: "virtual_id_Person 1", name: "Person 1" },
+    ]);
+  });
+
+  it("merges object person and string person when they have the same name", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    expect(convertLegacyPeople(["Person 1"], [person1])).toEqual([person1]);
   });
 });
 
-test("string and object person", () => {
-  const person2 = { _id: "person2", name: "Person 2" };
-  expect(convertLegacyPeople(["Person 1"], [person2], [])).toEqual({
-    allPeople: [person2, { _id: "virtual_id_Person 1", name: "Person 1" }],
-    convertedPrograms: [],
-  });
-});
+describe("replaceLegacyPeopleInPrograms()", () => {
+  it("returns empty array for empty inputs", () =>
+    expect(replaceLegacyPeopleInPrograms([], [])).toEqual([]));
 
-test("duplicate people", () => {
-  const person1 = { _id: "person1", name: "Person 1" };
-  expect(convertLegacyPeople(["Person 1"], [person1], [])).toEqual({
-    allPeople: [person1],
-    convertedPrograms: [],
+  it("keeps existing object people", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    const program1 = {
+      _id: "program1",
+      title: "Program 1",
+      people: [{ person: "person1" }],
+    };
+    expect(replaceLegacyPeopleInPrograms([program1], [person1])).toEqual([
+      program1,
+    ]);
   });
-});
 
-test("object person with program", () => {
-  const person1 = { _id: "person1", name: "Person 1" };
-  const program1 = {
-    _id: "program1",
-    title: "Program 1",
-    people: [{ person: "person1" }],
-  };
-  expect(convertLegacyPeople([], [person1], [program1])).toEqual({
-    allPeople: [person1],
-    convertedPrograms: [program1],
+  it("replaces string people with references looked up using name", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    const program1 = {
+      _id: "program1",
+      title: "Program 1",
+      people: ["Person 1"],
+    };
+    expect(replaceLegacyPeopleInPrograms([program1], [person1])).toEqual([
+      { ...program1, people: [{ person: "person1" }] },
+    ]);
   });
-});
 
-test("string person with program", () => {
-  const program1 = {
-    _id: "program1",
-    title: "Program 1",
-    people: ["Person 1"],
-  };
-  expect(convertLegacyPeople(["Person 1"], [], [program1])).toEqual({
-    allPeople: [{ _id: "virtual_id_Person 1", name: "Person 1" }],
-    convertedPrograms: [
+  it("replaces string people in programs with mixed people types", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    const person2 = { _id: "person2", name: "Person 2" };
+    const program1 = {
+      _id: "program1",
+      title: "Program 1",
+      people: [{ person: "person1" }, "Person 2"],
+    };
+    expect(
+      replaceLegacyPeopleInPrograms([program1], [person1, person2])
+    ).toEqual([
       {
         ...program1,
-        people: [{ person: "virtual_id_Person 1" }],
+        people: [{ person: "person1" }, { person: "person2" }],
       },
-    ],
-  });
-});
-
-test("both kinds of people with program", () => {
-  const person1 = { _id: "person1", name: "Person 1" };
-  const program1 = {
-    _id: "program1",
-    title: "Program 1",
-    people: [{ person: "person1" }, "Person 2"],
-  };
-  expect(convertLegacyPeople(["Person 2"], [person1], [program1])).toEqual({
-    allPeople: [person1, { _id: "virtual_id_Person 2", name: "Person 2" }],
-    convertedPrograms: [
-      {
-        ...program1,
-        people: [{ person: "person1" }, { person: "virtual_id_Person 2" }],
-      },
-    ],
+    ]);
   });
 });
