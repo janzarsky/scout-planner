@@ -170,7 +170,11 @@ export default function App() {
 
   useEffect(() => {
     const people = [
-      ...new Set([...programs].flatMap((program) => program.people)),
+      ...new Set(
+        [...programs].flatMap((program) =>
+          program.people.filter((person) => typeof person === "string")
+        )
+      ),
     ];
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
