@@ -82,7 +82,7 @@ function ProgramBody({ program, pkg, violations }) {
       }
     >
       <ProgramText
-        people={program.people}
+        programPeople={program.people}
         place={program.place}
         title={program.title}
         begin={program.begin}
@@ -99,7 +99,7 @@ function ProgramText({
   pkgName,
   begin,
   duration,
-  people,
+  programPeople,
   place,
   violations,
 }) {
@@ -117,8 +117,8 @@ function ProgramText({
       )}
       {viewTime && <ProgramTime begin={begin} end={begin + duration} />}
       {viewPlace && place && <ProgramPlace place={place} />}
-      {viewPeople && people.length > 0 && (
-        <ProgramPeople people={people} violations={violations} />
+      {viewPeople && programPeople.length > 0 && (
+        <ProgramPeople programPeople={programPeople} violations={violations} />
       )}
       {viewViolations && violations && (
         <ProgramViolations violations={violations} />
@@ -153,11 +153,11 @@ function convertLegacyPeople(people, allPeople) {
   });
 }
 
-function ProgramPeople({ people, violations }) {
+function ProgramPeople({ programPeople, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const allPeople = useSelector((state) => state.people.people);
 
-  const peopleDataFix = convertLegacyPeople(people, allPeople);
+  const peopleDataFix = convertLegacyPeople(programPeople, allPeople);
 
   return (
     <div className="program-people">
