@@ -157,9 +157,13 @@ export function EditProgramModal({ programId, handleClose }) {
                 (e) => dispatch(addError(e.message))
               )
             }
-            addPerson={(person) => setPeople([...people, person])}
-            removePerson={(person) =>
-              setPeople(people.filter((p) => p !== person))
+            addPerson={(id, legacy) =>
+              setPeople([...people, legacy ? id : { person: id }])
+            }
+            removePerson={(id, legacy) =>
+              setPeople(
+                people.filter((p) => (legacy ? p !== id : p.person !== id))
+              )
             }
             disabled={userLevel < level.EDIT}
           />
@@ -679,6 +683,7 @@ export function AddProgramModal({ options, handleClose }) {
           <ProgramPeople
             programPeople={people}
             allPeople={allPeople}
+<<<<<<< HEAD
             newPerson={(name) =>
               client.addPerson({ name }).then(
                 (resp) => dispatch(addPerson(resp)),
@@ -688,6 +693,15 @@ export function AddProgramModal({ options, handleClose }) {
             addPerson={(person) => setPeople([...people, person])}
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
+=======
+            addPerson={(id, legacy) =>
+              setPeople([...people, legacy ? id : { person: id }])
+            }
+            removePerson={(id, legacy) =>
+              setPeople(
+                people.filter((p) => (legacy ? p !== id : p.person !== id))
+              )
+>>>>>>> 0ada057 (WIP)
             }
           />
           <ProgramPlace place={place} setPlace={setPlace} />

@@ -4,6 +4,7 @@ export function convertLegacyPeople(legacyPeople, people) {
   const convertedLegacyPeople = legacyPeople.map((name) => ({
     _id: ID_PREFIX + name,
     name,
+    legacy: true,
   }));
 
   return people.concat(
