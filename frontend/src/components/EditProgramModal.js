@@ -56,8 +56,6 @@ export function EditProgramModal({ programId, handleClose }) {
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(table);
 
-  const { blockDivisionFeature } = useSelector((state) => state.config);
-
   function handleDelete(event) {
     event.preventDefault();
 
@@ -174,13 +172,11 @@ export function EditProgramModal({ programId, handleClose }) {
             setNotes={setNotes}
             disabled={userLevel < level.EDIT}
           />
-          {blockDivisionFeature && (
-            <ProgramBlockOrder
-              blockOrder={blockOrder}
-              setBlockOrder={setBlockOrder}
-              disabled={userLevel < level.EDIT}
-            />
-          )}
+          <ProgramBlockOrder
+            blockOrder={blockOrder}
+            setBlockOrder={setBlockOrder}
+            disabled={userLevel < level.EDIT}
+          />
         </Modal.Body>
         <Modal.Footer>
           {userLevel >= level.EDIT && (
@@ -608,8 +604,6 @@ export function AddProgramModal({ options, handleClose }) {
   const { table } = useSelector((state) => state.auth);
   const client = new Client(table);
 
-  const { blockDivisionFeature } = useSelector((state) => state.config);
-
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -683,12 +677,10 @@ export function AddProgramModal({ options, handleClose }) {
             updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
           />
           <ProgramNotes notes={notes} setNotes={setNotes} />
-          {blockDivisionFeature && (
-            <ProgramBlockOrder
-              blockOrder={blockOrder}
-              setBlockOrder={setBlockOrder}
-            />
-          )}
+          <ProgramBlockOrder
+            blockOrder={blockOrder}
+            setBlockOrder={setBlockOrder}
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="link" onClick={handleClose}>
