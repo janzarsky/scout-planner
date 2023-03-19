@@ -2,6 +2,10 @@ import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
+import {
+  convertLegacyPeople,
+  replaceLegacyPeopleInPrograms,
+} from "../helpers/PeopleConvertor";
 
 export default function Stats() {
   return (
@@ -54,13 +58,16 @@ function PackageStats() {
 }
 
 function PeopleStats() {
-  const people = useSelector((state) => state.people.legacyPeople);
+  const { people, legacyPeople } = useSelector((state) => state.people);
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
   const { programs } = useSelector((state) => state.programs);
 
+  const allPeople = convertLegacyPeople(legacyPeople, people);
+  const convertedPrograms = replaceLegacyPeopleInPrograms(programs, allPeople);
+
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
-    programs,
+    convertedPrograms,
     packages
   );
 
@@ -75,17 +82,17 @@ function PeopleStats() {
         </tr>
       </thead>
       <tbody>
-        {[...people]
-          .sort((a, b) => a.localeCompare(b))
+        {[...allPeople]
+          .sort((a, b) => a.name.localeCompare(b.name))
           .map((person) => (
-            <tr key={person}>
-              <td>{person}</td>
+            <tr key={person._id}>
+              <td>{person.name}</td>
               {[...groups].sort(byOrder).map((group) => (
                 <td key={group._id}>
-                  {durationPerPersonAndGroup[person] &&
-                  durationPerPersonAndGroup[person][group._id]
+                  {durationPerPersonAndGroup[person._id] &&
+                  durationPerPersonAndGroup[person._id][group._id]
                     ? formatDuration(
-                        durationPerPersonAndGroup[person][group._id]
+                        durationPerPersonAndGroup[person._id][group._id]
                       )
                     : ""}
                 </td>
@@ -122,15 +129,16 @@ function getDurationPerPersonAndGroup(programs, pkgs) {
   for (const program of programs) {
     const pkg = pkgs.find((pkg) => pkg._id === program.pkg);
 
-    if (pkg && pkg.name[0] !== "(" && program.title[0] !== "(") {
-      for (const person of program.people) {
-        if (counters[person] === undefined) counters[person] = {};
+    if ((!pkg || (pkg && pkg.name[0] !== "(")) && program.title[0] !== "(") {
+      for (const attendance of program.people) {
+        if (counters[attendance.person] === undefined)
+          counters[attendance.person] = {};
 
         for (const group of program.groups) {
-          if (counters[person][group] === undefined)
-            counters[person][group] = 0;
+          if (counters[attendance.person][group] === undefined)
+            counters[attendance.person][group] = 0;
 
-          counters[person][group] += program.duration;
+          counters[attendance.person][group] += program.duration;
         }
       }
     }
@@ -138,3 +146,7 @@ function getDurationPerPersonAndGroup(programs, pkgs) {
 
   return counters;
 }
+
+export const testing = {
+  getDurationPerPersonAndGroup,
+};
