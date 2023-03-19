@@ -3,6 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Client from "../Client";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
+import {
+  convertLegacyPeople,
+  convertProgramPeople,
+} from "../helpers/PeopleConvertor";
 import { addError } from "../store/errorsSlice";
 import { addProgram } from "../store/programsSlice";
 
@@ -138,49 +142,44 @@ function ProgramTime({ begin, end }) {
   );
 }
 
-function convertLegacyPeople(people, allPeople) {
-  return people.map((person) => {
-    if (typeof person === "object" && person)
-      return {
-        ...person,
-        person: allPeople.find((p) => p._id === person.personId),
-      };
-    else
-      return {
-        personId: person,
-        person: { _id: person, name: person, legacy: true },
-      };
-  });
+function lookUpPeople(programPeople, allPeople) {
+  return programPeople.map((attendance) => ({
+    ...attendance,
+    data: allPeople.find((person) => person._id === attendance.person),
+  }));
 }
 
 function ProgramPeople({ programPeople, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
-  const allPeople = useSelector((state) => state.people.people);
+  const { legacyPeople, people } = useSelector((state) => state.people);
 
-  const peopleDataFix = convertLegacyPeople(programPeople, allPeople);
+  const allPeople = convertLegacyPeople(legacyPeople, people);
+  const convertedProgramPeople = convertProgramPeople(programPeople, allPeople);
+
+  const lookedUpPeople = lookUpPeople(convertedProgramPeople, allPeople);
 
   return (
     <div className="program-people">
       <i className="fa fa-user-o" />
       &nbsp;
-      {[...peopleDataFix]
-        .sort((a, b) => a.person.name.localeCompare(b.person.name))
-        .map((person) => (
+      {[...lookedUpPeople]
+        .sort((a, b) => a.data.name.localeCompare(b.data.name))
+        .map((attendance) => (
           <span
-            key={person.person._id}
+            key={attendance.person}
             className={
               viewViolations &&
               violations &&
               violations.find(
                 (violation) =>
                   violation.people &&
-                  violation.people.indexOf(person.person._id) !== -1
+                  violation.people.indexOf(attendance.person) !== -1
               )
                 ? "program-violated"
                 : ""
             }
           >
-            {person.person.name}
+            {attendance.data.name}
           </span>
         ))
         .reduce((accu, elem) => {
