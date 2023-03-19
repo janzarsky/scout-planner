@@ -105,12 +105,6 @@ function checkOverlaps(programs) {
   return overlaps;
 }
 
-function convertLegacyPeople(people) {
-  return people.map((person) =>
-    typeof person === "object" && person ? person : { _id: person }
-  );
-}
-
 function checkPeople(programs) {
   var overlaps = [];
   const sorted = [...programs].sort((a, b) => (a.begin < b.begin ? -1 : 1));
@@ -121,12 +115,9 @@ function checkPeople(programs) {
 
       if (prog2.begin >= prog1.begin + prog1.duration) break;
 
-      const prog1People = convertLegacyPeople(prog1.people);
-      const prog2People = convertLegacyPeople(prog2.people);
-
-      const overlap = prog1People
-        .filter((p1) => prog2People.find((p2) => p2._id === p1._id))
-        .map((p) => p._id);
+      const overlap = prog1.people
+        .filter((p1) => prog2.people.find((p2) => p2.person === p1.person))
+        .map((p) => p.person);
 
       if (overlap.length > 0) {
         overlaps.push({

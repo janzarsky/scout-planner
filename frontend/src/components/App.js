@@ -37,6 +37,10 @@ import RangesSettings from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
 import { getPeople, setLegacyPeople } from "../store/peopleSlice";
+import {
+  convertLegacyPeople,
+  replaceLegacyPeopleInPrograms,
+} from "../helpers/PeopleConvertor";
 
 const config = require("../config.json");
 
@@ -61,7 +65,11 @@ export default function App() {
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs
   );
-  const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
+  const {
+    people,
+    legacyPeople,
+    loaded: peopleLoaded,
+  } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings
   );
@@ -124,7 +132,12 @@ export default function App() {
   }, [table, userLevel, permissionsLoaded, dispatch]);
 
   useEffect(() => {
-    const problems = checkRules(rules, programs);
+    const allPeople = convertLegacyPeople(legacyPeople, people);
+    const convertedPrograms = replaceLegacyPeopleInPrograms(
+      programs,
+      allPeople
+    );
+    const problems = checkRules(rules, convertedPrograms);
 
     setViolations(problems.violations);
     setOtherProblems(problems.other);
@@ -134,7 +147,17 @@ export default function App() {
         true
       ) && problems.other.length === 0
     );
-  }, [dataLoaded, programs, groups, packages, ranges, people, rules, settings]);
+  }, [
+    dataLoaded,
+    programs,
+    groups,
+    packages,
+    ranges,
+    legacyPeople,
+    people,
+    rules,
+    settings,
+  ]);
 
   useEffect(() => {
     if (
