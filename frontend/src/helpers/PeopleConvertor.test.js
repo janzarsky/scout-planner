@@ -1,5 +1,6 @@
 import {
   convertLegacyPeople,
+  convertProgramPeople,
   replaceLegacyPeopleInPrograms,
 } from "./PeopleConvertor";
 
@@ -30,6 +31,41 @@ describe("convertLegacyPeople()", () => {
     const person1 = { _id: "person1", name: "Person 1" };
     expect(convertLegacyPeople(["Person 1"], [person1])).toEqual([person1]);
   });
+});
+
+describe("convertProgramPeople()", () => {
+  it("returns empty array for empty inputs", () =>
+    expect(convertProgramPeople([], [])).toEqual([]));
+
+  it("keeps existing object people", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    const programPeople = [{ person: "person1" }];
+    expect(convertProgramPeople(programPeople, [person1])).toEqual(
+      programPeople
+    );
+  });
+
+  it("replaces string people with references looked up using name", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    expect(convertProgramPeople(["Person 1"], [person1])).toEqual([
+      { person: "person1" },
+    ]);
+  });
+
+  it("replaces string people in programs with mixed people types", () => {
+    expect(
+      convertProgramPeople(
+        [{ person: "person1" }, "Person 2"],
+        [
+          { _id: "person1", name: "Person 1" },
+          { _id: "person2", name: "Person 2" },
+        ]
+      )
+    ).toEqual([{ person: "person1" }, { person: "person2" }]);
+  });
+
+  it("skips string people if not found in all people", () =>
+    expect(convertProgramPeople(["Person 1"], [])).toEqual([]));
 });
 
 describe("replaceLegacyPeopleInPrograms()", () => {

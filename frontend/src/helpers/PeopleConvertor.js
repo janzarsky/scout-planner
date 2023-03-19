@@ -18,10 +18,15 @@ export function convertLegacyPeople(legacyPeople, people) {
 export function replaceLegacyPeopleInPrograms(programs, people) {
   return programs.map((program) => ({
     ...program,
-    people: program.people.map((person) => {
-      if (typeof person === "string")
-        return { person: people.find((p) => p.name === person)._id };
-      else return person;
-    }),
+    people: convertProgramPeople(program.people, people),
   }));
+}
+
+export function convertProgramPeople(programPeople, allPeople) {
+  return programPeople.flatMap((person) => {
+    if (typeof person === "string") {
+      const found = allPeople.find((p) => p.name === person);
+      return found ? [{ person: found._id }] : [];
+    } else return [person];
+  });
 }
