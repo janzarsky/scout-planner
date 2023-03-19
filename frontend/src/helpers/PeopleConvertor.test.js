@@ -63,6 +63,9 @@ describe("convertProgramPeople()", () => {
       )
     ).toEqual([{ person: "person1" }, { person: "person2" }]);
   });
+
+  it("skips string people if not found in all people", () =>
+    expect(convertProgramPeople(["Person 1"], [])).toEqual([]));
 });
 
 describe("replaceLegacyPeopleInPrograms()", () => {

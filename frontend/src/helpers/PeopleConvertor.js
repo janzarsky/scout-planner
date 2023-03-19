@@ -23,9 +23,10 @@ export function replaceLegacyPeopleInPrograms(programs, people) {
 }
 
 export function convertProgramPeople(programPeople, allPeople) {
-  return programPeople.map((person) => {
-    if (typeof person === "string")
-      return { person: allPeople.find((p) => p.name === person)._id };
-    else return person;
+  return programPeople.flatMap((person) => {
+    if (typeof person === "string") {
+      const found = allPeople.find((p) => p.name === person);
+      return found ? [{ person: found._id }] : [];
+    } else return [person];
   });
 }
