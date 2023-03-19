@@ -181,3 +181,48 @@ describe("overlaps", () => {
     });
   });
 });
+
+describe("people", () => {
+  test("two non-overlapping programs", () => {
+    const progA = {
+      _id: "progA",
+      begin: 0,
+      duration: 60,
+      people: [{ person: "person1" }, { person: "person2" }],
+    };
+    const progB = {
+      _id: "progB",
+      begin: 90,
+      duration: 60,
+      people: [{ person: "person2" }, { person: "person3" }],
+    };
+    expect(checkRules([], [progA, progB])).toEqual({
+      violations: new Map(),
+      other: [],
+    });
+  });
+
+  test("two overlapping programs", () => {
+    const progA = {
+      _id: "progA",
+      begin: 0,
+      duration: 60,
+      people: [{ person: "person1" }, { person: "person2" }],
+      groups: ["groupA"],
+    };
+    const progB = {
+      _id: "progB",
+      begin: 30,
+      duration: 60,
+      people: [{ person: "person2" }, { person: "person3" }],
+      groups: ["groupB"],
+    };
+    expect(checkRules([], [progA, progB])).toEqual({
+      violations: new Map(),
+      other: [
+        { program: "progA", people: ["person2"] },
+        { program: "progB", people: ["person2"] },
+      ],
+    });
+  });
+});
