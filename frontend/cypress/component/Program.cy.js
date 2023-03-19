@@ -5,7 +5,7 @@ import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
 import { testing } from "../../src/store/authSlice";
 import { addPackage } from "../../src/store/packagesSlice";
-import { addPerson } from "../../src/store/peopleSlice";
+import { addPerson, setLegacyPeople } from "../../src/store/peopleSlice";
 import {
   toggleViewPeople,
   toggleViewPkg,
@@ -27,7 +27,7 @@ describe("Program", () => {
     _id: "testprogramid",
     title: "Test program",
     url: "https://some.program.url",
-    people: [{ personId: alice._id }, { personId: bob._id }, "Cecil"],
+    people: [{ person: alice._id }, { person: bob._id }, "Cecil"],
     notes: "Test program notes",
     locked: false,
     duration: 16200000,
@@ -65,6 +65,8 @@ describe("Program", () => {
 
     // make time shown by default
     store.dispatch(toggleViewTime());
+
+    store.dispatch(setLegacyPeople(["Cecil"]));
 
     store.dispatch(addPerson(alice));
     store.dispatch(addPerson(bob));
