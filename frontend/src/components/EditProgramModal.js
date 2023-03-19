@@ -24,6 +24,7 @@ import { addPerson } from "../store/peopleSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
+import { convertLegacyPeople } from "../helpers/PeopleConvertor";
 
 export function EditProgramModal({ programId, handleClose }) {
   const program = useSelector((state) => {
@@ -52,7 +53,10 @@ export function EditProgramModal({ programId, handleClose }) {
 
   const dispatch = useDispatch();
 
-  const allPeople = useSelector((state) => state.people.legacyPeople);
+  const { legacyPeople, people: newPeople } = useSelector(
+    (state) => state.people
+  );
+  const allPeople = convertLegacyPeople(legacyPeople, newPeople);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = new Client(table);
@@ -424,30 +428,28 @@ function ProgramPeople({
       </Form.Label>
       <Col>
         <Row>
-          {[
-            ...new Set(
-              [...allPeople, ...programPeople].sort((a, b) =>
-                a.localeCompare(b)
-              )
-            ),
-          ].map((person) => (
-            <Col key={person}>
-              <Form.Check
-                type="checkbox"
-                label={person}
-                id={person}
-                checked={programPeople.includes(person)}
-                disabled={disabled}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    addPerson(person);
-                  } else {
-                    removePerson(person);
-                  }
-                }}
-              />
-            </Col>
-          ))}
+          {[...allPeople]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((person) => (
+              <Col key={person._id}>
+                <Form.Check
+                  type="checkbox"
+                  label={person.name}
+                  id={person._id}
+                  checked={programPeople.find(
+                    (attendance) => attendance.person === person._id
+                  )}
+                  disabled={disabled}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      addPerson(person._id);
+                    } else {
+                      removePerson(person._id);
+                    }
+                  }}
+                />
+              </Col>
+            ))}
         </Row>
         {!disabled && (
           <Button
@@ -608,7 +610,10 @@ export function AddProgramModal({ options, handleClose }) {
 
   const dispatch = useDispatch();
 
-  const allPeople = useSelector((state) => state.people.legacyPeople);
+  const { legacyPeople, people: newPeople } = useSelector(
+    (state) => state.people
+  );
+  const allPeople = convertLegacyPeople(legacyPeople, newPeople);
 
   const { table } = useSelector((state) => state.auth);
   const client = new Client(table);
