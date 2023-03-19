@@ -40,7 +40,7 @@ export function EditProgramModal({ programId, handleClose }) {
   const [duration, setDuration] = useState(formatDuration(program.duration));
   const [pkg, setPkg] = useState(program.pkg);
   const [groups, setGroups] = useState(program.groups);
-  const [people, setPeople] = useState(program.people);
+  const [attendance, setAttendance] = useState(program.people);
   const [place, setPlace] = useState(program.place ? program.place : ""); // data fix
   const [url, setUrl] = useState(program.url);
   const [notes, setNotes] = useState(program.notes);
@@ -85,7 +85,7 @@ export function EditProgramModal({ programId, handleClose }) {
         title: title,
         pkg: pkg,
         groups: groups,
-        people: people,
+        people: attendance,
         ranges: ranges,
         place: place,
         url: url,
@@ -145,7 +145,7 @@ export function EditProgramModal({ programId, handleClose }) {
             disabled={userLevel < level.EDIT}
           />
           <ProgramPeople
-            programPeople={people}
+            programPeople={attendance}
             allPeople={allPeople}
             newPerson={(name) =>
               client.addPerson({ name }).then(
@@ -153,9 +153,9 @@ export function EditProgramModal({ programId, handleClose }) {
                 (e) => dispatch(addError(e.message))
               )
             }
-            addPerson={(person) => setPeople([...people, person])}
+            addPerson={(person) => setAttendance([...attendance, person])}
             removePerson={(person) =>
-              setPeople(people.filter((p) => p !== person))
+              setAttendance(attendance.filter((p) => p !== person))
             }
             disabled={userLevel < level.EDIT}
           />
@@ -598,7 +598,7 @@ export function AddProgramModal({ options, handleClose }) {
   const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
   const [pkg, setPkg] = useState(undefined);
   const [groups, setGroups] = useState([]);
-  const [people, setPeople] = useState([]);
+  const [attendance, setAttendance] = useState([]);
   const [place, setPlace] = useState("");
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
@@ -625,7 +625,7 @@ export function AddProgramModal({ options, handleClose }) {
         title: title,
         pkg: pkg,
         groups: groups,
-        people: people,
+        people: attendance,
         ranges: ranges,
         place: place,
         url: url,
@@ -672,7 +672,7 @@ export function AddProgramModal({ options, handleClose }) {
             }
           />
           <ProgramPeople
-            programPeople={people}
+            programPeople={attendance}
             allPeople={allPeople}
             newPerson={(name) =>
               client.addPerson({ name }).then(
@@ -680,9 +680,9 @@ export function AddProgramModal({ options, handleClose }) {
                 (e) => dispatch(addError(e.message))
               )
             }
-            addPerson={(person) => setPeople([...people, person])}
+            addPerson={(person) => setAttendance([...attendance, person])}
             removePerson={(person) =>
-              setPeople(people.filter((p) => p !== person))
+              setAttendance(attendance.filter((p) => p !== person))
             }
           />
           <ProgramPlace place={place} setPlace={setPlace} />
