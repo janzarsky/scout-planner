@@ -20,6 +20,7 @@ import {
   deleteProgram,
   updateProgram,
 } from "../store/programsSlice";
+import { addPerson } from "../store/peopleSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
@@ -146,6 +147,12 @@ export function EditProgramModal({ programId, handleClose }) {
           <ProgramPeople
             programPeople={people}
             allPeople={allPeople}
+            newPerson={(name) =>
+              client.addPerson({ name }).then(
+                (resp) => dispatch(addPerson(resp)),
+                (e) => dispatch(addError(e.message))
+              )
+            }
             addPerson={(person) => setPeople([...people, person])}
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
@@ -405,6 +412,7 @@ function ProgramGroups({
 function ProgramPeople({
   programPeople,
   allPeople,
+  newPerson,
   addPerson,
   removePerson,
   disabled = false,
@@ -447,6 +455,7 @@ function ProgramPeople({
             onClick={() => {
               const name = window.prompt("Jméno");
               if (name) {
+                newPerson(name);
                 addPerson(name);
               }
             }}
@@ -665,6 +674,12 @@ export function AddProgramModal({ options, handleClose }) {
           <ProgramPeople
             programPeople={people}
             allPeople={allPeople}
+            newPerson={(name) =>
+              client.addPerson({ name }).then(
+                (resp) => dispatch(addPerson(resp)),
+                (e) => dispatch(addError(e.message))
+              )
+            }
             addPerson={(person) => setPeople([...people, person])}
             removePerson={(person) =>
               setPeople(people.filter((p) => p !== person))
