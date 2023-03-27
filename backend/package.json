@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
-    "nodemon": "^2.0.21",
+    "nodemon": "^2.0.22",
     "prettier": "^2.8.7"
   }
 }
