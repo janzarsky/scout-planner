@@ -27,12 +27,16 @@ export function getTimetableSettings(programs, groups, timeStep, now) {
     if (time < settings.dayStart) settings.dayStart = time;
   }
 
+  settings.dayStart = roundDownToWholeHours(settings.dayStart);
+
   settings.dayEnd = parseTime("16:00");
   for (const prog of programs) {
     let time = getOnlyTime(prog.begin + prog.duration);
     if (time === 0) time = parseTime("23:59");
     if (time > settings.dayEnd) settings.dayEnd = time;
   }
+
+  settings.dayEnd = roundUpToWholeHours(settings.dayEnd);
 
   settings.timeHeaders = Array.from(
     { length: Math.ceil((settings.dayEnd - settings.dayStart) / hour) },
@@ -44,4 +48,14 @@ export function getTimetableSettings(programs, groups, timeStep, now) {
   settings.groupCnt = groups.length > 0 ? groups.length : 1;
 
   return settings;
+}
+
+const hour = parseDuration("1:00");
+
+function roundDownToWholeHours(time) {
+  return time - (time % hour);
+}
+
+function roundUpToWholeHours(time) {
+  return time - (time % hour) + (time % hour !== 0 ? hour : 0);
 }
