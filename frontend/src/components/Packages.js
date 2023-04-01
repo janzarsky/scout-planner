@@ -114,7 +114,7 @@ function PackagesHeader() {
   );
 }
 
-function Package({ cnt, name, setName, color, setColor, editPkg, deletePkg }) {
+function Package({ cnt, name, color, editPkg, deletePkg }) {
   return (
     <tr>
       <td>{cnt}</td>
