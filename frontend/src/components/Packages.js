@@ -179,6 +179,7 @@ function NewPackage({ name, setName, color, setColor }) {
 }
 
 function ColorPicker({ color, setColor }) {
+  const defaultColor = "#eeeeee";
   const colors = [
     "#f48fb1",
     "#ce93d8",
@@ -197,21 +198,49 @@ function ColorPicker({ color, setColor }) {
     "#ffab91",
     "#bcaaa4",
     "#b0bec5",
-    "#eeeeee",
+    defaultColor,
   ];
 
+  const [custom, setCustom] = useState(colors.indexOf(color) === -1);
+
   return (
-    <Form.Control
-      as="select"
-      value={color}
-      onChange={(e) => setColor(e.target.value)}
-      style={{ backgroundColor: color }}
-    >
-      {colors.map((color) => (
-        <option key={color} value={color} style={{ backgroundColor: color }}>
-          {color}
+    <>
+      <Form.Control
+        data-test="pkgs-new-color"
+        as="select"
+        value={custom ? "custom" : color}
+        onChange={(e) => {
+          if (e.target.value === "custom") {
+            setCustom(true);
+            setColor(defaultColor);
+          } else {
+            setCustom(false);
+            setColor(e.target.value);
+          }
+        }}
+        style={{ backgroundColor: color }}
+      >
+        {colors.map((color) => (
+          <option key={color} value={color} style={{ backgroundColor: color }}>
+            {color}
+          </option>
+        ))}
+        <option
+          key="custom"
+          value="custom"
+          style={{ backgroundColor: custom ? color : defaultColor }}
+        >
+          Vlastní barva
         </option>
-      ))}
-    </Form.Control>
+      </Form.Control>
+      {custom && (
+        <Form.Control
+          data-test="pkgs-new-custom-color"
+          type="color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+        />
+      )}
+    </>
   );
 }
