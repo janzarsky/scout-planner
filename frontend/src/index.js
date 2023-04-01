@@ -10,7 +10,6 @@ import {
   useParams,
   useHistory,
 } from "react-router-dom";
-import Jumbotron from "react-bootstrap/Jumbotron";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
@@ -39,7 +38,7 @@ const Homepage = () => {
   }, [history]);
 
   return (
-    <Jumbotron className="text-center min-vh-100">
+    <div className="mt-4 p-5">
       <div className="container">
         <h1 className="mb-5">Skautský plánovač</h1>
 
@@ -60,7 +59,7 @@ const Homepage = () => {
           Nový harmonogram
         </Button>
       </div>
-    </Jumbotron>
+    </div>
   );
 };
 
