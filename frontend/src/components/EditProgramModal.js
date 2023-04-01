@@ -525,8 +525,7 @@ function ProgramRanges({ programRanges, updateRange, disabled = false }) {
         {range.name}
       </Form.Label>
       <Col>
-        <Form.Control
-          type="range"
+        <Form.Range
           min="0"
           max="3"
           value={
@@ -536,6 +535,7 @@ function ProgramRanges({ programRanges, updateRange, disabled = false }) {
           }
           onChange={(e) => updateRange(range._id, e.target.value)}
           disabled={disabled}
+          className="mt-2"
         />
       </Col>
     </Form.Group>
