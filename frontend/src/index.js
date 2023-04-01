@@ -48,11 +48,9 @@ const Homepage = () => {
             onChange={(e) => setState(e.target.value)}
             placeholder="Kód"
           />
-          <InputGroup.Append>
-            <Button disabled={!valid} variant="primary" onClick={submit}>
-              Otevřít
-            </Button>
-          </InputGroup.Append>
+          <Button disabled={!valid} variant="primary" onClick={submit}>
+            Otevřít
+          </Button>
         </InputGroup>
 
         <Button variant="primary" onClick={random}>
