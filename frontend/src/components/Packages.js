@@ -114,7 +114,7 @@ function PackagesHeader() {
   );
 }
 
-function Package({ cnt, name, setName, color, setColor, editPkg, deletePkg }) {
+function Package({ cnt, name, color, editPkg, deletePkg }) {
   return (
     <tr>
       <td>{cnt}</td>
@@ -148,11 +148,7 @@ function EditedPackage({ cnt, name, setName, color, setColor }) {
         <Form.Control value={name} onChange={(e) => setName(e.target.value)} />
       </td>
       <td>
-        <Form.Control
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-        />
+        <ColorPicker color={color} setColor={setColor} />
       </td>
       <td>
         <Button variant="primary" type="submit">
@@ -171,11 +167,7 @@ function NewPackage({ name, setName, color, setColor }) {
         <Form.Control value={name} onChange={(e) => setName(e.target.value)} />
       </td>
       <td>
-        <Form.Control
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-        />
+        <ColorPicker color={color} setColor={setColor} />
       </td>
       <td>
         <Button variant="success" type="submit">
@@ -183,5 +175,72 @@ function NewPackage({ name, setName, color, setColor }) {
         </Button>
       </td>
     </tr>
+  );
+}
+
+function ColorPicker({ color, setColor }) {
+  const defaultColor = "#eeeeee";
+  const colors = [
+    "#f48fb1",
+    "#ce93d8",
+    "#b39ddb",
+    "#9fa8da",
+    "#90caf9",
+    "#81d4fa",
+    "#80deea",
+    "#80cbc4",
+    "#a5d6a7",
+    "#c5e1a5",
+    "#e6ee9c",
+    "#fff59d",
+    "#ffe082",
+    "#ffcc80",
+    "#ffab91",
+    "#bcaaa4",
+    "#b0bec5",
+    defaultColor,
+  ];
+
+  const [custom, setCustom] = useState(colors.indexOf(color) === -1);
+
+  return (
+    <>
+      <Form.Control
+        data-test="pkgs-new-color"
+        as="select"
+        value={custom ? "custom" : color}
+        onChange={(e) => {
+          if (e.target.value === "custom") {
+            setCustom(true);
+            setColor(defaultColor);
+          } else {
+            setCustom(false);
+            setColor(e.target.value);
+          }
+        }}
+        style={{ backgroundColor: color }}
+      >
+        {colors.map((color) => (
+          <option key={color} value={color} style={{ backgroundColor: color }}>
+            {color}
+          </option>
+        ))}
+        <option
+          key="custom"
+          value="custom"
+          style={{ backgroundColor: custom ? color : defaultColor }}
+        >
+          Vlastní barva
+        </option>
+      </Form.Control>
+      {custom && (
+        <Form.Control
+          data-test="pkgs-new-custom-color"
+          type="color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+        />
+      )}
+    </>
   );
 }
