@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
+import Row from "react-bootstrap/esm/Row";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -176,7 +177,7 @@ function NewRule({
     <tr>
       <td></td>
       <td>
-        <Form.Row>
+        <Row>
           <Col sm="3">
             <Form.Control
               as="select"
@@ -249,7 +250,7 @@ function NewRule({
                 return null;
             }
           })()}
-        </Form.Row>
+        </Row>
       </td>
       <td></td>
       <td>
