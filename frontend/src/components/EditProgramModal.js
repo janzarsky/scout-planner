@@ -221,7 +221,7 @@ export function EditProgramModal({ programId, handleClose }) {
 
 function ProgramTitle({ title, setTitle, disabled = false }) {
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
         Název
       </Form.Label>
@@ -239,7 +239,7 @@ function ProgramTitle({ title, setTitle, disabled = false }) {
 
 function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-1">
       <Form.Label column sm="2">
         Začátek
       </Form.Label>
@@ -302,7 +302,7 @@ function ProgramDuration({
 
   return (
     <>
-      <Form.Group as={Row}>
+      <Form.Group as={Row} className="mb-1">
         <Form.Label column sm="2">
           Délka
         </Form.Label>
@@ -327,7 +327,7 @@ function ProgramDuration({
         </Col>
       </Form.Group>
       {!disabled && defaultDurations && (
-        <Form.Group>
+        <Form.Group className="mb-3">
           {defaultDurations.map(([value, text]) => (
             <Button
               variant={"outline-secondary"}
@@ -347,7 +347,7 @@ function ProgramPackage({ pkg, setPkg, disabled = false }) {
   const { packages } = useSelector((state) => state.packages);
 
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
         Balíček
       </Form.Label>
@@ -378,7 +378,7 @@ function ProgramGroups({
   const { groups: allGroups } = useSelector((state) => state.groups);
 
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
         Skupiny
       </Form.Label>
@@ -417,7 +417,7 @@ function ProgramPeople({
   disabled = false,
 }) {
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
         Lidi
       </Form.Label>
@@ -469,7 +469,7 @@ function ProgramPeople({
 
 function ProgramPlace({ place, setPlace, disabled = false }) {
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
         Místo
       </Form.Label>
@@ -490,7 +490,7 @@ function ProgramPlace({ place, setPlace, disabled = false }) {
 
 function ProgramUrl({ url, setUrl, disabled = false }) {
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
         URL
       </Form.Label>
@@ -520,7 +520,7 @@ function ProgramRanges({ programRanges, updateRange, disabled = false }) {
   const { ranges: allRanges } = useSelector((state) => state.ranges);
 
   return [...allRanges].sort(byName).map((range) => (
-    <Form.Group as={Row} key={range._id}>
+    <Form.Group as={Row} key={range._id} className="mb-1">
       <Form.Label column sm="2">
         {range.name}
       </Form.Label>
@@ -544,7 +544,7 @@ function ProgramRanges({ programRanges, updateRange, disabled = false }) {
 
 function ProgramNotes({ notes, setNotes, disabled = false }) {
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
         Poznámky
       </Form.Label>
@@ -565,7 +565,7 @@ function ProgramNotes({ notes, setNotes, disabled = false }) {
 
 function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
   return (
-    <Form.Group as={Row}>
+    <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
         Pořadí v bloku
       </Form.Label>
