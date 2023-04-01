@@ -13,8 +13,8 @@ describe("Packages", () => {
   it("empty", () => {
     cy.mount(<Packages />, { reduxStore: store });
 
-    cy.get("input[value='Nový balíček']");
-    cy.get("input[value='#81d4fa']");
+    cy.get("[value='Nový balíček']");
+    cy.get("[value='#81d4fa']");
     cy.contains("Přidat");
   });
 });
