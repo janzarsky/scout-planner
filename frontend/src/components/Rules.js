@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
+import Row from "react-bootstrap/esm/Row";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -176,10 +177,9 @@ function NewRule({
     <tr>
       <td></td>
       <td>
-        <Form.Row>
+        <Row>
           <Col sm="3">
-            <Form.Control
-              as="select"
+            <Form.Select
               value={firstProgram}
               onChange={(e) => setFirstProgram(e.target.value)}
             >
@@ -189,11 +189,10 @@ function NewRule({
                   {formatProgram(prog, groups)}
                 </option>
               ))}
-            </Form.Control>
+            </Form.Select>
           </Col>
           <Col>
-            <Form.Control
-              as="select"
+            <Form.Select
               value={condition}
               onChange={(e) => setCondition(e.target.value)}
             >
@@ -205,7 +204,7 @@ function NewRule({
               <option value="is_after_program">
                 musí proběhnout po programu{" "}
               </option>
-            </Form.Control>
+            </Form.Select>
           </Col>
           {(() => {
             switch (condition) {
@@ -231,8 +230,7 @@ function NewRule({
               case "is_after_program":
                 return (
                   <Col>
-                    <Form.Control
-                      as="select"
+                    <Form.Select
                       value={secondProgram}
                       onChange={(e) => setSecondProgram(e.target.value)}
                     >
@@ -242,14 +240,14 @@ function NewRule({
                           {formatProgram(prog, groups)}
                         </option>
                       ))}
-                    </Form.Control>
+                    </Form.Select>
                   </Col>
                 );
               default:
                 return null;
             }
           })()}
-        </Form.Row>
+        </Row>
       </td>
       <td></td>
       <td>

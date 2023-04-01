@@ -205,9 +205,8 @@ function ColorPicker({ color, setColor }) {
 
   return (
     <>
-      <Form.Control
+      <Form.Select
         data-test="pkgs-new-color"
-        as="select"
         value={custom ? "custom" : color}
         onChange={(e) => {
           if (e.target.value === "custom") {
@@ -232,7 +231,7 @@ function ColorPicker({ color, setColor }) {
         >
           Vlastní barva
         </option>
-      </Form.Control>
+      </Form.Select>
       {custom && (
         <Form.Control
           data-test="pkgs-new-custom-color"

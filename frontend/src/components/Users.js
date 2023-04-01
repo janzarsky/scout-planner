@@ -240,8 +240,7 @@ function EditedUser({ email, setEmail, level, setLevel }) {
         />
       </td>
       <td>
-        <Form.Control
-          as="select"
+        <Form.Select
           value={level}
           onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
@@ -250,7 +249,7 @@ function EditedUser({ email, setEmail, level, setLevel }) {
               {formatLevel(level)}
             </option>
           ))}
-        </Form.Control>
+        </Form.Select>
       </td>
       <td>
         <Button variant="primary" type="submit">
@@ -271,8 +270,7 @@ function NewUser({ email, setEmail, level, setLevel }) {
         />
       </td>
       <td>
-        <Form.Control
-          as="select"
+        <Form.Select
           value={level}
           onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
@@ -281,7 +279,7 @@ function NewUser({ email, setEmail, level, setLevel }) {
               {formatLevel(level)}
             </option>
           ))}
-        </Form.Control>
+        </Form.Select>
       </td>
       <td>
         <Button variant="success" type="submit">
@@ -319,8 +317,7 @@ function PublicEditedUser({ level, setLevel }) {
     <tr>
       <td>Kdokoliv</td>
       <td>
-        <Form.Control
-          as="select"
+        <Form.Select
           value={level}
           onChange={(e) => setLevel(parseIntOrZero(e.target.value))}
         >
@@ -329,7 +326,7 @@ function PublicEditedUser({ level, setLevel }) {
               {formatLevel(level)}
             </option>
           ))}
-        </Form.Control>
+        </Form.Select>
       </td>
       <td>
         <Button variant="primary" type="submit">

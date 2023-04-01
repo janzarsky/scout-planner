@@ -234,64 +234,34 @@ export default function App() {
       )}
       <Tab.Container defaultActiveKey={"timetable"}>
         <Nav variant="pills" className="control-panel">
-          <Nav.Item>
-            <Nav.Link as={Button} variant="light" eventKey="timetable">
-              Harmonogram
+          <Nav.Link eventKey="timetable">Harmonogram</Nav.Link>
+          {userLevel >= level.VIEW && (
+            <Nav.Link eventKey="rules">
+              Pravidla{" "}
+              {rulesSatisfied ? (
+                <i className="fa fa-check text-success" />
+              ) : (
+                <i className="fa fa-times text-danger" />
+              )}
             </Nav.Link>
-          </Nav.Item>
-          {userLevel >= level.VIEW && (
-            <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="rules">
-                Pravidla{" "}
-                {rulesSatisfied ? (
-                  <i className="fa fa-check text-success" />
-                ) : (
-                  <i className="fa fa-times text-danger" />
-                )}
-              </Nav.Link>
-            </Nav.Item>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="packages">
-                Balíčky
-              </Nav.Link>
-            </Nav.Item>
+            <Nav.Link eventKey="packages">Balíčky</Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="groups">
-                Skupiny
-              </Nav.Link>
-            </Nav.Item>
+            <Nav.Link eventKey="groups">Skupiny</Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="ranges">
-                Linky
-              </Nav.Link>
-            </Nav.Item>
+            <Nav.Link eventKey="ranges">Linky</Nav.Link>
           )}
           {userLevel >= level.VIEW && (
-            <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="stats">
-                Statistiky
-              </Nav.Link>
-            </Nav.Item>
+            <Nav.Link eventKey="stats">Statistiky</Nav.Link>
           )}
           {userLevel >= level.ADMIN && (
-            <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="users">
-                Uživatelé
-              </Nav.Link>
-            </Nav.Item>
+            <Nav.Link eventKey="users">Uživatelé</Nav.Link>
           )}
           {userLevel >= level.VIEW && (
-            <Nav.Item>
-              <Nav.Link as={Button} variant="light" eventKey="settings">
-                Nastavení
-              </Nav.Link>
-            </Nav.Item>
+            <Nav.Link eventKey="settings">Nastavení</Nav.Link>
           )}
           {userLevel >= level.VIEW && <Filters />}
           {userLevel >= level.VIEW && <ViewSettings />}

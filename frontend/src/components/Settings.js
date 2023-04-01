@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateSettings } from "../store/settingsSlice";
 import Client from "../Client";
 import { addError } from "../store/errorsSlice";
+import Row from "react-bootstrap/esm/Row";
 
 export default function Settings() {
   const { groups } = useSelector((state) => state.groups);
@@ -78,21 +79,17 @@ function TimeStep() {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Row>
+      <Row>
         <Form.Label column sm="2">
           Základní interval
         </Form.Label>
         <Col sm="3">
           {editing ? (
-            <Form.Control
-              as="select"
-              value={step}
-              onChange={(e) => setStep(e.target.value)}
-            >
+            <Form.Select value={step} onChange={(e) => setStep(e.target.value)}>
               <option value={15 * 60 * 1000}>15 min</option>
               <option value={10 * 60 * 1000}>10 min</option>
               <option value={5 * 60 * 1000}>5 min</option>
-            </Form.Control>
+            </Form.Select>
           ) : (
             formatDurationInMinutes(settings.timeStep)
           )}
@@ -108,7 +105,7 @@ function TimeStep() {
             </Button>
           )}
         </Col>
-      </Form.Row>
+      </Row>
     </Form>
   );
 }
