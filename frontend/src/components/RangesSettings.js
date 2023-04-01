@@ -10,26 +10,21 @@ export default function RangesSettings() {
 
   return (
     <>
-      <Nav.Item>
-        <Nav.Link
-          as={Button}
-          variant={rangesEnabled ? "dark" : "light"}
-          onClick={() => dispatch(toggleRangesEnabled())}
-        >
-          <i className="fa fa-area-chart" />
-        </Nav.Link>
-      </Nav.Item>
+      <Nav.Link
+        className={rangesEnabled ? "dark" : ""}
+        onClick={() => dispatch(toggleRangesEnabled())}
+      >
+        <i className="fa fa-area-chart" />
+      </Nav.Link>
       {rangesEnabled
         ? ranges.map((range) => (
-            <Nav.Item key={range._id}>
-              <Nav.Link
-                as={Button}
-                variant={activeRange === range._id ? "dark" : "light"}
-                onClick={() => dispatch(setActiveRange(range._id))}
-              >
-                {range.name}
-              </Nav.Link>
-            </Nav.Item>
+            <Nav.Link
+              key={range._id}
+              className={activeRange === range._id ? "dark" : ""}
+              onClick={() => dispatch(setActiveRange(range._id))}
+            >
+              {range.name}
+            </Nav.Link>
           ))
         : null}
     </>

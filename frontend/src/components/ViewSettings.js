@@ -18,62 +18,44 @@ export default function ViewSettings() {
 
   return (
     <>
-      <Nav.Item>
-        <Nav.Link
-          as={Button}
-          variant={active ? "dark" : "light"}
-          onClick={() => setActive(!active)}
-        >
-          <i className="fa fa-eye" />
-        </Nav.Link>
-      </Nav.Item>
+      <Nav.Link
+        className={active ? "dark" : ""}
+        onClick={() => setActive(!active)}
+      >
+        <i className="fa fa-eye" />
+      </Nav.Link>
       {active && (
         <>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewPkg ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewPkg())}
-            >
-              Balíček
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewTime ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewTime())}
-            >
-              Čas
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewPeople ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewPeople())}
-            >
-              Lidi
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewPlace ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewPlace())}
-            >
-              Místo
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              as={Button}
-              variant={viewViolations ? "dark" : "light"}
-              onClick={() => dispatch(toggleViewViolations())}
-            >
-              Porušení pravidel
-            </Nav.Link>
-          </Nav.Item>
+          <Nav.Link
+            className={viewPkg ? "dark" : ""}
+            onClick={() => dispatch(toggleViewPkg())}
+          >
+            Balíček
+          </Nav.Link>
+          <Nav.Link
+            className={viewTime ? "dark" : ""}
+            onClick={() => dispatch(toggleViewTime())}
+          >
+            Čas
+          </Nav.Link>
+          <Nav.Link
+            className={viewPeople ? "dark" : ""}
+            onClick={() => dispatch(toggleViewPeople())}
+          >
+            Lidi
+          </Nav.Link>
+          <Nav.Link
+            className={viewPlace ? "dark" : ""}
+            onClick={() => dispatch(toggleViewPlace())}
+          >
+            Místo
+          </Nav.Link>
+          <Nav.Link
+            className={viewViolations ? "dark" : ""}
+            onClick={() => dispatch(toggleViewViolations())}
+          >
+            Porušení pravidel
+          </Nav.Link>
         </>
       )}
     </>

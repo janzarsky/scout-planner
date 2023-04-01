@@ -24,6 +24,17 @@ p {
 .control-panel {
   margin-bottom: 4px;
 }
+.control-panel .nav-link {
+  color: var(--bs-body-color);
+}
+.control-panel .nav-link.active {
+  color: var(--bs-body-color);
+  background-color: #cfd8dc;
+}
+.control-panel .nav-link.dark {
+  color: #ffffff;
+  background-color: #343a40;
+}
 
 .timetable {
   display: grid;
@@ -283,9 +294,4 @@ p {
   .control-panel {
     display: none;
   }
-}
-
-/* Bootstrap fix */
-.nav-pills .nav-link.btn-dark {
-  background: 0 0 #343a40;
 }

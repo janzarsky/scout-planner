@@ -16,33 +16,28 @@ export default function Filters() {
 
   return (
     <>
-      <Nav.Item>
-        <Nav.Link
-          as={Button}
-          variant={highlightingEnabled ? "dark" : "light"}
-          onClick={() => dispatch(toggleHighlighting())}
-        >
-          <i className="fa fa-filter" />
-        </Nav.Link>
-      </Nav.Item>
+      <Nav.Link
+        className={highlightingEnabled ? "dark" : ""}
+        onClick={() => dispatch(toggleHighlighting())}
+      >
+        <i className="fa fa-filter" />
+      </Nav.Link>
       {highlightingEnabled &&
         [...packages].sort(byName).map((pkg) => (
-          <Nav.Item key={pkg._id}>
-            <Nav.Link
-              as={Button}
-              variant={
-                highlightedPackages.indexOf(pkg._id) === -1 ? "light" : "dark"
-              }
-              style={
-                highlightedPackages.indexOf(pkg._id) === -1
-                  ? { backgroundColor: pkg.color }
-                  : {}
-              }
-              onClick={() => dispatch(toggleHighlightedPackage(pkg._id))}
-            >
-              {pkg.name}
-            </Nav.Link>
-          </Nav.Item>
+          <Nav.Link
+            key={pkg._id}
+            className={
+              highlightedPackages.indexOf(pkg._id) !== -1 ? "dark" : ""
+            }
+            style={
+              highlightedPackages.indexOf(pkg._id) === -1
+                ? { backgroundColor: pkg.color }
+                : {}
+            }
+            onClick={() => dispatch(toggleHighlightedPackage(pkg._id))}
+          >
+            {pkg.name}
+          </Nav.Link>
         ))}
     </>
   );
