@@ -85,15 +85,11 @@ function TimeStep() {
         </Form.Label>
         <Col sm="3">
           {editing ? (
-            <Form.Control
-              as="select"
-              value={step}
-              onChange={(e) => setStep(e.target.value)}
-            >
+            <Form.Select value={step} onChange={(e) => setStep(e.target.value)}>
               <option value={15 * 60 * 1000}>15 min</option>
               <option value={10 * 60 * 1000}>10 min</option>
               <option value={5 * 60 * 1000}>5 min</option>
-            </Form.Control>
+            </Form.Select>
           ) : (
             formatDurationInMinutes(settings.timeStep)
           )}

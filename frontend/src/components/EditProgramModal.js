@@ -352,8 +352,7 @@ function ProgramPackage({ pkg, setPkg, disabled = false }) {
         Balíček
       </Form.Label>
       <Col>
-        <Form.Control
-          as="select"
+        <Form.Select
           value={pkg}
           onChange={(e) => setPkg(e.target.value)}
           disabled={disabled}
@@ -364,7 +363,7 @@ function ProgramPackage({ pkg, setPkg, disabled = false }) {
               {p.name}
             </option>
           ))}
-        </Form.Control>
+        </Form.Select>
       </Col>
     </Form.Group>
   );
