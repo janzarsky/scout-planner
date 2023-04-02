@@ -19,6 +19,7 @@ describe("People", () => {
           .spy(async (person) => ({ _id: "newperson", ...person }))
           .as("addPerson"),
         deletePerson: cy.spy(async (id) => {}).as("deletePerson"),
+        updatePerson: cy.spy(async (person) => person).as("updatePerson"),
       })
       .log(false);
   });
@@ -70,5 +71,27 @@ describe("People", () => {
     cy.wrap(store).invoke("getState").its("people.people").should("be.empty");
 
     cy.contains("Person 1").should("not.exist");
+  });
+
+  it("edit person", () => {
+    store.dispatch(addPerson({ _id: "person1", name: "Person 1" }));
+    cy.mount(<People />, { reduxStore: store });
+
+    cy.contains("Upravit").click();
+    cy.get("[data-test='people-edit-name']").clear().type("Person 2");
+    cy.get("[data-test='people-edit-save']").click();
+
+    cy.get("@updatePerson").should("be.calledOnceWith");
+
+    cy.wrap(store)
+      .invoke("getState")
+      .its("people.people")
+      .should("deep.include", {
+        _id: "person1",
+        name: "Person 2",
+      });
+
+    cy.contains("Person 2");
+    cy.contains("Upravit");
   });
 });

@@ -6,13 +6,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
 import { convertLegacyPeople } from "../helpers/PeopleConvertor";
 import { addError } from "../store/errorsSlice";
-import { addPerson, deletePerson } from "../store/peopleSlice";
+import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
 
 export default function People() {
   const { people, legacyPeople } = useSelector((state) => state.people);
   const allPeople = convertLegacyPeople(legacyPeople, people);
 
   const [newName, setNewName] = useState("Nový organizátor");
+  const [editedName, setEditedName] = useState();
+  const [editKey, setEditKey] = useState(undefined);
 
   const dispatch = useDispatch();
 
@@ -22,14 +24,27 @@ export default function People() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    client
-      .addPerson({
-        name: newName,
-      })
-      .then(
-        (resp) => dispatch(addPerson(resp)),
-        (e) => dispatch(addError(e.message))
-      );
+    if (editKey) {
+      client
+        .updatePerson({
+          _id: editKey,
+          name: editedName,
+        })
+        .then(
+          (resp) => dispatch(updatePerson(resp)),
+          (e) => dispatch(addError(e.message))
+        );
+      setEditKey(undefined);
+    } else {
+      client
+        .addPerson({
+          name: newName,
+        })
+        .then(
+          (resp) => dispatch(addPerson(resp)),
+          (e) => dispatch(addError(e.message))
+        );
+    }
   }
 
   return (
@@ -43,18 +58,26 @@ export default function People() {
         <tbody>
           {[...allPeople]
             .sort((a, b) => a.name.localeCompare(b.name))
-            .map((person) => (
-              <Person
-                key={person._id}
-                name={person.name}
-                deletePerson={() =>
-                  client.deletePerson(person._id).then(
-                    () => dispatch(deletePerson(person._id)),
-                    (e) => dispatch(addError(e.message))
-                  )
-                }
-              />
-            ))}
+            .map((person) =>
+              person._id === editKey ? (
+                <EditedPerson name={editedName} setName={setEditedName} />
+              ) : (
+                <Person
+                  key={person._id}
+                  name={person.name}
+                  editPerson={() => {
+                    setEditKey(person._id);
+                    setEditedName(person.name);
+                  }}
+                  deletePerson={() =>
+                    client.deletePerson(person._id).then(
+                      () => dispatch(deletePerson(person._id)),
+                      (e) => dispatch(addError(e.message))
+                    )
+                  }
+                />
+              )
+            )}
           <EditedPerson name={newName} setName={setNewName} isNew={true} />
         </tbody>
       </Table>
@@ -62,12 +85,16 @@ export default function People() {
   );
 }
 
-function Person({ name, deletePerson }) {
+function Person({ name, deletePerson, editPerson }) {
   return (
     <tr>
       <td>{name}</td>
       <td>
         <span>
+          <Button variant="link" onClick={editPerson}>
+            <i className="fa fa-pencil" /> Upravit
+          </Button>
+          &nbsp;
           <Button variant="link text-danger" onClick={deletePerson}>
             <i className="fa fa-trash" /> Smazat
           </Button>
@@ -82,13 +109,17 @@ function EditedPerson({ name, setName, isNew = false }) {
     <tr>
       <td>
         <Form.Control
-          data-test="people-new-name"
+          data-test={isNew ? "people-new-name" : "people-edit-name"}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
       </td>
       <td>
-        <Button data-test="people-new-add" variant="primary" type="submit">
+        <Button
+          data-test={isNew ? "people-new-add" : "people-edit-save"}
+          variant="primary"
+          type="submit"
+        >
           {isNew ? (
             <>
               <i className="fa fa-plus" /> Přidat
