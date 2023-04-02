@@ -5,6 +5,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getStore } from "../../src/store";
 import "../../src/index.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 Cypress.Commands.add("mount", (component, options = {}) => {
   const {
