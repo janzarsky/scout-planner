@@ -4,13 +4,11 @@ import Form from "react-bootstrap/esm/Form";
 import Table from "react-bootstrap/Table";
 import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
-import { convertLegacyPeople } from "../helpers/PeopleConvertor";
 import { addError } from "../store/errorsSlice";
 import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
 
 export default function People() {
-  const { people, legacyPeople } = useSelector((state) => state.people);
-  const allPeople = convertLegacyPeople(legacyPeople, people);
+  const { people } = useSelector((state) => state.people);
 
   const [newName, setNewName] = useState("Nový organizátor");
   const [editedName, setEditedName] = useState();
@@ -56,7 +54,7 @@ export default function People() {
           </tr>
         </thead>
         <tbody>
-          {[...allPeople]
+          {[...people]
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((person) =>
               person._id === editKey ? (
