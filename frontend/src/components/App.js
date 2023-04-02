@@ -10,7 +10,7 @@ import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Alert from "react-bootstrap/Alert";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { checkRules } from "../Checker";
 import Settings from "./Settings";
 import Users from "./Users";
@@ -108,14 +108,14 @@ export default function App() {
 
   useEffect(() => {
     if (!permissionsLoaded) {
-      const client = new Client(table);
+      const client = clientFactory.getClient(table);
       dispatch(getPermissions(client));
     }
   }, [table, permissionsLoaded, dispatch]);
 
   useEffect(() => {
     if (permissionsLoaded) {
-      const client = new Client(table);
+      const client = clientFactory.getClient(table);
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));

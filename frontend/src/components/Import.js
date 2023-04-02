@@ -1,14 +1,14 @@
 import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { useSelector } from "react-redux";
 
 export default function Import() {
   const [dataToImport, setDataToImport] = useState();
 
   const { table } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   async function handleSubmit(event) {
     event.preventDefault();

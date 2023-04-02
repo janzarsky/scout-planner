@@ -2,7 +2,7 @@ import { Children } from "react";
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { formatDay, getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
 import { groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { level } from "../helpers/Level";
@@ -22,7 +22,7 @@ export default function Timetable({
   const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   function onDroppableDrop(item, begin, groupId, currentPrograms) {
     var prog = currentPrograms.find((program) => program._id === item.id);

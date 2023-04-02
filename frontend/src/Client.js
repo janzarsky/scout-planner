@@ -2,7 +2,7 @@ import { getAuth } from "firebase/auth";
 
 const config = require("./config.json");
 
-export default class Client {
+class Client {
   constructor(timetable) {
     [
       ["programs", "Program", "Programs"],
@@ -170,3 +170,9 @@ export default class Client {
     return await resp.json();
   }
 }
+
+export const clientFactory = {
+  getClient() {
+    return new Client(...arguments);
+  },
+};

@@ -21,7 +21,7 @@ import {
   updateProgram,
 } from "../store/programsSlice";
 import { addPerson } from "../store/peopleSlice";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 
@@ -55,7 +55,7 @@ export function EditProgramModal({ programId, handleClose }) {
   const allPeople = useSelector((state) => state.people.legacyPeople);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   function handleDelete(event) {
     event.preventDefault();
@@ -610,7 +610,7 @@ export function AddProgramModal({ options, handleClose }) {
   const allPeople = useSelector((state) => state.people.legacyPeople);
 
   const { table } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();

@@ -9,7 +9,7 @@ import {
   deletePackage,
   updatePackage,
 } from "../store/packagesSlice";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 
 export default function Packages() {
@@ -23,7 +23,7 @@ export default function Packages() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();
