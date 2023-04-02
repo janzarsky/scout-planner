@@ -14,6 +14,8 @@ describe("People", () => {
   it("empty", () => {
     cy.mount(<People />, { reduxStore: store });
     cy.contains("Organizátor");
+    cy.get("[value='Nový organizátor']");
+    cy.contains("Přidat");
   });
 
   it("list of people", () => {
