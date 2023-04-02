@@ -4,6 +4,7 @@ import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
 import Packages from "./Packages";
 import Groups from "./Groups";
+import People from "./People";
 import Ranges from "./Ranges";
 import Rules from "./Rules";
 import Tab from "react-bootstrap/Tab";
@@ -77,6 +78,8 @@ export default function App() {
     (state) => state.auth
   );
   const errors = useSelector((state) => state.errors);
+
+  const peopleSection = useSelector((state) => state.config.peopleSection);
 
   const dispatch = useDispatch();
 
@@ -251,6 +254,9 @@ export default function App() {
           {userLevel >= level.EDIT && (
             <Nav.Link eventKey="groups">Skupiny</Nav.Link>
           )}
+          {userLevel >= level.EDIT && peopleSection && (
+            <Nav.Link eventKey="people">Organizátoři</Nav.Link>
+          )}
           {userLevel >= level.EDIT && (
             <Nav.Link eventKey="ranges">Linky</Nav.Link>
           )}
@@ -316,6 +322,11 @@ export default function App() {
           {userLevel >= level.EDIT && (
             <Tab.Pane eventKey="groups" title="Skupiny">
               <Groups />
+            </Tab.Pane>
+          )}
+          {userLevel >= level.EDIT && peopleSection && (
+            <Tab.Pane eventKey="people" title="Organizátoři">
+              <People />
             </Tab.Pane>
           )}
           {userLevel >= level.EDIT && (
