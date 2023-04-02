@@ -18,6 +18,7 @@ describe("People", () => {
         addPerson: cy
           .spy(async (person) => ({ _id: "newperson", ...person }))
           .as("addPerson"),
+        deletePerson: cy.spy(async (id) => {}).as("deletePerson"),
       })
       .log(false);
   });
@@ -56,5 +57,18 @@ describe("People", () => {
       });
 
     cy.contains("Person 1");
+  });
+
+  it("remove person", () => {
+    store.dispatch(addPerson({ _id: "person1", name: "Person 1" }));
+    cy.mount(<People />, { reduxStore: store });
+
+    cy.contains("Smazat").click();
+
+    cy.get("@deletePerson").should("be.calledOnceWith", "person1");
+
+    cy.wrap(store).invoke("getState").its("people.people").should("be.empty");
+
+    cy.contains("Person 1").should("not.exist");
   });
 });

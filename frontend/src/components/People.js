@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
 import { convertLegacyPeople } from "../helpers/PeopleConvertor";
 import { addError } from "../store/errorsSlice";
-import { addPerson } from "../store/peopleSlice";
+import { addPerson, deletePerson } from "../store/peopleSlice";
 
 export default function People() {
   const { people, legacyPeople } = useSelector((state) => state.people);
@@ -44,14 +44,36 @@ export default function People() {
           {[...allPeople]
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((person) => (
-              <tr key={person._id}>
-                <td>{person.name}</td>
-              </tr>
+              <Person
+                key={person._id}
+                name={person.name}
+                deletePerson={() =>
+                  client.deletePerson(person._id).then(
+                    () => dispatch(deletePerson(person._id)),
+                    (e) => dispatch(addError(e.message))
+                  )
+                }
+              />
             ))}
           <EditedPerson name={newName} setName={setNewName} isNew={true} />
         </tbody>
       </Table>
     </Form>
+  );
+}
+
+function Person({ name, deletePerson }) {
+  return (
+    <tr>
+      <td>{name}</td>
+      <td>
+        <span>
+          <Button variant="link text-danger" onClick={deletePerson}>
+            <i className="fa fa-trash" /> Smazat
+          </Button>
+        </span>
+      </td>
+    </tr>
   );
 }
 
