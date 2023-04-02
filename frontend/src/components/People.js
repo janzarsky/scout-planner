@@ -36,10 +36,14 @@ function EditedPerson({ name, setName, isNew = false }) {
   return (
     <tr>
       <td>
-        <Form.Control value={name} onChange={(e) => setName(e.target.value)} />
+        <Form.Control
+          data-test="people-new-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
       </td>
       <td>
-        <Button variant="primary" type="submit">
+        <Button data-test="people-new-add" variant="primary" type="submit">
           {isNew ? (
             <>
               <i className="fa fa-plus" /> Přidat
