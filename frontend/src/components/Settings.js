@@ -9,7 +9,7 @@ import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSettings } from "../store/settingsSlice";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
 
@@ -22,7 +22,7 @@ export default function Settings() {
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   async function deleteAll() {
     await Promise.all([
@@ -57,7 +57,7 @@ function TimeStep() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   const [step, setStep] = useState(settings.timeStep);
   const [editing, setEditing] = useState(false);

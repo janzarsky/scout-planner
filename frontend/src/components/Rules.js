@@ -13,7 +13,7 @@ import {
 import { level } from "../helpers/Level";
 import { useDispatch, useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
 
@@ -29,7 +29,7 @@ export default function Rules({ violations }) {
   const dispatch = useDispatch();
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();

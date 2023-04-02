@@ -6,7 +6,7 @@ import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, deleteUser, updateUser } from "../store/usersSlice";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 
 export default function Users({ userEmail }) {
@@ -20,7 +20,7 @@ export default function Users({ userEmail }) {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   const publicUser = users.find((user) => user.email === "public");
 

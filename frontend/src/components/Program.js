@@ -1,6 +1,6 @@
 import { useDrag } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import {
@@ -14,7 +14,7 @@ export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   const [, drag] = useDrag(() => ({
     type: "program",

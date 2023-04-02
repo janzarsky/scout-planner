@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
-import Client from "../Client";
+import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 
 export default function Ranges() {
@@ -17,7 +17,7 @@ export default function Ranges() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = new Client(table);
+  const client = clientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();
