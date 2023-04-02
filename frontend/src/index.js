@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
@@ -6,9 +6,9 @@ import App from "./components/App";
 import {
   BrowserRouter,
   Route,
-  Switch,
+  Routes,
+  useNavigate,
   useParams,
-  useHistory,
 } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -26,16 +26,15 @@ function AppWrapper() {
 }
 
 const Homepage = () => {
-  const history = useHistory();
-  const [state, setState] = React.useState("");
-  const submit = React.useCallback(() => {
-    history.push(`/${state}`);
-  }, [history, state]);
+  const navigate = useNavigate();
+  const [state, setState] = useState("");
+  const submit = useCallback(() => navigate(`/${state}`), [navigate, state]);
   const valid = state.match(/^[\w-]+$/);
 
-  const random = React.useCallback(() => {
-    history.push(`/${Math.floor(Math.random() * 10e13).toString(16)}`);
-  }, [history]);
+  const random = useCallback(
+    () => navigate(`/${Math.floor(Math.random() * 10e13).toString(16)}`),
+    [navigate]
+  );
 
   return (
     <div className="mt-4 p-5">
@@ -67,14 +66,10 @@ const store = getStore();
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <Switch>
-        <Route path="/" exact>
-          <Homepage />
-        </Route>
-        <Route path="/:table">
-          <AppWrapper />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route path="/" exact element={<Homepage />} />
+        <Route path="/:table" element={<AppWrapper />} />
+      </Routes>
     </BrowserRouter>
   </Provider>
 );
