@@ -1,7 +1,9 @@
 /// <reference types="cypress"/>
 
+import { clientFactory } from "../../src/Client";
 import People from "../../src/components/People";
 import { getStore } from "../../src/store";
+import { setTable } from "../../src/store/authSlice";
 import { addPerson } from "../../src/store/peopleSlice";
 
 describe("People", () => {
@@ -9,6 +11,15 @@ describe("People", () => {
 
   beforeEach(() => {
     store = getStore();
+    store.dispatch(setTable("table1"));
+
+    cy.stub(clientFactory, "getClient")
+      .returns({
+        addPerson: cy
+          .spy(async (person) => ({ _id: "newperson", ...person }))
+          .as("addPerson"),
+      })
+      .log(false);
   });
 
   it("empty", () => {
@@ -33,5 +44,17 @@ describe("People", () => {
     cy.mount(<People />, { reduxStore: store });
     cy.get("[data-test='people-new-name']").clear().type("Person 1");
     cy.get("[data-test='people-new-add']").click();
+
+    cy.get("@addPerson").should("be.calledOnceWith", { name: "Person 1" });
+
+    cy.wrap(store)
+      .invoke("getState")
+      .its("people.people")
+      .should("deep.include", {
+        _id: "newperson",
+        name: "Person 1",
+      });
+
+    cy.contains("Person 1");
   });
 });
