@@ -14,7 +14,7 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
-import { byName } from "../helpers/Sorting";
+import { byName, byOrder } from "../helpers/Sorting";
 import {
   addProgram,
   deleteProgram,
@@ -384,7 +384,7 @@ function ProgramGroups({
       </Form.Label>
       <Col>
         <Row>
-          {[...allGroups].sort(byName).map((group) => (
+          {[...allGroups].sort(byOrder).map((group) => (
             <Col key={group._id}>
               <Form.Check
                 type="checkbox"
