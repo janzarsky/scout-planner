@@ -596,7 +596,9 @@ export function AddProgramModal({ options, handleClose }) {
   const [time, setTime] = useState(formatTime(options.begin));
   const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
   const [pkg, setPkg] = useState(undefined);
-  const [groups, setGroups] = useState([]);
+  const [groups, setGroups] = useState(
+    options.groupId ? [options.groupId] : []
+  );
   const [attendance, setAttendance] = useState([]);
   const [place, setPlace] = useState("");
   const [url, setUrl] = useState("");
