@@ -43,7 +43,8 @@ p {
 
 .timeheader,
 .dateheader,
-.groupheader {
+.groupheader,
+.trayheader {
   color: #455a64;
   background-color: #cfd8dc;
   z-index: 999;
@@ -75,6 +76,23 @@ p {
   border-radius: 0 4px 4px 0;
   font-size: 0.8rem;
   text-align: right;
+}
+
+.tray {
+  grid-column-start: 3;
+}
+.trayheader {
+  padding: 2px;
+  margin: 2px 0;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  border-radius: 0 4px 4px 0;
+  background-color: #cfd8dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 5rem;
+  text-align: center;
 }
 
 .block {

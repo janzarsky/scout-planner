@@ -20,6 +20,7 @@ export default function Timetable({
 }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
+  const { trayFeature } = useSelector((state) => state.config);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
@@ -74,6 +75,9 @@ export default function Timetable({
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
+        {trayFeature && (
+          <Tray settings={settings} programs={programs} onEdit={onEdit} />
+        )}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -92,7 +96,10 @@ function getBlocks(programs, settings, violations, onEdit) {
     ...p,
     groups: p.groups.length > 0 ? p.groups : allGroups,
   }));
-  const blocks = groupProgramsToBlocks(programsGroupFix);
+  const programsNotInTray = programsGroupFix.filter(
+    (p) => typeof p.begin === "number"
+  );
+  const blocks = groupProgramsToBlocks(programsNotInTray);
 
   return blocks.map((block) => {
     const blockRect = getRect(
@@ -323,5 +330,62 @@ function Block({ rect, children }) {
     >
       {Children.map(children, (child) => child)}
     </div>
+  );
+}
+
+function Tray({ settings, programs, onEdit }) {
+  return (
+    <>
+      <div
+        className="trayheader"
+        style={{
+          gridRowStart: settings.days.length * settings.groupCnt + 2,
+        }}
+        title="Odkladiště"
+      >
+        <i class="fa fa-archive" aria-hidden="true"></i>
+      </div>
+      <div
+        className="tray"
+        style={{
+          gridRowStart: settings.days.length * settings.groupCnt + 2,
+          gridColumnEnd:
+            "span " + settings.timeHeaders.length * settings.timeSpan,
+        }}
+      >
+        <Block
+          rect={getRect(
+            settings.dayStart,
+            settings.dayEnd - settings.dayStart,
+            [],
+            settings
+          )}
+        >
+          {programs
+            .filter((p) => typeof p.begin !== "number")
+            .map((program, idx) => {
+              const programRect = getRect(
+                program.begin,
+                program.duration,
+                [],
+                settings
+              );
+              return (
+                <Program
+                  key={program._id}
+                  rect={{
+                    x: 0,
+                    y: idx,
+                    width: programRect.width,
+                    height: 1,
+                  }}
+                  program={program}
+                  onEdit={onEdit}
+                />
+              );
+            })}
+        </Block>
+      </div>
+    </>
   );
 }
