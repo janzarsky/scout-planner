@@ -75,7 +75,7 @@ export default function Timetable({
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
-        {trayFeature && <Tray settings={settings} />}
+        {trayFeature && <Tray settings={settings} programs={programs} />}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -331,7 +331,7 @@ function Block({ rect, children }) {
   );
 }
 
-function Tray({ settings }) {
+function Tray({ settings, programs }) {
   return (
     <>
       <div
@@ -350,7 +350,13 @@ function Tray({ settings }) {
             "span " + settings.timeHeaders.length * settings.timeSpan,
         }}
       >
-        TODO
+        <ul>
+          {programs
+            .filter((p) => typeof p.begin !== "number")
+            .map((program) => (
+              <li key={program._id}>{program.title}</li>
+            ))}
+        </ul>
       </div>
     </>
   );
