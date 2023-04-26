@@ -20,6 +20,7 @@ export default function Timetable({
 }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
+  const { trayFeature } = useSelector((state) => state.config);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
@@ -74,6 +75,7 @@ export default function Timetable({
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
+        {trayFeature && <Tray />}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -324,4 +326,8 @@ function Block({ rect, children }) {
       {Children.map(children, (child) => child)}
     </div>
   );
+}
+
+function Tray() {
+  return <div>Tray</div>;
 }
