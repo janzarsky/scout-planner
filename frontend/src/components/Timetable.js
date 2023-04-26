@@ -337,12 +337,13 @@ function Tray({ settings, programs, onEdit }) {
   return (
     <>
       <div
-        className="tray-header"
+        className="trayheader"
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
         }}
+        title="Odkladiště"
       >
-        Tray
+        <i class="fa fa-archive" aria-hidden="true"></i>
       </div>
       <div
         className="tray"
