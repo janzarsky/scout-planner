@@ -83,10 +83,10 @@ p {
 }
 .trayheader {
   padding: 2px;
-  margin: 2px;
+  margin: 2px 0;
   grid-column-start: 1;
   grid-column-end: 3;
-  border-radius: 4px;
+  border-radius: 0 4px 4px 0;
   background-color: #cfd8dc;
   display: flex;
   align-items: center;
