@@ -94,7 +94,10 @@ function getBlocks(programs, settings, violations, onEdit) {
     ...p,
     groups: p.groups.length > 0 ? p.groups : allGroups,
   }));
-  const blocks = groupProgramsToBlocks(programsGroupFix);
+  const programsNotInTray = programsGroupFix.filter(
+    (p) => typeof p.begin === "number"
+  );
+  const blocks = groupProgramsToBlocks(programsNotInTray);
 
   return blocks.map((block) => {
     const blockRect = getRect(

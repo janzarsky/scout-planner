@@ -118,4 +118,40 @@ describe("getTimetableSettings()", () => {
       ],
     });
   });
+
+  it("skips programs that are in tray", () => {
+    const prog = {
+      begin: null,
+      duration: parseDuration("10:00"),
+    };
+
+    expect(
+      getTimetableSettings(
+        [prog],
+        [],
+        parseDuration("0:15"),
+        parseDateTime("11:30 11.06.2022")
+      )
+    ).toEqual({
+      days: [
+        parseDate("11.06.2022"),
+        parseDate("12.06.2022"),
+        parseDate("13.06.2022"),
+      ],
+      dayStart: parseTime("10:00"),
+      dayEnd: parseTime("16:00"),
+      groupCnt: 1,
+      groups: [],
+      timeSpan: 4,
+      timeStep: parseDuration("0:15"),
+      timeHeaders: [
+        parseTime("10:00"),
+        parseTime("11:00"),
+        parseTime("12:00"),
+        parseTime("13:00"),
+        parseTime("14:00"),
+        parseTime("15:00"),
+      ],
+    });
+  });
 });
