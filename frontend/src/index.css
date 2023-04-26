@@ -78,8 +78,6 @@ p {
 }
 
 .tray {
-  padding: 2px;
-  margin: 2px;
   grid-column-start: 3;
 }
 .tray-header {
