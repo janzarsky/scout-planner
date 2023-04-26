@@ -77,6 +77,20 @@ p {
   text-align: right;
 }
 
+.tray {
+  padding: 2px;
+  margin: 2px;
+  grid-column-start: 3;
+}
+.tray-header {
+  padding: 2px;
+  margin: 2px;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  border-radius: 4px;
+  background-color: #cfd8dc;
+}
+
 .block {
   display: grid;
 }

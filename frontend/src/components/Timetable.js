@@ -75,7 +75,7 @@ export default function Timetable({
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
-        {trayFeature && <Tray />}
+        {trayFeature && <Tray settings={settings} />}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -328,6 +328,27 @@ function Block({ rect, children }) {
   );
 }
 
-function Tray() {
-  return <div>Tray</div>;
+function Tray({ settings }) {
+  return (
+    <>
+      <div
+        className="tray-header"
+        style={{
+          gridRowStart: settings.days.length * settings.groupCnt + 2,
+        }}
+      >
+        Tray
+      </div>
+      <div
+        className="tray"
+        style={{
+          gridRowStart: settings.days.length * settings.groupCnt + 2,
+          gridColumnEnd:
+            "span " + settings.timeHeaders.length * settings.timeSpan,
+        }}
+      >
+        TODO
+      </div>
+    </>
+  );
 }
