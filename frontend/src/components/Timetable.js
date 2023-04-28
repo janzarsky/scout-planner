@@ -385,19 +385,24 @@ function getProgramRects(programs, settings) {
   const getProgramWidth = (p) =>
     getRect(p.begin, p.duration, [], settings).width;
 
+  const dayWidth = (settings.dayEnd - settings.dayStart) / settings.timeStep;
+
   return trayPrograms.reduce(
     (acc, prog) => {
+      const width = getProgramWidth(prog);
+      const isOverflowing = acc.x + width > dayWidth;
       const rect = {
-        x: 0,
-        y: acc.idx + 1,
-        width: getProgramWidth(prog),
+        x: isOverflowing ? 0 : acc.x,
+        y: isOverflowing ? acc.y + 1 : acc.y,
+        width,
         height: 1,
       };
       return {
         programs: [...acc.programs, [prog, rect]],
-        idx: acc.idx + 1,
+        x: acc.x + rect.width,
+        y: acc.y,
       };
     },
-    { programs: [], idx: 0 }
+    { programs: [], x: 0, y: 0 }
   ).programs;
 }
