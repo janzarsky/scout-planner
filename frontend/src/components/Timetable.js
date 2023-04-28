@@ -77,7 +77,12 @@ export default function Timetable({
         {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
         {trayFeature && (
-          <Tray settings={settings} programs={programs} onEdit={onEdit} />
+          <Tray
+            settings={settings}
+            programs={programs}
+            onEdit={onEdit}
+            addProgramModal={addProgramModal}
+          />
         )}
         {timeIndicatorRect && (
           <TimeIndicator
@@ -334,13 +339,13 @@ function Block({ rect, children }) {
   );
 }
 
-function Tray({ settings, programs, onEdit }) {
+function Tray({ settings, programs, onEdit, addProgramModal }) {
   const programRects = getProgramRects(programs, settings);
 
   return (
     <>
       <div
-        className="trayheader"
+        className="tray-header"
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
         }}
@@ -364,6 +369,12 @@ function Tray({ settings, programs, onEdit }) {
             settings
           )}
         >
+          <button
+            className="tray-add-program"
+            onClick={() => addProgramModal({ begin: 0, groupId: null })}
+          >
+            <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
+          </button>
           {programRects.map(([program, rect]) => {
             return (
               <Program

@@ -81,7 +81,7 @@ p {
 .tray {
   grid-column-start: 3;
 }
-.trayheader {
+.tray-header {
   padding: 2px;
   margin: 2px 2px 2px 0;
   grid-column-start: 1;
@@ -93,6 +93,20 @@ p {
   justify-content: center;
   min-height: 5rem;
   text-align: center;
+}
+.tray-add-program {
+  display: flex;
+  padding: 2px;
+  margin: 2px;
+  grid-column-start: 1;
+  grid-row-start: 1;
+  grid-column-end: 5;
+  align-items: center;
+  justify-content: center;
+  background-color: #dcedc8;
+  border: none;
+  border-radius: 4px;
+  min-height: 5rem;
 }
 
 .block {
