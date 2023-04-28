@@ -380,21 +380,24 @@ function Tray({ settings, programs, onEdit }) {
 }
 
 function getProgramRects(programs, settings) {
-  return programs
-    .filter((p) => typeof p.begin !== "number")
-    .map((program, idx) => {
-      const programRect = getRect(
-        program.begin,
-        program.duration,
-        [],
-        settings
-      );
+  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
+
+  const getProgramWidth = (p) =>
+    getRect(p.begin, p.duration, [], settings).width;
+
+  return trayPrograms.reduce(
+    (acc, prog) => {
       const rect = {
         x: 0,
-        y: idx,
-        width: programRect.width,
+        y: acc.idx + 1,
+        width: getProgramWidth(prog),
         height: 1,
       };
-      return [program, rect];
-    });
+      return {
+        programs: [...acc.programs, [prog, rect]],
+        idx: acc.idx + 1,
+      };
+    },
+    { programs: [], idx: 0 }
+  ).programs;
 }
