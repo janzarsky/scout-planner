@@ -83,7 +83,7 @@ p {
 }
 .trayheader {
   padding: 2px;
-  margin: 2px 0;
+  margin: 2px 2px 2px 0;
   grid-column-start: 1;
   grid-column-end: 3;
   border-radius: 0 4px 4px 0;
