@@ -11,6 +11,7 @@ import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
+import { getProgramRects } from "./Tray";
 
 export default function Timetable({
   violations,
@@ -377,32 +378,4 @@ function Tray({ settings, programs, onEdit }) {
       </div>
     </>
   );
-}
-
-function getProgramRects(programs, settings) {
-  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
-
-  const getProgramWidth = (p) =>
-    getRect(p.begin, p.duration, [], settings).width;
-
-  const dayWidth = (settings.dayEnd - settings.dayStart) / settings.timeStep;
-
-  return trayPrograms.reduce(
-    (acc, prog) => {
-      const width = getProgramWidth(prog);
-      const isOverflowing = acc.x + width > dayWidth;
-      const rect = {
-        x: isOverflowing ? 0 : acc.x,
-        y: isOverflowing ? acc.y + 1 : acc.y,
-        width,
-        height: 1,
-      };
-      return {
-        programs: [...acc.programs, [prog, rect]],
-        x: acc.x + rect.width,
-        y: acc.y,
-      };
-    },
-    { programs: [], x: 0, y: 0 }
-  ).programs;
 }
