@@ -343,7 +343,7 @@ function Tray({ settings, programs, onEdit }) {
         }}
         title="Odkladiště"
       >
-        <i class="fa fa-archive" aria-hidden="true"></i>
+        <i className="fa fa-archive" aria-hidden="true"></i>
       </div>
       <div
         className="tray"
