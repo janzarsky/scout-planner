@@ -11,6 +11,7 @@ import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
+import { getProgramRects } from "./Tray";
 
 export default function Timetable({
   violations,
@@ -334,6 +335,8 @@ function Block({ rect, children }) {
 }
 
 function Tray({ settings, programs, onEdit }) {
+  const programRects = getProgramRects(programs, settings);
+
   return (
     <>
       <div
@@ -361,29 +364,16 @@ function Tray({ settings, programs, onEdit }) {
             settings
           )}
         >
-          {programs
-            .filter((p) => typeof p.begin !== "number")
-            .map((program, idx) => {
-              const programRect = getRect(
-                program.begin,
-                program.duration,
-                [],
-                settings
-              );
-              return (
-                <Program
-                  key={program._id}
-                  rect={{
-                    x: 0,
-                    y: idx,
-                    width: programRect.width,
-                    height: 1,
-                  }}
-                  program={program}
-                  onEdit={onEdit}
-                />
-              );
-            })}
+          {programRects.map(([program, rect]) => {
+            return (
+              <Program
+                key={program._id}
+                rect={rect}
+                program={program}
+                onEdit={onEdit}
+              />
+            );
+          })}
         </Block>
       </div>
     </>
