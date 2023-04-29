@@ -16,7 +16,7 @@ describe("getProgramRects", () => {
     const prog = { duration: parseDuration("1:00") };
 
     expect(getProgramRects([prog], settings)).toEqual([
-      [prog, { x: 0, y: 0, width: 4, height: 1 }],
+      [prog, { x: 4, y: 0, width: 4, height: 1 }],
     ]);
   });
 
@@ -25,8 +25,8 @@ describe("getProgramRects", () => {
     const prog2 = { duration: parseDuration("1:00") };
 
     expect(getProgramRects([prog1, prog2], settings)).toEqual([
-      [prog1, { x: 0, y: 0, width: 4, height: 1 }],
-      [prog2, { x: 4, y: 0, width: 4, height: 1 }],
+      [prog1, { x: 4, y: 0, width: 4, height: 1 }],
+      [prog2, { x: 8, y: 0, width: 4, height: 1 }],
     ]);
   });
 
@@ -35,7 +35,7 @@ describe("getProgramRects", () => {
     const prog2 = { duration: parseDuration("10:00") };
 
     expect(getProgramRects([prog1, prog2], settings)).toEqual([
-      [prog1, { x: 0, y: 0, width: 40, height: 1 }],
+      [prog1, { x: 4, y: 0, width: 40, height: 1 }],
       [prog2, { x: 0, y: 1, width: 40, height: 1 }],
     ]);
   });
