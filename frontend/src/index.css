@@ -81,6 +81,9 @@ p {
 .tray {
   grid-column-start: 3;
 }
+.tray.drag-over {
+  background-color: #29b6f6;
+}
 .tray-header {
   padding: 2px;
   margin: 2px 2px 2px 0;

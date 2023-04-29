@@ -82,6 +82,7 @@ export default function Timetable({
             programs={programs}
             onEdit={onEdit}
             addProgramModal={addProgramModal}
+            onDroppableDrop={onDroppableDrop}
           />
         )}
         {timeIndicatorRect && (
@@ -339,7 +340,20 @@ function Block({ rect, children }) {
   );
 }
 
-function Tray({ settings, programs, onEdit, addProgramModal }) {
+function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
+  const { programs } = useSelector((state) => state.programs);
+
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => onDroppableDrop(item, null, null, programs),
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+      }),
+    }),
+    [programs]
+  );
+
   const programRects = getProgramRects(programs, settings);
 
   return (
@@ -354,7 +368,8 @@ function Tray({ settings, programs, onEdit, addProgramModal }) {
         <i className="fa fa-archive" aria-hidden="true"></i>
       </div>
       <div
-        className="tray"
+        ref={drop}
+        className={"tray" + (isOver ? " drag-over" : "")}
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
           gridColumnEnd:
