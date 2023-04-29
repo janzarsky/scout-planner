@@ -16,9 +16,12 @@ export default function Program({ program, rect, violations, onEdit }) {
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
-  const [, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: "program",
     item: { id: program._id },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
   }));
 
   const dispatch = useDispatch();
@@ -31,7 +34,7 @@ export default function Program({ program, rect, violations, onEdit }) {
   return (
     <div
       ref={program.locked ? null : drag}
-      className={"program-wrapper"}
+      className={"program-wrapper " + (isDragging ? " dragged" : "")}
       style={{
         gridColumnStart: rect.x + 1,
         gridRowStart: rect.y + 1,
