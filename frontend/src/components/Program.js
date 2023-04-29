@@ -30,7 +30,7 @@ export default function Program({ program, rect, violations, onEdit }) {
 
   return (
     <div
-      ref={drag}
+      ref={program.locked ? null : drag}
       className={"program-wrapper"}
       style={{
         gridColumnStart: rect.x + 1,
@@ -38,7 +38,6 @@ export default function Program({ program, rect, violations, onEdit }) {
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
       }}
-      draggable={!program.locked}
     >
       <ProgramBody
         program={program}
