@@ -11,7 +11,7 @@ import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
-import { getProgramRects } from "./Tray";
+import { getProgramRects, sortTrayPrograms } from "./Tray";
 
 export default function Timetable({
   violations,
@@ -342,6 +342,7 @@ function Block({ rect, children }) {
 
 function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
+  const { packages } = useSelector((state) => state.packages);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -355,7 +356,9 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
   );
 
   const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
-  const programRects = getProgramRects(trayPrograms, settings);
+  const sortedPrograms = sortTrayPrograms(trayPrograms, packages);
+
+  const programRects = getProgramRects(sortedPrograms, settings);
 
   return (
     <>
