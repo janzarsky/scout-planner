@@ -1,5 +1,5 @@
 import { parseDuration, parseTime } from "../helpers/DateUtils";
-import { getProgramRects } from "./Tray";
+import { getProgramRects, sortTrayPrograms } from "./Tray";
 
 describe("getProgramRects", () => {
   const settings = {
@@ -50,5 +50,39 @@ describe("getProgramRects", () => {
       [prog2, { x: 0, y: 1, width: 20, height: 1 }],
       [prog3, { x: 20, y: 1, width: 20, height: 1 }],
     ]);
+  });
+});
+
+describe("sortTrayPrograms", () => {
+  it("should return empty array for no programs", () =>
+    expect(sortTrayPrograms([], [])).toEqual([]));
+
+  it("should return one program", () => {
+    const prog = { title: "Prog A" };
+    expect(sortTrayPrograms([prog], [])).toEqual([prog]);
+  });
+
+  it("should sort two programs by title", () => {
+    const progA = { title: "Prog A" };
+    const progB = { title: "Prog B" };
+    expect(sortTrayPrograms([progB, progA], [])).toEqual([progA, progB]);
+  });
+
+  it("should sort two programs by package name", () => {
+    const pkgA = { _id: "pkgA", name: "Package A" };
+    const pkgB = { _id: "pkgB", name: "Package B" };
+    const progA = { title: "Prog A", pkg: pkgB._id };
+    const progB = { title: "Prog B", pkg: pkgA._id };
+    expect(sortTrayPrograms([progA, progB], [pkgB, pkgA])).toEqual([
+      progB,
+      progA,
+    ]);
+  });
+
+  it("should sort two programs by title when their package is the same ", () => {
+    const pkg = { _id: "pkg", name: "Package" };
+    const progA = { title: "Prog A", pkg: pkg._id };
+    const progB = { title: "Prog B", pkg: pkg._id };
+    expect(sortTrayPrograms([progB, progA], [pkg])).toEqual([progA, progB]);
   });
 });

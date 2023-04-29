@@ -11,7 +11,7 @@ import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import TimeIndicator from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
-import { getProgramRects } from "./Tray";
+import { getProgramRects, sortTrayPrograms } from "./Tray";
 
 export default function Timetable({
   violations,
@@ -342,6 +342,7 @@ function Block({ rect, children }) {
 
 function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
+  const { packages } = useSelector((state) => state.packages);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -354,7 +355,10 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
     [programs]
   );
 
-  const programRects = getProgramRects(programs, settings);
+  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
+  const sortedPrograms = sortTrayPrograms(trayPrograms, packages);
+
+  const programRects = getProgramRects(sortedPrograms, settings);
 
   return (
     <>
@@ -386,7 +390,7 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
         >
           <button
             className="tray-add-program"
-            onClick={() => addProgramModal({ begin: 0, groupId: null })}
+            onClick={() => addProgramModal({ begin: null, groupId: null })}
           >
             <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
           </button>

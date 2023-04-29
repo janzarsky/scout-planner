@@ -1,9 +1,7 @@
 export function getProgramRects(programs, settings) {
-  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
-
   const dayWidth = (settings.dayEnd - settings.dayStart) / settings.timeStep;
 
-  return trayPrograms.reduce(
+  return programs.reduce(
     (acc, prog) => {
       const width = Math.ceil(prog.duration / settings.timeStep);
       const isOverflowing = acc.x + width > dayWidth;
@@ -21,4 +19,18 @@ export function getProgramRects(programs, settings) {
     },
     { programs: [], x: 4, y: 0 } // make space for "new program" button
   ).programs;
+}
+
+export function sortTrayPrograms(programs, packages) {
+  return programs.sort((a, b) => {
+    const pkgA = packages.find((pkg) => pkg._id === a.pkg);
+    const pkgB = packages.find((pkg) => pkg._id === b.pkg);
+
+    const resPkg = (pkgA && pkgA.name ? pkgA.name : "").localeCompare(
+      pkgB && pkgB.name ? pkgB.name : ""
+    );
+    if (resPkg !== 0) return resPkg;
+
+    return a.title.localeCompare(b.title);
+  });
 }
