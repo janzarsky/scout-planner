@@ -386,7 +386,7 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
         >
           <button
             className="tray-add-program"
-            onClick={() => addProgramModal({ begin: 0, groupId: null })}
+            onClick={() => addProgramModal({ begin: null, groupId: null })}
           >
             <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
           </button>
