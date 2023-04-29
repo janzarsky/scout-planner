@@ -400,6 +400,7 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
               />
             );
           })}
+          <div className="tray-drop-target"></div>
         </Block>
       </div>
     </>
