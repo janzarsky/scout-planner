@@ -79,10 +79,12 @@ export function EditProgramModal({ programId, handleClose }) {
 
     setSubmitInProgress(true);
 
+    const begin = parseDate(date) + parseTime(time);
+
     client
       .updateProgram({
         ...program,
-        begin: parseDate(date) + parseTime(time),
+        begin: isNaN(begin) ? null : begin,
         duration: parseDuration(duration),
         title: title,
         pkg: pkg,
@@ -621,9 +623,11 @@ export function AddProgramModal({ options, handleClose }) {
 
     setSubmitInProgress(true);
 
+    const begin = parseDate(date) + parseTime(time);
+
     client
       .addProgram({
-        begin: parseDate(date) + parseTime(time),
+        begin: isNaN(begin) ? null : begin,
         duration: parseDuration(duration),
         title: title,
         pkg: pkg,
