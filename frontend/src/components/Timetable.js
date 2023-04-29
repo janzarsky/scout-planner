@@ -77,7 +77,13 @@ export default function Timetable({
         {getGroupHeaders(settings)}
         {getBlocks(programs, settings, violations, onEdit)}
         {trayFeature && (
-          <Tray settings={settings} programs={programs} onEdit={onEdit} />
+          <Tray
+            settings={settings}
+            programs={programs}
+            onEdit={onEdit}
+            addProgramModal={addProgramModal}
+            onDroppableDrop={onDroppableDrop}
+          />
         )}
         {timeIndicatorRect && (
           <TimeIndicator
@@ -334,13 +340,26 @@ function Block({ rect, children }) {
   );
 }
 
-function Tray({ settings, programs, onEdit }) {
+function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
+  const { programs } = useSelector((state) => state.programs);
+
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => onDroppableDrop(item, null, null, programs),
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+      }),
+    }),
+    [programs]
+  );
+
   const programRects = getProgramRects(programs, settings);
 
   return (
     <>
       <div
-        className="trayheader"
+        className="tray-header"
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
         }}
@@ -349,7 +368,8 @@ function Tray({ settings, programs, onEdit }) {
         <i className="fa fa-archive" aria-hidden="true"></i>
       </div>
       <div
-        className="tray"
+        ref={drop}
+        className={"tray" + (isOver ? " drag-over" : "")}
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
           gridColumnEnd:
@@ -364,6 +384,12 @@ function Tray({ settings, programs, onEdit }) {
             settings
           )}
         >
+          <button
+            className="tray-add-program"
+            onClick={() => addProgramModal({ begin: 0, groupId: null })}
+          >
+            <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
+          </button>
           {programRects.map(([program, rect]) => {
             return (
               <Program
@@ -374,6 +400,7 @@ function Tray({ settings, programs, onEdit }) {
               />
             );
           })}
+          <div className="tray-drop-target"></div>
         </Block>
       </div>
     </>
