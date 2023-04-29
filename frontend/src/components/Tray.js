@@ -15,8 +15,8 @@ export function getProgramRects(programs, settings) {
       };
       return {
         programs: [...acc.programs, [prog, rect]],
-        x: acc.x + rect.width,
-        y: acc.y,
+        x: rect.x + rect.width,
+        y: rect.y,
       };
     },
     { programs: [], x: 4, y: 0 } // make space for "new program" button
