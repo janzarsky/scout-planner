@@ -1,9 +1,7 @@
 export function getProgramRects(programs, settings) {
-  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
-
   const dayWidth = (settings.dayEnd - settings.dayStart) / settings.timeStep;
 
-  return trayPrograms.reduce(
+  return programs.reduce(
     (acc, prog) => {
       const width = Math.ceil(prog.duration / settings.timeStep);
       const isOverflowing = acc.x + width > dayWidth;

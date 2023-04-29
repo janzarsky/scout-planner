@@ -354,7 +354,8 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
     [programs]
   );
 
-  const programRects = getProgramRects(programs, settings);
+  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
+  const programRects = getProgramRects(trayPrograms, settings);
 
   return (
     <>
