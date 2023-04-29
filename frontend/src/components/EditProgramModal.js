@@ -7,8 +7,10 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {
   formatDate,
+  formatDateWithTray,
   formatDuration,
   formatTime,
+  formatTimeWithTray,
   parseDate,
   parseDuration,
   parseTime,
@@ -35,16 +37,8 @@ export function EditProgramModal({ programId, handleClose }) {
   const [deleteInProgress, setDeleteInProgress] = useState(false);
 
   const [title, setTitle] = useState(program.title);
-  const [date, setDate] = useState(
-    typeof program.begin === "number"
-      ? formatDate(program.begin)
-      : "(odkladiště)"
-  );
-  const [time, setTime] = useState(
-    typeof program.begin === "number"
-      ? formatTime(program.begin)
-      : "(odkladiště)"
-  );
+  const [date, setDate] = useState(formatDateWithTray(program.begin));
+  const [time, setTime] = useState(formatTimeWithTray(program.begin));
   const [duration, setDuration] = useState(formatDuration(program.duration));
   const [pkg, setPkg] = useState(program.pkg);
   const [groups, setGroups] = useState(program.groups);
@@ -600,16 +594,8 @@ export function AddProgramModal({ options, handleClose }) {
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
   const [title, setTitle] = useState("Nový program");
-  const [date, setDate] = useState(
-    typeof options.begin === "number"
-      ? formatDate(options.begin)
-      : "(odkladiště)"
-  );
-  const [time, setTime] = useState(
-    typeof options.begin === "number"
-      ? formatTime(options.begin)
-      : "(odkladiště)"
-  );
+  const [date, setDate] = useState(formatDateWithTray(options.begin));
+  const [time, setTime] = useState(formatTimeWithTray(options.begin));
   const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
   const [pkg, setPkg] = useState(undefined);
   const [groups, setGroups] = useState(

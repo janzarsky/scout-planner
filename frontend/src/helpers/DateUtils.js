@@ -8,6 +8,10 @@ export function formatDate(ms) {
   }.${date.getUTCFullYear()}`;
 }
 
+export function formatDateWithTray(ms) {
+  return typeof ms === "number" ? formatDate(ms) : "(odkladiště)";
+}
+
 export function formatTime(ms) {
   const date = new Date(parseInt(ms));
 
@@ -16,6 +20,10 @@ export function formatTime(ms) {
   return `${date.getUTCHours()}:${
     date.getUTCMinutes() < 10 ? "0" : ""
   }${date.getUTCMinutes()}`;
+}
+
+export function formatTimeWithTray(ms) {
+  return typeof ms === "number" ? formatTime(ms) : "(odkladiště)";
 }
 
 export function formatDateTime(ms) {
