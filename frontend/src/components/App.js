@@ -143,7 +143,10 @@ export default function App() {
       allPeople
     );
 
-    if (peopleMigration) migratePeople();
+    if (peopleMigration) {
+      const client = clientFactory.getClient(table);
+      migratePeople(programs, people, client, dispatch);
+    }
 
     const problems = checkRules(rules, convertedPrograms);
 
@@ -156,6 +159,7 @@ export default function App() {
       ) && problems.other.length === 0
     );
   }, [
+    table,
     dataLoaded,
     programs,
     groups,

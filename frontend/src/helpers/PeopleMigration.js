@@ -1,3 +1,3 @@
-export function migratePeople() {
-  console.log("migrating people");
+export function migratePeople(programs, people, client, dispatch) {
+  // TODO
 }
