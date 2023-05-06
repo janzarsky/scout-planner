@@ -9,6 +9,7 @@ const emptyData = {
   rules: [],
   ranges: [],
   users: [],
+  people: [],
   settings: {},
 };
 
@@ -25,6 +26,7 @@ beforeEach(() => {
     addPackage: mockAddingFunction("pkg"),
     addGroup: mockAddingFunction("group"),
     addRange: mockAddingFunction("range"),
+    addPerson: mockAddingFunction("person"),
   };
 });
 
@@ -177,6 +179,50 @@ test("program with ranges", async () => {
       ...data.programs[0],
       _id: undefined,
       ranges: { range1_new: 42, range2_new: 23 },
+    });
+  });
+});
+
+test("program with people", async () => {
+  const data = {
+    ...emptyData,
+    programs: [
+      {
+        _id: "program1",
+        table: "table1",
+        title: "Program 1",
+        ranges: {},
+        groups: [],
+        pkg: undefined,
+        people: [{ person: "person1" }, { person: "person2" }],
+      },
+    ],
+    people: [
+      {
+        _id: "person1",
+        table: "table1",
+        name: "Person 1",
+      },
+      {
+        _id: "person2",
+        table: "table1",
+        name: "Person 2",
+      },
+    ],
+  };
+  return testing.importData(data, client).then(() => {
+    expect(client.addPerson).toHaveBeenCalledWith({
+      ...data.people[0],
+      _id: undefined,
+    });
+    expect(client.addPerson).toHaveBeenCalledWith({
+      ...data.people[1],
+      _id: undefined,
+    });
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      _id: undefined,
+      people: [{ person: "person1_new" }, { person: "person2_new" }],
     });
   });
 });

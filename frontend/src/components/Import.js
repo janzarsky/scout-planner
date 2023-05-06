@@ -40,6 +40,7 @@ async function importData(data, client) {
   // data fixes
   if (data.ranges === undefined) data.ranges = [];
   if (data.users === undefined) data.users = [];
+  if (data.people === undefined) data.people = [];
   if (data.settings === undefined) data.settings = {};
 
   return await Promise.all([
@@ -70,10 +71,19 @@ async function importData(data, client) {
         )
       ),
     ]).then((ranges) => new Map(ranges)),
+    // add all people
+    Promise.all([
+      ...data.people.map((person) =>
+        client.addPerson({ ...person, _id: undefined }).then(
+          // create person ID replacement map
+          (newPerson) => [person._id, newPerson._id]
+        )
+      ),
+    ]).then((people) => new Map(people)),
     client.updateSettings(data.settings),
   ])
     // replace package, group, and range IDs in programs
-    .then(([pkgs, groups, ranges]) =>
+    .then(([pkgs, groups, ranges, people]) =>
       data.programs.map((prog) => {
         return {
           ...prog,
@@ -87,6 +97,10 @@ async function importData(data, client) {
                 ])
               )
             : undefined,
+          people: prog.people.map((oldPerson) => ({
+            ...oldPerson,
+            person: people.get(oldPerson.person),
+          })),
         };
       })
     )
