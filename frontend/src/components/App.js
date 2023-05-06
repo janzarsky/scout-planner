@@ -42,6 +42,7 @@ import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
 } from "../helpers/PeopleConvertor";
+import { migratePeople } from "../helpers/PeopleMigration";
 
 const config = require("../config.json");
 
@@ -80,6 +81,7 @@ export default function App() {
   const errors = useSelector((state) => state.errors);
 
   const peopleSection = useSelector((state) => state.config.peopleSection);
+  const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
   const dispatch = useDispatch();
 
@@ -140,6 +142,9 @@ export default function App() {
       programs,
       allPeople
     );
+
+    if (peopleMigration) migratePeople();
+
     const problems = checkRules(rules, convertedPrograms);
 
     setViolations(problems.violations);
@@ -160,6 +165,7 @@ export default function App() {
     people,
     rules,
     settings,
+    peopleMigration,
   ]);
 
   useEffect(() => {
