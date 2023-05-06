@@ -183,7 +183,7 @@ test("program with ranges", async () => {
   });
 });
 
-test("program with people", async () => {
+test("program with object people", async () => {
   const data = {
     ...emptyData,
     programs: [
@@ -223,6 +223,85 @@ test("program with people", async () => {
       ...data.programs[0],
       _id: undefined,
       people: [{ person: "person1_new" }, { person: "person2_new" }],
+    });
+  });
+});
+
+test("program with string people", async () => {
+  const data = {
+    ...emptyData,
+    programs: [
+      {
+        _id: "program1",
+        table: "table1",
+        title: "Program 1",
+        ranges: {},
+        groups: [],
+        pkg: undefined,
+        people: ["Person 1", "Person 2"],
+      },
+    ],
+    people: [
+      {
+        _id: "person1",
+        table: "table1",
+        name: "Person 1",
+      },
+      {
+        _id: "person2",
+        table: "table1",
+        name: "Person 2",
+      },
+    ],
+  };
+  return testing.importData(data, client).then(() => {
+    expect(client.addPerson).toHaveBeenCalledWith({
+      ...data.people[0],
+      _id: undefined,
+    });
+    expect(client.addPerson).toHaveBeenCalledWith({
+      ...data.people[1],
+      _id: undefined,
+    });
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      _id: undefined,
+      people: ["Person 1", "Person 2"],
+    });
+  });
+});
+
+test("program with mixed people", async () => {
+  const data = {
+    ...emptyData,
+    programs: [
+      {
+        _id: "program1",
+        table: "table1",
+        title: "Program 1",
+        ranges: {},
+        groups: [],
+        pkg: undefined,
+        people: [{ person: "person1" }, "Person 2"],
+      },
+    ],
+    people: [
+      {
+        _id: "person1",
+        table: "table1",
+        name: "Person 1",
+      },
+    ],
+  };
+  return testing.importData(data, client).then(() => {
+    expect(client.addPerson).toHaveBeenCalledWith({
+      ...data.people[0],
+      _id: undefined,
+    });
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      _id: undefined,
+      people: [{ person: "person1_new" }, "Person 2"],
     });
   });
 });

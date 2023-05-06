@@ -97,10 +97,14 @@ async function importData(data, client) {
                 ])
               )
             : undefined,
-          people: prog.people.map((oldPerson) => ({
-            ...oldPerson,
-            person: people.get(oldPerson.person),
-          })),
+          people: prog.people.map((oldPerson) =>
+            typeof oldPerson === "string"
+              ? oldPerson
+              : {
+                  ...oldPerson,
+                  person: people.get(oldPerson.person),
+                }
+          ),
         };
       })
     )
