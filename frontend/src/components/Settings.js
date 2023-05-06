@@ -19,6 +19,7 @@ export default function Settings() {
   const { packages } = useSelector((state) => state.packages);
   const { rules } = useSelector((state) => state.rules);
   const { users } = useSelector((state) => state.users);
+  const { people } = useSelector((state) => state.people);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -33,6 +34,7 @@ export default function Settings() {
       ...rules.map((it) => client.deleteRule(it._id)),
       ...ranges.map((it) => client.deleteRange(it._id)),
       ...users.map((it) => client.deleteUser(it._id)),
+      ...people.map((it) => client.deletePerson(it._id)),
     ]).then(() => window.location.reload());
   }
 
