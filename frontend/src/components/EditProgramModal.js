@@ -146,11 +146,13 @@ export function EditProgramModal({ programId, handleClose }) {
           />
           <ProgramPeople
             programPeople={attendance}
-            addPersonToState={(person) =>
-              setAttendance([...attendance, person])
-            }
-            removePerson={(person) =>
+            addPersonString={(person) => setAttendance([...attendance, person])}
+            removePersonString={(person) =>
               setAttendance(attendance.filter((p) => p !== person))
+            }
+            addPersonObject={(person) => setAttendance([...attendance, person])}
+            removePersonObject={(id) =>
+              setAttendance(attendance.filter((att) => att.person !== id))
             }
             disabled={userLevel < level.EDIT}
           />
@@ -405,11 +407,15 @@ function ProgramGroups({
 
 function ProgramPeople({
   programPeople,
-  addPersonToState,
-  removePerson,
+  addPersonString,
+  removePersonString,
+  addPersonObject,
+  removePersonObject,
   disabled = false,
 }) {
-  const allPeople = useSelector((state) => state.people.legacyPeople);
+  const stringPeople = useSelector((state) => state.people.legacyPeople);
+  const objectPeople = useSelector((state) => state.people.people);
+  const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
   const dispatch = useDispatch();
   const table = useSelector((state) => state.auth.table);
@@ -422,30 +428,53 @@ function ProgramPeople({
       </Form.Label>
       <Col>
         <Row>
-          {[
-            ...new Set(
-              [...allPeople, ...programPeople].sort((a, b) =>
-                a.localeCompare(b)
-              )
-            ),
-          ].map((person) => (
-            <Col key={person}>
-              <Form.Check
-                type="checkbox"
-                label={person}
-                id={person}
-                checked={programPeople.includes(person)}
-                disabled={disabled}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    addPersonToState(person);
-                  } else {
-                    removePerson(person);
-                  }
-                }}
-              />
-            </Col>
-          ))}
+          {peopleMigration
+            ? [...objectPeople]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((person) => (
+                  <Col key={person._id}>
+                    <Form.Check
+                      type="checkbox"
+                      label={person.name}
+                      id={person._id}
+                      checked={
+                        !!programPeople.find((att) => att.person === person._id)
+                      }
+                      disabled={disabled}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          addPersonObject({ person: person._id });
+                        } else {
+                          removePersonObject(person._id);
+                        }
+                      }}
+                    />
+                  </Col>
+                ))
+            : [
+                ...new Set(
+                  [...stringPeople, ...programPeople].sort((a, b) =>
+                    a.localeCompare(b)
+                  )
+                ),
+              ].map((person) => (
+                <Col key={person}>
+                  <Form.Check
+                    type="checkbox"
+                    label={person}
+                    id={person}
+                    checked={programPeople.includes(person)}
+                    disabled={disabled}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        addPersonString(person);
+                      } else {
+                        removePersonString(person);
+                      }
+                    }}
+                  />
+                </Col>
+              ))}
         </Row>
         {!disabled && (
           <Button
@@ -456,7 +485,9 @@ function ProgramPeople({
                 client.addPerson({ name }).then(
                   (resp) => {
                     dispatch(addPerson(resp));
-                    addPersonToState(name);
+                    peopleMigration
+                      ? addPersonObject({ person: resp._id })
+                      : addPersonString(name);
                   },
                   (e) => dispatch(addError(e.message))
                 );
@@ -678,11 +709,13 @@ export function AddProgramModal({ options, handleClose }) {
           />
           <ProgramPeople
             programPeople={attendance}
-            addPersonToState={(person) =>
-              setAttendance([...attendance, person])
-            }
-            removePerson={(person) =>
+            addPersonString={(person) => setAttendance([...attendance, person])}
+            removePersonString={(person) =>
               setAttendance(attendance.filter((p) => p !== person))
+            }
+            addPersonObject={(person) => setAttendance([...attendance, person])}
+            removePersonObject={(id) =>
+              setAttendance(attendance.filter((att) => att.person !== id))
             }
           />
           <ProgramPlace place={place} setPlace={setPlace} />

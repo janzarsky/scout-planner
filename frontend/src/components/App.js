@@ -301,17 +301,22 @@ export default function App() {
         </Nav>
         <Tab.Content>
           <Tab.Pane eventKey="timetable">
-            {userLevel >= level.VIEW && dataLoaded && (
-              <Timetable
-                violations={violationsPerProgram}
-                addProgramModal={(options) => {
-                  setAddModalEnabled(true);
-                  setAddProgramOptions(options);
-                }}
-                onEdit={(program) => setEditProgramId(program._id)}
-              />
-            )}
-            {!dataLoaded && (
+            {userLevel >= level.VIEW &&
+              dataLoaded &&
+              (!peopleMigration ||
+                peopleMigrationState === "finishedPrograms") && (
+                <Timetable
+                  violations={violationsPerProgram}
+                  addProgramModal={(options) => {
+                    setAddModalEnabled(true);
+                    setAddProgramOptions(options);
+                  }}
+                  onEdit={(program) => setEditProgramId(program._id)}
+                />
+              )}
+            {(!dataLoaded ||
+              (peopleMigration &&
+                peopleMigrationState !== "finishedPrograms")) && (
               <Container fluid>
                 <Alert variant="primary">
                   <i className="fa fa-spinner fa-pulse" />
