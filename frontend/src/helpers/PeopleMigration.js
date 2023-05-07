@@ -5,11 +5,11 @@ export async function migratePeople(programs, people, client, dispatch) {
   const legacyPeople = getLegacyPeople(programs);
   const peopleToAdd = getPeopleToBeAdded(legacyPeople, people);
 
-  dispatch(setPeopleMigrationState("pending"));
+  dispatch(setPeopleMigrationState("pendingPeople"));
 
   try {
     await addMissingPeople(peopleToAdd, client, dispatch);
-    dispatch(setPeopleMigrationState("peopleAdded"));
+    dispatch(setPeopleMigrationState("finishedPeople"));
   } catch (e) {
     dispatch(addError(e.message));
   }
@@ -43,6 +43,13 @@ function getPeopleToBeAdded(legacyPeople, existingPeople) {
   return legacyPeople
     .filter((person) => !existingPeople.find((p) => p.name === person))
     .map((name) => ({ name }));
+}
+
+export async function migratePrograms(programs, people, client, dispatch) {
+  // TODO
+  dispatch(setPeopleMigrationState("pendingPrograms"));
+  console.log("Migrating programs");
+  dispatch(setPeopleMigrationState("finishedPrograms"));
 }
 
 export const testing = {

@@ -31,7 +31,9 @@ describe("migratePeople()", () => {
       client,
       dispatch
     ).then(() => {
-      expect(dispatch).toHaveBeenCalledWith(setPeopleMigrationState("pending"));
+      expect(dispatch).toHaveBeenCalledWith(
+        setPeopleMigrationState("pendingPeople")
+      );
 
       expect(client.addPerson).not.toHaveBeenCalledWith({ name: "Person 0" });
       expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 1" });
@@ -46,7 +48,7 @@ describe("migratePeople()", () => {
       );
 
       expect(dispatch).toHaveBeenCalledWith(
-        setPeopleMigrationState("peopleAdded")
+        setPeopleMigrationState("finishedPeople")
       );
     });
   });
@@ -179,4 +181,8 @@ describe("getPeopleToBeAdded()", () => {
         [{ _id: "person1", name: "Person 1" }]
       )
     ).toEqual([]));
+});
+
+describe("migratePrograms()", () => {
+  it("TODO", () => {});
 });
