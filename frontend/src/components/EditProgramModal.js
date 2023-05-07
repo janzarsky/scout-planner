@@ -52,8 +52,6 @@ export function EditProgramModal({ programId, handleClose }) {
 
   const dispatch = useDispatch();
 
-  const allPeople = useSelector((state) => state.people.legacyPeople);
-
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
@@ -148,7 +146,6 @@ export function EditProgramModal({ programId, handleClose }) {
           />
           <ProgramPeople
             programPeople={attendance}
-            allPeople={allPeople}
             newPerson={(name) =>
               client.addPerson({ name }).then(
                 (resp) => dispatch(addPerson(resp)),
@@ -412,12 +409,13 @@ function ProgramGroups({
 
 function ProgramPeople({
   programPeople,
-  allPeople,
   newPerson,
   addPerson,
   removePerson,
   disabled = false,
 }) {
+  const allPeople = useSelector((state) => state.people.legacyPeople);
+
   return (
     <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
@@ -611,8 +609,6 @@ export function AddProgramModal({ options, handleClose }) {
 
   const dispatch = useDispatch();
 
-  const allPeople = useSelector((state) => state.people.legacyPeople);
-
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
@@ -678,7 +674,6 @@ export function AddProgramModal({ options, handleClose }) {
           />
           <ProgramPeople
             programPeople={attendance}
-            allPeople={allPeople}
             newPerson={(name) =>
               client.addPerson({ name }).then(
                 (resp) => dispatch(addPerson(resp)),
