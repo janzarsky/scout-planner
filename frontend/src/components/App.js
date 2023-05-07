@@ -172,6 +172,7 @@ export default function App() {
     settings,
     peopleMigration,
     peopleMigrationState,
+    dispatch,
   ]);
 
   useEffect(() => {
