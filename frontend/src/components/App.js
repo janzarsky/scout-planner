@@ -42,7 +42,7 @@ import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
 } from "../helpers/PeopleConvertor";
-import { migratePeople } from "../helpers/PeopleMigration";
+import { migratePeople, migratePrograms } from "../helpers/PeopleMigration";
 
 const config = require("../config.json");
 
@@ -147,6 +147,13 @@ export default function App() {
     if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
       const client = clientFactory.getClient(table);
       migratePeople(programs, people, client, dispatch);
+    } else if (
+      peopleMigration &&
+      dataLoaded &&
+      peopleMigrationState === "finishedPeople"
+    ) {
+      const client = clientFactory.getClient(table);
+      migratePrograms(programs, people, client, dispatch);
     }
 
     const problems = checkRules(rules, convertedPrograms);
