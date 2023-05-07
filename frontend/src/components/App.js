@@ -37,7 +37,11 @@ import ViewSettings from "./ViewSettings";
 import RangesSettings from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
-import { getPeople, setLegacyPeople } from "../store/peopleSlice";
+import {
+  getPeople,
+  setLegacyPeople,
+  setPeopleMigrationState,
+} from "../store/peopleSlice";
 import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
@@ -146,14 +150,16 @@ export default function App() {
 
     if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
       const client = clientFactory.getClient(table);
-      migratePeople(programs, people, client, dispatch);
+      migratePeople(programs, people, userLevel, client, dispatch);
     } else if (
       peopleMigration &&
       dataLoaded &&
       peopleMigrationState === "finishedPeople"
     ) {
       const client = clientFactory.getClient(table);
-      migratePrograms(programs, people, client, dispatch);
+      migratePrograms(programs, people, userLevel, client, dispatch);
+    } else if (!peopleMigration && dataLoaded) {
+      dispatch(setPeopleMigrationState("failedPeople"));
     }
 
     const problems = checkRules(rules, convertedPrograms);
@@ -169,6 +175,7 @@ export default function App() {
   }, [
     table,
     dataLoaded,
+    userLevel,
     programs,
     groups,
     packages,
@@ -303,8 +310,9 @@ export default function App() {
           <Tab.Pane eventKey="timetable">
             {userLevel >= level.VIEW &&
               dataLoaded &&
-              (!peopleMigration ||
-                peopleMigrationState === "finishedPrograms") && (
+              (peopleMigrationState === "finishedPrograms" ||
+                peopleMigrationState === "failedPrograms" ||
+                peopleMigrationState === "failedPeople") && (
                 <Timetable
                   violations={violationsPerProgram}
                   addProgramModal={(options) => {
@@ -315,8 +323,9 @@ export default function App() {
                 />
               )}
             {(!dataLoaded ||
-              (peopleMigration &&
-                peopleMigrationState !== "finishedPrograms")) && (
+              (peopleMigrationState !== "finishedPrograms" &&
+                peopleMigrationState !== "failedPrograms" &&
+                peopleMigrationState !== "failedPeople")) && (
               <Container fluid>
                 <Alert variant="primary">
                   <i className="fa fa-spinner fa-pulse" />

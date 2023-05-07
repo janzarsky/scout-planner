@@ -413,9 +413,11 @@ function ProgramPeople({
   removePersonObject,
   disabled = false,
 }) {
-  const stringPeople = useSelector((state) => state.people.legacyPeople);
-  const objectPeople = useSelector((state) => state.people.people);
-  const peopleMigration = useSelector((state) => state.config.peopleMigration);
+  const {
+    legacyPeople: stringPeople,
+    people: objectPeople,
+    peopleMigrationState,
+  } = useSelector((state) => state.people);
 
   const dispatch = useDispatch();
   const table = useSelector((state) => state.auth.table);
@@ -428,7 +430,7 @@ function ProgramPeople({
       </Form.Label>
       <Col>
         <Row>
-          {peopleMigration
+          {peopleMigrationState === "finishedPrograms"
             ? [...objectPeople]
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((person) => (
@@ -485,7 +487,7 @@ function ProgramPeople({
                 client.addPerson({ name }).then(
                   (resp) => {
                     dispatch(addPerson(resp));
-                    peopleMigration
+                    peopleMigrationState === "finishedPrograms"
                       ? addPersonObject({ person: resp._id })
                       : addPersonString(name);
                   },
