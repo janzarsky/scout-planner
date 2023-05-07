@@ -71,6 +71,7 @@ export default function App() {
     people,
     legacyPeople,
     loaded: peopleLoaded,
+    peopleMigrationState,
   } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings
@@ -143,7 +144,7 @@ export default function App() {
       allPeople
     );
 
-    if (peopleMigration) {
+    if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
       const client = clientFactory.getClient(table);
       migratePeople(programs, people, client, dispatch);
     }
@@ -170,6 +171,7 @@ export default function App() {
     rules,
     settings,
     peopleMigration,
+    peopleMigrationState,
   ]);
 
   useEffect(() => {
