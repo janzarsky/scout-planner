@@ -146,13 +146,9 @@ export function EditProgramModal({ programId, handleClose }) {
           />
           <ProgramPeople
             programPeople={attendance}
-            newPerson={(name) =>
-              client.addPerson({ name }).then(
-                (resp) => dispatch(addPerson(resp)),
-                (e) => dispatch(addError(e.message))
-              )
+            addPersonToState={(person) =>
+              setAttendance([...attendance, person])
             }
-            addPerson={(person) => setAttendance([...attendance, person])}
             removePerson={(person) =>
               setAttendance(attendance.filter((p) => p !== person))
             }
@@ -409,12 +405,15 @@ function ProgramGroups({
 
 function ProgramPeople({
   programPeople,
-  newPerson,
-  addPerson,
+  addPersonToState,
   removePerson,
   disabled = false,
 }) {
   const allPeople = useSelector((state) => state.people.legacyPeople);
+
+  const dispatch = useDispatch();
+  const table = useSelector((state) => state.auth.table);
+  const client = clientFactory.getClient(table);
 
   return (
     <Form.Group as={Row} className="mb-3">
@@ -439,7 +438,7 @@ function ProgramPeople({
                 disabled={disabled}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    addPerson(person);
+                    addPersonToState(person);
                   } else {
                     removePerson(person);
                   }
@@ -454,8 +453,13 @@ function ProgramPeople({
             onClick={() => {
               const name = window.prompt("Jméno");
               if (name) {
-                newPerson(name);
-                addPerson(name);
+                client.addPerson({ name }).then(
+                  (resp) => {
+                    dispatch(addPerson(resp));
+                    addPersonToState(name);
+                  },
+                  (e) => dispatch(addError(e.message))
+                );
               }
             }}
           >
@@ -674,13 +678,9 @@ export function AddProgramModal({ options, handleClose }) {
           />
           <ProgramPeople
             programPeople={attendance}
-            newPerson={(name) =>
-              client.addPerson({ name }).then(
-                (resp) => dispatch(addPerson(resp)),
-                (e) => dispatch(addError(e.message))
-              )
+            addPersonToState={(person) =>
+              setAttendance([...attendance, person])
             }
-            addPerson={(person) => setAttendance([...attendance, person])}
             removePerson={(person) =>
               setAttendance(attendance.filter((p) => p !== person))
             }
