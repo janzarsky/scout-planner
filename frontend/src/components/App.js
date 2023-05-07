@@ -42,6 +42,7 @@ import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
 } from "../helpers/PeopleConvertor";
+import { migratePeople } from "../helpers/PeopleMigration";
 
 const config = require("../config.json");
 
@@ -70,6 +71,7 @@ export default function App() {
     people,
     legacyPeople,
     loaded: peopleLoaded,
+    peopleMigrationState,
   } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings
@@ -80,6 +82,7 @@ export default function App() {
   const errors = useSelector((state) => state.errors);
 
   const peopleSection = useSelector((state) => state.config.peopleSection);
+  const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
   const dispatch = useDispatch();
 
@@ -140,6 +143,12 @@ export default function App() {
       programs,
       allPeople
     );
+
+    if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
+      const client = clientFactory.getClient(table);
+      migratePeople(programs, people, client, dispatch);
+    }
+
     const problems = checkRules(rules, convertedPrograms);
 
     setViolations(problems.violations);
@@ -151,6 +160,7 @@ export default function App() {
       ) && problems.other.length === 0
     );
   }, [
+    table,
     dataLoaded,
     programs,
     groups,
@@ -160,6 +170,9 @@ export default function App() {
     people,
     rules,
     settings,
+    peopleMigration,
+    peopleMigrationState,
+    dispatch,
   ]);
 
   useEffect(() => {

@@ -3,5 +3,6 @@
   "apiKey": "AIzaSyAJWL29qO2dgvaJvDpnXALUYtH_Lkdrek8",
   "authDomain": "scout-planner-343913.firebaseapp.com",
   "peopleSection": false,
+  "peopleMigration": false,
   "trayFeature": false
 }
