@@ -1,10 +1,27 @@
 import { addError } from "../store/errorsSlice";
 import { addPerson, setPeopleMigrationState } from "../store/peopleSlice";
 import { updateProgram } from "../store/programsSlice";
+import { level } from "./Level";
 
-export async function migratePeople(programs, people, client, dispatch) {
+export async function migratePeople(
+  programs,
+  people,
+  userLevel,
+  client,
+  dispatch
+) {
   const legacyPeople = getLegacyPeople(programs);
   const peopleToAdd = getPeopleToBeAdded(legacyPeople, people);
+
+  if (peopleToAdd.length === 0) {
+    dispatch(setPeopleMigrationState("finishedPeople"));
+    return;
+  }
+
+  if (userLevel < level.EDIT) {
+    dispatch(setPeopleMigrationState("failedPeople"));
+    return;
+  }
 
   dispatch(setPeopleMigrationState("pendingPeople"));
 
@@ -46,8 +63,24 @@ function getPeopleToBeAdded(legacyPeople, existingPeople) {
     .map((name) => ({ name }));
 }
 
-export async function migratePrograms(programs, people, client, dispatch) {
+export async function migratePrograms(
+  programs,
+  people,
+  userLevel,
+  client,
+  dispatch
+) {
   const programsToBeUpdated = getProgramsToBeUpdated(programs, people);
+
+  if (programsToBeUpdated.length === 0) {
+    dispatch(setPeopleMigrationState("finishedPrograms"));
+    return;
+  }
+
+  if (userLevel < level.EDIT) {
+    dispatch(setPeopleMigrationState("failedPrograms"));
+    return;
+  }
 
   dispatch(setPeopleMigrationState("pendingPrograms"));
 
