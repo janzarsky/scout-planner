@@ -111,6 +111,7 @@ export default function App() {
     const auth = getAuth();
     auth.onAuthStateChanged(async (user) => {
       dispatch(setAuthenticated(!!user));
+      dispatch(setPeopleMigrationState("idle"));
     });
     setProvider(provider);
     setAuth(auth);
