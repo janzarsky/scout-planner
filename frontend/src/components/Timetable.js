@@ -1,15 +1,14 @@
-import { Children } from "react";
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
-import { formatDay, getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
-import { groupProgramsToBlocks } from "../helpers/TimetableUtils";
+import { formatDay } from "../helpers/DateUtils";
+import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
-import TimeIndicator from "./TimeIndicator";
+import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
 
@@ -56,6 +55,35 @@ export default function Timetable({
   const timeIndicatorRect = getTimeIndicatorRect(settings, timeProvider());
 
   return (
+    <TimetableDndWrapper settings={settings}>
+      {userLevel >= level.EDIT &&
+        getDroppables(settings, onDroppableDrop, addProgramModal)}
+      {getTimeHeaders(settings)}
+      {getDateHeaders(settings)}
+      {getGroupHeaders(settings)}
+      {getBlocks(programs, settings, violations, onEdit)}
+      {trayFeature && (
+        <Tray
+          settings={settings}
+          programs={programs}
+          onEdit={onEdit}
+          addProgramModal={addProgramModal}
+          onDroppableDrop={onDroppableDrop}
+        />
+      )}
+      {timeIndicatorRect && (
+        <TimeIndicator
+          x={timeIndicatorRect.x}
+          y={timeIndicatorRect.y}
+          height={timeIndicatorRect.height}
+        />
+      )}
+    </TimetableDndWrapper>
+  );
+}
+
+function TimetableDndWrapper({ settings, children }) {
+  return (
     <DndProvider backend={HTML5Backend}>
       <div
         className="timetable"
@@ -70,28 +98,7 @@ export default function Timetable({
             ", minmax(20px, 1fr))",
         }}
       >
-        {userLevel >= level.EDIT &&
-          getDroppables(settings, onDroppableDrop, addProgramModal)}
-        {getTimeHeaders(settings)}
-        {getDateHeaders(settings)}
-        {getGroupHeaders(settings)}
-        {getBlocks(programs, settings, violations, onEdit)}
-        {trayFeature && (
-          <Tray
-            settings={settings}
-            programs={programs}
-            onEdit={onEdit}
-            addProgramModal={addProgramModal}
-            onDroppableDrop={onDroppableDrop}
-          />
-        )}
-        {timeIndicatorRect && (
-          <TimeIndicator
-            x={timeIndicatorRect.x}
-            y={timeIndicatorRect.y}
-            height={timeIndicatorRect.height}
-          />
-        )}
+        {children}
       </div>
     </DndProvider>
   );
@@ -214,52 +221,6 @@ function getGroupHeaders(settings) {
   );
 }
 
-function getRect(begin, duration, groups, settings) {
-  const date = getOnlyDate(begin);
-  const time = getOnlyTime(begin);
-
-  var [first, last] = [0, settings.groupCnt - 1];
-
-  if (groups && groups.length > 0) {
-    const groupMap = settings.groups.map(
-      (group) => groups.findIndex((idx) => idx === group._id) !== -1
-    );
-    first = groupMap.reduce(
-      (acc, cur, idx) => (cur && idx < acc ? idx : acc),
-      settings.groupCnt - 1
-    );
-    last = groupMap.reduce(
-      (acc, cur, idx) => (cur && idx > acc ? idx : acc),
-      0
-    );
-  }
-
-  return {
-    x: Math.ceil((time - settings.dayStart) / settings.timeStep),
-    y: settings.days.indexOf(date) * settings.groupCnt + first,
-    width: Math.ceil(duration / settings.timeStep),
-    height: last - first + 1,
-  };
-}
-
-function getTimeIndicatorRect(settings, now) {
-  // the times in timetable are in UTC (we don't know the timezone of the actual event)
-  // the indicator assumes that you are in the correct timezone
-  const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
-
-  const currTime = getOnlyTime(zoneAdjust);
-  if (currTime < settings.dayStart || currTime > settings.dayEnd) return null;
-
-  const currDate = getOnlyDate(zoneAdjust);
-  if (settings.days.indexOf(currDate) === -1) return null;
-
-  return {
-    x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
-    y: settings.days.indexOf(currDate) * settings.groupCnt,
-    height: settings.groupCnt,
-  };
-}
-
 function Droppable({ onDrop, x, y, addProgramModal }) {
   const { programs } = useSelector((state) => state.programs);
 
@@ -335,7 +296,7 @@ function Block({ rect, children }) {
         gridTemplateColumns: "repeat(" + rect.width + ", minmax(20px, 1fr))",
       }}
     >
-      {Children.map(children, (child) => child)}
+      {children}
     </div>
   );
 }
