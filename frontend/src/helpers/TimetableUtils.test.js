@@ -1,11 +1,11 @@
 import { groupProgramsToBlocks } from "./TimetableUtils";
 
 describe("groupProgramsToBlocks()", () => {
-  test("empty", () => {
+  it("returns empty array when there are no programs", () => {
     expect(groupProgramsToBlocks([])).toEqual([]);
   });
 
-  test("one program", () => {
+  it("returns one block for one program", () => {
     const progA = { begin: 0, duration: 60, groups: ["first"] };
 
     expect(groupProgramsToBlocks([progA])).toEqual([
@@ -13,7 +13,7 @@ describe("groupProgramsToBlocks()", () => {
     ]);
   });
 
-  test("two programs with non-overlapping time", () => {
+  it("returns two blocks for two programs with non-overlapping time and the same group", () => {
     const progA = { begin: 0, duration: 60, groups: ["first"] };
     const progB = { begin: 90, duration: 60, groups: ["first"] };
 
@@ -23,7 +23,7 @@ describe("groupProgramsToBlocks()", () => {
     ]);
   });
 
-  test("two programs with different groups", () => {
+  it("returns two blocks for two programs with overlapping time but different groups", () => {
     const progA = { begin: 0, duration: 60, groups: ["first"] };
     const progB = { begin: 0, duration: 60, groups: ["second"] };
 
@@ -33,7 +33,7 @@ describe("groupProgramsToBlocks()", () => {
     ]);
   });
 
-  test("two programs with overlapping time", () => {
+  it("returns one block for two programs with overlapping time and the same group", () => {
     const progA = { begin: 0, duration: 60, groups: ["first"] };
     const progB = { begin: 30, duration: 60, groups: ["first"] };
 
@@ -42,7 +42,7 @@ describe("groupProgramsToBlocks()", () => {
     ]);
   });
 
-  test("two programs right after each other", () => {
+  it("returns two blocks for two programs right after each other", () => {
     const progA = { begin: 0, duration: 60, groups: ["first"] };
     const progB = { begin: 60, duration: 60, groups: ["first"] };
 
@@ -52,7 +52,8 @@ describe("groupProgramsToBlocks()", () => {
     ]);
   });
 
-  test("two programs with overlapping times and groups", () => {
+  it("returns two blocks for two programs with overlapping times and groups", () => {
+    // this setup is not supported - we need to create two blocks for the overlap error to show
     const progA = { begin: 0, duration: 60, groups: ["first", "second"] };
     const progB = { begin: 0, duration: 60, groups: ["second", "third"] };
 
@@ -72,7 +73,7 @@ describe("groupProgramsToBlocks()", () => {
     ]);
   });
 
-  test("three programs with overlapping time", () => {
+  it("returns one block for three programs with overlapping time", () => {
     const progA = { begin: 0, duration: 60, groups: ["first"] };
     const progB = { begin: 40, duration: 60, groups: ["first"] };
     const progC = { begin: 80, duration: 60, groups: ["first"] };
