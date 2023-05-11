@@ -1,4 +1,3 @@
-import { Children } from "react";
 import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
@@ -297,7 +296,7 @@ function Block({ rect, children }) {
         gridTemplateColumns: "repeat(" + rect.width + ", minmax(20px, 1fr))",
       }}
     >
-      {Children.map(children, (child) => child)}
+      {children}
     </div>
   );
 }
