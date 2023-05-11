@@ -152,6 +152,9 @@ function getBlocks(
           block.programs.length,
           block.programs[0].begin,
           settings.timeStep,
+          block.programs[0].groups.length > 0
+            ? block.programs[0].groups[0]
+            : null,
           onDrop,
           addProgramModal
         )}
@@ -187,6 +190,7 @@ function getBlockDroppables(
   height,
   blockBegin,
   timeStep,
+  groupId,
   onDrop,
   addProgramModal
 ) {
@@ -198,8 +202,8 @@ function getBlockDroppables(
           key={`${x}-${y}`}
           x={x + 1}
           y={y + 1}
-          onDrop={(item, programs) => onDrop(item, begin, null, programs)}
-          addProgramModal={() => addProgramModal({ begin, groupId: null })}
+          onDrop={(item, programs) => onDrop(item, begin, groupId, programs)}
+          addProgramModal={() => addProgramModal({ begin, groupId })}
         />
       );
     })
