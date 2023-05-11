@@ -3,13 +3,13 @@ import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
-import { formatDay, getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
+import { formatDay } from "../helpers/DateUtils";
 import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
-import TimeIndicator from "./TimeIndicator";
+import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
 
@@ -212,24 +212,6 @@ function getGroupHeaders(settings) {
       />
     ))
   );
-}
-
-function getTimeIndicatorRect(settings, now) {
-  // the times in timetable are in UTC (we don't know the timezone of the actual event)
-  // the indicator assumes that you are in the correct timezone
-  const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
-
-  const currTime = getOnlyTime(zoneAdjust);
-  if (currTime < settings.dayStart || currTime > settings.dayEnd) return null;
-
-  const currDate = getOnlyDate(zoneAdjust);
-  if (settings.days.indexOf(currDate) === -1) return null;
-
-  return {
-    x: Math.ceil((currTime - settings.dayStart) / settings.timeStep),
-    y: settings.days.indexOf(currDate) * settings.groupCnt,
-    height: settings.groupCnt,
-  };
 }
 
 function Droppable({ onDrop, x, y, addProgramModal }) {
