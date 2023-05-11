@@ -61,7 +61,14 @@ export default function Timetable({
       {getTimeHeaders(settings)}
       {getDateHeaders(settings)}
       {getGroupHeaders(settings)}
-      {getBlocks(programs, settings, violations, onEdit)}
+      {getBlocks(
+        programs,
+        settings,
+        violations,
+        onEdit,
+        onDroppableDrop,
+        addProgramModal
+      )}
       {trayFeature && (
         <Tray
           settings={settings}
@@ -104,7 +111,14 @@ function TimetableDndWrapper({ settings, children }) {
   );
 }
 
-function getBlocks(programs, settings, violations, onEdit) {
+function getBlocks(
+  programs,
+  settings,
+  violations,
+  onEdit,
+  onDrop,
+  addProgramModal
+) {
   const allGroups = settings.groups.map((g) => g._id);
   const programsGroupFix = programs.map((p) => ({
     ...p,
@@ -133,6 +147,17 @@ function getBlocks(programs, settings, violations, onEdit) {
         {block.programs.map((program) =>
           getProgram(program, blockRect, settings, violations, onEdit)
         )}
+        {getBlockDroppables(
+          blockRect.width,
+          block.programs.length,
+          block.programs[0].begin,
+          settings.timeStep,
+          block.programs[0].groups.length > 0
+            ? block.programs[0].groups[0]
+            : null,
+          onDrop,
+          addProgramModal
+        )}
       </Block>
     );
   });
@@ -157,6 +182,31 @@ function getProgram(prog, blockRect, settings, violations, onEdit) {
       violations={violations.get(prog._id)}
       onEdit={onEdit}
     />
+  );
+}
+
+function getBlockDroppables(
+  width,
+  height,
+  blockBegin,
+  timeStep,
+  groupId,
+  onDrop,
+  addProgramModal
+) {
+  return [...Array(width).keys()].flatMap((x) =>
+    [...Array(height).keys()].map((y) => {
+      const begin = blockBegin + x * timeStep;
+      return (
+        <Droppable
+          key={`${x}-${y}`}
+          x={x + 1}
+          y={y + 1}
+          onDrop={(item, programs) => onDrop(item, begin, groupId, programs)}
+          addProgramModal={() => addProgramModal({ begin, groupId })}
+        />
+      );
+    })
   );
 }
 
