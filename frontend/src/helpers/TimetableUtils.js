@@ -1,3 +1,4 @@
+import { getOnlyDate, getOnlyTime } from "./DateUtils";
 import { arraysEqualWithSorting } from "./Sorting";
 
 export function groupProgramsToBlocks(unsortedPrograms) {
@@ -34,4 +35,32 @@ export function groupProgramsToBlocks(unsortedPrograms) {
   }
 
   return blocks;
+}
+
+export function getRect(begin, duration, groups, settings) {
+  const date = getOnlyDate(begin);
+  const time = getOnlyTime(begin);
+
+  var [first, last] = [0, settings.groupCnt - 1];
+
+  if (groups && groups.length > 0) {
+    const groupMap = settings.groups.map(
+      (group) => groups.findIndex((idx) => idx === group._id) !== -1
+    );
+    first = groupMap.reduce(
+      (acc, cur, idx) => (cur && idx < acc ? idx : acc),
+      settings.groupCnt - 1
+    );
+    last = groupMap.reduce(
+      (acc, cur, idx) => (cur && idx > acc ? idx : acc),
+      0
+    );
+  }
+
+  return {
+    x: Math.ceil((time - settings.dayStart) / settings.timeStep),
+    y: settings.days.indexOf(date) * settings.groupCnt + first,
+    width: Math.ceil(duration / settings.timeStep),
+    height: last - first + 1,
+  };
 }

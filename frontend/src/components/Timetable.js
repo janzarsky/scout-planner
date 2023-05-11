@@ -4,7 +4,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
 import { formatDay, getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
-import { groupProgramsToBlocks } from "../helpers/TimetableUtils";
+import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
@@ -212,34 +212,6 @@ function getGroupHeaders(settings) {
       />
     ))
   );
-}
-
-function getRect(begin, duration, groups, settings) {
-  const date = getOnlyDate(begin);
-  const time = getOnlyTime(begin);
-
-  var [first, last] = [0, settings.groupCnt - 1];
-
-  if (groups && groups.length > 0) {
-    const groupMap = settings.groups.map(
-      (group) => groups.findIndex((idx) => idx === group._id) !== -1
-    );
-    first = groupMap.reduce(
-      (acc, cur, idx) => (cur && idx < acc ? idx : acc),
-      settings.groupCnt - 1
-    );
-    last = groupMap.reduce(
-      (acc, cur, idx) => (cur && idx > acc ? idx : acc),
-      0
-    );
-  }
-
-  return {
-    x: Math.ceil((time - settings.dayStart) / settings.timeStep),
-    y: settings.days.indexOf(date) * settings.groupCnt + first,
-    width: Math.ceil(duration / settings.timeStep),
-    height: last - first + 1,
-  };
 }
 
 function getTimeIndicatorRect(settings, now) {
