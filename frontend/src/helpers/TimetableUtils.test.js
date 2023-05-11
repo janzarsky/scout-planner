@@ -1,4 +1,6 @@
-import { groupProgramsToBlocks } from "./TimetableUtils";
+import { parseDate, parseDuration } from "./DateUtils";
+import { parseDateTime, parseTime } from "./DateUtils";
+import { getRect, groupProgramsToBlocks } from "./TimetableUtils";
 
 describe("groupProgramsToBlocks()", () => {
   it("returns empty array when there are no programs", () => {
@@ -86,5 +88,78 @@ describe("groupProgramsToBlocks()", () => {
         groups: ["first"],
       },
     ]);
+  });
+});
+
+describe("getRect()", () => {
+  const settings = {
+    days: [
+      parseDate("10.06.2022"),
+      parseDate("11.06.2022"),
+      parseDate("12.06.2022"),
+    ],
+    dayStart: parseTime("10:00"),
+    dayEnd: parseTime("16:00"),
+    groupCnt: 1,
+    groups: [],
+    timeSpan: 4,
+    timeStep: parseDuration("0:15"),
+  };
+
+  it("returns rectangle for program without groups", () => {
+    expect(
+      getRect(
+        parseDateTime("11:30 11.06.2022"),
+        parseDuration("1:00"),
+        [],
+        settings
+      )
+    ).toEqual({
+      x: 6,
+      y: 1,
+      width: 4,
+      height: 1,
+    });
+  });
+
+  it("returns rectangle for program starting at misaligned time", () =>
+    expect(
+      getRect(
+        parseDateTime("11:23 11.06.2022"),
+        parseDuration("1:14"),
+        [],
+        settings
+      )
+    ).toEqual({ x: 6, y: 1, width: 5, height: 1 }));
+
+  it("returns rectangle for short program", () =>
+    expect(
+      getRect(
+        parseDateTime("11:30 11.06.2022"),
+        parseDuration("0:01"),
+        [],
+        settings
+      )
+    ).toEqual({ x: 6, y: 1, width: 1, height: 1 }));
+
+  it("returns rectangle for program with groups", () => {
+    const settingsWithGroups = {
+      ...settings,
+      groupCnt: 4,
+      groups: [
+        { _id: "group1" },
+        { _id: "group2" },
+        { _id: "group3" },
+        { _id: "group4" },
+      ],
+    };
+    expect(
+      getRect(
+        parseDateTime("11:30 11.06.2022"),
+        parseDuration("1:00"),
+        ["group2", "group3"],
+        settingsWithGroups
+      )
+    ).toEqual({ x: 6, y: 5, width: 4, height: 2 });
   });
 });
