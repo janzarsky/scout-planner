@@ -22,6 +22,8 @@ export default function Program({ program, rect, violations, onEdit }) {
 
   const ref = useRef(null);
 
+  const dispatch = useDispatch();
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "program",
     item: { id: program._id },
@@ -64,7 +66,7 @@ export default function Program({ program, rect, violations, onEdit }) {
       }
     };
     swap();
-  }, [programToSwap]);
+  }, [client, dispatch, program, programs, programToSwap]);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -81,7 +83,6 @@ export default function Program({ program, rect, violations, onEdit }) {
 
   drag(drop(ref));
 
-  const dispatch = useDispatch();
   const clone = (p) =>
     client.addProgram(p).then(
       (resp) => dispatch(addProgram(resp)),
