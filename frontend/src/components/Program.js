@@ -9,7 +9,7 @@ import {
 } from "../helpers/PeopleConvertor";
 import { addError } from "../store/errorsSlice";
 import { addProgram, updateProgram } from "../store/programsSlice";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
@@ -17,8 +17,6 @@ export default function Program({ program, rect, violations, onEdit }) {
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
-
-  const [programToSwap, setProgramToSwap] = useState(null);
 
   const ref = useRef(null);
 
@@ -32,14 +30,11 @@ export default function Program({ program, rect, violations, onEdit }) {
     }),
   }));
 
-  useEffect(() => {
-    const swap = async () => {
-      if (programToSwap) {
-        setProgramToSwap(null);
-
-        var otherProg = programs.find(
-          (program) => program._id === programToSwap
-        );
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => {
+        var otherProg = programs.find((program) => program._id === item.id);
 
         if (otherProg) {
           const newProg = {
@@ -54,25 +49,13 @@ export default function Program({ program, rect, violations, onEdit }) {
           };
           dispatch(updateProgram(newProg));
           dispatch(updateProgram(newOtherProg));
-          await Promise.all([
-            client
-              .updateProgram(newProg)
-              .catch((e) => dispatch(addError(e.message))),
-            client
-              .updateProgram(newOtherProg)
-              .catch((e) => dispatch(addError(e.message))),
-          ]);
+          client
+            .updateProgram(newProg)
+            .catch((e) => dispatch(addError(e.message)));
+          client
+            .updateProgram(newOtherProg)
+            .catch((e) => dispatch(addError(e.message)));
         }
-      }
-    };
-    swap();
-  }, [client, dispatch, program, programs, programToSwap]);
-
-  const [{ isOver }, drop] = useDrop(
-    () => ({
-      accept: "program",
-      drop: (item) => {
-        setProgramToSwap(item.id);
       },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),

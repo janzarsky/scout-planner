@@ -119,6 +119,7 @@ p {
   grid-row-start: 1;
   grid-column-end: 5;
   border-radius: 4px;
+  min-height: 5rem;
   background-color: #29b6f6;
 }
 .tray.drag-over .tray-drop-target {
