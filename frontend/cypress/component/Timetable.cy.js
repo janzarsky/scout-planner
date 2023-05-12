@@ -87,6 +87,7 @@ describe("Timetable", () => {
     mountTimetable();
 
     cy.get(".block")
+      .first()
       .should("have.css", "grid-area", "2 / 3 / span 1 / span 8")
       .within(() => {
         cy.get(".program-wrapper").should(
@@ -127,6 +128,7 @@ describe("Timetable", () => {
     cy.contains("G2");
 
     cy.get(".block")
+      .first()
       .should("have.css", "grid-area", "3 / 3 / span 1 / span 18")
       .within(() => {
         cy.get(".program-wrapper").should(
