@@ -1,4 +1,4 @@
-import { useDrag } from "react-dnd";
+import { useDrag, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
 import { formatTime } from "../helpers/DateUtils";
@@ -8,13 +8,19 @@ import {
   convertProgramPeople,
 } from "../helpers/PeopleConvertor";
 import { addError } from "../store/errorsSlice";
-import { addProgram } from "../store/programsSlice";
+import { addProgram, updateProgram } from "../store/programsSlice";
+import { useEffect, useRef, useState } from "react";
 
 export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
+  const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
+
+  const [programToSwap, setProgramToSwap] = useState(null);
+
+  const ref = useRef(null);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "program",
@@ -23,6 +29,57 @@ export default function Program({ program, rect, violations, onEdit }) {
       isDragging: !!monitor.isDragging(),
     }),
   }));
+
+  useEffect(() => {
+    const swap = async () => {
+      if (programToSwap) {
+        setProgramToSwap(null);
+
+        var otherProg = programs.find(
+          (program) => program._id === programToSwap
+        );
+
+        if (otherProg) {
+          const newProg = {
+            ...program,
+            groups: [...otherProg.groups],
+            begin: otherProg.begin,
+          };
+          const newOtherProg = {
+            ...otherProg,
+            groups: [...program.groups],
+            begin: program.begin,
+          };
+          dispatch(updateProgram(newProg));
+          dispatch(updateProgram(newOtherProg));
+          await Promise.all([
+            client
+              .updateProgram(newProg)
+              .catch((e) => dispatch(addError(e.message))),
+            client
+              .updateProgram(newOtherProg)
+              .catch((e) => dispatch(addError(e.message))),
+          ]);
+        }
+      }
+    };
+    swap();
+  }, [programToSwap]);
+
+  const [{ isOver }, drop] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => {
+        setProgramToSwap(item.id);
+      },
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+      }),
+    }),
+    []
+  );
+
+  drag(drop(ref));
 
   const dispatch = useDispatch();
   const clone = (p) =>
@@ -33,8 +90,12 @@ export default function Program({ program, rect, violations, onEdit }) {
 
   return (
     <div
-      ref={program.locked ? null : drag}
-      className={"program-wrapper " + (isDragging ? " dragged" : "")}
+      ref={program.locked ? null : ref}
+      className={
+        "program-wrapper " +
+        (isDragging ? " dragged" : "") +
+        (isOver ? " drag-over" : "")
+      }
       style={{
         gridColumnStart: rect.x + 1,
         gridRowStart: rect.y + 1,

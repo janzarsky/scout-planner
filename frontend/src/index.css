@@ -174,6 +174,9 @@ p {
   text-orientation: sideways;
   transform: rotate(180deg);
 }
+.program-wrapper.drag-over .program {
+  background-color: #29b6f6 !important;
+}
 
 .program-text {
   flex: 1;
