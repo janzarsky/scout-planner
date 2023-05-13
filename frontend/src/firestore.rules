@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function emailVerified() {
+      return request.auth.token.email_verified;
+    }
+    
+    function userExists(timetable) {
+      return exists(/databases/$(database)/documents/timetables/$(timetable)/users/$(request.auth.token.email));
+    }
+  
+    function getUser(timetable) {
+    	return get(/databases/$(database)/documents/timetables/$(timetable)/users/$(request.auth.token.email))
+    }
+    
+    function authLevel(timetable, level) {
+      return isSignedIn() && emailVerified() && userExists(timetable) && getUser(timetable).data.level >= level;
+    }
+    
+    function publicLevel(timetable, level) {
+      return get(/databases/$(database)/documents/timetables/$(timetable)).data.publicLevel >= level;
+    }
+    
+    function level(timetable, level) {
+      return publicLevel(timetable, level) || authLevel(timetable, level);
+    }
+    
+    function userMatches(timetable, user) {
+      return authLevel(timetable, 1)  && user == request.auth.token.email;
+    }
+    
+  	match /timetables/{timetable} {
+      allow read: if level(timetable, 1);
+      allow write: if level(timetable, 2);
+      
+      match /users/{user} {
+        allow read: if level(timetable, 3) || userMatches(timetable, user);
+        allow write: if level(timetable, 3);
+      }
+      
+      match /{document=**} {
+        allow read: if level(timetable, 1)
+        allow write: if level(timetable, 2)
+      }
+    }
+    
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
