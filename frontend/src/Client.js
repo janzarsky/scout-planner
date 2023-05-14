@@ -1,4 +1,5 @@
 import { getAuth } from "firebase/auth";
+import { firestoreClientFactory } from "./FirestoreClient";
 
 const config = require("./config.json");
 
@@ -171,8 +172,22 @@ class Client {
   }
 }
 
+var localConfig = {};
+
+try {
+  localConfig = require("./config.local.json");
+} catch {}
+
+const completeConfig = {
+  ...config,
+  ...localConfig,
+};
+
 export const clientFactory = {
   getClient() {
+    if (completeConfig.firestore)
+      return firestoreClientFactory.getClient(...arguments);
+
     return new Client(...arguments);
   },
 };
