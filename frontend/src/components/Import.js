@@ -47,7 +47,7 @@ async function importData(data, client) {
     // add all packages
     Promise.all([
       ...data.pkgs.map((pkg) =>
-        client.addPackage({ ...pkg, _id: undefined }).then(
+        client.addPackage(pkg).then(
           // create package ID replacement map
           (newPkg) => [pkg._id, newPkg._id]
         )
@@ -56,7 +56,7 @@ async function importData(data, client) {
     // add all groups
     Promise.all([
       ...data.groups.map((group) =>
-        client.addGroup({ ...group, _id: undefined }).then(
+        client.addGroup(group).then(
           // create group ID replacement map
           (newGroup) => [group._id, newGroup._id]
         )
@@ -65,7 +65,7 @@ async function importData(data, client) {
     // add all ranges
     Promise.all([
       ...data.ranges.map((range) =>
-        client.addRange({ ...range, _id: undefined }).then(
+        client.addRange(range).then(
           // create range ID replacement map
           (newRange) => [range._id, newRange._id]
         )
@@ -74,7 +74,7 @@ async function importData(data, client) {
     // add all people
     Promise.all([
       ...data.people.map((person) =>
-        client.addPerson({ ...person, _id: undefined }).then(
+        client.addPerson(person).then(
           // create person ID replacement map
           (newPerson) => [person._id, newPerson._id]
         )
@@ -87,7 +87,7 @@ async function importData(data, client) {
       data.programs.map((prog) => {
         return {
           ...prog,
-          pkg: pkgs.get(prog.pkg),
+          pkg: pkgs.get(prog.pkg) ? pkgs.get(prog.pkg) : null,
           groups: prog.groups.map((oldGroup) => groups.get(oldGroup)),
           ranges: prog.ranges
             ? Object.fromEntries(
@@ -96,7 +96,7 @@ async function importData(data, client) {
                   val,
                 ])
               )
-            : undefined,
+            : null,
           people: prog.people.map((oldPerson) =>
             typeof oldPerson === "string"
               ? oldPerson
@@ -112,15 +112,10 @@ async function importData(data, client) {
     .then((programs) =>
       Promise.all(
         programs.map((prog) =>
-          client
-            .addProgram({
-              ...prog,
-              _id: undefined,
-            })
-            .then(
-              // create program ID replacement map
-              (newProg) => [prog._id, newProg._id]
-            )
+          client.addProgram(prog).then(
+            // create program ID replacement map
+            (newProg) => [prog._id, newProg._id]
+          )
         )
       )
     )
@@ -142,18 +137,10 @@ async function importData(data, client) {
       })
     )
     // add all rules
-    .then((rules) =>
-      Promise.all(
-        rules.map((rule) => client.addRule({ ...rule, _id: undefined }))
-      )
-    )
+    .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))
     // add all users (at the end, so there are no issues with permissions)
     .then(() =>
-      Promise.all([
-        ...data.users.map((user) =>
-          client.addUser({ ...user, _id: undefined })
-        ),
-      ])
+      Promise.all([...data.users.map((user) => client.addUser(user))])
     );
 }
 
