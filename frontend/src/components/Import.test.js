@@ -46,17 +46,15 @@ test("single program", async () => {
         title: "Program 1",
         ranges: {},
         groups: [],
-        pkg: undefined,
+        pkg: null,
         people: [],
       },
     ],
   };
-  return testing.importData(data, client).then(() => {
-    expect(client.addProgram).toHaveBeenCalledWith({
-      ...data.programs[0],
-      _id: undefined,
-    });
-  });
+
+  await testing.importData(data, client);
+
+  expect(client.addProgram).toHaveBeenCalledWith(data.programs[0]);
 });
 
 test("program with groups", async () => {
@@ -69,7 +67,7 @@ test("program with groups", async () => {
         title: "Program 1",
         ranges: {},
         groups: ["group1", "group2"],
-        pkg: undefined,
+        pkg: null,
         people: [],
       },
     ],
@@ -86,20 +84,14 @@ test("program with groups", async () => {
       },
     ],
   };
-  return testing.importData(data, client).then(() => {
-    expect(client.addGroup).toHaveBeenCalledWith({
-      ...data.groups[0],
-      _id: undefined,
-    });
-    expect(client.addGroup).toHaveBeenCalledWith({
-      ...data.groups[1],
-      _id: undefined,
-    });
-    expect(client.addProgram).toHaveBeenCalledWith({
-      ...data.programs[0],
-      _id: undefined,
-      groups: ["group1_new", "group2_new"],
-    });
+
+  await testing.importData(data, client);
+
+  expect(client.addGroup).toHaveBeenCalledWith(data.groups[0]);
+  expect(client.addGroup).toHaveBeenCalledWith(data.groups[1]);
+  expect(client.addProgram).toHaveBeenCalledWith({
+    ...data.programs[0],
+    groups: ["group1_new", "group2_new"],
   });
 });
 
@@ -127,13 +119,9 @@ test("program with package", async () => {
     ],
   };
   return testing.importData(data, client).then(() => {
-    expect(client.addPackage).toHaveBeenCalledWith({
-      ...data.pkgs[0],
-      _id: undefined,
-    });
+    expect(client.addPackage).toHaveBeenCalledWith(data.pkgs[0]);
     expect(client.addProgram).toHaveBeenCalledWith({
       ...data.programs[0],
-      _id: undefined,
       pkg: "pkg1_new",
     });
   });
@@ -149,7 +137,7 @@ test("program with ranges", async () => {
         title: "Program 1",
         ranges: { range1: 42, range2: 23 },
         groups: [],
-        pkg: undefined,
+        pkg: null,
         people: [],
       },
     ],
@@ -167,17 +155,10 @@ test("program with ranges", async () => {
     ],
   };
   return testing.importData(data, client).then(() => {
-    expect(client.addRange).toHaveBeenCalledWith({
-      ...data.ranges[0],
-      _id: undefined,
-    });
-    expect(client.addRange).toHaveBeenCalledWith({
-      ...data.ranges[1],
-      _id: undefined,
-    });
+    expect(client.addRange).toHaveBeenCalledWith(data.ranges[0]);
+    expect(client.addRange).toHaveBeenCalledWith(data.ranges[1]);
     expect(client.addProgram).toHaveBeenCalledWith({
       ...data.programs[0],
-      _id: undefined,
       ranges: { range1_new: 42, range2_new: 23 },
     });
   });
@@ -193,7 +174,7 @@ test("program with object people", async () => {
         title: "Program 1",
         ranges: {},
         groups: [],
-        pkg: undefined,
+        pkg: null,
         people: [{ person: "person1" }, { person: "person2" }],
       },
     ],
@@ -211,17 +192,10 @@ test("program with object people", async () => {
     ],
   };
   return testing.importData(data, client).then(() => {
-    expect(client.addPerson).toHaveBeenCalledWith({
-      ...data.people[0],
-      _id: undefined,
-    });
-    expect(client.addPerson).toHaveBeenCalledWith({
-      ...data.people[1],
-      _id: undefined,
-    });
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
     expect(client.addProgram).toHaveBeenCalledWith({
       ...data.programs[0],
-      _id: undefined,
       people: [{ person: "person1_new" }, { person: "person2_new" }],
     });
   });
@@ -237,7 +211,7 @@ test("program with string people", async () => {
         title: "Program 1",
         ranges: {},
         groups: [],
-        pkg: undefined,
+        pkg: null,
         people: ["Person 1", "Person 2"],
       },
     ],
@@ -255,17 +229,10 @@ test("program with string people", async () => {
     ],
   };
   return testing.importData(data, client).then(() => {
-    expect(client.addPerson).toHaveBeenCalledWith({
-      ...data.people[0],
-      _id: undefined,
-    });
-    expect(client.addPerson).toHaveBeenCalledWith({
-      ...data.people[1],
-      _id: undefined,
-    });
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
     expect(client.addProgram).toHaveBeenCalledWith({
       ...data.programs[0],
-      _id: undefined,
       people: ["Person 1", "Person 2"],
     });
   });
@@ -281,7 +248,7 @@ test("program with mixed people", async () => {
         title: "Program 1",
         ranges: {},
         groups: [],
-        pkg: undefined,
+        pkg: null,
         people: [{ person: "person1" }, "Person 2"],
       },
     ],
@@ -294,13 +261,9 @@ test("program with mixed people", async () => {
     ],
   };
   return testing.importData(data, client).then(() => {
-    expect(client.addPerson).toHaveBeenCalledWith({
-      ...data.people[0],
-      _id: undefined,
-    });
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
     expect(client.addProgram).toHaveBeenCalledWith({
       ...data.programs[0],
-      _id: undefined,
       people: [{ person: "person1_new" }, "Person 2"],
     });
   });
