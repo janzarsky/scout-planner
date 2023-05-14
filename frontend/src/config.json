@@ -2,7 +2,9 @@
   "host": "https://harmonogram.zarsky.name/api",
   "apiKey": "AIzaSyAJWL29qO2dgvaJvDpnXALUYtH_Lkdrek8",
   "authDomain": "scout-planner-343913.firebaseapp.com",
+  "projectId": "scout-planner-343913",
   "peopleSection": true,
   "peopleMigration": true,
-  "trayFeature": true
+  "trayFeature": true,
+  "firestore": false
 }

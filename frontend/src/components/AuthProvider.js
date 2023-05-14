@@ -6,6 +6,7 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 import {
   createContext,
   useCallback,
@@ -21,8 +22,10 @@ const AuthContext = createContext(null);
 const app = initializeApp({
   apiKey: config.apiKey,
   authDomain: config.authDomain,
+  projectId: config.projectId,
 });
 const auth = getAuth(app);
+const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 export function AuthProvider({ children }) {
@@ -48,7 +51,7 @@ export function AuthProvider({ children }) {
   }, [authChanged]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, initializing }}>
+    <AuthContext.Provider value={{ user, login, logout, initializing, db }}>
       {children}
     </AuthContext.Provider>
   );
