@@ -58,7 +58,11 @@ export default function People() {
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((person) =>
               person._id === editKey ? (
-                <EditedPerson name={editedName} setName={setEditedName} />
+                <EditedPerson
+                  key="edited"
+                  name={editedName}
+                  setName={setEditedName}
+                />
               ) : (
                 <Person
                   key={person._id}
