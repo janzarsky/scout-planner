@@ -1,3 +1,4 @@
+import { getAuth } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -9,6 +10,7 @@ import {
   query,
   setDoc,
 } from "firebase/firestore";
+import { level } from "./helpers/Level";
 
 class FirestoreClient {
   constructor(table) {
@@ -29,11 +31,53 @@ class FirestoreClient {
     });
 
     this.db = getFirestore();
+    this.auth = getAuth();
     this.table = table;
   }
 
-  // TODO: get permissions
-  // TODO: get/set settings
+  async getPermissions() {
+    const publicLevel = await getDoc(
+      doc(this.db, `timetables/${this.table}`)
+    ).then(
+      (table) =>
+        table.data() && table.data().publicLevel
+          ? table.data().publicLevel
+          : level.NONE,
+      () => level.NONE
+    );
+
+    const userLevel = await getDoc(
+      doc(
+        this.db,
+        `timetables/${this.table}/users/${this.auth.currentUser.email}`
+      )
+    ).then(
+      (user) =>
+        user.data() && user.data().level ? user.data().level : level.NONE,
+      () => level.NONE
+    );
+
+    return { level: userLevel > publicLevel ? userLevel : publicLevel };
+  }
+
+  async getSettings() {
+    try {
+      const snapshot = await getDoc(doc(this.db, `timetables/${this.table}`));
+      return snapshot.data();
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async updateSettings(data) {
+    try {
+      await setDoc(doc(this.db, `timetables/${this.table}`), data);
+
+      return data;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
 
   async get(coll, id) {
     try {
