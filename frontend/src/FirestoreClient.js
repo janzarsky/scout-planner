@@ -9,6 +9,7 @@ import {
   getFirestore,
   query,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { level } from "./helpers/Level";
 
@@ -68,7 +69,9 @@ class FirestoreClient {
 
   async updateSettings(data) {
     try {
-      await setDoc(doc(this.db, `timetables/${this.table}`), data);
+      await updateDoc(doc(this.db, `timetables/${this.table}`), {
+        settings: data,
+      });
 
       return data;
     } catch (e) {
