@@ -16,13 +16,6 @@ import { checkRules } from "../Checker";
 import Settings from "./Settings";
 import Users from "./Users";
 import Stats from "./Stats";
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-} from "firebase/auth";
 import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { getRanges } from "../store/rangesSlice";
@@ -47,8 +40,7 @@ import {
   replaceLegacyPeopleInPrograms,
 } from "../helpers/PeopleConvertor";
 import { migratePeople, migratePrograms } from "../helpers/PeopleMigration";
-
-const config = require("../config.json");
+import { useAuth } from "./AuthProvider";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -59,8 +51,7 @@ export default function App() {
   const [editProgramId, setEditProgramId] = useState(undefined);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  const [auth, setAuth] = useState();
-  const [provider, setProvider] = useState();
+  const { user, initializing } = useAuth();
 
   const { groups, loaded: groupsLoaded } = useSelector((state) => state.groups);
   const { ranges, loaded: rangesLoaded } = useSelector((state) => state.ranges);
@@ -90,39 +81,12 @@ export default function App() {
 
   const dispatch = useDispatch();
 
-  async function login() {
-    await signInWithPopup(auth, provider).catch((e) =>
-      dispatch(addError(e.message))
-    );
-  }
-
-  async function logout() {
-    await signOut(auth)
-      .catch((e) => dispatch(addError(e.message)))
-      .finally(() => dispatch(setAuthenticated(false)));
-  }
-
   useEffect(() => {
-    initializeApp({
-      apiKey: config.apiKey,
-      authDomain: config.authDomain,
-    });
-    const provider = new GoogleAuthProvider();
-    const auth = getAuth();
-    auth.onAuthStateChanged(async (user) => {
-      dispatch(setAuthenticated(!!user));
-      dispatch(setPeopleMigrationState("idle"));
-    });
-    setProvider(provider);
-    setAuth(auth);
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!permissionsLoaded) {
+    if (!permissionsLoaded && !initializing) {
       const client = clientFactory.getClient(table);
       dispatch(getPermissions(client));
     }
-  }, [table, permissionsLoaded, dispatch]);
+  }, [table, permissionsLoaded, initializing, dispatch]);
 
   useEffect(() => {
     if (permissionsLoaded) {
@@ -300,12 +264,7 @@ export default function App() {
           {userLevel >= level.VIEW && <Filters />}
           {userLevel >= level.VIEW && <ViewSettings />}
           {userLevel >= level.VIEW && <RangesSettings />}
-          <GoogleLogin
-            authenticated={auth && auth.currentUser}
-            name={auth && auth.currentUser && auth.currentUser.displayName}
-            login={login}
-            logout={logout}
-          />
+          <GoogleLogin />
         </Nav>
         <Tab.Content>
           <Tab.Pane eventKey="timetable">
@@ -376,9 +335,7 @@ export default function App() {
           )}
           {userLevel >= level.ADMIN && (
             <Tab.Pane eventKey="users" title="Uživatelé">
-              <Users
-                userEmail={auth.currentUser ? auth.currentUser.email : null}
-              />
+              <Users userEmail={user ? user.email : null} />
             </Tab.Pane>
           )}
           <Tab.Pane eventKey="settings" title="Nastavení">
@@ -390,18 +347,37 @@ export default function App() {
   );
 }
 
-function GoogleLogin({ authenticated, name, login, logout }) {
-  return authenticated ? (
+function GoogleLogin() {
+  const dispatch = useDispatch();
+  const { user, login, logout } = useAuth();
+
+  return !!user ? (
     <Nav.Item>
-      <Nav.Link as={Button} variant="light" onClick={logout}>
-        {name}
+      <Nav.Link
+        as={Button}
+        variant="light"
+        onClick={() =>
+          logout()
+            .then(() => dispatch(setAuthenticated(false)))
+            .catch((e) => dispatch(addError(e.message)))
+        }
+      >
+        {user.displayName}
         &nbsp;
         <i className="fa fa-sign-out" />
       </Nav.Link>
     </Nav.Item>
   ) : (
     <Nav.Item>
-      <Nav.Link as={Button} variant="light" onClick={login}>
+      <Nav.Link
+        as={Button}
+        variant="light"
+        onClick={() =>
+          login()
+            .then(() => dispatch(setAuthenticated(true)))
+            .catch((e) => dispatch(addError(e.message)))
+        }
+      >
         <i className="fa fa-sign-in" />
       </Nav.Link>
     </Nav.Item>

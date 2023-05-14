@@ -16,13 +16,18 @@ import Button from "react-bootstrap/Button";
 import { Provider, useDispatch } from "react-redux";
 import { getStore } from "./store";
 import { setTable } from "./store/authSlice";
+import { AuthProvider } from "./components/AuthProvider";
 
 function AppWrapper() {
   const dispatch = useDispatch();
   let { table } = useParams();
   dispatch(setTable(table));
 
-  return <App />;
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
 }
 
 const Homepage = () => {
