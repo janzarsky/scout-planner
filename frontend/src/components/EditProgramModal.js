@@ -350,7 +350,7 @@ function ProgramPackage({ pkg, setPkg, disabled = false }) {
       </Form.Label>
       <Col>
         <Form.Select
-          value={pkg}
+          value={pkg ? pkg : undefined}
           onChange={(e) => setPkg(e.target.value)}
           disabled={disabled}
         >
@@ -632,7 +632,7 @@ export function AddProgramModal({ options, handleClose }) {
   const [date, setDate] = useState(formatDateWithTray(options.begin));
   const [time, setTime] = useState(formatTimeWithTray(options.begin));
   const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
-  const [pkg, setPkg] = useState(undefined);
+  const [pkg, setPkg] = useState(null);
   const [groups, setGroups] = useState(
     options.groupId ? [options.groupId] : []
   );

@@ -39,10 +39,7 @@ class FirestoreClient {
     const publicLevel = await getDoc(
       doc(this.db, `timetables/${this.table}`)
     ).then(
-      (table) =>
-        table.data() && table.data().publicLevel
-          ? table.data().publicLevel
-          : level.NONE,
+      (table) => (table.exists() ? table.data().publicLevel : level.ADMIN),
       () => level.NONE
     );
 
