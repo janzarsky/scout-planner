@@ -44,8 +44,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const subscriber = onAuthStateChanged(auth, authChanged);
-    return subscriber;
+    onAuthStateChanged(auth, authChanged);
   }, [authChanged]);
 
   return (
