@@ -403,7 +403,13 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
             className="tray-add-program"
             onClick={() => addProgramModal({ begin: null, groupId: null })}
           >
-            <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
+            {!isOver && (
+              <i
+                className="fa fa-plus"
+                aria-hidden="true"
+                title="Nový program"
+              />
+            )}
           </button>
           {programRects.map(([program, rect]) => {
             return (
