@@ -190,10 +190,12 @@ function ProgramTime({ begin, end }) {
 }
 
 function lookUpPeople(programPeople, allPeople) {
-  return programPeople.map((attendance) => ({
-    ...attendance,
-    data: allPeople.find((person) => person._id === attendance.person),
-  }));
+  return programPeople
+    .map((attendance) => ({
+      ...attendance,
+      data: allPeople.find((person) => person._id === attendance.person),
+    }))
+    .filter((attendance) => attendance.data);
 }
 
 function ProgramPeople({ programPeople, violations }) {
