@@ -383,7 +383,6 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
         <i className="fa fa-archive" aria-hidden="true"></i>
       </div>
       <div
-        ref={drop}
         className={"tray" + (isOver ? " drag-over" : "")}
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
@@ -400,6 +399,7 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
           )}
         >
           <button
+            ref={drop}
             className="tray-add-program"
             onClick={() => addProgramModal({ begin: null, groupId: null })}
           >
@@ -415,7 +415,6 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
               />
             );
           })}
-          <div className="tray-drop-target"></div>
         </Block>
       </div>
     </>
