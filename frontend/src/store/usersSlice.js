@@ -33,6 +33,9 @@ export const usersSlice = createSlice({
     deleteUser(state, action) {
       state.users = state.users.filter((r) => r._id !== action.payload);
     },
+    setPublicLevel(state, action) {
+      state.publicLevel = action.payload.publicLevel;
+    },
   },
   extraReducers(builder) {
     builder.addCase(getUsers.pending, (state) => {
@@ -59,6 +62,7 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { addUser, updateUser, deleteUser } = usersSlice.actions;
+export const { addUser, updateUser, deleteUser, setPublicLevel } =
+  usersSlice.actions;
 
 export default usersSlice.reducer;
