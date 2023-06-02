@@ -34,7 +34,7 @@ export const usersSlice = createSlice({
       state.users = state.users.filter((r) => r._id !== action.payload);
     },
     setPublicLevel(state, action) {
-      state.publicLevel = action.payload.publicLevel;
+      state.publicLevel = action.payload;
     },
   },
   extraReducers(builder) {
