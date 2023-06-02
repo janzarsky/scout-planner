@@ -79,6 +79,25 @@ class FirestoreClient {
     }
   }
 
+  async getPublicLevel(level) {
+    return await getDoc(doc(this.db, `timetables/${this.table}`)).then(
+      (table) => (table.exists() ? table.data().publicLevel : level.ADMIN),
+      () => level.NONE
+    );
+  }
+
+  async setPublicLevel(level) {
+    try {
+      await updateDoc(doc(this.db, `timetables/${this.table}`), {
+        publicLevel: level,
+      });
+
+      return level;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
   async get(coll, id) {
     try {
       const snapshot = await getDoc(

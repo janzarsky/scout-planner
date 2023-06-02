@@ -1,13 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { level } from "../helpers/Level";
 
-export const getUsers = createAsyncThunk(
-  "users/getUsers",
-  async (client) => await client.getUsers()
-);
+export const getUsers = createAsyncThunk("users/getUsers", async (client) => {
+  // checking whether the function is present (effectively signals whether firestore flag is on)
+  if (client.getPublicLevel) {
+    return await Promise.all([client.getUsers(), client.getPublicLevel()]).then(
+      ([users, publicLevel]) => ({ users, publicLevel })
+    );
+  } else {
+    return { users: await client.getUsers() };
+  }
+});
 
 export const usersSlice = createSlice({
   name: "users",
-  initialState: { users: [], loading: "idle", error: null },
+  initialState: {
+    users: [],
+    publicLevel: level.NONE,
+    loading: "idle",
+    error: null,
+  },
   reducers: {
     addUser(state, action) {
       state.users.push(action.payload);
@@ -21,6 +33,9 @@ export const usersSlice = createSlice({
     deleteUser(state, action) {
       state.users = state.users.filter((r) => r._id !== action.payload);
     },
+    setPublicLevel(state, action) {
+      state.publicLevel = action.payload;
+    },
   },
   extraReducers(builder) {
     builder.addCase(getUsers.pending, (state) => {
@@ -31,7 +46,9 @@ export const usersSlice = createSlice({
 
     builder.addCase(getUsers.fulfilled, (state, action) => {
       if (state.loading === "pending") {
-        state.users = action.payload;
+        state.users = action.payload.users;
+        if (action.payload.publicLevel)
+          state.publicLevel = action.payload.publicLevel;
         state.loading = "idle";
       }
     });
@@ -45,6 +62,7 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { addUser, updateUser, deleteUser } = usersSlice.actions;
+export const { addUser, updateUser, deleteUser, setPublicLevel } =
+  usersSlice.actions;
 
 export default usersSlice.reducer;
