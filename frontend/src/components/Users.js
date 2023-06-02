@@ -24,7 +24,7 @@ export default function Users({ userEmail }) {
 
   const publicUser = users.find((user) => user.email === "public");
 
-  const [publicLevel, setPublicLevel] = useState(
+  const [publicLevelState, setPublicLevelState] = useState(
     publicUser ? publicUser.level : 3
   );
 
@@ -40,7 +40,7 @@ export default function Users({ userEmail }) {
           .updateUser({
             _id: publicUser._id,
             email: publicUser.email,
-            level: publicLevel,
+            level: publicLevelState,
           })
           .then(
             (resp) => dispatch(updateUser(resp)),
@@ -51,7 +51,7 @@ export default function Users({ userEmail }) {
         client
           .addUser({
             email: "public",
-            level: publicLevel,
+            level: publicLevelState,
           })
           .then(
             (resp) => dispatch(addUser(resp)),
@@ -111,13 +111,13 @@ export default function Users({ userEmail }) {
           {editKey === "public_user" ? (
             <PublicEditedUser
               key="public_user"
-              level={publicLevel}
-              setLevel={setPublicLevel}
+              level={publicLevelState}
+              setLevel={setPublicLevelState}
             />
           ) : (
             <PublicUser
               key="public_user"
-              level={publicLevel}
+              level={publicLevelState}
               userEmail={userEmail}
               editable={publicUserEditable}
               editUser={() => setEditKey("public_user")}
