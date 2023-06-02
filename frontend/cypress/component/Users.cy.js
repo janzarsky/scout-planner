@@ -29,6 +29,7 @@ describe("Users", () => {
         .spy(async (user) => ({ ...user, _id: "newuser" }))
         .as("addUser"),
       updateUser: cy.spy(async (user) => user).as("updateUser"),
+      setPublicLevel: cy.spy(async (level) => level).as("setPublicLevel"),
     };
     if (completeConfig.firestore)
       cy.stub(firestoreClientFactory, "getClient").returns(client).log(false);
@@ -124,11 +125,17 @@ describe("Users", () => {
       cy.get("select").first().select("zobrazovat");
       cy.contains("Uložit").click();
 
-      cy.get("@updateUser").should("have.been.calledOnceWith", {
-        _id: "user0",
-        email: "public",
-        level: level.VIEW,
-      });
+      if (completeConfig.firestore)
+        cy.get("@setPublicLevel").should(
+          "have.been.calledOnceWith",
+          level.VIEW
+        );
+      else
+        cy.get("@updateUser").should("have.been.calledOnceWith", {
+          _id: "user0",
+          email: "public",
+          level: level.VIEW,
+        });
     });
 
     it("adds public user when there is not one yet", () => {
@@ -142,10 +149,16 @@ describe("Users", () => {
       cy.get("select").first().select("zobrazovat");
       cy.contains("Uložit").click();
 
-      cy.get("@addUser").should("have.been.calledOnceWith", {
-        email: "public",
-        level: level.VIEW,
-      });
+      if (completeConfig.firestore)
+        cy.get("@setPublicLevel").should(
+          "have.been.calledOnceWith",
+          level.VIEW
+        );
+      else
+        cy.get("@addUser").should("have.been.calledOnceWith", {
+          email: "public",
+          level: level.VIEW,
+        });
     });
   });
 
