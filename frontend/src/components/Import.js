@@ -88,7 +88,9 @@ async function importData(data, client) {
         return {
           ...prog,
           pkg: pkgs.get(prog.pkg) ? pkgs.get(prog.pkg) : null,
-          groups: prog.groups.map((oldGroup) => groups.get(oldGroup)),
+          groups: prog.groups.map((oldGroup) =>
+            groups.get(oldGroup) ? groups.get(oldGroup) : null
+          ),
           ranges: prog.ranges
             ? Object.fromEntries(
                 Object.entries(prog.ranges).map(([oldRange, val]) => [
@@ -102,7 +104,9 @@ async function importData(data, client) {
               ? oldPerson
               : {
                   ...oldPerson,
-                  person: people.get(oldPerson.person),
+                  person: people.get(oldPerson.person)
+                    ? people.get(oldPerson.person)
+                    : null,
                 }
           ),
         };
