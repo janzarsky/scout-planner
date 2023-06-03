@@ -11,6 +11,7 @@ import Program from "./Program";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
+import { useState } from "react";
 
 export default function Timetable({
   violations,
@@ -54,40 +55,6 @@ export default function Timetable({
   const timeIndicatorRect = getTimeIndicatorRect(settings, timeProvider());
 
   return (
-    <TimetableDndWrapper settings={settings}>
-      {userLevel >= level.EDIT &&
-        getDroppables(settings, onDroppableDrop, addProgramModal)}
-      {getTimeHeaders(settings)}
-      {getDateHeaders(settings)}
-      {getGroupHeaders(settings)}
-      {getBlocks(
-        programs,
-        settings,
-        violations,
-        onEdit,
-        onDroppableDrop,
-        addProgramModal
-      )}
-      <Tray
-        settings={settings}
-        programs={programs}
-        onEdit={onEdit}
-        addProgramModal={addProgramModal}
-        onDroppableDrop={onDroppableDrop}
-      />
-      {timeIndicatorRect && (
-        <TimeIndicator
-          x={timeIndicatorRect.x}
-          y={timeIndicatorRect.y}
-          height={timeIndicatorRect.height}
-        />
-      )}
-    </TimetableDndWrapper>
-  );
-}
-
-function TimetableDndWrapper({ settings, children }) {
-  return (
     <DndProvider backend={HTML5Backend}>
       <div
         className="timetable"
@@ -102,8 +69,34 @@ function TimetableDndWrapper({ settings, children }) {
             ", minmax(20px, 1fr))",
         }}
       >
-        {children}
+        {userLevel >= level.EDIT &&
+          getDroppables(settings, onDroppableDrop, addProgramModal)}
+        {getTimeHeaders(settings)}
+        {getDateHeaders(settings)}
+        {getGroupHeaders(settings)}
+        {getBlocks(
+          programs,
+          settings,
+          violations,
+          onEdit,
+          onDroppableDrop,
+          addProgramModal
+        )}
+        {timeIndicatorRect && (
+          <TimeIndicator
+            x={timeIndicatorRect.x}
+            y={timeIndicatorRect.y}
+            height={timeIndicatorRect.height}
+          />
+        )}
       </div>
+      <Tray
+        settings={settings}
+        programs={programs}
+        onEdit={onEdit}
+        addProgramModal={addProgramModal}
+        onDroppableDrop={onDroppableDrop}
+      />
     </DndProvider>
   );
 }
@@ -368,8 +361,18 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
 
   const programRects = getProgramRects(sortedPrograms, settings);
 
+  const [pinned, setPinned] = useState(false);
+
   return (
-    <>
+    <div
+      className={"tray-wrapper" + (pinned ? " pinned" : "")}
+      style={{
+        gridTemplateColumns:
+          "auto auto repeat(" +
+          settings.timeSpan * settings.timeHeaders.length +
+          ", minmax(20px, 1fr))",
+      }}
+    >
       <div
         className="tray-header"
         style={{
@@ -377,7 +380,16 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
         }}
         title="Odkladiště"
       >
-        <i className="fa fa-archive" aria-hidden="true"></i>
+        <div className="tray-header-icon">
+          <i className="fa fa-archive" aria-hidden="true"></i>
+        </div>
+        <button
+          className={"btn" + (pinned ? " btn-dark" : "")}
+          onClick={() => setPinned(!pinned)}
+          title="Připnout"
+        >
+          <i className="fa fa-thumb-tack" aria-hidden="true"></i>
+        </button>
       </div>
       <div
         className={"tray" + (isOver ? " drag-over" : "")}
@@ -420,6 +432,6 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
           })}
         </Block>
       </div>
-    </>
+    </div>
   );
 }

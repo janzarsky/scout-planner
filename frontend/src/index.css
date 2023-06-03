@@ -47,7 +47,7 @@ p {
 .trayheader {
   color: #455a64;
   background-color: #cfd8dc;
-  z-index: 999;
+  z-index: 100;
   font-weight: 400;
 }
 .timeheader {
@@ -78,6 +78,18 @@ p {
   text-align: right;
 }
 
+.tray-wrapper {
+  display: grid;
+  background-color: #fff;
+  padding-top: 2px;
+  z-index: 200;
+}
+.tray-wrapper.pinned {
+  position: sticky;
+  bottom: 0;
+  overflow: auto;
+  max-height: 30vh;
+}
 .tray {
   grid-column-start: 3;
 }
@@ -89,9 +101,13 @@ p {
   border-radius: 0 4px 4px 0;
   background-color: #cfd8dc;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+.tray-header-icon {
+  margin: 4px 0;
 }
 .tray-add-program {
   display: flex;
