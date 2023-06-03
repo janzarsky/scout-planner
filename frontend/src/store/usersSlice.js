@@ -47,7 +47,7 @@ export const usersSlice = createSlice({
     builder.addCase(getUsers.fulfilled, (state, action) => {
       if (state.loading === "pending") {
         state.users = action.payload.users;
-        if (action.payload.publicLevel)
+        if (action.payload.publicLevel !== undefined)
           state.publicLevel = action.payload.publicLevel;
         state.loading = "idle";
       }
