@@ -150,12 +150,15 @@ function Width() {
               value={width}
               onChange={(e) => setWidth(e.target.value)}
             >
-              <option value={80}>Užší</option>
+              <option value={25}>Nejužší</option>
+              <option value={50}>Užší</option>
               <option value={100}>Normální</option>
-              <option value={120}>Širší</option>
+              <option value={150}>Širší</option>
             </Form.Select>
           ) : (
-            { 80: "Užší", 100: "Normální", 120: "Širší" }[settings.width]
+            { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
+              settings.width
+            ]
           )}
         </Col>
         <Col>
