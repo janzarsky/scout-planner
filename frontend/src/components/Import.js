@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { clientFactory } from "../Client";
 import { useSelector } from "react-redux";
+import { level } from "../helpers/Level";
 
 export default function Import() {
   const [dataToImport, setDataToImport] = useState();
@@ -10,11 +11,13 @@ export default function Import() {
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
+  const firestore = useSelector((state) => state.config.firestore);
+
   async function handleSubmit(event) {
     event.preventDefault();
 
     const data = JSON.parse(dataToImport);
-    await importData(data, client);
+    await importData(data, client, firestore);
 
     window.location.reload();
   }
@@ -36,7 +39,7 @@ export default function Import() {
   );
 }
 
-async function importData(data, client) {
+async function importData(data, client, firestore = false) {
   // data fixes
   if (data.ranges === undefined) data.ranges = [];
   if (data.users === undefined) data.users = [];
@@ -140,8 +143,22 @@ async function importData(data, client) {
     .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))
     // add all users (at the end, so there are no issues with permissions)
     .then(() =>
-      Promise.all([...data.users.map((user) => client.addUser(user))])
+      firestore
+        ? importUsersFirestore(data.users, client)
+        : Promise.all([...data.users.map((user) => client.addUser(user))])
     );
+}
+
+function importUsersFirestore(users, client) {
+  const realUsers = users.filter((user) => user.email !== "public");
+
+  const publicUser = users.find((user) => user.email === "public");
+  const publicUserLevel = publicUser ? publicUser.level : level.ADMIN;
+
+  return Promise.all([
+    ...realUsers.map((user) => client.updateUser({ ...user, _id: user.email })),
+    client.setPublicLevel(publicUserLevel),
+  ]);
 }
 
 export const testing = {

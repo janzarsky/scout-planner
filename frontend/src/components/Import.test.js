@@ -1,3 +1,4 @@
+import { level } from "../helpers/Level";
 import { testing } from "./Import";
 
 var client;
@@ -27,6 +28,9 @@ beforeEach(() => {
     addGroup: mockAddingFunction("group"),
     addRange: mockAddingFunction("range"),
     addPerson: mockAddingFunction("person"),
+    addUser: mockAddingFunction("user"),
+    updateUser: jest.fn().mockImplementation(async (a) => a),
+    setPublicLevel: jest.fn().mockImplementation(async (a) => a),
   };
 });
 
@@ -266,5 +270,77 @@ test("program with mixed people", async () => {
       ...data.programs[0],
       people: [{ person: "person1_new" }, "Person 2"],
     });
+  });
+});
+
+describe("users", () => {
+  const config = require("../config.json");
+  var localConfig = {};
+
+  try {
+    localConfig = require("../config.local.json");
+  } catch {}
+
+  const completeConfig = {
+    ...config,
+    ...localConfig,
+  };
+
+  it("imports one user", async () => {
+    const data = {
+      ...emptyData,
+      users: [{ _id: "user0", email: "test@user.com", level: level.ADMIN }],
+    };
+
+    await testing.importData(data, client, completeConfig.firestore);
+
+    if (completeConfig.firestore)
+      expect(client.updateUser).toHaveBeenCalledWith({
+        ...data.users[0],
+        _id: "test@user.com",
+      });
+    else expect(client.addUser).toHaveBeenCalledWith(data.users[0]);
+  });
+
+  it("sets public user", async () => {
+    const data = {
+      ...emptyData,
+      users: [{ _id: "public", email: "public", level: level.ADMIN }],
+    };
+
+    await testing.importData(data, client, completeConfig.firestore);
+
+    if (completeConfig.firestore)
+      expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
+    else expect(client.addUser).toHaveBeenCalledWith(data.users[0]);
+  });
+
+  it("imports both real and public users", async () => {
+    const data = {
+      ...emptyData,
+      users: [
+        { _id: "public", email: "public", level: level.ADMIN },
+        { _id: "user0", email: "test@user.com", level: level.ADMIN },
+        { _id: "user1", email: "another@user.com", level: level.EDIT },
+      ],
+    };
+
+    await testing.importData(data, client, completeConfig.firestore);
+
+    if (completeConfig.firestore) {
+      expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
+      expect(client.updateUser).toHaveBeenCalledWith({
+        ...data.users[1],
+        _id: data.users[1].email,
+      });
+      expect(client.updateUser).toHaveBeenCalledWith({
+        ...data.users[2],
+        _id: data.users[2].email,
+      });
+    } else {
+      expect(client.addUser).toHaveBeenCalledWith(data.users[0]);
+      expect(client.addUser).toHaveBeenCalledWith(data.users[1]);
+      expect(client.addUser).toHaveBeenCalledWith(data.users[2]);
+    }
   });
 });
