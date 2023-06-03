@@ -21,7 +21,7 @@ export default function Users({ userEmail }) {
   const [editedLevel, setEditedLevel] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
-  const { users } = useSelector((state) => state.users);
+  const { users, publicLevel } = useSelector((state) => state.users);
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
@@ -31,9 +31,12 @@ export default function Users({ userEmail }) {
 
   const publicUser = users.find((user) => user.email === "public");
 
-  const [publicLevelState, setPublicLevelState] = useState(
-    publicUser ? publicUser.level : 3
-  );
+  const defaultPublicLevel = firestore
+    ? publicLevel
+    : publicUser
+    ? publicUser.level
+    : level.ADMIN;
+  const [publicLevelState, setPublicLevelState] = useState(defaultPublicLevel);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -102,17 +105,20 @@ export default function Users({ userEmail }) {
 
   // allow editing of current user only in case they are other users with ADMIN rights
   // (or there is a implicit public user which also has ADMIN rights)
+  const hasPublicAccess = firestore ? publicLevel >= level.ADMIN : !publicUser;
   const currentUserEditable =
     userEmail &&
-    (!publicUser ||
+    (hasPublicAccess ||
       users.some(
         (user) => user.email !== userEmail && user.level >= level.ADMIN
       ));
 
   // when it is allowed to edit current user, there is a warning about losing access,
   // the warning should not be shown in case there is still public ADMIN access
-  const currentUserWarning =
-    currentUserEditable && publicUser && publicUser.level < level.ADMIN;
+  const warningPublicLevel = firestore
+    ? publicLevel < level.ADMIN
+    : publicUser && publicUser.level < level.ADMIN;
+  const currentUserWarning = currentUserEditable && warningPublicLevel;
 
   return (
     <Form onSubmit={handleSubmit}>
