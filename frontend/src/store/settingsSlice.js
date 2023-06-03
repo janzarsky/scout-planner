@@ -4,6 +4,7 @@ export const getSettings = createAsyncThunk(
   "settings/getSettings",
   async (client) => ({
     timeStep: 15 * 60 * 1000,
+    width: 100,
     ...(await client.getSettings()),
   })
 );
