@@ -11,6 +11,7 @@ import Program from "./Program";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
+import { useState } from "react";
 
 export default function Timetable({
   violations,
@@ -360,9 +361,11 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
 
   const programRects = getProgramRects(sortedPrograms, settings);
 
+  const [pinned, setPinned] = useState(false);
+
   return (
     <div
-      className="tray-wrapper"
+      className={"tray-wrapper" + (pinned ? " pinned" : "")}
       style={{
         gridTemplateColumns:
           "auto auto repeat(" +
@@ -377,7 +380,16 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
         }}
         title="Odkladiště"
       >
-        <i className="fa fa-archive" aria-hidden="true"></i>
+        <div className="tray-header-icon">
+          <i className="fa fa-archive" aria-hidden="true"></i>
+        </div>
+        <button
+          className={"btn" + (pinned ? " btn-dark" : "")}
+          onClick={() => setPinned(!pinned)}
+          title="Připnout"
+        >
+          <i className="fa fa-thumb-tack" aria-hidden="true"></i>
+        </button>
       </div>
       <div
         className={"tray" + (isOver ? " drag-over" : "")}

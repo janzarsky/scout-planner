@@ -80,11 +80,13 @@ p {
 
 .tray-wrapper {
   display: grid;
-  position: sticky;
-  bottom: 0;
   background-color: #fff;
   padding-top: 2px;
   z-index: 200;
+}
+.tray-wrapper.pinned {
+  position: sticky;
+  bottom: 0;
   overflow: auto;
   max-height: 30vh;
 }
@@ -99,9 +101,13 @@ p {
   border-radius: 0 4px 4px 0;
   background-color: #cfd8dc;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+.tray-header-icon {
+  margin: 4px 0;
 }
 .tray-add-program {
   display: flex;
