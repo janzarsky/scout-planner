@@ -131,6 +131,10 @@ function getBlocks(
       settings
     );
 
+    const maxBlockOrder = block.programs
+      .map((p) => (p.blockOrder ? p.blockOrder : 0))
+      .reduce((acc, curr) => (curr > acc ? curr : acc), 0);
+
     return (
       <Block
         key={`${block.programs[0].begin}-${
@@ -143,7 +147,7 @@ function getBlocks(
         )}
         {getBlockDroppables(
           blockRect.width,
-          block.programs.length,
+          maxBlockOrder + 1,
           block.programs[0].begin,
           settings.timeStep,
           block.programs[0].groups.length > 0
