@@ -4,6 +4,7 @@ export const getSettings = createAsyncThunk(
   "settings/getSettings",
   async (client) => ({
     timeStep: 15 * 60 * 1000,
+    width: 100,
     ...(await client.getSettings()),
   })
 );
@@ -11,7 +12,7 @@ export const getSettings = createAsyncThunk(
 export const settingsSlice = createSlice({
   name: "settings",
   initialState: {
-    settings: { timeStep: 15 * 60 * 1000 },
+    settings: { timeStep: 15 * 60 * 1000, width: 100 },
     loading: "idle",
     error: null,
     loaded: false,

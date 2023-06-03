@@ -49,6 +49,7 @@ export default function Settings() {
           </Form.Group>
         )}
         {userLevel >= level.EDIT && <TimeStep />}
+        {userLevel >= level.EDIT && <Width />}
       </Container>
     </>
   );
@@ -94,6 +95,70 @@ function TimeStep() {
             </Form.Select>
           ) : (
             formatDurationInMinutes(settings.timeStep)
+          )}
+        </Col>
+        <Col>
+          {editing ? (
+            <Button type="submit">
+              <i className="fa fa-check"></i> Uložit
+            </Button>
+          ) : (
+            <Button type="submit">
+              <i className="fa fa-pencil"></i> Upravit
+            </Button>
+          )}
+        </Col>
+      </Row>
+    </Form>
+  );
+}
+
+function Width() {
+  const { settings } = useSelector((state) => state.settings);
+  const dispatch = useDispatch();
+
+  const { table } = useSelector((state) => state.auth);
+  const client = clientFactory.getClient(table);
+
+  const [width, setWidth] = useState(settings.width);
+  const [editing, setEditing] = useState(false);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if (editing) {
+      const data = { ...settings, width: parseInt(width) };
+      client.updateSettings(data).then(
+        () => dispatch(updateSettings(data)),
+        (e) => dispatch(addError(e.message))
+      );
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Row>
+        <Form.Label column sm="2">
+          Šířka harmonogramu
+        </Form.Label>
+        <Col sm="3">
+          {editing ? (
+            <Form.Select
+              value={width}
+              onChange={(e) => setWidth(e.target.value)}
+            >
+              <option value={25}>Nejužší</option>
+              <option value={50}>Užší</option>
+              <option value={100}>Normální</option>
+              <option value={150}>Širší</option>
+            </Form.Select>
+          ) : (
+            { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
+              settings.width
+            ]
           )}
         </Col>
         <Col>

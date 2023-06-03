@@ -54,6 +54,8 @@ export default function Timetable({
   );
   const timeIndicatorRect = getTimeIndicatorRect(settings, timeProvider());
 
+  const width = useSelector((state) => state.settings.settings.width);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -66,7 +68,9 @@ export default function Timetable({
           gridTemplateColumns:
             "auto auto repeat(" +
             settings.timeSpan * settings.timeHeaders.length +
-            ", minmax(20px, 1fr))",
+            ", minmax(" +
+            (width * 20) / 100 +
+            "px, 1fr))",
         }}
       >
         {userLevel >= level.EDIT &&
@@ -325,6 +329,8 @@ function GroupHeader({ pos, name }) {
 }
 
 function Block({ rect, children }) {
+  const width = useSelector((state) => state.settings.settings.width);
+
   return (
     <div
       className="block"
@@ -333,7 +339,12 @@ function Block({ rect, children }) {
         gridRowStart: rect.y + 2,
         gridColumnEnd: "span " + rect.width,
         gridRowEnd: "span " + rect.height,
-        gridTemplateColumns: "repeat(" + rect.width + ", minmax(20px, 1fr))",
+        gridTemplateColumns:
+          "repeat(" +
+          rect.width +
+          ", minmax(" +
+          (width * 20) / 100 +
+          "px, 1fr))",
       }}
     >
       {children}
@@ -356,6 +367,8 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
     [programs]
   );
 
+  const width = useSelector((state) => state.settings.settings.width);
+
   const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
   const sortedPrograms = sortTrayPrograms(trayPrograms, packages);
 
@@ -370,7 +383,9 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
         gridTemplateColumns:
           "auto auto repeat(" +
           settings.timeSpan * settings.timeHeaders.length +
-          ", minmax(20px, 1fr))",
+          ", minmax(" +
+          (width * 20) / 100 +
+          "px, 1fr))",
       }}
     >
       <div
