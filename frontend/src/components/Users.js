@@ -146,10 +146,13 @@ export default function Users({ userEmail }) {
           ) : (
             <PublicUser
               key="public_user"
-              level={publicLevelState}
+              level={defaultPublicLevel}
               userEmail={userEmail}
               editable={publicUserEditable}
-              editUser={() => setEditKey("public_user")}
+              editUser={(level) => {
+                setEditKey("public_user");
+                setEditedLevel(level);
+              }}
             />
           )}
           {[...users]
@@ -326,7 +329,7 @@ function PublicUser({ level, editable, editUser, userEmail }) {
       <td>{formatLevel(level)}</td>
       <td>
         {editable && (
-          <Button variant="link" onClick={editUser}>
+          <Button variant="link" onClick={() => editUser(level)}>
             <i className="fa fa-pencil" /> Upravit
           </Button>
         )}
