@@ -47,7 +47,7 @@ p {
 .trayheader {
   color: #455a64;
   background-color: #cfd8dc;
-  z-index: 999;
+  z-index: 100;
   font-weight: 400;
 }
 .timeheader {
@@ -80,6 +80,13 @@ p {
 
 .tray-wrapper {
   display: grid;
+  position: sticky;
+  bottom: 0;
+  background-color: #fff;
+  padding-top: 2px;
+  z-index: 200;
+  overflow: auto;
+  max-height: 30vh;
 }
 .tray {
   grid-column-start: 3;
