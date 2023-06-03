@@ -38,14 +38,16 @@ describe("Users", () => {
     store = getStore();
   });
 
+  function setPublicLevelOrUser(level) {
+    if (completeConfig.firestore) store.dispatch(setPublicLevel(level));
+    else
+      store.dispatch(addUser({ _id: "public", email: "public", level: level }));
+  }
+
   describe("public user", () => {
     it("displays warning when not logged in and there is no public access", () => {
       store.dispatch(testing.setUserLevel(level.EDIT));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.EDIT));
-      else
-        store.dispatch(
-          addUser({ _id: "public", email: "public", level: level.EDIT })
-        );
+      setPublicLevelOrUser(level.EDIT);
       cy.mount(<Users />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
@@ -65,11 +67,7 @@ describe("Users", () => {
 
     it("displays warning when not logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
-      else
-        store.dispatch(
-          addUser({ _id: "public", email: "public", level: level.ADMIN })
-        );
+      setPublicLevelOrUser(level.ADMIN);
       cy.mount(<Users />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
@@ -90,11 +88,7 @@ describe("Users", () => {
 
     it("displays instructions when logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
-      else
-        store.dispatch(
-          addUser({ _id: "public", email: "public", level: level.ADMIN })
-        );
+      setPublicLevelOrUser(level.ADMIN);
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
@@ -105,11 +99,7 @@ describe("Users", () => {
 
     it("allows editing when logged in and there is user access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
-      else
-        store.dispatch(
-          addUser({ _id: "user0", email: "public", level: level.ADMIN })
-        );
+      setPublicLevelOrUser(level.ADMIN);
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -126,11 +116,7 @@ describe("Users", () => {
 
     it("updates public user", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
-      else
-        store.dispatch(
-          addUser({ _id: "user0", email: "public", level: level.ADMIN })
-        );
+      setPublicLevelOrUser(level.ADMIN);
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -147,7 +133,7 @@ describe("Users", () => {
         );
       else
         cy.get("@updateUser").should("have.been.calledOnceWith", {
-          _id: "user0",
+          _id: "public",
           email: "public",
           level: level.VIEW,
         });
@@ -192,11 +178,7 @@ describe("Users", () => {
 
     it("allows editing when there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
-      else
-        store.dispatch(
-          addUser({ _id: "public", email: "public", level: level.ADMIN })
-        );
+      setPublicLevelOrUser(level.ADMIN);
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.NONE })
       );
@@ -213,11 +195,7 @@ describe("Users", () => {
 
     it("displays warning when there is no public access and no other admins", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.NONE));
-      else
-        store.dispatch(
-          addUser({ _id: "public", email: "public", level: level.NONE })
-        );
+      setPublicLevelOrUser(level.NONE);
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -237,12 +215,7 @@ describe("Users", () => {
         "and there are other admins",
       () => {
         store.dispatch(testing.setUserLevel(level.ADMIN));
-        if (completeConfig.firestore)
-          store.dispatch(setPublicLevel(level.NONE));
-        else
-          store.dispatch(
-            addUser({ _id: "public", email: "public", level: level.NONE })
-          );
+        setPublicLevelOrUser(level.NONE);
         store.dispatch(
           addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
         );
@@ -268,11 +241,7 @@ describe("Users", () => {
 
     it("updates current user", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
-      else
-        store.dispatch(
-          addUser({ _id: "user0", email: "public", level: level.ADMIN })
-        );
+      setPublicLevelOrUser(level.ADMIN);
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -292,11 +261,7 @@ describe("Users", () => {
 
   it("adds new user", () => {
     store.dispatch(testing.setUserLevel(level.ADMIN));
-    if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
-    else
-      store.dispatch(
-        addUser({ _id: "user0", email: "public", level: level.ADMIN })
-      );
+    setPublicLevelOrUser(level.ADMIN);
     cy.mount(<Users />, { reduxStore: store });
 
     cy.get("input").clear().type("another@email.com");
