@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import { firestoreClientFactory } from "../../src/FirestoreClient";
 import Program from "../../src/components/Program";
 import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
@@ -60,6 +61,8 @@ describe("Program", () => {
 
   beforeEach(() => {
     cy.viewport(400, 150);
+
+    cy.stub(firestoreClientFactory, "getClient").log(false);
 
     store = getStore();
 

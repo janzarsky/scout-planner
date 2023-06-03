@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import { firestoreClientFactory } from "../../src/FirestoreClient";
 import Packages from "../../src/components/Packages";
 import { getStore } from "../../src/store";
 
@@ -8,6 +9,8 @@ describe("Packages", () => {
 
   beforeEach(() => {
     store = getStore();
+
+    cy.stub(firestoreClientFactory, "getClient").log(false);
   });
 
   it("empty", () => {
