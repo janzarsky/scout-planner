@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import { firestoreClientFactory } from "../../src/FirestoreClient";
 import { EditProgramModal } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
 import { addPerson, setLegacyPeople } from "../../src/store/peopleSlice";
@@ -26,6 +27,8 @@ describe("EditProgramModal", () => {
 
   beforeEach(() => {
     cy.viewport(400, 600);
+
+    cy.stub(firestoreClientFactory, "getClient").log(false);
 
     store = getStore();
 

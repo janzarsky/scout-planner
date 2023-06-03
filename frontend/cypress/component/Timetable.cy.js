@@ -8,6 +8,7 @@ import { addProgram } from "../../src/store/programsSlice";
 import { parseDuration } from "../../src/helpers/DateUtils";
 import { addGroup } from "../../src/store/groupsSlice";
 import { addPerson } from "../../src/store/peopleSlice";
+import { firestoreClientFactory } from "../../src/FirestoreClient";
 
 describe("Timetable", () => {
   const alice = {
@@ -49,6 +50,8 @@ describe("Timetable", () => {
   }
 
   beforeEach(() => {
+    cy.stub(firestoreClientFactory, "getClient").log(false);
+
     store = getStore();
 
     store.dispatch(addPerson(alice));
