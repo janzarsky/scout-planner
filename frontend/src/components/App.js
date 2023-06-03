@@ -201,6 +201,8 @@ export default function App() {
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
 
+  const [activeTab, setActiveTab] = useState("timetable");
+
   return (
     <div className="App">
       {errors.length > 0 && (
@@ -227,7 +229,10 @@ export default function App() {
           handleClose={() => setEditProgramId(undefined)}
         />
       )}
-      <Tab.Container defaultActiveKey={"timetable"}>
+      <Tab.Container
+        activeKey={activeTab}
+        onSelect={(key) => setActiveTab(key)}
+      >
         <Nav variant="pills" className="control-panel">
           <Nav.Link eventKey="timetable">Harmonogram</Nav.Link>
           {userLevel >= level.VIEW && (
@@ -261,9 +266,13 @@ export default function App() {
           {userLevel >= level.VIEW && (
             <Nav.Link eventKey="settings">Nastavení</Nav.Link>
           )}
-          {userLevel >= level.VIEW && <Filters />}
-          {userLevel >= level.VIEW && <ViewSettings />}
-          {userLevel >= level.VIEW && <RangesSettings />}
+          {userLevel >= level.VIEW && activeTab === "timetable" && <Filters />}
+          {userLevel >= level.VIEW && activeTab === "timetable" && (
+            <ViewSettings />
+          )}
+          {userLevel >= level.VIEW && activeTab === "timetable" && (
+            <RangesSettings />
+          )}
           <GoogleLogin />
         </Nav>
         <Tab.Content>
