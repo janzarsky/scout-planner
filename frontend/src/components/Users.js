@@ -42,14 +42,14 @@ export default function Users({ userEmail }) {
     event.preventDefault();
 
     if (editKey && editKey === "public_user") {
-      const publicUser = users.find((user) => user.email === "public");
-
       if (firestore) {
         client.setPublicLevel(publicLevelState).then(
           (level) => dispatch(setPublicLevel(level)),
           (e) => dispatch(addError(e.message))
         );
       } else {
+        const publicUser = users.find((user) => user.email === "public");
+
         if (publicUser)
           client
             .updateUser({
