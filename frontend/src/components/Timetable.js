@@ -20,7 +20,6 @@ export default function Timetable({
 }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
-  const { trayFeature } = useSelector((state) => state.config);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
@@ -69,15 +68,13 @@ export default function Timetable({
         onDroppableDrop,
         addProgramModal
       )}
-      {trayFeature && (
-        <Tray
-          settings={settings}
-          programs={programs}
-          onEdit={onEdit}
-          addProgramModal={addProgramModal}
-          onDroppableDrop={onDroppableDrop}
-        />
-      )}
+      <Tray
+        settings={settings}
+        programs={programs}
+        onEdit={onEdit}
+        addProgramModal={addProgramModal}
+        onDroppableDrop={onDroppableDrop}
+      />
       {timeIndicatorRect && (
         <TimeIndicator
           x={timeIndicatorRect.x}

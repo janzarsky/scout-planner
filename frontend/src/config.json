@@ -5,6 +5,5 @@
   "projectId": "scout-planner-343913",
   "peopleSection": true,
   "peopleMigration": true,
-  "trayFeature": true,
   "firestore": true
 }
