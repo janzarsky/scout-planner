@@ -243,7 +243,11 @@ describe("Users", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
       setPublicLevelOrUser(level.ADMIN);
       store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
+        addUser({
+          _id: "test@email.com",
+          email: "test@email.com",
+          level: level.ADMIN,
+        })
       );
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
@@ -252,7 +256,7 @@ describe("Users", () => {
       cy.contains("Uložit").click();
 
       cy.get("@updateUser").should("have.been.calledOnceWith", {
-        _id: "user1",
+        _id: "test@email.com",
         email: "test@email.com",
         level: level.VIEW,
       });
@@ -268,10 +272,17 @@ describe("Users", () => {
     cy.get("select").select("zobrazovat");
     cy.contains("Přidat").click();
 
-    cy.get("@addUser").should("have.been.calledOnceWith", {
-      email: "another@email.com",
-      level: level.VIEW,
-    });
+    if (completeConfig.firestore)
+      cy.get("@updateUser").should("have.been.calledOnceWith", {
+        _id: "another@email.com",
+        email: "another@email.com",
+        level: level.VIEW,
+      });
+    else
+      cy.get("@addUser").should("have.been.calledOnceWith", {
+        email: "another@email.com",
+        level: level.VIEW,
+      });
 
     cy.get("tbody tr")
       .eq(1)

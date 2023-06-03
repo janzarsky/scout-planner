@@ -86,15 +86,27 @@ export default function Users({ userEmail }) {
         );
       setEditKey(undefined);
     } else {
-      client
-        .addUser({
-          email: newEmail,
-          level: newLevel,
-        })
-        .then(
-          (resp) => dispatch(addUser(resp)),
-          (e) => dispatch(addError(e.message))
-        );
+      if (firestore)
+        client
+          .updateUser({
+            _id: newEmail,
+            email: newEmail,
+            level: newLevel,
+          })
+          .then(
+            (resp) => dispatch(addUser(resp)),
+            (e) => dispatch(addError(e.message))
+          );
+      else
+        client
+          .addUser({
+            email: newEmail,
+            level: newLevel,
+          })
+          .then(
+            (resp) => dispatch(addUser(resp)),
+            (e) => dispatch(addError(e.message))
+          );
     }
   }
 
