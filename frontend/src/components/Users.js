@@ -5,7 +5,12 @@ import Button from "react-bootstrap/Button";
 import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, deleteUser, updateUser } from "../store/usersSlice";
+import {
+  addUser,
+  deleteUser,
+  setPublicLevel,
+  updateUser,
+} from "../store/usersSlice";
 import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 
@@ -22,43 +27,49 @@ export default function Users({ userEmail }) {
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
+  const firestore = useSelector((state) => state.config.firestore);
+
   const publicUser = users.find((user) => user.email === "public");
 
-  const [publicLevel, setPublicLevel] = useState(
+  const [publicLevelState, setPublicLevelState] = useState(
     publicUser ? publicUser.level : 3
   );
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    // TODO refactor
     if (editKey && editKey === "public_user") {
       const publicUser = users.find((user) => user.email === "public");
 
-      if (publicUser) {
-        client
-          .updateUser({
-            _id: publicUser._id,
-            email: publicUser.email,
-            level: publicLevel,
-          })
-          .then(
-            (resp) => dispatch(updateUser(resp)),
-            (e) => dispatch(addError(e.message))
-          );
-        setEditKey(undefined);
+      if (firestore) {
+        client.setPublicLevel(publicLevelState).then(
+          (level) => dispatch(setPublicLevel(level)),
+          (e) => dispatch(addError(e.message))
+        );
       } else {
-        client
-          .addUser({
-            email: "public",
-            level: publicLevel,
-          })
-          .then(
-            (resp) => dispatch(addUser(resp)),
-            (e) => dispatch(addError(e.message))
-          );
-        setEditKey(undefined);
+        if (publicUser)
+          client
+            .updateUser({
+              _id: publicUser._id,
+              email: publicUser.email,
+              level: publicLevelState,
+            })
+            .then(
+              (resp) => dispatch(updateUser(resp)),
+              (e) => dispatch(addError(e.message))
+            );
+        else
+          client
+            .addUser({
+              email: "public",
+              level: publicLevelState,
+            })
+            .then(
+              (resp) => dispatch(addUser(resp)),
+              (e) => dispatch(addError(e.message))
+            );
       }
+      setEditKey(undefined);
     } else if (editKey) {
       client
         .updateUser({
@@ -111,13 +122,13 @@ export default function Users({ userEmail }) {
           {editKey === "public_user" ? (
             <PublicEditedUser
               key="public_user"
-              level={publicLevel}
-              setLevel={setPublicLevel}
+              level={publicLevelState}
+              setLevel={setPublicLevelState}
             />
           ) : (
             <PublicUser
               key="public_user"
-              level={publicLevel}
+              level={publicLevelState}
               userEmail={userEmail}
               editable={publicUserEditable}
               editUser={() => setEditKey("public_user")}
