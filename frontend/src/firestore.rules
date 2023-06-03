@@ -22,7 +22,9 @@ service cloud.firestore {
     }
     
     function publicLevel(timetable, level) {
-      return get(/databases/$(database)/documents/timetables/$(timetable)).data.publicLevel >= level;
+      return !exists(/databases/$(database)/documents/timetables/$(timetable))
+        || !('publicLevel' in get(/databases/$(database)/documents/timetables/$(timetable)).data)
+        || get(/databases/$(database)/documents/timetables/$(timetable)).data.publicLevel >= level;
     }
     
     function level(timetable, level) {

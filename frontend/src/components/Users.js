@@ -42,14 +42,14 @@ export default function Users({ userEmail }) {
     event.preventDefault();
 
     if (editKey && editKey === "public_user") {
-      const publicUser = users.find((user) => user.email === "public");
-
       if (firestore) {
         client.setPublicLevel(publicLevelState).then(
           (level) => dispatch(setPublicLevel(level)),
           (e) => dispatch(addError(e.message))
         );
       } else {
+        const publicUser = users.find((user) => user.email === "public");
+
         if (publicUser)
           client
             .updateUser({
@@ -86,15 +86,27 @@ export default function Users({ userEmail }) {
         );
       setEditKey(undefined);
     } else {
-      client
-        .addUser({
-          email: newEmail,
-          level: newLevel,
-        })
-        .then(
-          (resp) => dispatch(addUser(resp)),
-          (e) => dispatch(addError(e.message))
-        );
+      if (firestore)
+        client
+          .updateUser({
+            _id: newEmail,
+            email: newEmail,
+            level: newLevel,
+          })
+          .then(
+            (resp) => dispatch(addUser(resp)),
+            (e) => dispatch(addError(e.message))
+          );
+      else
+        client
+          .addUser({
+            email: newEmail,
+            level: newLevel,
+          })
+          .then(
+            (resp) => dispatch(addUser(resp)),
+            (e) => dispatch(addError(e.message))
+          );
     }
   }
 
@@ -134,10 +146,13 @@ export default function Users({ userEmail }) {
           ) : (
             <PublicUser
               key="public_user"
-              level={publicLevelState}
+              level={defaultPublicLevel}
               userEmail={userEmail}
               editable={publicUserEditable}
-              editUser={() => setEditKey("public_user")}
+              editUser={(level) => {
+                setEditKey("public_user");
+                setEditedLevel(level);
+              }}
             />
           )}
           {[...users]
@@ -314,7 +329,7 @@ function PublicUser({ level, editable, editUser, userEmail }) {
       <td>{formatLevel(level)}</td>
       <td>
         {editable && (
-          <Button variant="link" onClick={editUser}>
+          <Button variant="link" onClick={() => editUser(level)}>
             <i className="fa fa-pencil" /> Upravit
           </Button>
         )}

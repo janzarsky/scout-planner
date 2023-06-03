@@ -37,25 +37,38 @@ class FirestoreClient {
   }
 
   async getPermissions() {
-    const publicLevel = await getDoc(
-      doc(this.db, `timetables/${this.table}`)
-    ).then(
-      (table) => (table.exists() ? table.data().publicLevel : level.ADMIN),
-      () => level.NONE
-    );
+    try {
+      const publicLevel = await getDoc(
+        doc(this.db, `timetables/${this.table}`)
+      ).then(
+        (table) =>
+          table.exists() && table.data().publicLevel !== undefined
+            ? table.data().publicLevel
+            : level.ADMIN,
+        () => level.NONE
+      );
 
-    const userLevel = await getDoc(
-      doc(
-        this.db,
-        `timetables/${this.table}/users/${this.auth.currentUser.email}`
-      )
-    ).then(
-      (user) =>
-        user.data() && user.data().level ? user.data().level : level.NONE,
-      () => level.NONE
-    );
+      if (this.auth.currentUser) {
+        const userLevel = await getDoc(
+          doc(
+            this.db,
+            `timetables/${this.table}/users/${this.auth.currentUser.email}`
+          )
+        ).then(
+          (user) =>
+            user.exists() && user.data().level !== undefined
+              ? user.data().level
+              : level.NONE,
+          () => level.NONE
+        );
 
-    return { level: userLevel > publicLevel ? userLevel : publicLevel };
+        return { level: userLevel > publicLevel ? userLevel : publicLevel };
+      }
+
+      return { level: publicLevel };
+    } catch (e) {
+      throw new Error(e.message);
+    }
   }
 
   async getSettings() {
@@ -69,9 +82,17 @@ class FirestoreClient {
 
   async updateSettings(data) {
     try {
-      await updateDoc(doc(this.db, `timetables/${this.table}`), {
-        settings: data,
-      });
+      const timetableDoc = doc(this.db, `timetables/${this.table}`);
+      const snapshot = await getDoc(timetableDoc);
+
+      if (snapshot.exists())
+        await updateDoc(timetableDoc, {
+          settings: data,
+        });
+      else
+        await setDoc(timetableDoc, {
+          settings: data,
+        });
 
       return data;
     } catch (e) {
@@ -79,18 +100,29 @@ class FirestoreClient {
     }
   }
 
-  async getPublicLevel(level) {
+  async getPublicLevel() {
     return await getDoc(doc(this.db, `timetables/${this.table}`)).then(
-      (table) => (table.exists() ? table.data().publicLevel : level.ADMIN),
+      (table) =>
+        table.exists() && table.data().publicLevel
+          ? table.data().publicLevel
+          : level.ADMIN,
       () => level.NONE
     );
   }
 
   async setPublicLevel(level) {
     try {
-      await updateDoc(doc(this.db, `timetables/${this.table}`), {
-        publicLevel: level,
-      });
+      const timetableDoc = doc(this.db, `timetables/${this.table}`);
+      const snapshot = await getDoc(timetableDoc);
+
+      if (snapshot.exists())
+        await updateDoc(timetableDoc, {
+          publicLevel: level,
+        });
+      else
+        await setDoc(timetableDoc, {
+          publicLevel: level,
+        });
 
       return level;
     } catch (e) {
