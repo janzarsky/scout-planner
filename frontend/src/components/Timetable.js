@@ -81,13 +81,6 @@ export default function Timetable({
           onDroppableDrop,
           addProgramModal
         )}
-        <Tray
-          settings={settings}
-          programs={programs}
-          onEdit={onEdit}
-          addProgramModal={addProgramModal}
-          onDroppableDrop={onDroppableDrop}
-        />
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -96,6 +89,13 @@ export default function Timetable({
           />
         )}
       </div>
+      <Tray
+        settings={settings}
+        programs={programs}
+        onEdit={onEdit}
+        addProgramModal={addProgramModal}
+        onDroppableDrop={onDroppableDrop}
+      />
     </DndProvider>
   );
 }
@@ -361,7 +361,15 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
   const programRects = getProgramRects(sortedPrograms, settings);
 
   return (
-    <>
+    <div
+      className="tray-wrapper"
+      style={{
+        gridTemplateColumns:
+          "auto auto repeat(" +
+          settings.timeSpan * settings.timeHeaders.length +
+          ", minmax(20px, 1fr))",
+      }}
+    >
       <div
         className="tray-header"
         style={{
@@ -412,6 +420,6 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
           })}
         </Block>
       </div>
-    </>
+    </div>
   );
 }

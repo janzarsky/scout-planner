@@ -78,6 +78,9 @@ p {
   text-align: right;
 }
 
+.tray-wrapper {
+  display: grid;
+}
 .tray {
   grid-column-start: 3;
 }
