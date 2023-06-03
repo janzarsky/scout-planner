@@ -103,6 +103,11 @@ describe("Users", () => {
 
     it("allows editing when logged in and there is user access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
+      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
+      else
+        store.dispatch(
+          addUser({ _id: "user0", email: "public", level: level.ADMIN })
+        );
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -166,27 +171,30 @@ describe("Users", () => {
   });
 
   describe("current user", () => {
-    it("allows editing when there is an implicit public access", () => {
-      store.dispatch(testing.setUserLevel(level.ADMIN));
-      store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.NONE })
-      );
-      cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
+    !completeConfig.firestore &&
+      it("allows editing when there is an implicit public access", () => {
+        store.dispatch(testing.setUserLevel(level.ADMIN));
+        store.dispatch(
+          addUser({ _id: "user1", email: "test@email.com", level: level.NONE })
+        );
+        cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
-      cy.get("tbody tr")
-        .eq(1)
-        .within(() => {
-          cy.contains("test@email.com");
-          cy.contains("žádné");
-          cy.contains("Upravit");
-        });
-    });
+        cy.get("tbody tr")
+          .eq(1)
+          .within(() => {
+            cy.contains("test@email.com");
+            cy.contains("žádné");
+            cy.contains("Upravit");
+          });
+      });
 
     it("allows editing when there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      store.dispatch(
-        addUser({ _id: "public", email: "public", level: level.ADMIN })
-      );
+      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
+      else
+        store.dispatch(
+          addUser({ _id: "public", email: "public", level: level.ADMIN })
+        );
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.NONE })
       );

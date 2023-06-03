@@ -21,7 +21,7 @@ export default function Users({ userEmail }) {
   const [editedLevel, setEditedLevel] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
-  const { users } = useSelector((state) => state.users);
+  const { users, publicLevel } = useSelector((state) => state.users);
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
@@ -31,9 +31,12 @@ export default function Users({ userEmail }) {
 
   const publicUser = users.find((user) => user.email === "public");
 
-  const [publicLevelState, setPublicLevelState] = useState(
-    publicUser ? publicUser.level : 3
-  );
+  const defaultPublicLevel = firestore
+    ? publicLevel
+    : publicUser
+    ? publicUser.level
+    : level.ADMIN;
+  const [publicLevelState, setPublicLevelState] = useState(defaultPublicLevel);
 
   function handleSubmit(event) {
     event.preventDefault();
