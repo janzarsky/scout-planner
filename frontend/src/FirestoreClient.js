@@ -88,9 +88,17 @@ class FirestoreClient {
 
   async setPublicLevel(level) {
     try {
-      await updateDoc(doc(this.db, `timetables/${this.table}`), {
-        publicLevel: level,
-      });
+      const timetableDoc = doc(this.db, `timetables/${this.table}`);
+      const snapshot = await getDoc(timetableDoc);
+
+      if (snapshot.exists())
+        await updateDoc(timetableDoc, {
+          publicLevel: level,
+        });
+      else
+        await setDoc(timetableDoc, {
+          publicLevel: level,
+        });
 
       return level;
     } catch (e) {
