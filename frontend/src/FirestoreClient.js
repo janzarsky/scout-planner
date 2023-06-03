@@ -37,25 +37,38 @@ class FirestoreClient {
   }
 
   async getPermissions() {
-    const publicLevel = await getDoc(
-      doc(this.db, `timetables/${this.table}`)
-    ).then(
-      (table) => (table.exists() ? table.data().publicLevel : level.ADMIN),
-      () => level.NONE
-    );
+    try {
+      const publicLevel = await getDoc(
+        doc(this.db, `timetables/${this.table}`)
+      ).then(
+        (table) =>
+          table.exists() && table.data().publicLevel !== undefined
+            ? table.data().publicLevel
+            : level.ADMIN,
+        () => level.NONE
+      );
 
-    const userLevel = await getDoc(
-      doc(
-        this.db,
-        `timetables/${this.table}/users/${this.auth.currentUser.email}`
-      )
-    ).then(
-      (user) =>
-        user.data() && user.data().level ? user.data().level : level.NONE,
-      () => level.NONE
-    );
+      if (this.auth.currentUser) {
+        const userLevel = await getDoc(
+          doc(
+            this.db,
+            `timetables/${this.table}/users/${this.auth.currentUser.email}`
+          )
+        ).then(
+          (user) =>
+            user.exists() && user.data().level !== undefined
+              ? user.data().level
+              : level.NONE,
+          () => level.NONE
+        );
 
-    return { level: userLevel > publicLevel ? userLevel : publicLevel };
+        return { level: userLevel > publicLevel ? userLevel : publicLevel };
+      }
+
+      return { level: publicLevel };
+    } catch (e) {
+      throw new Error(e.message);
+    }
   }
 
   async getSettings() {
