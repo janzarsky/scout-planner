@@ -115,8 +115,10 @@ export default function Users({ userEmail }) {
 
   // when it is allowed to edit current user, there is a warning about losing access,
   // the warning should not be shown in case there is still public ADMIN access
-  const currentUserWarning =
-    currentUserEditable && publicUser && publicUser.level < level.ADMIN;
+  const warningPublicLevel = firestore
+    ? publicLevel < level.ADMIN
+    : publicUser && publicUser.level < level.ADMIN;
+  const currentUserWarning = currentUserEditable && warningPublicLevel;
 
   return (
     <Form onSubmit={handleSubmit}>
