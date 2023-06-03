@@ -90,9 +90,11 @@ describe("Users", () => {
 
     it("displays instructions when logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      store.dispatch(
-        addUser({ _id: "public", email: "public", level: level.ADMIN })
-      );
+      if (completeConfig.firestore) store.dispatch(setPublicLevel(level.ADMIN));
+      else
+        store.dispatch(
+          addUser({ _id: "public", email: "public", level: level.ADMIN })
+        );
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
