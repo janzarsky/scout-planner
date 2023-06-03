@@ -105,9 +105,10 @@ export default function Users({ userEmail }) {
 
   // allow editing of current user only in case they are other users with ADMIN rights
   // (or there is a implicit public user which also has ADMIN rights)
+  const hasPublicAccess = firestore ? publicLevel >= level.ADMIN : !publicUser;
   const currentUserEditable =
     userEmail &&
-    (!publicUser ||
+    (hasPublicAccess ||
       users.some(
         (user) => user.email !== userEmail && user.level >= level.ADMIN
       ));
