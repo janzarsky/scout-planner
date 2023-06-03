@@ -54,40 +54,6 @@ export default function Timetable({
   const timeIndicatorRect = getTimeIndicatorRect(settings, timeProvider());
 
   return (
-    <TimetableDndWrapper settings={settings}>
-      {userLevel >= level.EDIT &&
-        getDroppables(settings, onDroppableDrop, addProgramModal)}
-      {getTimeHeaders(settings)}
-      {getDateHeaders(settings)}
-      {getGroupHeaders(settings)}
-      {getBlocks(
-        programs,
-        settings,
-        violations,
-        onEdit,
-        onDroppableDrop,
-        addProgramModal
-      )}
-      <Tray
-        settings={settings}
-        programs={programs}
-        onEdit={onEdit}
-        addProgramModal={addProgramModal}
-        onDroppableDrop={onDroppableDrop}
-      />
-      {timeIndicatorRect && (
-        <TimeIndicator
-          x={timeIndicatorRect.x}
-          y={timeIndicatorRect.y}
-          height={timeIndicatorRect.height}
-        />
-      )}
-    </TimetableDndWrapper>
-  );
-}
-
-function TimetableDndWrapper({ settings, children }) {
-  return (
     <DndProvider backend={HTML5Backend}>
       <div
         className="timetable"
@@ -102,7 +68,33 @@ function TimetableDndWrapper({ settings, children }) {
             ", minmax(20px, 1fr))",
         }}
       >
-        {children}
+        {userLevel >= level.EDIT &&
+          getDroppables(settings, onDroppableDrop, addProgramModal)}
+        {getTimeHeaders(settings)}
+        {getDateHeaders(settings)}
+        {getGroupHeaders(settings)}
+        {getBlocks(
+          programs,
+          settings,
+          violations,
+          onEdit,
+          onDroppableDrop,
+          addProgramModal
+        )}
+        <Tray
+          settings={settings}
+          programs={programs}
+          onEdit={onEdit}
+          addProgramModal={addProgramModal}
+          onDroppableDrop={onDroppableDrop}
+        />
+        {timeIndicatorRect && (
+          <TimeIndicator
+            x={timeIndicatorRect.x}
+            y={timeIndicatorRect.y}
+            height={timeIndicatorRect.height}
+          />
+        )}
       </div>
     </DndProvider>
   );
