@@ -305,6 +305,10 @@ p {
 .program-wrapper:hover .program-clone {
   display: block;
 }
+.program-wrapper:hover .program-url.narrow,
+.program-wrapper:hover .program-move.narrow {
+  display: none;
+}
 
 .droppable {
   border-radius: 4px;

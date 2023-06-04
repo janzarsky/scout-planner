@@ -72,6 +72,9 @@ export default function Program({ program, rect, violations, onEdit }) {
       (e) => dispatch(addError(e.message))
     );
 
+  const timeStep = useSelector((state) => state.settings.settings.timeStep);
+  const narrow = program.duration <= 2 * timeStep;
+
   return (
     <div
       ref={program.locked ? null : ref}
@@ -91,17 +94,22 @@ export default function Program({ program, rect, violations, onEdit }) {
         program={program}
         violations={violations}
         pkg={packages.find((p) => p._id === program.pkg)}
+        narrow={narrow}
       />
-      <ProgramEdit program={program} onEdit={onEdit} />
-      {program.locked && <ProgramLock />}
-      {!program.locked && userLevel >= level.EDIT && <ProgramMove />}
-      {program.url && <ProgramUrl url={program.url} />}
-      {userLevel >= level.EDIT && <ProgramClone clone={() => clone(program)} />}
+      <ProgramEdit program={program} onEdit={onEdit} narrow={narrow} />
+      {program.locked && <ProgramLock narrow={narrow} />}
+      {!program.locked && userLevel >= level.EDIT && (
+        <ProgramMove narrow={narrow} />
+      )}
+      {program.url && <ProgramUrl url={program.url} narrow={narrow} />}
+      {userLevel >= level.EDIT && (
+        <ProgramClone clone={() => clone(program)} narrow={narrow} />
+      )}
     </div>
   );
 }
 
-function ProgramBody({ program, pkg, violations }) {
+function ProgramBody({ program, pkg, violations, narrow }) {
   const { highlighted, faded } = useSelector((state) => {
     const highlighted =
       state.view.highlightingEnabled &&
@@ -111,7 +119,6 @@ function ProgramBody({ program, pkg, violations }) {
   });
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
-  const timeStep = useSelector((state) => state.settings.settings.timeStep);
   let rangeValue =
     activeRange && program.ranges ? program.ranges[activeRange] : 0;
   if (rangeValue === undefined) rangeValue = 0;
@@ -124,7 +131,7 @@ function ProgramBody({ program, pkg, violations }) {
         (highlighted ? " highlighted" : "") +
         (faded ? " faded" : "") +
         (rangesEnabled ? " range range-" + rangeValue : "") +
-        (program.duration <= 2 * timeStep ? " narrow" : "")
+        (narrow ? " narrow" : "")
       }
       style={
         !highlighted && !rangesEnabled && pkg
@@ -261,11 +268,14 @@ function ProgramViolations({ violations }) {
   );
 }
 
-function ProgramEdit({ onEdit, program }) {
+function ProgramEdit({ onEdit, program, narrow }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
-    <div className="program-edit" onClick={() => onEdit(program)}>
+    <div
+      className={"program-edit" + (narrow ? " narrow" : "")}
+      onClick={() => onEdit(program)}
+    >
       {userLevel >= level.EDIT ? (
         <i className="fa fa-pencil" />
       ) : (
@@ -275,25 +285,25 @@ function ProgramEdit({ onEdit, program }) {
   );
 }
 
-function ProgramMove() {
+function ProgramMove({ narrow }) {
   return (
-    <div className="program-move">
+    <div className={"program-move" + (narrow ? " narrow" : "")}>
       <i className="fa fa-arrows" />
     </div>
   );
 }
 
-function ProgramLock() {
+function ProgramLock({ narrow }) {
   return (
-    <div className="program-lock">
+    <div className={"program-lock" + (narrow ? " narrow" : "")}>
       <i className="fa fa-lock" />
     </div>
   );
 }
 
-function ProgramUrl({ url }) {
+function ProgramUrl({ url, narrow }) {
   return (
-    <div className="program-url">
+    <div className={"program-url" + (narrow ? " narrow" : "")}>
       <a href={url} rel="noopener noreferrer" target="_blank">
         <i className="fa fa-link" />
       </a>
@@ -301,9 +311,12 @@ function ProgramUrl({ url }) {
   );
 }
 
-function ProgramClone({ clone }) {
+function ProgramClone({ clone, narrow }) {
   return (
-    <div className="program-clone" onClick={clone}>
+    <div
+      className={"program-clone" + (narrow ? " narrow" : "")}
+      onClick={clone}
+    >
       <i className="fa fa-clone" />
     </div>
   );
