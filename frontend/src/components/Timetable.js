@@ -377,7 +377,11 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
   const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
   const sortedPrograms = sortTrayPrograms(trayPrograms, packages);
 
-  const programRects = getProgramRects(sortedPrograms, settings);
+  const programRects = getProgramRects(
+    sortedPrograms,
+    settings,
+    userLevel >= level.EDIT
+  );
 
   const [pinned, setPinned] = useState(false);
 

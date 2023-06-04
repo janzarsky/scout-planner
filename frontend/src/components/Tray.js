@@ -1,4 +1,4 @@
-export function getProgramRects(programs, settings) {
+export function getProgramRects(programs, settings, addButton = true) {
   const dayWidth = (settings.dayEnd - settings.dayStart) / settings.timeStep;
 
   return programs.reduce(
@@ -17,7 +17,7 @@ export function getProgramRects(programs, settings) {
         y: rect.y,
       };
     },
-    { programs: [], x: 4, y: 0 } // make space for "new program" button
+    { programs: [], x: addButton ? 4 : 0, y: 0 } // make space for "new program" button
   ).programs;
 }
 
