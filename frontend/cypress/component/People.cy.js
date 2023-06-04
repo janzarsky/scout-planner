@@ -89,6 +89,7 @@ describe("People", () => {
       .should("deep.include", {
         _id: "person1",
         name: "Person 2",
+        absence: [],
       });
 
     cy.contains("Person 2");
