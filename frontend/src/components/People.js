@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
-import { formatDateTime } from "../helpers/DateUtils";
+import { formatDateTime, parseDateTime } from "../helpers/DateUtils";
 
 export default function People() {
   const { people } = useSelector((state) => state.people);
@@ -14,13 +14,14 @@ export default function People() {
   const [newName, setNewName] = useState("Nový organizátor");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
+  const [absence, setAbsence] = useState();
 
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
-  const attendance = useSelector((state) => state.config.attendance);
+  const attendanceFlag = useSelector((state) => state.config.attendance);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -30,6 +31,7 @@ export default function People() {
         .updatePerson({
           _id: editKey,
           name: editedName,
+          absence: parseAbsence(absence),
         })
         .then(
           (resp) => dispatch(updatePerson(resp)),
@@ -54,7 +56,7 @@ export default function People() {
         <thead>
           <tr>
             <th>Organizátor</th>
-            {attendance && <th>Účast</th>}
+            {attendanceFlag && <th>Účast</th>}
             <th>Akce</th>
           </tr>
         </thead>
@@ -67,6 +69,8 @@ export default function People() {
                   key="edited"
                   name={editedName}
                   setName={setEditedName}
+                  absence={absence}
+                  setAbsence={setAbsence}
                 />
               ) : (
                 <Person
@@ -76,6 +80,9 @@ export default function People() {
                   editPerson={() => {
                     setEditKey(person._id);
                     setEditedName(person.name);
+                    setAbsence(
+                      formatAbsence(person.absence ? person.absence : [])
+                    );
                   }}
                   deletePerson={() =>
                     client.deletePerson(person._id).then(
@@ -129,7 +136,13 @@ function Person({ name, absence, deletePerson, editPerson }) {
   );
 }
 
-function EditedPerson({ name, setName, isNew = false }) {
+function EditedPerson({
+  name,
+  setName,
+  absence = null,
+  setAbsence = null,
+  isNew = false,
+}) {
   const attendanceFlag = useSelector((state) => state.config.attendance);
 
   return (
@@ -141,7 +154,16 @@ function EditedPerson({ name, setName, isNew = false }) {
           onChange={(e) => setName(e.target.value)}
         />
       </td>
-      {attendanceFlag && <td></td>}
+      {attendanceFlag && (
+        <td>
+          {absence !== null && (
+            <Form.Control
+              value={absence}
+              onChange={(e) => setAbsence(e.target.value)}
+            />
+          )}
+        </td>
+      )}
       <td>
         <Button
           data-test={isNew ? "people-new-add" : "people-edit-save"}
@@ -161,4 +183,26 @@ function EditedPerson({ name, setName, isNew = false }) {
       </td>
     </tr>
   );
+}
+
+function formatAbsence(absence) {
+  return absence
+    .map(
+      (entry) => `${formatDateTime(entry.begin)} - ${formatDateTime(entry.end)}`
+    )
+    .join(", ");
+}
+
+function parseAbsence(absence) {
+  return absence
+    .split(",")
+    .map((entry) => entry.trim())
+    .map((entry) => {
+      const times = entry
+        .split("-", 2)
+        .map((time) => time.trim())
+        .map((time) => parseDateTime(time));
+
+      return { begin: times[0], end: times[1] };
+    });
 }
