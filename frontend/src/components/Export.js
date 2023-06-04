@@ -23,7 +23,7 @@ export default function Export() {
   });
 
   return (
-    <Form.Group>
+    <Form.Group className="mb-3">
       <Form.Label>Exportovaná data:</Form.Label>
       <Form.Control as="textarea" value={data} readOnly />
     </Form.Group>

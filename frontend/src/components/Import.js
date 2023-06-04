@@ -24,7 +24,7 @@ export default function Import() {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Group>
+      <Form.Group className="mb-3">
         <Form.Label>Data k importu:</Form.Label>
         <Form.Control
           as="textarea"
@@ -32,7 +32,7 @@ export default function Import() {
           onChange={(e) => setDataToImport(e.target.value)}
         />
       </Form.Group>
-      <Form.Group>
+      <Form.Group className="mb-3">
         <Button type="submit">Importovat</Button>
       </Form.Group>
     </Form>
