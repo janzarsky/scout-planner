@@ -1,7 +1,7 @@
 import { formatDateTime } from "./helpers/DateUtils";
 import { arraysEqualWithSorting, arraysIntersect } from "./helpers/Sorting";
 
-export function checkRules(rules, programs) {
+export function checkRules(rules, programs, people = []) {
   const violations = new Map();
 
   for (const rule of rules) {
@@ -9,11 +9,12 @@ export function checkRules(rules, programs) {
   }
 
   const overlaps = checkOverlaps(programs);
-  const people = checkPeople(programs);
+  const peopleOverlaps = checkPeople(programs);
+  const absence = checkAbsence(programs, people);
 
   return {
     violations: violations,
-    other: [...overlaps, ...people],
+    other: [...overlaps, ...peopleOverlaps, ...absence],
   };
 }
 
@@ -138,4 +139,47 @@ function checkPeople(programs) {
   });
 
   return overlaps;
+}
+
+function intervalsOverlap(begin1, end1, begin2, end2) {
+  return begin1 < end2 && begin2 < end1;
+}
+
+function isPersonAvailable(absence, begin, end) {
+  return absence.reduce((acc, curr) => {
+    if (intervalsOverlap(curr.begin, curr.end, begin, end)) return false;
+
+    return acc;
+  }, true);
+}
+
+function getAbsentPeople(program, allPeople) {
+  return program.people.flatMap((attendance) => {
+    const person = allPeople.find((p) => p._id === attendance.person);
+
+    if (
+      person &&
+      person.absence &&
+      person.absence.length > 0 &&
+      !isPersonAvailable(
+        person.absence,
+        program.begin,
+        program.begin + program.duration
+      )
+    )
+      return [person._id];
+
+    return [];
+  });
+}
+
+function checkAbsence(programs, people) {
+  return programs.flatMap((program) => {
+    const absentPeople = program.people ? getAbsentPeople(program, people) : [];
+
+    if (absentPeople.length > 0)
+      return [{ program: program._id, people: absentPeople }];
+
+    return [];
+  });
 }

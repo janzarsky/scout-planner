@@ -127,7 +127,7 @@ export default function App() {
       dispatch(setPeopleMigrationState("failedPeople"));
     }
 
-    const problems = checkRules(rules, convertedPrograms);
+    const problems = checkRules(rules, convertedPrograms, people);
 
     setViolations(problems.violations);
     setOtherProblems(problems.other);
