@@ -51,6 +51,7 @@ export default function People() {
         <thead>
           <tr>
             <th>Organizátor</th>
+            <th>Účast</th>
             <th>Akce</th>
           </tr>
         </thead>
@@ -92,6 +93,7 @@ function Person({ name, deletePerson, editPerson }) {
   return (
     <tr>
       <td>{name}</td>
+      <td>celou dobu</td>
       <td>
         <span>
           <Button variant="link" onClick={editPerson}>
@@ -117,6 +119,7 @@ function EditedPerson({ name, setName, isNew = false }) {
           onChange={(e) => setName(e.target.value)}
         />
       </td>
+      <td>celou dobu</td>
       <td>
         <Button
           data-test={isNew ? "people-new-add" : "people-edit-save"}
