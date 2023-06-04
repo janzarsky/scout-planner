@@ -44,7 +44,7 @@ export default function Settings() {
         <Export />
         {userLevel >= level.ADMIN && <Import />}
         {userLevel >= level.ADMIN && (
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Button onClick={deleteAll}>Smazat vše</Button>
           </Form.Group>
         )}
@@ -82,7 +82,7 @@ function TimeStep() {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Row>
+      <Row className="mb-3">
         <Form.Label column sm="2">
           Základní interval
         </Form.Label>
@@ -140,7 +140,7 @@ function Width() {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Row>
+      <Row className="mb-3">
         <Form.Label column sm="2">
           Šířka harmonogramu
         </Form.Label>
