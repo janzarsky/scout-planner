@@ -456,34 +456,6 @@ function ProgramPeople({
   const table = useSelector((state) => state.auth.table);
   const client = clientFactory.getClient(table);
 
-  function intervalsOverlap(begin1, end1, begin2, end2) {
-    return begin1 < end2 && begin2 < end1;
-  }
-
-  function personAvailable(absence, begin, end) {
-    return absence.reduce((acc, curr) => {
-      if (intervalsOverlap(curr.begin, curr.end, begin, end)) return false;
-
-      return acc;
-    }, true);
-  }
-
-  function isPersonAvailable(id) {
-    const person = objectPeople.find((p) => p._id === id);
-
-    if (
-      begin !== null &&
-      duration !== null &&
-      person &&
-      person.absence &&
-      person.absence.length > 0 &&
-      !personAvailable(person.absence, begin, begin + duration)
-    )
-      return false;
-
-    return true;
-  }
-
   return (
     <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
@@ -499,7 +471,14 @@ function ProgramPeople({
                     <Form.Check
                       type="checkbox"
                       className={
-                        isPersonAvailable(person._id) ? "" : "text-danger"
+                        isPersonAvailable(
+                          person._id,
+                          objectPeople,
+                          begin,
+                          duration
+                        )
+                          ? ""
+                          : "text-danger"
                       }
                       label={person.name}
                       id={person._id}
@@ -812,4 +791,32 @@ export function AddProgramModal({ options, handleClose }) {
       </Form>
     </Modal>
   );
+}
+
+function intervalsOverlap(begin1, end1, begin2, end2) {
+  return begin1 < end2 && begin2 < end1;
+}
+
+function personAvailable(absence, begin, end) {
+  return absence.reduce((acc, curr) => {
+    if (intervalsOverlap(curr.begin, curr.end, begin, end)) return false;
+
+    return acc;
+  }, true);
+}
+
+function isPersonAvailable(id, people, begin, duration) {
+  const person = people.find((p) => p._id === id);
+
+  if (
+    begin !== null &&
+    duration !== null &&
+    person &&
+    person.absence &&
+    person.absence.length > 0 &&
+    !personAvailable(person.absence, begin, begin + duration)
+  )
+    return false;
+
+  return true;
 }
