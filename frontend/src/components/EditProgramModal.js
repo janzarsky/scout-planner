@@ -33,6 +33,7 @@ export function EditProgramModal({ programId, handleClose }) {
 
   const [submitInProgress, setSubmitInProgress] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
+  const [cloneInProgress, setCloneInProgress] = useState(false);
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
@@ -64,6 +65,24 @@ export function EditProgramModal({ programId, handleClose }) {
       () => {
         dispatch(deleteProgram(program._id));
         setDeleteInProgress(false);
+        handleClose();
+      },
+      (e) => dispatch(addError(e.message))
+    );
+  }
+
+  function handleClone(event) {
+    event.preventDefault();
+
+    setCloneInProgress(true);
+
+    const newProgram = { ...program };
+    delete newProgram._id;
+
+    client.addProgram(newProgram).then(
+      () => {
+        dispatch(addProgram(newProgram));
+        setCloneInProgress(false);
         handleClose();
       },
       (e) => dispatch(addError(e.message))
@@ -184,17 +203,27 @@ export function EditProgramModal({ programId, handleClose }) {
         </Modal.Body>
         <Modal.Footer>
           {userLevel >= level.EDIT && (
-            <Button
-              variant="link text-danger"
-              onClick={handleDelete}
-              style={{ marginRight: "auto" }}
-            >
+            <Button variant="link text-danger" onClick={handleDelete}>
               {deleteInProgress ? (
                 <i className="fa fa-spinner fa-pulse" />
               ) : (
                 <i className="fa fa-trash" />
               )}
               &nbsp; Smazat
+            </Button>
+          )}
+          {userLevel >= level.EDIT && (
+            <Button
+              variant="link"
+              onClick={handleClone}
+              style={{ marginRight: "auto" }}
+            >
+              {cloneInProgress ? (
+                <i className="fa fa-spinner fa-pulse" />
+              ) : (
+                <i className="fa fa-clone" />
+              )}
+              &nbsp; Klonovat
             </Button>
           )}
           <Button variant="link" onClick={handleClose}>
