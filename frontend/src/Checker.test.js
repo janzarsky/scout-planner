@@ -180,6 +180,30 @@ describe("overlaps", () => {
       ],
     });
   });
+
+  test("two programs with overlapping times, different block order, but no groups", () => {
+    const progA = {
+      _id: "progA",
+      begin: 0,
+      duration: 60,
+      groups: [],
+      people: [],
+      blockOrder: 0,
+    };
+    const progB = {
+      _id: "progB",
+      begin: 30,
+      duration: 60,
+      groups: [],
+      people: [],
+      blockOrder: 1,
+    };
+
+    expect(checkRules([], [progA, progB])).toEqual({
+      violations: new Map(),
+      other: [],
+    });
+  });
 });
 
 describe("people", () => {

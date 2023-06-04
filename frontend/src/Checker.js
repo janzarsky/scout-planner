@@ -66,6 +66,24 @@ function checkRule(rule, programs) {
   return failure("Neznámé pravidlo");
 }
 
+function programsOverlap(prog1, prog2) {
+  // if there are no groups, it only depends on block order
+  if (prog1.groups.length === 0 && prog2.groups.length === 0)
+    return prog1.blockOrder === prog2.blockOrder;
+
+  // if only one program has no groups, it is always overlap
+  if (prog1.groups.length === 0 || prog2.groups.length === 0) return true;
+
+  if (
+    arraysIntersect(prog1.groups, prog2.groups) &&
+    (prog1.blockOrder === prog2.blockOrder ||
+      !arraysEqualWithSorting(prog1.groups, prog2.groups))
+  )
+    return true;
+
+  return false;
+}
+
 function checkOverlaps(programs) {
   var overlaps = [];
   const sorted = [...programs].sort((a, b) => (a.begin < b.begin ? -1 : 1));
@@ -76,20 +94,7 @@ function checkOverlaps(programs) {
 
       if (prog2.begin >= prog1.begin + prog1.duration) break;
 
-      if (prog1.groups.length === 0 || prog2.groups.length === 0) {
-        overlaps.push({
-          program: prog1._id,
-          msg: "Více programů pro jednu skupinu",
-        });
-        overlaps.push({
-          program: prog2._id,
-          msg: "Více programů pro jednu skupinu",
-        });
-      } else if (
-        arraysIntersect(prog1.groups, prog2.groups) &&
-        (prog1.blockOrder === prog2.blockOrder ||
-          !arraysEqualWithSorting(prog1.groups, prog2.groups))
-      ) {
+      if (programsOverlap(prog1, prog2)) {
         overlaps.push({
           program: prog1._id,
           msg: "Více programů pro jednu skupinu",
