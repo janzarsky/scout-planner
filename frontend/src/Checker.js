@@ -67,6 +67,11 @@ function checkRule(rule, programs) {
 }
 
 function programsOverlap(prog1, prog2) {
+  // if there are no groups, it only depends on block order
+  if (prog1.groups.length === 0 && prog2.groups.length === 0)
+    return prog1.blockOrder === prog2.blockOrder;
+
+  // if only one program has no groups, it is always overlap
   if (prog1.groups.length === 0 || prog2.groups.length === 0) return true;
 
   if (
