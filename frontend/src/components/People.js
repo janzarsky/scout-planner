@@ -20,6 +20,8 @@ export default function People() {
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
+  const attendance = useSelector((state) => state.config.attendance);
+
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -52,7 +54,7 @@ export default function People() {
         <thead>
           <tr>
             <th>Organizátor</th>
-            <th>Účast</th>
+            {attendance && <th>Účast</th>}
             <th>Akce</th>
           </tr>
         </thead>
@@ -92,21 +94,25 @@ export default function People() {
 }
 
 function Person({ name, attendance, deletePerson, editPerson }) {
+  const attendanceFlag = useSelector((state) => state.config.attendance);
+
   return (
     <tr>
       <td>{name}</td>
-      <td>
-        {attendance && attendance.length > 0
-          ? attendance
-              .map(
-                (entry) =>
-                  `chybí od ${formatDateTime(entry.begin)} do ${formatDateTime(
-                    entry.end
-                  )}`
-              )
-              .join(", ")
-          : "celou dobu"}
-      </td>
+      {attendanceFlag && (
+        <td>
+          {attendance && attendance.length > 0
+            ? attendance
+                .map(
+                  (entry) =>
+                    `chybí od ${formatDateTime(
+                      entry.begin
+                    )} do ${formatDateTime(entry.end)}`
+                )
+                .join(", ")
+            : "celou dobu"}
+        </td>
+      )}
       <td>
         <span>
           <Button variant="link" onClick={editPerson}>
@@ -123,6 +129,8 @@ function Person({ name, attendance, deletePerson, editPerson }) {
 }
 
 function EditedPerson({ name, setName, isNew = false }) {
+  const attendanceFlag = useSelector((state) => state.config.attendance);
+
   return (
     <tr>
       <td>
@@ -132,7 +140,7 @@ function EditedPerson({ name, setName, isNew = false }) {
           onChange={(e) => setName(e.target.value)}
         />
       </td>
-      <td></td>
+      {attendanceFlag && <td></td>}
       <td>
         <Button
           data-test={isNew ? "people-new-add" : "people-edit-save"}
