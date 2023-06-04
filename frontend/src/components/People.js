@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
+import { formatDateTime } from "../helpers/DateUtils";
 
 export default function People() {
   const { people } = useSelector((state) => state.people);
@@ -69,6 +70,7 @@ export default function People() {
                 <Person
                   key={person._id}
                   name={person.name}
+                  attendance={person.attendance}
                   editPerson={() => {
                     setEditKey(person._id);
                     setEditedName(person.name);
@@ -89,11 +91,22 @@ export default function People() {
   );
 }
 
-function Person({ name, deletePerson, editPerson }) {
+function Person({ name, attendance, deletePerson, editPerson }) {
   return (
     <tr>
       <td>{name}</td>
-      <td>celou dobu</td>
+      <td>
+        {attendance && attendance.length > 0
+          ? attendance
+              .map(
+                (entry) =>
+                  `chybí od ${formatDateTime(entry.begin)} do ${formatDateTime(
+                    entry.end
+                  )}`
+              )
+              .join(", ")
+          : "celou dobu"}
+      </td>
       <td>
         <span>
           <Button variant="link" onClick={editPerson}>
@@ -119,7 +132,7 @@ function EditedPerson({ name, setName, isNew = false }) {
           onChange={(e) => setName(e.target.value)}
         />
       </td>
-      <td>celou dobu</td>
+      <td></td>
       <td>
         <Button
           data-test={isNew ? "people-new-add" : "people-edit-save"}
