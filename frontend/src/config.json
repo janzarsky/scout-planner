@@ -6,5 +6,5 @@
   "peopleSection": true,
   "peopleMigration": true,
   "firestore": true,
-  "absence": false
+  "attendance": false
 }
