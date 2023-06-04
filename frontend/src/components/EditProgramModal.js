@@ -762,6 +762,8 @@ export function AddProgramModal({ options, handleClose }) {
             removePersonObject={(id) =>
               setAttendance(attendance.filter((att) => att.person !== id))
             }
+            begin={parseDate(date) + parseTime(time)}
+            duration={parseDuration(duration)}
           />
           <ProgramPlace place={place} setPlace={setPlace} />
           <ProgramUrl url={url} setUrl={setUrl} />
