@@ -174,6 +174,8 @@ export function EditProgramModal({ programId, handleClose }) {
               setAttendance(attendance.filter((att) => att.person !== id))
             }
             disabled={userLevel < level.EDIT}
+            begin={parseDate(date) + parseTime(time)}
+            duration={parseDuration(duration)}
           />
           <ProgramPlace
             place={place}
@@ -441,6 +443,8 @@ function ProgramPeople({
   addPersonObject,
   removePersonObject,
   disabled = false,
+  begin,
+  duration,
 }) {
   const {
     legacyPeople: stringPeople,
@@ -466,6 +470,16 @@ function ProgramPeople({
                   <Col key={person._id}>
                     <Form.Check
                       type="checkbox"
+                      className={
+                        isPersonAvailable(
+                          person._id,
+                          objectPeople,
+                          begin,
+                          duration
+                        )
+                          ? ""
+                          : "text-danger"
+                      }
                       label={person.name}
                       id={person._id}
                       checked={
@@ -748,6 +762,8 @@ export function AddProgramModal({ options, handleClose }) {
             removePersonObject={(id) =>
               setAttendance(attendance.filter((att) => att.person !== id))
             }
+            begin={parseDate(date) + parseTime(time)}
+            duration={parseDuration(duration)}
           />
           <ProgramPlace place={place} setPlace={setPlace} />
           <ProgramUrl url={url} setUrl={setUrl} />
@@ -777,4 +793,32 @@ export function AddProgramModal({ options, handleClose }) {
       </Form>
     </Modal>
   );
+}
+
+function intervalsOverlap(begin1, end1, begin2, end2) {
+  return begin1 < end2 && begin2 < end1;
+}
+
+function personAvailable(absence, begin, end) {
+  return absence.reduce((acc, curr) => {
+    if (intervalsOverlap(curr.begin, curr.end, begin, end)) return false;
+
+    return acc;
+  }, true);
+}
+
+function isPersonAvailable(id, people, begin, duration) {
+  const person = people.find((p) => p._id === id);
+
+  if (
+    begin !== null &&
+    duration !== null &&
+    person &&
+    person.absence &&
+    person.absence.length > 0 &&
+    !personAvailable(person.absence, begin, begin + duration)
+  )
+    return false;
+
+  return true;
 }
