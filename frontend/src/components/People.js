@@ -56,7 +56,16 @@ export default function People() {
         <thead>
           <tr>
             <th>Organizátor</th>
-            {attendanceFlag && <th>Účast</th>}
+            {attendanceFlag && (
+              <th>
+                Účast{" "}
+                <i
+                  className="fa fa-flask text-secondary"
+                  aria-hidden="true"
+                ></i>{" "}
+                <small className="text-secondary">Experimentální funkce</small>
+              </th>
+            )}
             <th>Akce</th>
           </tr>
         </thead>
