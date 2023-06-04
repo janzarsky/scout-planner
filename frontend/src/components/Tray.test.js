@@ -20,6 +20,14 @@ describe("getProgramRects", () => {
     ]);
   });
 
+  it("should remove the space for add button when not requested", () => {
+    const prog = { duration: parseDuration("1:00") };
+
+    expect(getProgramRects([prog], settings, false)).toEqual([
+      [prog, { x: 0, y: 0, width: 4, height: 1 }],
+    ]);
+  });
+
   it("should position two programs next to each other", () => {
     const prog1 = { duration: parseDuration("1:00") };
     const prog2 = { duration: parseDuration("1:00") };

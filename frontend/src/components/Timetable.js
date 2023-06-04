@@ -372,11 +372,16 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
   );
 
   const width = useSelector((state) => state.settings.settings.width);
+  const userLevel = useSelector((state) => state.auth.userLevel);
 
   const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
   const sortedPrograms = sortTrayPrograms(trayPrograms, packages);
 
-  const programRects = getProgramRects(sortedPrograms, settings);
+  const programRects = getProgramRects(
+    sortedPrograms,
+    settings,
+    userLevel >= level.EDIT
+  );
 
   const [pinned, setPinned] = useState(false);
 
@@ -426,19 +431,21 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
             settings
           )}
         >
-          <button
-            ref={drop}
-            className="tray-add-program"
-            onClick={() => addProgramModal({ begin: null, groupId: null })}
-          >
-            {!isOver && (
-              <i
-                className="fa fa-plus"
-                aria-hidden="true"
-                title="Nový program"
-              />
-            )}
-          </button>
+          {userLevel >= level.EDIT && (
+            <button
+              ref={drop}
+              className="tray-add-program"
+              onClick={() => addProgramModal({ begin: null, groupId: null })}
+            >
+              {!isOver && (
+                <i
+                  className="fa fa-plus"
+                  aria-hidden="true"
+                  title="Nový program"
+                />
+              )}
+            </button>
+          )}
           {programRects.map(([program, rect]) => {
             return (
               <Program
