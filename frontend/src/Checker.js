@@ -9,11 +9,11 @@ export function checkRules(rules, programs) {
   }
 
   const overlaps = checkOverlaps(programs);
-  const people = checkPeople(programs);
+  const peopleOverlaps = checkPeople(programs);
 
   return {
     violations: violations,
-    other: [...overlaps, ...people],
+    other: [...overlaps, ...peopleOverlaps],
   };
 }
 
