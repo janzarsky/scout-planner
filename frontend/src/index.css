@@ -140,6 +140,7 @@ p {
   align-content: stretch;
   overflow: hidden;
   position: relative;
+  min-height: 3.5rem;
 }
 .program-wrapper.dragged {
   transform: translateX(-9999px);
