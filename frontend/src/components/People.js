@@ -160,6 +160,7 @@ function EditedPerson({
             <Form.Control
               value={absence}
               onChange={(e) => setAbsence(e.target.value)}
+              placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
             />
           )}
         </td>
