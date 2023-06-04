@@ -204,6 +204,9 @@ function formatAbsence(absence) {
 }
 
 function parseAbsence(absence) {
+  if (typeof absence !== "string") return [];
+  if (absence === "") return [];
+
   return absence
     .split(",")
     .map((entry) => entry.trim())
