@@ -51,6 +51,7 @@ export default function People() {
         <thead>
           <tr>
             <th>Organizátor</th>
+            <th>Akce</th>
           </tr>
         </thead>
         <tbody>
