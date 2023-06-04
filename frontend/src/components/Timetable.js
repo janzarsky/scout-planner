@@ -303,6 +303,7 @@ function TimeHeader({ time, pos, span }) {
       }}
     >
       {time.getUTCHours()}
+      <span className="timeheader-minutes">:00</span>
     </div>
   );
 }
