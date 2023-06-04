@@ -102,12 +102,13 @@ function Person({ name, attendance, deletePerson, editPerson }) {
       {attendanceFlag && (
         <td>
           {attendance && attendance.length > 0
-            ? attendance
+            ? "chybí " +
+              attendance
                 .map(
                   (entry) =>
-                    `chybí od ${formatDateTime(
-                      entry.begin
-                    )} do ${formatDateTime(entry.end)}`
+                    `od ${formatDateTime(entry.begin)} do ${formatDateTime(
+                      entry.end
+                    )}`
                 )
                 .join(", ")
             : "celou dobu"}
