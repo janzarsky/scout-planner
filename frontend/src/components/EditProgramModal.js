@@ -174,6 +174,8 @@ export function EditProgramModal({ programId, handleClose }) {
               setAttendance(attendance.filter((att) => att.person !== id))
             }
             disabled={userLevel < level.EDIT}
+            begin={parseDate(date) + parseTime(time)}
+            duration={parseDuration(duration)}
           />
           <ProgramPlace
             place={place}
@@ -441,6 +443,8 @@ function ProgramPeople({
   addPersonObject,
   removePersonObject,
   disabled = false,
+  begin,
+  duration,
 }) {
   const {
     legacyPeople: stringPeople,
@@ -451,6 +455,34 @@ function ProgramPeople({
   const dispatch = useDispatch();
   const table = useSelector((state) => state.auth.table);
   const client = clientFactory.getClient(table);
+
+  function intervalsOverlap(begin1, end1, begin2, end2) {
+    return begin1 < end2 && begin2 < end1;
+  }
+
+  function personAvailable(absence, begin, end) {
+    return absence.reduce((acc, curr) => {
+      if (intervalsOverlap(curr.begin, curr.end, begin, end)) return false;
+
+      return acc;
+    }, true);
+  }
+
+  function isPersonAvailable(id) {
+    const person = objectPeople.find((p) => p._id === id);
+
+    if (
+      begin !== null &&
+      duration !== null &&
+      person &&
+      person.absence &&
+      person.absence.length > 0 &&
+      !personAvailable(person.absence, begin, begin + duration)
+    )
+      return false;
+
+    return true;
+  }
 
   return (
     <Form.Group as={Row} className="mb-3">
@@ -466,6 +498,9 @@ function ProgramPeople({
                   <Col key={person._id}>
                     <Form.Check
                       type="checkbox"
+                      className={
+                        isPersonAvailable(person._id) ? "" : "text-danger"
+                      }
                       label={person.name}
                       id={person._id}
                       checked={
