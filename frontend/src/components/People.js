@@ -72,7 +72,7 @@ export default function People() {
                 <Person
                   key={person._id}
                   name={person.name}
-                  attendance={person.attendance}
+                  absence={person.absence}
                   editPerson={() => {
                     setEditKey(person._id);
                     setEditedName(person.name);
@@ -93,7 +93,7 @@ export default function People() {
   );
 }
 
-function Person({ name, attendance, deletePerson, editPerson }) {
+function Person({ name, absence, deletePerson, editPerson }) {
   const attendanceFlag = useSelector((state) => state.config.attendance);
 
   return (
@@ -101,9 +101,9 @@ function Person({ name, attendance, deletePerson, editPerson }) {
       <td>{name}</td>
       {attendanceFlag && (
         <td>
-          {attendance && attendance.length > 0
+          {absence && absence.length > 0
             ? "chybí " +
-              attendance
+              absence
                 .map(
                   (entry) =>
                     `od ${formatDateTime(entry.begin)} do ${formatDateTime(
