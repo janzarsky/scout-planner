@@ -204,6 +204,11 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState("timetable");
 
+  const onSelectCallback = useCallback(
+    (key) => setActiveTab(key),
+    [setActiveTab]
+  );
+
   const addProgramCallback = useCallback(
     (options) => {
       setAddModalEnabled(true);
@@ -243,10 +248,7 @@ export default function App() {
           handleClose={() => setEditProgramId(undefined)}
         />
       )}
-      <Tab.Container
-        activeKey={activeTab}
-        onSelect={(key) => setActiveTab(key)}
-      >
+      <Tab.Container activeKey={activeTab} onSelect={onSelectCallback}>
         <Nav variant="pills" className="control-panel">
           <Nav.Link eventKey="timetable">Harmonogram</Nav.Link>
           {userLevel >= level.VIEW && (
