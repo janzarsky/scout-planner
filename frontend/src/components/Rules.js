@@ -26,6 +26,7 @@ export default function Rules({ violations }) {
 
   const { rules } = useSelector((state) => state.rules);
   const { programs } = useSelector((state) => state.programs);
+  const groups = useSelector((state) => state.groups.groups);
   const dispatch = useDispatch();
 
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -60,9 +61,16 @@ export default function Rules({ violations }) {
       );
   }
 
-  const rulesData = useMemo(() => {
-    return [...rules].sort((a, b) => ruleSort(a, b, programs));
-  }, [rules, programs]);
+  const rulesData = useMemo(
+    () =>
+      [...rules]
+        .sort((a, b) => ruleSort(a, b, programs))
+        .map((rule) => ({
+          ...rule,
+          formatted: formatRule(rule, programs, groups),
+        })),
+    [rules, programs, groups]
+  );
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -74,6 +82,7 @@ export default function Rules({ violations }) {
               key={rule._id}
               cnt={index + 1}
               rule={rule}
+              formattedRule={rule.formatted}
               violation={violations.get(rule._id)}
               deleteRule={() =>
                 client.deleteRule(rule._id).then(
@@ -127,15 +136,13 @@ function RulesHeader() {
   );
 }
 
-function Rule({ cnt, rule, violation, deleteRule }) {
-  const { groups } = useSelector((state) => state.groups);
-  const programs = useSelector((state) => state.programs.programs);
+function Rule({ cnt, violation, formattedRule, deleteRule }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
     <tr>
       <td>{cnt}</td>
-      <td>{formatRule(rule, programs, groups)}</td>
+      <td>{formattedRule}</td>
       <td>
         {violation &&
           (violation.satisfied ? (
