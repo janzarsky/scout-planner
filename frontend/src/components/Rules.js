@@ -174,6 +174,14 @@ function NewRule({
   const { groups } = useSelector((state) => state.groups);
   const programs = useSelector((state) => state.programs.programs);
 
+  const formattedPrograms = useMemo(
+    () =>
+      [...programs]
+        .sort(programSort)
+        .map((prog) => ({ _id: prog._id, text: formatProgram(prog, groups) })),
+    [programs, groups]
+  );
+
   return (
     <tr>
       <td></td>
@@ -185,9 +193,9 @@ function NewRule({
               onChange={(e) => setFirstProgram(e.target.value)}
             >
               <option>Žádný program</option>
-              {[...programs].sort(programSort).map((prog) => (
+              {formattedPrograms.map((prog) => (
                 <option key={prog._id} value={prog._id}>
-                  {formatProgram(prog, groups)}
+                  {prog.text}
                 </option>
               ))}
             </Form.Select>
@@ -236,9 +244,9 @@ function NewRule({
                       onChange={(e) => setSecondProgram(e.target.value)}
                     >
                       <option>Žádný program</option>
-                      {[...programs].sort(programSort).map((prog) => (
+                      {formattedPrograms.map((prog) => (
                         <option key={prog._id} value={prog._id}>
-                          {formatProgram(prog, groups)}
+                          {prog.text}
                         </option>
                       ))}
                     </Form.Select>
