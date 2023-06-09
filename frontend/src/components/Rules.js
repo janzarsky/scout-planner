@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -26,6 +26,7 @@ export default function Rules({ violations }) {
 
   const { rules } = useSelector((state) => state.rules);
   const { programs } = useSelector((state) => state.programs);
+  const groups = useSelector((state) => state.groups.groups);
   const dispatch = useDispatch();
 
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -60,31 +61,39 @@ export default function Rules({ violations }) {
       );
   }
 
+  const rulesData = useMemo(
+    () =>
+      [...rules]
+        .sort((a, b) => ruleSort(a, b, programs))
+        .map((rule) => ({
+          ...rule,
+          formatted: formatRule(rule, programs, groups),
+        })),
+    [rules, programs, groups]
+  );
+
   return (
     <Form onSubmit={handleSubmit}>
       <Table bordered hover responsive>
         <RulesHeader />
         <tbody>
-          {[...rules]
-            .sort((a, b) => ruleSort(a, b, programs))
-            .map((rule, index) => (
-              <Rule
-                key={rule._id}
-                cnt={index + 1}
-                rule={rule}
-                programs={programs}
-                violation={violations.get(rule._id)}
-                deleteRule={() =>
-                  client.deleteRule(rule._id).then(
-                    () => dispatch(deleteRule(rule._id)),
-                    (e) => dispatch(addError(e.message))
-                  )
-                }
-              />
-            ))}
+          {rulesData.map((rule, index) => (
+            <Rule
+              key={rule._id}
+              cnt={index + 1}
+              rule={rule}
+              formattedRule={rule.formatted}
+              violation={violations.get(rule._id)}
+              deleteRule={() =>
+                client.deleteRule(rule._id).then(
+                  () => dispatch(deleteRule(rule._id)),
+                  (e) => dispatch(addError(e.message))
+                )
+              }
+            />
+          ))}
           {userLevel >= level.EDIT && (
             <NewRule
-              programs={programs}
               condition={condition}
               setCondition={setCondition}
               firstProgram={firstProgram}
@@ -127,14 +136,13 @@ function RulesHeader() {
   );
 }
 
-function Rule({ cnt, rule, programs, violation, deleteRule }) {
-  const { groups } = useSelector((state) => state.groups);
+function Rule({ cnt, violation, formattedRule, deleteRule }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
     <tr>
       <td>{cnt}</td>
-      <td>{formatRule(rule, programs, groups)}</td>
+      <td>{formattedRule}</td>
       <td>
         {violation &&
           (violation.satisfied ? (
@@ -169,9 +177,17 @@ function NewRule({
   setTime,
   date,
   setDate,
-  programs,
 }) {
   const { groups } = useSelector((state) => state.groups);
+  const programs = useSelector((state) => state.programs.programs);
+
+  const formattedPrograms = useMemo(
+    () =>
+      [...programs]
+        .sort(programSort)
+        .map((prog) => ({ _id: prog._id, text: formatProgram(prog, groups) })),
+    [programs, groups]
+  );
 
   return (
     <tr>
@@ -184,9 +200,9 @@ function NewRule({
               onChange={(e) => setFirstProgram(e.target.value)}
             >
               <option>Žádný program</option>
-              {[...programs].sort(programSort).map((prog) => (
+              {formattedPrograms.map((prog) => (
                 <option key={prog._id} value={prog._id}>
-                  {formatProgram(prog, groups)}
+                  {prog.text}
                 </option>
               ))}
             </Form.Select>
@@ -235,9 +251,9 @@ function NewRule({
                       onChange={(e) => setSecondProgram(e.target.value)}
                     >
                       <option>Žádný program</option>
-                      {[...programs].sort(programSort).map((prog) => (
+                      {formattedPrograms.map((prog) => (
                         <option key={prog._id} value={prog._id}>
-                          {formatProgram(prog, groups)}
+                          {prog.text}
                         </option>
                       ))}
                     </Form.Select>
