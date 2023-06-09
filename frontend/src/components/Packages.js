@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -23,72 +23,88 @@ export default function Packages() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = useMemo(() => clientFactory.getClient(table), [table]);
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
 
-    if (editKey) {
-      client
-        .updatePackage({
-          _id: editKey,
-          name: editedName,
-          color: editedColor,
-        })
-        .then(
-          (resp) => dispatch(updatePackage(resp)),
-          (e) => dispatch(addError(e.message))
-        );
+      if (editKey) {
+        client
+          .updatePackage({
+            _id: editKey,
+            name: editedName,
+            color: editedColor,
+          })
+          .then(
+            (resp) => dispatch(updatePackage(resp)),
+            (e) => dispatch(addError(e.message))
+          );
+        setEditKey(undefined);
+      } else {
+        client
+          .addPackage({
+            name: newName,
+            color: newColor,
+          })
+          .then(
+            (resp) => dispatch(addPackage(resp)),
+            (e) => dispatch(addError(e.message))
+          );
+      }
+    },
+    [client, dispatch, editKey, editedColor, editedName, newColor, newName]
+  );
+
+  const deletePackageCallback = useCallback(
+    (id) => {
+      client.deletePackage(id).then(
+        () => dispatch(deletePackage(id)),
+        (e) => dispatch(addError(e.message))
+      );
       setEditKey(undefined);
-    } else {
-      client
-        .addPackage({
-          name: newName,
-          color: newColor,
-        })
-        .then(
-          (resp) => dispatch(addPackage(resp)),
-          (e) => dispatch(addError(e.message))
-        );
-    }
-  }
+    },
+    [client, dispatch, setEditKey]
+  );
+
+  const editPackageCallback = useCallback(
+    (id, name, color) => {
+      setEditKey(id);
+      setEditedName(name);
+      setEditedColor(color);
+    },
+    [setEditKey, setEditedName, setEditedColor]
+  );
 
   return (
     <Form onSubmit={handleSubmit}>
       <Table bordered hover responsive>
         <PackagesHeader />
         <tbody>
-          {[...packages].sort(byName).map((pkg, index) =>
-            pkg._id === editKey ? (
-              <EditedPackage
-                key={pkg._id}
-                name={editedName}
-                color={editedColor}
-                cnt={index + 1}
-                setName={setEditedName}
-                setColor={setEditedColor}
-              />
-            ) : (
-              <Package
-                key={pkg._id}
-                name={pkg.name}
-                color={pkg.color}
-                cnt={index + 1}
-                deletePkg={() => {
-                  client.deletePackage(pkg._id).then(
-                    () => dispatch(deletePackage(pkg._id)),
-                    (e) => dispatch(addError(e.message))
-                  );
-                  setEditKey(undefined);
-                }}
-                editPkg={() => {
-                  setEditKey(pkg._id);
-                  setEditedName(pkg.name);
-                  setEditedColor(pkg.color);
-                }}
-              />
-            )
-          )}
+          {[...packages]
+            .sort(byName)
+            .map((pkg, index) =>
+              pkg._id === editKey ? (
+                <EditedPackage
+                  key={pkg._id}
+                  name={editedName}
+                  color={editedColor}
+                  cnt={index + 1}
+                  setName={setEditedName}
+                  setColor={setEditedColor}
+                />
+              ) : (
+                <Package
+                  key={pkg._id}
+                  id={pkg._id}
+                  name={pkg.name}
+                  color={pkg.color}
+                  cnt={index + 1}
+                  deletePkg={deletePackageCallback}
+                  editPkg={editPackageCallback}
+                />
+              )
+            )}
           <NewPackage
             name={newName}
             color={newColor}
@@ -114,7 +130,7 @@ function PackagesHeader() {
   );
 }
 
-function Package({ cnt, name, color, editPkg, deletePkg }) {
+function Package({ id, cnt, name, color, editPkg, deletePkg }) {
   return (
     <tr>
       <td>{cnt}</td>
@@ -127,11 +143,11 @@ function Package({ cnt, name, color, editPkg, deletePkg }) {
       </td>
       <td>
         <span>
-          <Button variant="link" onClick={editPkg}>
+          <Button variant="link" onClick={() => editPkg(id, name, color)}>
             <i className="fa fa-pencil" /> Upravit
           </Button>
           &nbsp;
-          <Button variant="link text-danger" onClick={deletePkg}>
+          <Button variant="link text-danger" onClick={() => deletePkg(id)}>
             <i className="fa fa-trash" /> Smazat
           </Button>
         </span>
