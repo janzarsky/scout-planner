@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
@@ -60,28 +60,30 @@ export default function Rules({ violations }) {
       );
   }
 
+  const rulesData = useMemo(() => {
+    return [...rules].sort((a, b) => ruleSort(a, b, programs));
+  }, [rules, programs]);
+
   return (
     <Form onSubmit={handleSubmit}>
       <Table bordered hover responsive>
         <RulesHeader />
         <tbody>
-          {[...rules]
-            .sort((a, b) => ruleSort(a, b, programs))
-            .map((rule, index) => (
-              <Rule
-                key={rule._id}
-                cnt={index + 1}
-                rule={rule}
-                programs={programs}
-                violation={violations.get(rule._id)}
-                deleteRule={() =>
-                  client.deleteRule(rule._id).then(
-                    () => dispatch(deleteRule(rule._id)),
-                    (e) => dispatch(addError(e.message))
-                  )
-                }
-              />
-            ))}
+          {rulesData.map((rule, index) => (
+            <Rule
+              key={rule._id}
+              cnt={index + 1}
+              rule={rule}
+              programs={programs}
+              violation={violations.get(rule._id)}
+              deleteRule={() =>
+                client.deleteRule(rule._id).then(
+                  () => dispatch(deleteRule(rule._id)),
+                  (e) => dispatch(addError(e.message))
+                )
+              }
+            />
+          ))}
           {userLevel >= level.EDIT && (
             <NewRule
               programs={programs}
