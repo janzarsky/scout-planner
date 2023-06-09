@@ -74,7 +74,6 @@ export default function Rules({ violations }) {
               key={rule._id}
               cnt={index + 1}
               rule={rule}
-              programs={programs}
               violation={violations.get(rule._id)}
               deleteRule={() =>
                 client.deleteRule(rule._id).then(
@@ -86,7 +85,6 @@ export default function Rules({ violations }) {
           ))}
           {userLevel >= level.EDIT && (
             <NewRule
-              programs={programs}
               condition={condition}
               setCondition={setCondition}
               firstProgram={firstProgram}
@@ -129,8 +127,9 @@ function RulesHeader() {
   );
 }
 
-function Rule({ cnt, rule, programs, violation, deleteRule }) {
+function Rule({ cnt, rule, violation, deleteRule }) {
   const { groups } = useSelector((state) => state.groups);
+  const programs = useSelector((state) => state.programs.programs);
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
@@ -171,9 +170,9 @@ function NewRule({
   setTime,
   date,
   setDate,
-  programs,
 }) {
   const { groups } = useSelector((state) => state.groups);
+  const programs = useSelector((state) => state.programs.programs);
 
   return (
     <tr>
