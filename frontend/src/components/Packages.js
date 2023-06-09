@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -23,35 +23,38 @@ export default function Packages() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = useMemo(() => clientFactory.getClient(table), [table]);
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
 
-    if (editKey) {
-      client
-        .updatePackage({
-          _id: editKey,
-          name: editedName,
-          color: editedColor,
-        })
-        .then(
-          (resp) => dispatch(updatePackage(resp)),
-          (e) => dispatch(addError(e.message))
-        );
-      setEditKey(undefined);
-    } else {
-      client
-        .addPackage({
-          name: newName,
-          color: newColor,
-        })
-        .then(
-          (resp) => dispatch(addPackage(resp)),
-          (e) => dispatch(addError(e.message))
-        );
-    }
-  }
+      if (editKey) {
+        client
+          .updatePackage({
+            _id: editKey,
+            name: editedName,
+            color: editedColor,
+          })
+          .then(
+            (resp) => dispatch(updatePackage(resp)),
+            (e) => dispatch(addError(e.message))
+          );
+        setEditKey(undefined);
+      } else {
+        client
+          .addPackage({
+            name: newName,
+            color: newColor,
+          })
+          .then(
+            (resp) => dispatch(addPackage(resp)),
+            (e) => dispatch(addError(e.message))
+          );
+      }
+    },
+    [client, dispatch, editKey, editedColor, editedName, newColor, newName]
+  );
 
   return (
     <Form onSubmit={handleSubmit}>
