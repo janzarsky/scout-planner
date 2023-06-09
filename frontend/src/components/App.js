@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
@@ -175,20 +175,21 @@ export default function App() {
     settingsLoaded,
   ]);
 
-  var violationsPerProgram = new Map();
-  [...violations.values()]
-    .filter((val) => !val.satisfied)
-    .map((val) => [val.program, val])
-    .forEach(([programId, violation]) => {
-      if (!violationsPerProgram.get(programId))
-        violationsPerProgram.set(programId, []);
-      violationsPerProgram.get(programId).push(violation);
+  const violationsPerProgram = useMemo(() => {
+    var tmp = new Map();
+    [...violations.values()]
+      .filter((val) => !val.satisfied)
+      .map((val) => [val.program, val])
+      .forEach(([programId, violation]) => {
+        if (!tmp.get(programId)) tmp.set(programId, []);
+        tmp.get(programId).push(violation);
+      });
+    otherProblems.forEach((problem) => {
+      if (!tmp.get(problem.program)) tmp.set(problem.program, []);
+      tmp.get(problem.program).push(problem);
     });
-  otherProblems.forEach((problem) => {
-    if (!violationsPerProgram.get(problem.program))
-      violationsPerProgram.set(problem.program, []);
-    violationsPerProgram.get(problem.program).push(problem);
-  });
+    return tmp;
+  }, [violations, otherProblems]);
 
   useEffect(() => {
     const people = [
@@ -202,6 +203,24 @@ export default function App() {
   }, [programs, dispatch]);
 
   const [activeTab, setActiveTab] = useState("timetable");
+
+  const onSelectCallback = useCallback(
+    (key) => setActiveTab(key),
+    [setActiveTab]
+  );
+
+  const addProgramCallback = useCallback(
+    (options) => {
+      setAddModalEnabled(true);
+      setAddProgramOptions(options);
+    },
+    [setAddModalEnabled, setAddProgramOptions]
+  );
+
+  const onEditCallback = useCallback(
+    (program) => setEditProgramId(program._id),
+    [setEditProgramId]
+  );
 
   return (
     <div className="App">
@@ -229,10 +248,7 @@ export default function App() {
           handleClose={() => setEditProgramId(undefined)}
         />
       )}
-      <Tab.Container
-        activeKey={activeTab}
-        onSelect={(key) => setActiveTab(key)}
-      >
+      <Tab.Container activeKey={activeTab} onSelect={onSelectCallback}>
         <Nav variant="pills" className="control-panel">
           <Nav.Link eventKey="timetable">Harmonogram</Nav.Link>
           {userLevel >= level.VIEW && (
@@ -284,11 +300,8 @@ export default function App() {
                 peopleMigrationState === "failedPeople") && (
                 <Timetable
                   violations={violationsPerProgram}
-                  addProgramModal={(options) => {
-                    setAddModalEnabled(true);
-                    setAddProgramOptions(options);
-                  }}
-                  onEdit={(program) => setEditProgramId(program._id)}
+                  addProgramModal={addProgramCallback}
+                  onEdit={onEditCallback}
                 />
               )}
             {(!dataLoaded ||
