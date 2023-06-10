@@ -78,7 +78,17 @@ export default function Timetable({
             "px, 1fr))",
         }}
       >
-        {getDroppables(droppablesData, onDroppableDrop, addProgramModal)}
+        {droppablesData.map(({ key, x, y, begin, group }) => (
+          <Droppable
+            key={key}
+            x={x}
+            y={y}
+            begin={begin}
+            group={group}
+            onDrop={onDroppableDrop}
+            addProgramModal={addProgramModal}
+          />
+        ))}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
@@ -233,20 +243,6 @@ function getDroppablesData(settings) {
       })
     )
   );
-}
-
-function getDroppables(droppablesData, onDrop, addProgramModal) {
-  return droppablesData.map(({ key, x, y, begin, group }) => (
-    <Droppable
-      key={key}
-      x={x}
-      y={y}
-      begin={begin}
-      group={group}
-      onDrop={onDrop}
-      addProgramModal={addProgramModal}
-    />
-  ));
 }
 
 function getTimeHeaders(settings) {
