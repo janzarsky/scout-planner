@@ -205,7 +205,7 @@ function getBlockDroppables(
           begin={begin}
           group={groupId}
           onDrop={onDrop}
-          addProgramModal={() => addProgramModal({ begin, groupId })}
+          addProgramModal={addProgramModal}
         />
       );
     })
@@ -242,7 +242,7 @@ function getDroppables(droppablesData, onDrop, addProgramModal) {
       begin={begin}
       group={group}
       onDrop={onDrop}
-      addProgramModal={() => addProgramModal({ begin, groupId: group })}
+      addProgramModal={addProgramModal}
     />
   ));
 }
@@ -300,7 +300,7 @@ function Droppable({ onDrop, x, y, addProgramModal, begin, group }) {
       ref={drop}
       className={"droppable " + (isOver ? "drag-over" : "")}
       style={{ gridColumnStart: x, gridRowStart: y }}
-      onClick={(_) => addProgramModal()}
+      onClick={(_) => addProgramModal({ begin, groupId: group })}
     />
   );
 }
