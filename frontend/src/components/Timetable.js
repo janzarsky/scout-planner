@@ -17,7 +17,7 @@ export default function Timetable({
   violations,
   addProgramModal,
   onEdit,
-  timeProvider = () => Date.now(),
+  timeProvider = null,
 }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
@@ -49,13 +49,20 @@ export default function Timetable({
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings
   );
-  const settings = getTimetableSettings(
-    programs,
-    groups,
-    timetableSettings.timeStep,
-    timeProvider()
+  const settings = useMemo(
+    () =>
+      getTimetableSettings(
+        programs,
+        groups,
+        timetableSettings.timeStep,
+        timeProvider ? timeProvider() : Date.now()
+      ),
+    [programs, groups, timetableSettings, timeProvider]
   );
-  const timeIndicatorRect = getTimeIndicatorRect(settings, timeProvider());
+  const timeIndicatorRect = getTimeIndicatorRect(
+    settings,
+    timeProvider ? timeProvider() : Date.now()
+  );
 
   const width = useSelector((state) => state.settings.settings.width);
 
