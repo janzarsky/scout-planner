@@ -11,7 +11,7 @@ import Program from "./Program";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function Timetable({
   violations,
@@ -56,7 +56,10 @@ export default function Timetable({
 
   const width = useSelector((state) => state.settings.settings.width);
 
-  const droppablesData = getDroppablesData(settings);
+  const droppablesData = useMemo(
+    () => (userLevel >= level.EDIT ? getDroppablesData(settings) : []),
+    [settings, userLevel]
+  );
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -75,8 +78,7 @@ export default function Timetable({
             "px, 1fr))",
         }}
       >
-        {userLevel >= level.EDIT &&
-          getDroppables(droppablesData, onDroppableDrop, addProgramModal)}
+        {getDroppables(droppablesData, onDroppableDrop, addProgramModal)}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
