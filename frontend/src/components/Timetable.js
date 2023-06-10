@@ -11,50 +11,65 @@ import Program from "./Program";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export default function Timetable({
   violations,
   addProgramModal,
   onEdit,
-  timeProvider = () => Date.now(),
+  timeProvider = null,
 }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = useMemo(() => clientFactory.getClient(table), [table]);
 
-  function onDroppableDrop(item, begin, groupId, currentPrograms) {
-    var prog = currentPrograms.find((program) => program._id === item.id);
-    if (prog) {
-      // single-group programs should be always updated according to the target group,
-      // multi-group programs should be only updated in case they are dragged to a new group
-      const groups =
-        !groupId || prog.groups.indexOf(groupId) !== -1
-          ? prog.groups
-          : [groupId];
+  const onDroppableDrop = useCallback(
+    (item, begin, groupId, currentPrograms) => {
+      var prog = currentPrograms.find((program) => program._id === item.id);
+      if (prog) {
+        // single-group programs should be always updated according to the target group,
+        // multi-group programs should be only updated in case they are dragged to a new group
+        const groups =
+          !groupId || prog.groups.indexOf(groupId) !== -1
+            ? prog.groups
+            : [groupId];
 
-      client.updateProgram({ ...prog, begin, groups }).then(
-        (resp) => dispatch(updateProgram(resp)),
-        (e) => dispatch(addError(e.message))
-      );
-    }
-  }
+        client.updateProgram({ ...prog, begin, groups }).then(
+          (resp) => dispatch(updateProgram(resp)),
+          (e) => dispatch(addError(e.message))
+        );
+      }
+    },
+    [client, dispatch]
+  );
 
   const { groups } = useSelector((state) => state.groups);
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings
   );
-  const settings = getTimetableSettings(
-    programs,
-    groups,
-    timetableSettings.timeStep,
-    timeProvider()
+  const settings = useMemo(
+    () =>
+      getTimetableSettings(
+        programs,
+        groups,
+        timetableSettings.timeStep,
+        timeProvider ? timeProvider() : Date.now()
+      ),
+    [programs, groups, timetableSettings, timeProvider]
   );
-  const timeIndicatorRect = getTimeIndicatorRect(settings, timeProvider());
+  const timeIndicatorRect = getTimeIndicatorRect(
+    settings,
+    timeProvider ? timeProvider() : Date.now()
+  );
 
   const width = useSelector((state) => state.settings.settings.width);
+
+  const droppablesData = useMemo(
+    () => (userLevel >= level.EDIT ? getDroppablesData(settings) : []),
+    [settings, userLevel]
+  );
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -73,8 +88,17 @@ export default function Timetable({
             "px, 1fr))",
         }}
       >
-        {userLevel >= level.EDIT &&
-          getDroppables(settings, onDroppableDrop, addProgramModal)}
+        {droppablesData.map(({ key, x, y, begin, group }) => (
+          <Droppable
+            key={key}
+            x={x}
+            y={y}
+            begin={begin}
+            group={group}
+            onDrop={onDroppableDrop}
+            addProgramModal={addProgramModal}
+          />
+        ))}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
@@ -200,15 +224,17 @@ function getBlockDroppables(
           key={`${x}-${y}`}
           x={x + 1}
           y={y + 1}
-          onDrop={(item, programs) => onDrop(item, begin, groupId, programs)}
-          addProgramModal={() => addProgramModal({ begin, groupId })}
+          begin={begin}
+          group={groupId}
+          onDrop={onDrop}
+          addProgramModal={addProgramModal}
         />
       );
     })
   );
 }
 
-function getDroppables(settings, onDrop, addProgramModal) {
+function getDroppablesData(settings) {
   // ensure there is always at least one group
   const groups = settings.groups.length > 0 ? settings.groups : [{ _id: null }];
 
@@ -217,19 +243,13 @@ function getDroppables(settings, onDrop, addProgramModal) {
       [...Array(settings.timeSpan).keys()].flatMap((idxSpan) => {
         const begin = date + time + idxSpan * settings.timeStep;
 
-        return groups.map((group, idxGroup) => (
-          <Droppable
-            key={`${begin}-${group._id}`}
-            x={3 + idxTime * settings.timeSpan + idxSpan}
-            y={2 + idxDate * settings.groupCnt + idxGroup}
-            onDrop={(item, programs) =>
-              onDrop(item, begin, group._id, programs)
-            }
-            addProgramModal={() =>
-              addProgramModal({ begin, groupId: group._id })
-            }
-          />
-        ));
+        return groups.map((group, idxGroup) => ({
+          key: `${begin}-${group._id}`,
+          x: 3 + idxTime * settings.timeSpan + idxSpan,
+          y: 2 + idxDate * settings.groupCnt + idxGroup,
+          begin,
+          group: group._id,
+        }));
       })
     )
   );
@@ -269,13 +289,13 @@ function getGroupHeaders(settings) {
   );
 }
 
-function Droppable({ onDrop, x, y, addProgramModal }) {
+function Droppable({ onDrop, x, y, addProgramModal, begin, group }) {
   const { programs } = useSelector((state) => state.programs);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => onDrop(item, programs),
+      drop: (item) => onDrop(item, begin, group, programs),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
@@ -288,7 +308,7 @@ function Droppable({ onDrop, x, y, addProgramModal }) {
       ref={drop}
       className={"droppable " + (isOver ? "drag-over" : "")}
       style={{ gridColumnStart: x, gridRowStart: y }}
-      onClick={(_) => addProgramModal()}
+      onClick={(_) => addProgramModal({ begin, groupId: group })}
     />
   );
 }
