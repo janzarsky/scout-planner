@@ -55,26 +55,25 @@ export function EditProgramModal({ programId, handleClose }) {
   function handleDelete(event) {
     event.preventDefault();
 
-    client.updateProgram({ ...program, deleted: true }).then(
-      () => {
-        dispatch(deleteProgram(program._id));
-        handleClose();
-      },
-      (e) => dispatch(addError(e.message))
-    );
+    handleClose();
+
+    dispatch(deleteProgram(program._id));
+
+    client
+      .updateProgram({ ...program, deleted: true })
+      .catch((e) => dispatch(addError(e.message)));
   }
 
   function handleClone(event) {
     event.preventDefault();
 
+    handleClose();
+
     const newProgram = { ...program };
     delete newProgram._id;
 
     client.addProgram(newProgram).then(
-      () => {
-        dispatch(addProgram(newProgram));
-        handleClose();
-      },
+      (resp) => dispatch(addProgram(resp)),
       (e) => dispatch(addError(e.message))
     );
   }
@@ -82,31 +81,30 @@ export function EditProgramModal({ programId, handleClose }) {
   function handleSubmit(event) {
     event.preventDefault();
 
+    handleClose();
+
     const begin = parseDate(date) + parseTime(time);
+    const updatedProgram = {
+      ...program,
+      begin: isNaN(begin) ? null : begin,
+      duration: parseDuration(duration),
+      title: title,
+      pkg: pkg,
+      groups: groups,
+      people: attendance,
+      ranges: ranges,
+      place: place,
+      url: url,
+      notes: notes,
+      locked: locked,
+      blockOrder: blockOrder,
+    };
+
+    dispatch(updateProgram(updatedProgram));
 
     client
-      .updateProgram({
-        ...program,
-        begin: isNaN(begin) ? null : begin,
-        duration: parseDuration(duration),
-        title: title,
-        pkg: pkg,
-        groups: groups,
-        people: attendance,
-        ranges: ranges,
-        place: place,
-        url: url,
-        notes: notes,
-        locked: locked,
-        blockOrder: blockOrder,
-      })
-      .then(
-        (resp) => {
-          dispatch(updateProgram(resp));
-          handleClose();
-        },
-        (e) => dispatch(addError(e.message))
-      );
+      .updateProgram(updatedProgram)
+      .catch((e) => dispatch(addError(e.message)));
   }
 
   return (
@@ -668,6 +666,8 @@ export function AddProgramModal({ options, handleClose }) {
   function handleSubmit(event) {
     event.preventDefault();
 
+    handleClose();
+
     const begin = parseDate(date) + parseTime(time);
 
     client
@@ -686,10 +686,7 @@ export function AddProgramModal({ options, handleClose }) {
         blockOrder: blockOrder,
       })
       .then(
-        (resp) => {
-          dispatch(addProgram(resp));
-          handleClose();
-        },
+        (resp) => dispatch(addProgram(resp)),
         (e) => dispatch(addError(e.message))
       );
   }
