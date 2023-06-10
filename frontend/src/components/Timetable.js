@@ -72,7 +72,7 @@ export default function Timetable({
   );
 
   const blocksData = useMemo(
-    () => getBlocksData(programs, settings),
+    () => getBlocksData(programs, settings, violations),
     [programs, settings]
   );
 
@@ -107,14 +107,7 @@ export default function Timetable({
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
-        {getBlocks(
-          blocksData,
-          settings,
-          violations,
-          onEdit,
-          onDroppableDrop,
-          addProgramModal
-        )}
+        {getBlocks(blocksData, onEdit, onDroppableDrop, addProgramModal)}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -134,7 +127,7 @@ export default function Timetable({
   );
 }
 
-function getBlocksData(programs, settings) {
+function getBlocksData(programs, settings, violations) {
   const allGroups = settings.groups.map((g) => g._id);
   const programsGroupFix = programs.map((p) => ({
     ...p,
@@ -165,39 +158,33 @@ function getBlocksData(programs, settings) {
       block.programs[0].groups.length > 0 ? block.programs[0].groups[0] : null
     );
 
+    const programsData = block.programs.map((program) =>
+      getProgramData(program, blockRect, settings, violations)
+    );
+
     return {
       key: `${block.programs[0].begin}-${
         block.programs[0].duration
       }-${block.programs[0].groups.join("-")}`,
       rect: blockRect,
-      programs: block.programs,
+      programs: programsData,
       droppablesData: blockDroppablesData,
     };
   });
 }
 
-function getBlocks(
-  blocksData,
-  settings,
-  violations,
-  onEdit,
-  onDrop,
-  addProgramModal
-) {
+function getBlocks(blocksData, onEdit, onDrop, addProgramModal) {
   return blocksData.map((block) => (
     <Block key={block.key} rect={block.rect}>
-      {block.programs.map((program) => {
-        const data = getProgramData(program, block.rect, settings, violations);
-        return (
-          <Program
-            key={data.key}
-            rect={data.rect}
-            program={data.program}
-            violations={data.violations}
-            onEdit={onEdit}
-          />
-        );
-      })}
+      {block.programs.map(({ key, rect, program, violations }) => (
+        <Program
+          key={key}
+          rect={rect}
+          program={program}
+          violations={violations}
+          onEdit={onEdit}
+        />
+      ))}
       {block.droppablesData.map(({ key, x, y, begin, group }) => (
         <Droppable
           key={key}
