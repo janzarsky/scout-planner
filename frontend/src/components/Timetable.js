@@ -186,9 +186,18 @@ function getBlocks(
 ) {
   return blocksData.map((block) => (
     <Block key={block.key} rect={block.rect}>
-      {block.programs.map((program) =>
-        getProgram(program, block.rect, settings, violations, onEdit)
-      )}
+      {block.programs.map((program) => {
+        const data = getProgramData(program, block.rect, settings, violations);
+        return (
+          <Program
+            key={data.key}
+            rect={data.rect}
+            program={data.program}
+            violations={data.violations}
+            onEdit={onEdit}
+          />
+        );
+      })}
       {block.droppablesData.map(({ key, x, y, begin, group }) => (
         <Droppable
           key={key}
@@ -204,7 +213,7 @@ function getBlocks(
   ));
 }
 
-function getProgram(prog, blockRect, settings, violations, onEdit) {
+function getProgramData(prog, blockRect, settings, violations) {
   const programRect = getRect(prog.begin, prog.duration, prog.groups, settings);
 
   const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
@@ -215,15 +224,12 @@ function getProgram(prog, blockRect, settings, violations, onEdit) {
     height: 1,
   };
 
-  return (
-    <Program
-      key={prog._id}
-      rect={relativeRect}
-      program={prog}
-      violations={violations.get(prog._id)}
-      onEdit={onEdit}
-    />
-  );
+  return {
+    key: prog._id,
+    rect: relativeRect,
+    program: prog,
+    violations: violations.get(prog._id),
+  };
 }
 
 function getBlockDroppablesData(width, height, blockBegin, timeStep, groupId) {
