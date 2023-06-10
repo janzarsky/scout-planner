@@ -71,7 +71,10 @@ export default function Timetable({
     [settings, userLevel]
   );
 
-  const blocksData = getBlocksData(programs, settings);
+  const blocksData = useMemo(
+    () => getBlocksData(programs, settings),
+    [programs, settings]
+  );
 
   return (
     <DndProvider backend={HTML5Backend}>
