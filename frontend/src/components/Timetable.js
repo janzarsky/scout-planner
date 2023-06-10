@@ -217,17 +217,13 @@ function getProgram(prog, blockRect, settings, violations, onEdit) {
 
 function getBlockDroppablesData(width, height, blockBegin, timeStep, groupId) {
   return [...Array(width).keys()].flatMap((x) =>
-    [...Array(height).keys()].map((y) => {
-      const begin = blockBegin + x * timeStep;
-
-      return {
-        key: `${x}-${y}`,
-        x: x + 1,
-        y: y + 1,
-        begin,
-        group: groupId,
-      };
-    })
+    [...Array(height).keys()].map((y) => ({
+      key: `${x}-${y}`,
+      x: x + 1,
+      y: y + 1,
+      begin: blockBegin + x * timeStep,
+      group: groupId,
+    }))
   );
 }
 
