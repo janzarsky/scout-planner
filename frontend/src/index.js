@@ -73,7 +73,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" exact element={<Homepage />} />
-        <Route path="/:table" element={<AppWrapper />} />
+        <Route path="/:table/*" element={<AppWrapper />} />
       </Routes>
     </BrowserRouter>
   </Provider>
