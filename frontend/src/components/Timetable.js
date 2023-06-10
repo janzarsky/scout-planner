@@ -71,6 +71,11 @@ export default function Timetable({
     [settings, userLevel]
   );
 
+  const blocksData = useMemo(
+    () => getBlocksData(programs, settings, violations),
+    [programs, settings, violations]
+  );
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -102,14 +107,7 @@ export default function Timetable({
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
-        {getBlocks(
-          programs,
-          settings,
-          violations,
-          onEdit,
-          onDroppableDrop,
-          addProgramModal
-        )}
+        {getBlocks(blocksData, onEdit, onDroppableDrop, addProgramModal)}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -129,14 +127,7 @@ export default function Timetable({
   );
 }
 
-function getBlocks(
-  programs,
-  settings,
-  violations,
-  onEdit,
-  onDrop,
-  addProgramModal
-) {
+function getBlocksData(programs, settings, violations) {
   const allGroups = settings.groups.map((g) => g._id);
   const programsGroupFix = programs.map((p) => ({
     ...p,
@@ -159,33 +150,57 @@ function getBlocks(
       .map((p) => (p.blockOrder ? p.blockOrder : 0))
       .reduce((acc, curr) => (curr > acc ? curr : acc), 0);
 
-    return (
-      <Block
-        key={`${block.programs[0].begin}-${
-          block.programs[0].duration
-        }-${block.programs[0].groups.join("-")}`}
-        rect={blockRect}
-      >
-        {block.programs.map((program) =>
-          getProgram(program, blockRect, settings, violations, onEdit)
-        )}
-        {getBlockDroppables(
-          blockRect.width,
-          maxBlockOrder + 1,
-          block.programs[0].begin,
-          settings.timeStep,
-          block.programs[0].groups.length > 0
-            ? block.programs[0].groups[0]
-            : null,
-          onDrop,
-          addProgramModal
-        )}
-      </Block>
+    const blockDroppablesData = getBlockDroppablesData(
+      blockRect.width,
+      maxBlockOrder + 1,
+      block.programs[0].begin,
+      settings.timeStep,
+      block.programs[0].groups.length > 0 ? block.programs[0].groups[0] : null
     );
+
+    const programsData = block.programs.map((program) =>
+      getProgramData(program, blockRect, settings, violations)
+    );
+
+    return {
+      key: `${block.programs[0].begin}-${
+        block.programs[0].duration
+      }-${block.programs[0].groups.join("-")}`,
+      rect: blockRect,
+      programs: programsData,
+      droppablesData: blockDroppablesData,
+    };
   });
 }
 
-function getProgram(prog, blockRect, settings, violations, onEdit) {
+function getBlocks(blocksData, onEdit, onDrop, addProgramModal) {
+  return blocksData.map((block) => (
+    <Block key={block.key} rect={block.rect}>
+      {block.programs.map(({ key, rect, program, violations }) => (
+        <Program
+          key={key}
+          rect={rect}
+          program={program}
+          violations={violations}
+          onEdit={onEdit}
+        />
+      ))}
+      {block.droppablesData.map(({ key, x, y, begin, group }) => (
+        <Droppable
+          key={key}
+          x={x}
+          y={y}
+          begin={begin}
+          group={group}
+          onDrop={onDrop}
+          addProgramModal={addProgramModal}
+        />
+      ))}
+    </Block>
+  ));
+}
+
+function getProgramData(prog, blockRect, settings, violations) {
   const programRect = getRect(prog.begin, prog.duration, prog.groups, settings);
 
   const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
@@ -196,41 +211,23 @@ function getProgram(prog, blockRect, settings, violations, onEdit) {
     height: 1,
   };
 
-  return (
-    <Program
-      key={prog._id}
-      rect={relativeRect}
-      program={prog}
-      violations={violations.get(prog._id)}
-      onEdit={onEdit}
-    />
-  );
+  return {
+    key: prog._id,
+    rect: relativeRect,
+    program: prog,
+    violations: violations.get(prog._id),
+  };
 }
 
-function getBlockDroppables(
-  width,
-  height,
-  blockBegin,
-  timeStep,
-  groupId,
-  onDrop,
-  addProgramModal
-) {
+function getBlockDroppablesData(width, height, blockBegin, timeStep, groupId) {
   return [...Array(width).keys()].flatMap((x) =>
-    [...Array(height).keys()].map((y) => {
-      const begin = blockBegin + x * timeStep;
-      return (
-        <Droppable
-          key={`${x}-${y}`}
-          x={x + 1}
-          y={y + 1}
-          begin={begin}
-          group={groupId}
-          onDrop={onDrop}
-          addProgramModal={addProgramModal}
-        />
-      );
-    })
+    [...Array(height).keys()].map((y) => ({
+      key: `${x}-${y}`,
+      x: x + 1,
+      y: y + 1,
+      begin: blockBegin + x * timeStep,
+      group: groupId,
+    }))
   );
 }
 
