@@ -45,7 +45,7 @@ describe("Timetable", () => {
         timeProvider={() => now}
         violations={new Map()}
       />,
-      { reduxStore: store }
+      { reduxStore: store, router: true }
     );
   }
 

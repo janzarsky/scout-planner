@@ -5,11 +5,6 @@ export const viewSlice = createSlice({
   initialState: {
     highlightingEnabled: false,
     highlightedPackages: [],
-    viewPkg: true,
-    viewTime: false,
-    viewPeople: true,
-    viewPlace: true,
-    viewViolations: true,
     rangesEnabled: false,
     activeRange: undefined,
   },
@@ -26,21 +21,6 @@ export const viewSlice = createSlice({
           1
         );
     },
-    toggleViewPkg(state) {
-      state.viewPkg = !state.viewPkg;
-    },
-    toggleViewTime(state) {
-      state.viewTime = !state.viewTime;
-    },
-    toggleViewPeople(state) {
-      state.viewPeople = !state.viewPeople;
-    },
-    toggleViewPlace(state) {
-      state.viewPlace = !state.viewPlace;
-    },
-    toggleViewViolations(state) {
-      state.viewViolations = !state.viewViolations;
-    },
     toggleRangesEnabled(state) {
       state.rangesEnabled = !state.rangesEnabled;
     },
@@ -53,11 +33,6 @@ export const viewSlice = createSlice({
 export const {
   toggleHighlighting,
   toggleHighlightedPackage,
-  toggleViewPkg,
-  toggleViewTime,
-  toggleViewPeople,
-  toggleViewPlace,
-  toggleViewViolations,
   toggleRangesEnabled,
   setActiveRange,
 } = viewSlice.actions;

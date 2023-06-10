@@ -10,6 +10,7 @@ import {
 import { addError } from "../store/errorsSlice";
 import { addProgram, updateProgram } from "../store/programsSlice";
 import { useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export default function Program({ program, rect, violations, onEdit }) {
   const { packages } = useSelector((state) => state.packages);
@@ -117,7 +118,10 @@ function ProgramBody({ program, pkg, violations, narrow }) {
     const faded = state.view.highlightingEnabled && !highlighted;
     return { highlighted, faded };
   });
-  const viewViolations = useSelector((state) => state.view.viewViolations);
+
+  const [searchParams] = useSearchParams();
+  const viewViolations = searchParams.get("viewViolations") !== "false";
+
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   let rangeValue =
     activeRange && program.ranges ? program.ranges[activeRange] : 0;
@@ -161,8 +165,13 @@ function ProgramText({
   place,
   violations,
 }) {
-  const { viewPkg, viewTime, viewPeople, viewPlace, viewViolations } =
-    useSelector((state) => state.view);
+  const [searchParams] = useSearchParams();
+  const viewPkg = searchParams.get("viewPkg") !== "false";
+  const viewTime = searchParams.get("viewTime") === "true";
+  const viewPlace = searchParams.get("viewPlace") !== "false";
+  const viewPeople = searchParams.get("viewPeople") !== "false";
+  const viewViolations = searchParams.get("viewViolations") !== "false";
+
   return (
     <div className="program-text">
       {!isHidden(title) && <h3 className="program-title">{title}</h3>}
@@ -206,7 +215,9 @@ function lookUpPeople(programPeople, allPeople) {
 }
 
 function ProgramPeople({ programPeople, violations }) {
-  const viewViolations = useSelector((state) => state.view.viewViolations);
+  const [searchParams] = useSearchParams();
+  const viewViolations = searchParams.get("viewViolations") !== "false";
+
   const { legacyPeople, people } = useSelector((state) => state.people);
 
   const allPeople = convertLegacyPeople(legacyPeople, people);

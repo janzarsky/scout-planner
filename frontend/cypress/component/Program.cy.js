@@ -7,12 +7,6 @@ import { getStore } from "../../src/store";
 import { testing } from "../../src/store/authSlice";
 import { addPackage } from "../../src/store/packagesSlice";
 import { addPerson, setLegacyPeople } from "../../src/store/peopleSlice";
-import {
-  toggleViewPeople,
-  toggleViewPkg,
-  toggleViewTime,
-  toggleViewViolations,
-} from "../../src/store/viewSlice";
 
 describe("Program", () => {
   const alice = {
@@ -46,7 +40,11 @@ describe("Program", () => {
 
   let store;
 
-  function mountProgram(program, violations) {
+  function mountProgram(
+    program,
+    violations,
+    initialEntries = ["/?viewTime=true"]
+  ) {
     cy.mount(
       <Program
         program={program}
@@ -55,7 +53,7 @@ describe("Program", () => {
         onEdit={cy.stub().as("edit")}
         clone={cy.stub().as("clone")}
       />,
-      { dndProvider: true, reduxStore: store }
+      { dndProvider: true, reduxStore: store, router: true, initialEntries }
     );
   }
 
@@ -65,9 +63,6 @@ describe("Program", () => {
     cy.stub(firestoreClientFactory, "getClient").log(false);
 
     store = getStore();
-
-    // make time shown by default
-    store.dispatch(toggleViewTime());
 
     store.dispatch(setLegacyPeople(["Cecil"]));
 
@@ -150,9 +145,7 @@ describe("Program", () => {
       const progWithPackage = Cypress._.cloneDeep(prog);
       progWithPackage.pkg = pkg._id;
 
-      store.dispatch(toggleViewPkg());
-
-      mountProgram(progWithPackage);
+      mountProgram(progWithPackage, [], ["/?viewPkg=false"]);
 
       cy.contains("Test package").should("not.exist");
       cy.get(".program").should(
@@ -163,22 +156,22 @@ describe("Program", () => {
     });
 
     it("no time", () => {
-      store.dispatch(toggleViewTime());
-      mountProgram(prog);
-
+      mountProgram(prog, [], ["/?viewTime=false"]);
       cy.contains("8:00\u201312:30").should("not.exist");
     });
 
     it("no people", () => {
-      store.dispatch(toggleViewPeople());
-      mountProgram(prog);
+      mountProgram(prog, [], ["/?viewPeople=false"]);
 
       cy.contains("Alice, Bob").should("not.exist");
     });
 
     it("no violations", () => {
-      store.dispatch(toggleViewViolations());
-      mountProgram(prog, ["First violation", "Second violation - Alice"]);
+      mountProgram(
+        prog,
+        ["First violation", "Second violation - Alice"],
+        ["/?viewViolations=false"]
+      );
 
       cy.contains("First violation, Second violation - Alice").should(
         "not.exist"
