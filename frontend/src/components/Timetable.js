@@ -11,7 +11,7 @@ import Program from "./Program";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export default function Timetable({
   violations,
@@ -23,24 +23,27 @@ export default function Timetable({
   const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = useMemo(() => clientFactory.getClient(table), [table]);
 
-  function onDroppableDrop(item, begin, groupId, currentPrograms) {
-    var prog = currentPrograms.find((program) => program._id === item.id);
-    if (prog) {
-      // single-group programs should be always updated according to the target group,
-      // multi-group programs should be only updated in case they are dragged to a new group
-      const groups =
-        !groupId || prog.groups.indexOf(groupId) !== -1
-          ? prog.groups
-          : [groupId];
+  const onDroppableDrop = useCallback(
+    (item, begin, groupId, currentPrograms) => {
+      var prog = currentPrograms.find((program) => program._id === item.id);
+      if (prog) {
+        // single-group programs should be always updated according to the target group,
+        // multi-group programs should be only updated in case they are dragged to a new group
+        const groups =
+          !groupId || prog.groups.indexOf(groupId) !== -1
+            ? prog.groups
+            : [groupId];
 
-      client.updateProgram({ ...prog, begin, groups }).then(
-        (resp) => dispatch(updateProgram(resp)),
-        (e) => dispatch(addError(e.message))
-      );
-    }
-  }
+        client.updateProgram({ ...prog, begin, groups }).then(
+          (resp) => dispatch(updateProgram(resp)),
+          (e) => dispatch(addError(e.message))
+        );
+      }
+    },
+    [client, dispatch]
+  );
 
   const { groups } = useSelector((state) => state.groups);
   const { settings: timetableSettings } = useSelector(
