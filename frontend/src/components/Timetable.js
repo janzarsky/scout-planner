@@ -159,6 +159,14 @@ function getBlocks(
       .map((p) => (p.blockOrder ? p.blockOrder : 0))
       .reduce((acc, curr) => (curr > acc ? curr : acc), 0);
 
+    const blockDroppablesData = getBlockDroppablesData(
+      blockRect.width,
+      maxBlockOrder + 1,
+      block.programs[0].begin,
+      settings.timeStep,
+      block.programs[0].groups.length > 0 ? block.programs[0].groups[0] : null
+    );
+
     return (
       <Block
         key={`${block.programs[0].begin}-${
@@ -169,17 +177,17 @@ function getBlocks(
         {block.programs.map((program) =>
           getProgram(program, blockRect, settings, violations, onEdit)
         )}
-        {getBlockDroppables(
-          blockRect.width,
-          maxBlockOrder + 1,
-          block.programs[0].begin,
-          settings.timeStep,
-          block.programs[0].groups.length > 0
-            ? block.programs[0].groups[0]
-            : null,
-          onDrop,
-          addProgramModal
-        )}
+        {blockDroppablesData.map(({ key, x, y, begin, group }) => (
+          <Droppable
+            key={key}
+            x={x}
+            y={y}
+            begin={begin}
+            group={group}
+            onDrop={onDrop}
+            addProgramModal={addProgramModal}
+          />
+        ))}
       </Block>
     );
   });
@@ -207,29 +215,18 @@ function getProgram(prog, blockRect, settings, violations, onEdit) {
   );
 }
 
-function getBlockDroppables(
-  width,
-  height,
-  blockBegin,
-  timeStep,
-  groupId,
-  onDrop,
-  addProgramModal
-) {
+function getBlockDroppablesData(width, height, blockBegin, timeStep, groupId) {
   return [...Array(width).keys()].flatMap((x) =>
     [...Array(height).keys()].map((y) => {
       const begin = blockBegin + x * timeStep;
-      return (
-        <Droppable
-          key={`${x}-${y}`}
-          x={x + 1}
-          y={y + 1}
-          begin={begin}
-          group={groupId}
-          onDrop={onDrop}
-          addProgramModal={addProgramModal}
-        />
-      );
+
+      return {
+        key: `${x}-${y}`,
+        x: x + 1,
+        y: y + 1,
+        begin,
+        group: groupId,
+      };
     })
   );
 }
