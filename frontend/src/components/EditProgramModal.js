@@ -31,10 +31,6 @@ export function EditProgramModal({ programId, handleClose }) {
     return prog ? prog : {};
   });
 
-  const [submitInProgress, setSubmitInProgress] = useState(false);
-  const [deleteInProgress, setDeleteInProgress] = useState(false);
-  const [cloneInProgress, setCloneInProgress] = useState(false);
-
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
   const [time, setTime] = useState(formatTimeWithTray(program.begin));
@@ -59,32 +55,25 @@ export function EditProgramModal({ programId, handleClose }) {
   function handleDelete(event) {
     event.preventDefault();
 
-    setDeleteInProgress(true);
+    handleClose();
 
-    client.updateProgram({ ...program, deleted: true }).then(
-      () => {
-        dispatch(deleteProgram(program._id));
-        setDeleteInProgress(false);
-        handleClose();
-      },
-      (e) => dispatch(addError(e.message))
-    );
+    dispatch(deleteProgram(program._id));
+
+    client
+      .updateProgram({ ...program, deleted: true })
+      .catch((e) => dispatch(addError(e.message)));
   }
 
   function handleClone(event) {
     event.preventDefault();
 
-    setCloneInProgress(true);
+    handleClose();
 
     const newProgram = { ...program };
     delete newProgram._id;
 
     client.addProgram(newProgram).then(
-      () => {
-        dispatch(addProgram(newProgram));
-        setCloneInProgress(false);
-        handleClose();
-      },
+      (resp) => dispatch(addProgram(resp)),
       (e) => dispatch(addError(e.message))
     );
   }
@@ -92,34 +81,30 @@ export function EditProgramModal({ programId, handleClose }) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    setSubmitInProgress(true);
+    handleClose();
 
     const begin = parseDate(date) + parseTime(time);
+    const updatedProgram = {
+      ...program,
+      begin: isNaN(begin) ? null : begin,
+      duration: parseDuration(duration),
+      title: title,
+      pkg: pkg,
+      groups: groups,
+      people: attendance,
+      ranges: ranges,
+      place: place,
+      url: url,
+      notes: notes,
+      locked: locked,
+      blockOrder: blockOrder,
+    };
+
+    dispatch(updateProgram(updatedProgram));
 
     client
-      .updateProgram({
-        ...program,
-        begin: isNaN(begin) ? null : begin,
-        duration: parseDuration(duration),
-        title: title,
-        pkg: pkg,
-        groups: groups,
-        people: attendance,
-        ranges: ranges,
-        place: place,
-        url: url,
-        notes: notes,
-        locked: locked,
-        blockOrder: blockOrder,
-      })
-      .then(
-        (resp) => {
-          dispatch(updateProgram(resp));
-          setSubmitInProgress(false);
-          handleClose();
-        },
-        (e) => dispatch(addError(e.message))
-      );
+      .updateProgram(updatedProgram)
+      .catch((e) => dispatch(addError(e.message)));
   }
 
   return (
@@ -206,11 +191,7 @@ export function EditProgramModal({ programId, handleClose }) {
         <Modal.Footer>
           {userLevel >= level.EDIT && (
             <Button variant="link text-danger" onClick={handleDelete}>
-              {deleteInProgress ? (
-                <i className="fa fa-spinner fa-pulse" />
-              ) : (
-                <i className="fa fa-trash" />
-              )}
+              <i className="fa fa-trash" />
               &nbsp; Smazat
             </Button>
           )}
@@ -220,11 +201,7 @@ export function EditProgramModal({ programId, handleClose }) {
               onClick={handleClone}
               style={{ marginRight: "auto" }}
             >
-              {cloneInProgress ? (
-                <i className="fa fa-spinner fa-pulse" />
-              ) : (
-                <i className="fa fa-clone" />
-              )}
+              <i className="fa fa-clone" />
               &nbsp; Klonovat
             </Button>
           )}
@@ -233,11 +210,7 @@ export function EditProgramModal({ programId, handleClose }) {
           </Button>
           {userLevel >= level.EDIT && (
             <Button variant="primary" type="submit">
-              {submitInProgress ? (
-                <i className="fa fa-spinner fa-pulse" />
-              ) : (
-                <i className="fa fa-save" />
-              )}
+              <i className="fa fa-save" />
               &nbsp; Uložit
             </Button>
           )}
@@ -669,8 +642,6 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
 }
 
 export function AddProgramModal({ options, handleClose }) {
-  const [submitInProgress, setSubmitInProgress] = useState(false);
-
   const [title, setTitle] = useState("Nový program");
   const [date, setDate] = useState(formatDateWithTray(options.begin));
   const [time, setTime] = useState(formatTimeWithTray(options.begin));
@@ -695,7 +666,7 @@ export function AddProgramModal({ options, handleClose }) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    setSubmitInProgress(true);
+    handleClose();
 
     const begin = parseDate(date) + parseTime(time);
 
@@ -715,11 +686,7 @@ export function AddProgramModal({ options, handleClose }) {
         blockOrder: blockOrder,
       })
       .then(
-        (resp) => {
-          dispatch(addProgram(resp));
-          setSubmitInProgress(false);
-          handleClose();
-        },
+        (resp) => dispatch(addProgram(resp)),
         (e) => dispatch(addError(e.message))
       );
   }
@@ -782,11 +749,7 @@ export function AddProgramModal({ options, handleClose }) {
             Zrušit
           </Button>
           <Button variant="primary" type="submit">
-            {submitInProgress ? (
-              <i className="fa fa-spinner fa-pulse" />
-            ) : (
-              <i className="fa fa-plus" />
-            )}
+            <i className="fa fa-plus" />
             &nbsp; Přidat
           </Button>
         </Modal.Footer>
