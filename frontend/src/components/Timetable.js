@@ -56,6 +56,8 @@ export default function Timetable({
 
   const width = useSelector((state) => state.settings.settings.width);
 
+  const droppablesData = getDroppablesData(settings);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -74,7 +76,7 @@ export default function Timetable({
         }}
       >
         {userLevel >= level.EDIT &&
-          getDroppables(settings, onDroppableDrop, addProgramModal)}
+          getDroppables(droppablesData, onDroppableDrop, addProgramModal)}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
@@ -210,7 +212,7 @@ function getBlockDroppables(
   );
 }
 
-function getDroppables(settings, onDrop, addProgramModal) {
+function getDroppablesData(settings) {
   // ensure there is always at least one group
   const groups = settings.groups.length > 0 ? settings.groups : [{ _id: null }];
 
@@ -219,22 +221,30 @@ function getDroppables(settings, onDrop, addProgramModal) {
       [...Array(settings.timeSpan).keys()].flatMap((idxSpan) => {
         const begin = date + time + idxSpan * settings.timeStep;
 
-        return groups.map((group, idxGroup) => (
-          <Droppable
-            key={`${begin}-${group._id}`}
-            x={3 + idxTime * settings.timeSpan + idxSpan}
-            y={2 + idxDate * settings.groupCnt + idxGroup}
-            begin={begin}
-            group={group._id}
-            onDrop={onDrop}
-            addProgramModal={() =>
-              addProgramModal({ begin, groupId: group._id })
-            }
-          />
-        ));
+        return groups.map((group, idxGroup) => ({
+          key: `${begin}-${group._id}`,
+          x: 3 + idxTime * settings.timeSpan + idxSpan,
+          y: 2 + idxDate * settings.groupCnt + idxGroup,
+          begin,
+          group: group._id,
+        }));
       })
     )
   );
+}
+
+function getDroppables(droppablesData, onDrop, addProgramModal) {
+  return droppablesData.map(({ key, x, y, begin, group }) => (
+    <Droppable
+      key={key}
+      x={x}
+      y={y}
+      begin={begin}
+      group={group}
+      onDrop={onDrop}
+      addProgramModal={() => addProgramModal({ begin, groupId: group })}
+    />
+  ));
 }
 
 function getTimeHeaders(settings) {
