@@ -73,7 +73,7 @@ export default function Timetable({
 
   const blocksData = useMemo(
     () => getBlocksData(programs, settings, violations),
-    [programs, settings]
+    [programs, settings, violations]
   );
 
   return (
