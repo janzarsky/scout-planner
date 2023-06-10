@@ -77,7 +77,7 @@ export default function Program({ program, rect, violations, onEdit }) {
 
   return (
     <div
-      ref={program.locked ? null : ref}
+      ref={userLevel < level.EDIT || program.locked ? null : ref}
       className={
         "program-wrapper " +
         (isDragging ? " dragged" : "") +
