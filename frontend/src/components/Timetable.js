@@ -200,7 +200,9 @@ function getBlockDroppables(
           key={`${x}-${y}`}
           x={x + 1}
           y={y + 1}
-          onDrop={(item, programs) => onDrop(item, begin, groupId, programs)}
+          begin={begin}
+          group={groupId}
+          onDrop={onDrop}
           addProgramModal={() => addProgramModal({ begin, groupId })}
         />
       );
@@ -222,9 +224,9 @@ function getDroppables(settings, onDrop, addProgramModal) {
             key={`${begin}-${group._id}`}
             x={3 + idxTime * settings.timeSpan + idxSpan}
             y={2 + idxDate * settings.groupCnt + idxGroup}
-            onDrop={(item, programs) =>
-              onDrop(item, begin, group._id, programs)
-            }
+            begin={begin}
+            group={group._id}
+            onDrop={onDrop}
             addProgramModal={() =>
               addProgramModal({ begin, groupId: group._id })
             }
@@ -269,13 +271,13 @@ function getGroupHeaders(settings) {
   );
 }
 
-function Droppable({ onDrop, x, y, addProgramModal }) {
+function Droppable({ onDrop, x, y, addProgramModal, begin, group }) {
   const { programs } = useSelector((state) => state.programs);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => onDrop(item, programs),
+      drop: (item) => onDrop(item, begin, group, programs),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
