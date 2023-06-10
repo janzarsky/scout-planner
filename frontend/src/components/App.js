@@ -41,6 +41,7 @@ import {
 } from "../helpers/PeopleConvertor";
 import { migratePeople, migratePrograms } from "../helpers/PeopleMigration";
 import { useAuth } from "./AuthProvider";
+import { NavLink, Route, Routes } from "react-router-dom";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -250,9 +251,11 @@ export default function App() {
       )}
       <Tab.Container activeKey={activeTab} onSelect={onSelectCallback}>
         <Nav variant="pills" className="control-panel">
-          <Nav.Link eventKey="timetable">Harmonogram</Nav.Link>
+          <Nav.Link as={NavLink} to="" eventKey="timetable" end>
+            Harmonogram
+          </Nav.Link>
           {userLevel >= level.VIEW && (
-            <Nav.Link eventKey="rules">
+            <Nav.Link as={NavLink} to="rules" eventKey="rules">
               Pravidla{" "}
               {rulesSatisfied ? (
                 <i className="fa fa-check text-success" />
@@ -262,25 +265,39 @@ export default function App() {
             </Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Link eventKey="packages">Balíčky</Nav.Link>
+            <Nav.Link as={NavLink} to="packages" eventKey="packages">
+              Balíčky
+            </Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Link eventKey="groups">Skupiny</Nav.Link>
+            <Nav.Link as={NavLink} to="groups" eventKey="groups">
+              Skupiny
+            </Nav.Link>
           )}
           {userLevel >= level.EDIT && peopleSection && (
-            <Nav.Link eventKey="people">Organizátoři</Nav.Link>
+            <Nav.Link as={NavLink} to="people" eventKey="people">
+              Organizátoři
+            </Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Link eventKey="ranges">Linky</Nav.Link>
+            <Nav.Link as={NavLink} to="ranges" eventKey="ranges">
+              Linky
+            </Nav.Link>
           )}
           {userLevel >= level.VIEW && (
-            <Nav.Link eventKey="stats">Statistiky</Nav.Link>
+            <Nav.Link as={NavLink} to="stats" eventKey="stats">
+              Statistiky
+            </Nav.Link>
           )}
           {userLevel >= level.ADMIN && (
-            <Nav.Link eventKey="users">Uživatelé</Nav.Link>
+            <Nav.Link as={NavLink} to="users" eventKey="users">
+              Uživatelé
+            </Nav.Link>
           )}
           {userLevel >= level.VIEW && (
-            <Nav.Link eventKey="settings">Nastavení</Nav.Link>
+            <Nav.Link as={NavLink} to="settings" eventKey="settings">
+              Nastavení
+            </Nav.Link>
           )}
           {userLevel >= level.VIEW && activeTab === "timetable" && <Filters />}
           {userLevel >= level.VIEW && activeTab === "timetable" && (
@@ -292,77 +309,125 @@ export default function App() {
           <GoogleLogin />
         </Nav>
         <Tab.Content>
-          <Tab.Pane eventKey="timetable">
-            {userLevel >= level.VIEW &&
-              dataLoaded &&
-              (peopleMigrationState === "finishedPrograms" ||
-                peopleMigrationState === "failedPrograms" ||
-                peopleMigrationState === "failedPeople") && (
-                <Timetable
-                  violations={violationsPerProgram}
-                  addProgramModal={addProgramCallback}
-                  onEdit={onEditCallback}
-                />
-              )}
-            {(!dataLoaded ||
-              (peopleMigrationState !== "finishedPrograms" &&
-                peopleMigrationState !== "failedPrograms" &&
-                peopleMigrationState !== "failedPeople")) && (
-              <Container fluid>
-                <Alert variant="primary">
-                  <i className="fa fa-spinner fa-pulse" />
-                  &nbsp; Načítání&hellip;
-                </Alert>
-              </Container>
-            )}
-            {userLevel === level.NONE && dataLoaded && (
-              <Container fluid>
-                <Alert variant="danger">
-                  <i className="fa fa-exclamation-triangle" />
-                  &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
-                  oprávnění.
-                </Alert>
-              </Container>
-            )}
-          </Tab.Pane>
-          {userLevel >= level.VIEW && (
-            <Tab.Pane eventKey="rules">
-              <Rules violations={violations} />
-            </Tab.Pane>
-          )}
-          {userLevel >= level.EDIT && (
-            <Tab.Pane eventKey="packages" title="Balíčky">
-              <Packages />
-            </Tab.Pane>
-          )}
-          {userLevel >= level.EDIT && (
-            <Tab.Pane eventKey="groups" title="Skupiny">
-              <Groups />
-            </Tab.Pane>
-          )}
-          {userLevel >= level.EDIT && peopleSection && (
-            <Tab.Pane eventKey="people" title="Organizátoři">
-              <People />
-            </Tab.Pane>
-          )}
-          {userLevel >= level.EDIT && (
-            <Tab.Pane eventKey="ranges" title="Linky">
-              <Ranges />
-            </Tab.Pane>
-          )}
-          {userLevel >= level.VIEW && (
-            <Tab.Pane eventKey="stats" title="Statistiky">
-              <Stats />
-            </Tab.Pane>
-          )}
-          {userLevel >= level.ADMIN && (
-            <Tab.Pane eventKey="users" title="Uživatelé">
-              <Users userEmail={user ? user.email : null} />
-            </Tab.Pane>
-          )}
-          <Tab.Pane eventKey="settings" title="Nastavení">
-            <Settings />
-          </Tab.Pane>
+          <Routes>
+            <Route
+              index
+              element={
+                <Tab.Pane eventKey="timetable">
+                  {userLevel >= level.VIEW &&
+                    dataLoaded &&
+                    (peopleMigrationState === "finishedPrograms" ||
+                      peopleMigrationState === "failedPrograms" ||
+                      peopleMigrationState === "failedPeople") && (
+                      <Timetable
+                        violations={violationsPerProgram}
+                        addProgramModal={addProgramCallback}
+                        onEdit={onEditCallback}
+                      />
+                    )}
+                  {(!dataLoaded ||
+                    (peopleMigrationState !== "finishedPrograms" &&
+                      peopleMigrationState !== "failedPrograms" &&
+                      peopleMigrationState !== "failedPeople")) && (
+                    <Container fluid>
+                      <Alert variant="primary">
+                        <i className="fa fa-spinner fa-pulse" />
+                        &nbsp; Načítání&hellip;
+                      </Alert>
+                    </Container>
+                  )}
+                  {userLevel === level.NONE && dataLoaded && (
+                    <Container fluid>
+                      <Alert variant="danger">
+                        <i className="fa fa-exclamation-triangle" />
+                        &nbsp; Pro zobrazení tohoto harmonogramu nemáte
+                        dostatečná oprávnění.
+                      </Alert>
+                    </Container>
+                  )}
+                </Tab.Pane>
+              }
+            />
+            <Route
+              path="rules"
+              element={
+                userLevel >= level.VIEW && (
+                  <Tab.Pane eventKey="rules">
+                    <Rules violations={violations} />
+                  </Tab.Pane>
+                )
+              }
+            />
+            <Route
+              path="packages"
+              element={
+                userLevel >= level.EDIT && (
+                  <Tab.Pane eventKey="packages" title="Balíčky">
+                    <Packages />
+                  </Tab.Pane>
+                )
+              }
+            />
+            <Route
+              path="groups"
+              element={
+                userLevel >= level.EDIT && (
+                  <Tab.Pane eventKey="groups" title="Skupiny">
+                    <Groups />
+                  </Tab.Pane>
+                )
+              }
+            />
+            <Route
+              path="people"
+              element={
+                userLevel >= level.EDIT &&
+                peopleSection && (
+                  <Tab.Pane eventKey="people" title="Organizátoři">
+                    <People />
+                  </Tab.Pane>
+                )
+              }
+            />
+            <Route
+              path="ranges"
+              element={
+                userLevel >= level.EDIT && (
+                  <Tab.Pane eventKey="ranges" title="Linky">
+                    <Ranges />
+                  </Tab.Pane>
+                )
+              }
+            />
+            <Route
+              path="stats"
+              element={
+                userLevel >= level.VIEW && (
+                  <Tab.Pane eventKey="stats" title="Statistiky">
+                    <Stats />
+                  </Tab.Pane>
+                )
+              }
+            />
+            <Route
+              path="users"
+              element={
+                userLevel >= level.ADMIN && (
+                  <Tab.Pane eventKey="users" title="Uživatelé">
+                    <Users userEmail={user ? user.email : null} />
+                  </Tab.Pane>
+                )
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <Tab.Pane eventKey="settings" title="Nastavení">
+                  <Settings />
+                </Tab.Pane>
+              }
+            />
+          </Routes>
         </Tab.Content>
       </Tab.Container>
     </div>
