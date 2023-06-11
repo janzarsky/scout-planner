@@ -12,12 +12,9 @@ import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  BlockDroppables,
-  Droppables,
-  getBlockDroppablesData,
-} from "./Droppables";
+import { Droppables, getBlockDroppablesData } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
+import { Block, Blocks } from "./Blocks";
 
 export default function Timetable({ violations, timeProvider = null }) {
   const dispatch = useDispatch();
@@ -159,22 +156,6 @@ function getBlocksData(programs, settings, violations) {
   });
 }
 
-function Blocks({ data, onDrop }) {
-  return data.map((block) => (
-    <Block key={block.key} rect={block.rect}>
-      {block.programs.map(({ key, rect, program, violations }) => (
-        <Program
-          key={key}
-          rect={rect}
-          program={program}
-          violations={violations}
-        />
-      ))}
-      <BlockDroppables data={block.droppablesData} onDrop={onDrop} />
-    </Block>
-  ));
-}
-
 function getProgramData(prog, blockRect, settings, violations) {
   const programRect = getRect(prog.begin, prog.duration, prog.groups, settings);
 
@@ -192,30 +173,6 @@ function getProgramData(prog, blockRect, settings, violations) {
     program: prog,
     violations: violations.get(prog._id),
   };
-}
-
-function Block({ rect, children }) {
-  const width = useSelector((state) => state.settings.settings.width);
-
-  return (
-    <div
-      className="block"
-      style={{
-        gridColumnStart: rect.x + 3,
-        gridRowStart: rect.y + 2,
-        gridColumnEnd: "span " + rect.width,
-        gridRowEnd: "span " + rect.height,
-        gridTemplateColumns:
-          "repeat(" +
-          rect.width +
-          ", minmax(" +
-          (width * 20) / 100 +
-          "px, 1fr))",
-      }}
-    >
-      {children}
-    </div>
-  );
 }
 
 function Tray({ settings, onDroppableDrop }) {
