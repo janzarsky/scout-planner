@@ -74,7 +74,6 @@ export default function App() {
   );
   const errors = useSelector((state) => state.errors);
 
-  const peopleSection = useSelector((state) => state.config.peopleSection);
   const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
   const dispatch = useDispatch();
@@ -277,7 +276,7 @@ export default function App() {
               Skupiny
             </Nav.Link>
           )}
-          {userLevel >= level.EDIT && peopleSection && (
+          {userLevel >= level.EDIT && (
             <Nav.Link as={NavLink} to="people" end>
               Organizátoři
             </Nav.Link>
@@ -330,10 +329,7 @@ export default function App() {
           element={userLevel >= level.EDIT && <Packages />}
         />
         <Route path="groups" element={userLevel >= level.EDIT && <Groups />} />
-        <Route
-          path="people"
-          element={userLevel >= level.EDIT && peopleSection && <People />}
-        />
+        <Route path="people" element={userLevel >= level.EDIT && <People />} />
         <Route path="ranges" element={userLevel >= level.EDIT && <Ranges />} />
         <Route path="stats" element={userLevel >= level.VIEW && <Stats />} />
         <Route
