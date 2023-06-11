@@ -9,7 +9,7 @@ import { updateProgram } from "../store/programsSlice";
 import Program from "./Program";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
-import { getProgramRects, sortTrayPrograms } from "./Tray";
+import { getProgramRects, sortTrayPrograms } from "../helpers/TrayUtils";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Droppables } from "./Droppables";
