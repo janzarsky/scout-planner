@@ -89,16 +89,7 @@ export default function Timetable({ violations, timeProvider = null }) {
             "px, 1fr))",
         }}
       >
-        {droppablesData.map(({ key, x, y, begin, group }) => (
-          <Droppable
-            key={key}
-            x={x}
-            y={y}
-            begin={begin}
-            group={group}
-            onDrop={onDroppableDrop}
-          />
-        ))}
+        <Droppables data={droppablesData} onDrop={onDroppableDrop} />
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
@@ -208,6 +199,19 @@ function getProgramData(prog, blockRect, settings, violations) {
     program: prog,
     violations: violations.get(prog._id),
   };
+}
+
+function Droppables({ data, onDrop }) {
+  return data.map(({ key, x, y, begin, group }) => (
+    <Droppable
+      key={key}
+      x={x}
+      y={y}
+      begin={begin}
+      group={group}
+      onDrop={onDrop}
+    />
+  ));
 }
 
 function getBlockDroppablesData(width, height, blockBegin, timeStep, groupId) {
