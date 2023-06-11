@@ -2,4 +2,4 @@
 
 Scout planner is a single-page app that helps with planning scout events.
 
-You can try it at https://harmonogram.zarsky.name
+You can try it at https://harmac.cz
