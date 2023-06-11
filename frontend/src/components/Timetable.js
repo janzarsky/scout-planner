@@ -13,6 +13,11 @@ import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  BlockDroppables,
+  Droppables,
+  getBlockDroppablesData,
+} from "./Droppables";
 
 export default function Timetable({ violations, timeProvider = null }) {
   const dispatch = useDispatch();
@@ -62,11 +67,6 @@ export default function Timetable({ violations, timeProvider = null }) {
 
   const width = useSelector((state) => state.settings.settings.width);
 
-  const droppablesData = useMemo(
-    () => (userLevel >= level.EDIT ? getDroppablesData(settings) : []),
-    [settings, userLevel]
-  );
-
   const blocksData = useMemo(
     () => getBlocksData(programs, settings, violations),
     [programs, settings, violations]
@@ -89,16 +89,9 @@ export default function Timetable({ violations, timeProvider = null }) {
             "px, 1fr))",
         }}
       >
-        {droppablesData.map(({ key, x, y, begin, group }) => (
-          <Droppable
-            key={key}
-            x={x}
-            y={y}
-            begin={begin}
-            group={group}
-            onDrop={onDroppableDrop}
-          />
-        ))}
+        {userLevel >= level.EDIT && (
+          <Droppables settings={settings} onDrop={onDroppableDrop} />
+        )}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
@@ -177,16 +170,7 @@ function getBlocks(blocksData, onDrop) {
           violations={violations}
         />
       ))}
-      {block.droppablesData.map(({ key, x, y, begin, group }) => (
-        <Droppable
-          key={key}
-          x={x}
-          y={y}
-          begin={begin}
-          group={group}
-          onDrop={onDrop}
-        />
-      ))}
+      <BlockDroppables data={block.droppablesData} onDrop={onDrop} />
     </Block>
   ));
 }
@@ -208,39 +192,6 @@ function getProgramData(prog, blockRect, settings, violations) {
     program: prog,
     violations: violations.get(prog._id),
   };
-}
-
-function getBlockDroppablesData(width, height, blockBegin, timeStep, groupId) {
-  return [...Array(width).keys()].flatMap((x) =>
-    [...Array(height).keys()].map((y) => ({
-      key: `${x}-${y}`,
-      x: x + 1,
-      y: y + 1,
-      begin: blockBegin + x * timeStep,
-      group: groupId,
-    }))
-  );
-}
-
-function getDroppablesData(settings) {
-  // ensure there is always at least one group
-  const groups = settings.groups.length > 0 ? settings.groups : [{ _id: null }];
-
-  return settings.days.flatMap((date, idxDate) =>
-    settings.timeHeaders.flatMap((time, idxTime) =>
-      [...Array(settings.timeSpan).keys()].flatMap((idxSpan) => {
-        const begin = date + time + idxSpan * settings.timeStep;
-
-        return groups.map((group, idxGroup) => ({
-          key: `${begin}-${group._id}`,
-          x: 3 + idxTime * settings.timeSpan + idxSpan,
-          y: 2 + idxDate * settings.groupCnt + idxGroup,
-          begin,
-          group: group._id,
-        }));
-      })
-    )
-  );
 }
 
 function getTimeHeaders(settings) {
@@ -274,31 +225,6 @@ function getGroupHeaders(settings) {
         name={group.name}
       />
     ))
-  );
-}
-
-function Droppable({ onDrop, x, y, begin, group }) {
-  const { programs } = useSelector((state) => state.programs);
-  const navigate = useNavigate();
-
-  const [{ isOver }, drop] = useDrop(
-    () => ({
-      accept: "program",
-      drop: (item) => onDrop(item, begin, group, programs),
-      collect: (monitor) => ({
-        isOver: !!monitor.isOver(),
-      }),
-    }),
-    [programs]
-  );
-
-  return (
-    <div
-      ref={drop}
-      className={"droppable " + (isOver ? "drag-over" : "")}
-      style={{ gridColumnStart: x, gridRowStart: y }}
-      onClick={() => navigate("add", { state: { begin, groupId: group } })}
-    />
   );
 }
 
