@@ -70,7 +70,7 @@ export function getBlockDroppablesData(
   );
 }
 
-export function Droppable({ onDrop, x, y, begin, group }) {
+function Droppable({ onDrop, x, y, begin, group }) {
   const { programs } = useSelector((state) => state.programs);
   const navigate = useNavigate();
 
