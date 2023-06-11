@@ -1,5 +1,5 @@
-import { parseDuration, parseTime } from "../helpers/DateUtils";
-import { getProgramRects, sortTrayPrograms } from "./Tray";
+import { parseDuration, parseTime } from "./DateUtils";
+import { getProgramRects, sortTrayPrograms } from "./TrayUtils";
 
 describe("getProgramRects", () => {
   const settings = {
