@@ -13,7 +13,7 @@ import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Droppable, Droppables } from "./Droppables";
+import { BlockDroppables, Droppables } from "./Droppables";
 
 export default function Timetable({ violations, timeProvider = null }) {
   const dispatch = useDispatch();
@@ -188,19 +188,6 @@ function getProgramData(prog, blockRect, settings, violations) {
     program: prog,
     violations: violations.get(prog._id),
   };
-}
-
-function BlockDroppables({ data, onDrop }) {
-  return data.map(({ key, x, y, begin, group }) => (
-    <Droppable
-      key={key}
-      x={x}
-      y={y}
-      begin={begin}
-      group={group}
-      onDrop={onDrop}
-    />
-  ));
 }
 
 function getBlockDroppablesData(width, height, blockBegin, timeStep, groupId) {

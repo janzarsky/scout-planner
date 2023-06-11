@@ -39,6 +39,19 @@ function getDroppablesData(settings) {
   );
 }
 
+export function BlockDroppables({ data, onDrop }) {
+  return data.map(({ key, x, y, begin, group }) => (
+    <Droppable
+      key={key}
+      x={x}
+      y={y}
+      begin={begin}
+      group={group}
+      onDrop={onDrop}
+    />
+  ));
+}
+
 export function Droppable({ onDrop, x, y, begin, group }) {
   const { programs } = useSelector((state) => state.programs);
   const navigate = useNavigate();
