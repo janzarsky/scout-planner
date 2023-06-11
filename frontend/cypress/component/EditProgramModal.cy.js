@@ -5,6 +5,7 @@ import { EditProgramModal } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
 import { addPerson, setLegacyPeople } from "../../src/store/peopleSlice";
 import { addProgram } from "../../src/store/programsSlice";
+import { Route, Routes } from "react-router-dom";
 
 describe("EditProgramModal", () => {
   const alice = {
@@ -20,8 +21,15 @@ describe("EditProgramModal", () => {
 
   function mountModal(programId) {
     cy.mount(
-      <EditProgramModal programId={programId} handleClose={() => {}} />,
-      { dndProvider: false, reduxStore: store }
+      <Routes>
+        <Route path="/edit/:id" element={<EditProgramModal />} />
+      </Routes>,
+      {
+        dndProvider: false,
+        reduxStore: store,
+        router: true,
+        initialEntries: [`/edit/${programId}`],
+      }
     );
   }
 

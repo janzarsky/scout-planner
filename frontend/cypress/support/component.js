@@ -6,11 +6,14 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { getStore } from "../../src/store";
 import "../../src/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { MemoryRouter } from "react-router-dom";
 
 Cypress.Commands.add("mount", (component, options = {}) => {
   const {
     reduxStore = getStore(),
     dndProvider = false,
+    router = false,
+    initialEntries = ["/"],
     ...mountOptions
   } = options;
 
@@ -22,5 +25,11 @@ Cypress.Commands.add("mount", (component, options = {}) => {
     storeWrapped
   );
 
-  return mount(dndWrapped, mountOptions);
+  const routerWrapped = router ? (
+    <MemoryRouter initialEntries={initialEntries}>{dndWrapped}</MemoryRouter>
+  ) : (
+    dndWrapped
+  );
+
+  return mount(routerWrapped, mountOptions);
 });
