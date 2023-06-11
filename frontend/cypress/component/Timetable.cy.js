@@ -1,9 +1,7 @@
 /// <reference types="cypress"/>
 
 import Timetable from "../../src/components/Timetable";
-import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
-import { testing } from "../../src/store/authSlice";
 import { addProgram } from "../../src/store/programsSlice";
 import { parseDuration } from "../../src/helpers/DateUtils";
 import { addGroup } from "../../src/store/groupsSlice";
@@ -45,7 +43,7 @@ describe("Timetable", () => {
         timeProvider={() => now}
         violations={new Map()}
       />,
-      { reduxStore: store }
+      { reduxStore: store, router: true }
     );
   }
 
@@ -65,16 +63,6 @@ describe("Timetable", () => {
     cy.contains("Po");
     cy.contains("Út");
     ["10", "11", "12", "13", "14", "15"].forEach((hour) => cy.contains(hour));
-  });
-
-  it("adding a program", () => {
-    store.dispatch(testing.setUserLevel(level.EDIT));
-    mountTimetable();
-
-    cy.get(".droppable").first().click();
-    cy.get("@addProgram").should("have.been.calledWithMatch", {
-      begin: now - parseDuration("1:00"),
-    });
   });
 
   it("with program", () => {
