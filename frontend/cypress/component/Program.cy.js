@@ -48,14 +48,8 @@ describe("Program", () => {
 
   function mountProgram(program, violations) {
     cy.mount(
-      <Program
-        program={program}
-        rect={rect}
-        violations={violations}
-        onEdit={cy.stub().as("edit")}
-        clone={cy.stub().as("clone")}
-      />,
-      { dndProvider: true, reduxStore: store }
+      <Program program={program} rect={rect} violations={violations} />,
+      { dndProvider: true, reduxStore: store, router: true }
     );
   }
 
@@ -86,10 +80,6 @@ describe("Program", () => {
       "href",
       "https://some.program.url"
     );
-
-    // see https://docs.cypress.io/api/commands/hover
-    cy.get(".program-edit").click({ force: true });
-    cy.get("@edit").should("have.been.calledOnce");
   });
 
   it("with package", () => {
