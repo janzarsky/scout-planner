@@ -95,7 +95,7 @@ export default function Timetable({ violations, timeProvider = null }) {
         <TimeHeaders settings={settings} />
         <DateHeaders settings={settings} />
         <GroupHeaders settings={settings} />
-        {getBlocks(blocksData, onDroppableDrop)}
+        <Blocks data={blocksData} onDrop={onDroppableDrop} />
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -159,8 +159,8 @@ function getBlocksData(programs, settings, violations) {
   });
 }
 
-function getBlocks(blocksData, onDrop) {
-  return blocksData.map((block) => (
+function Blocks({ data, onDrop }) {
+  return data.map((block) => (
     <Block key={block.key} rect={block.rect}>
       {block.programs.map(({ key, rect, program, violations }) => (
         <Program
