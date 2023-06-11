@@ -258,37 +258,37 @@ export default function App() {
             </Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="packages">
+            <Nav.Link as={NavLink} to="packages" end>
               Balíčky
             </Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="groups">
+            <Nav.Link as={NavLink} to="groups" end>
               Skupiny
             </Nav.Link>
           )}
           {userLevel >= level.EDIT && peopleSection && (
-            <Nav.Link as={NavLink} to="people">
+            <Nav.Link as={NavLink} to="people" end>
               Organizátoři
             </Nav.Link>
           )}
           {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="ranges">
+            <Nav.Link as={NavLink} to="ranges" end>
               Linky
             </Nav.Link>
           )}
           {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="stats">
+            <Nav.Link as={NavLink} to="stats" end>
               Statistiky
             </Nav.Link>
           )}
           {userLevel >= level.ADMIN && (
-            <Nav.Link as={NavLink} to="users">
+            <Nav.Link as={NavLink} to="users" end>
               Uživatelé
             </Nav.Link>
           )}
           {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="settings">
+            <Nav.Link as={NavLink} to="settings" end>
               Nastavení
             </Nav.Link>
           )}
