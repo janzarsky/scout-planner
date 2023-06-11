@@ -2,8 +2,16 @@ import { useSelector } from "react-redux";
 import { BlockDroppables, getBlockDroppablesData } from "./Droppables";
 import Program from "./Program";
 import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
+import { useMemo } from "react";
 
-export function Blocks({ data, onDrop }) {
+export function Blocks({ settings, violations, onDrop }) {
+  const { programs } = useSelector((state) => state.programs);
+
+  const data = useMemo(
+    () => getBlocksData(programs, settings, violations),
+    [programs, settings, violations]
+  );
+
   return data.map((block) => (
     <Block key={block.key} rect={block.rect}>
       {block.programs.map(({ key, rect, program, violations }) => (
@@ -43,7 +51,7 @@ export function Block({ rect, children }) {
   );
 }
 
-export function getBlocksData(programs, settings, violations) {
+function getBlocksData(programs, settings, violations) {
   const allGroups = settings.groups.map((g) => g._id);
   const programsGroupFix = programs.map((p) => ({
     ...p,

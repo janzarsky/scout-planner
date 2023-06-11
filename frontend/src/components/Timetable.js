@@ -14,7 +14,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Droppables } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
-import { Block, Blocks, getBlocksData } from "./Blocks";
+import { Block, Blocks } from "./Blocks";
 
 export default function Timetable({ violations, timeProvider = null }) {
   const dispatch = useDispatch();
@@ -64,11 +64,6 @@ export default function Timetable({ violations, timeProvider = null }) {
 
   const width = useSelector((state) => state.settings.settings.width);
 
-  const blocksData = useMemo(
-    () => getBlocksData(programs, settings, violations),
-    [programs, settings, violations]
-  );
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -92,7 +87,11 @@ export default function Timetable({ violations, timeProvider = null }) {
         <TimeHeaders settings={settings} />
         <DateHeaders settings={settings} />
         <GroupHeaders settings={settings} />
-        <Blocks data={blocksData} onDrop={onDroppableDrop} />
+        <Blocks
+          settings={settings}
+          violations={violations}
+          onDrop={onDroppableDrop}
+        />
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
