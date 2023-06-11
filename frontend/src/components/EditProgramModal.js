@@ -24,12 +24,15 @@ import { addPerson } from "../store/peopleSlice";
 import { clientFactory } from "../Client";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-export function EditProgramModal({ programId, handleClose }) {
-  const program = useSelector((state) => {
-    const prog = state.programs.programs.find((p) => p._id === programId);
-    return prog ? prog : {};
-  });
+export function EditProgramModal() {
+  const { id: programId } = useParams();
+  const navigate = useNavigate();
+
+  const program = useSelector((state) =>
+    state.programs.programs.find((p) => p._id === programId)
+  );
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
@@ -51,6 +54,13 @@ export function EditProgramModal({ programId, handleClose }) {
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
+
+  const handleClose = () => navigate(`/${table}`);
+
+  if (!program) {
+    handleClose();
+    return null;
+  }
 
   function handleDelete(event) {
     event.preventDefault();
@@ -641,7 +651,12 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
   );
 }
 
-export function AddProgramModal({ options, handleClose }) {
+export function AddProgramModal() {
+  const location = useLocation();
+  const options = location.state;
+
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("Nový program");
   const [date, setDate] = useState(formatDateWithTray(options.begin));
   const [time, setTime] = useState(formatTimeWithTray(options.begin));
@@ -662,6 +677,8 @@ export function AddProgramModal({ options, handleClose }) {
 
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
+
+  const handleClose = () => navigate(`/${table}`);
 
   function handleSubmit(event) {
     event.preventDefault();

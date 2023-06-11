@@ -10,8 +10,9 @@ import {
 import { addError } from "../store/errorsSlice";
 import { addProgram, updateProgram } from "../store/programsSlice";
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Program({ program, rect, violations, onEdit }) {
+export default function Program({ program, rect, violations }) {
   const { packages } = useSelector((state) => state.packages);
   const { programs } = useSelector((state) => state.programs);
 
@@ -96,7 +97,7 @@ export default function Program({ program, rect, violations, onEdit }) {
         pkg={packages.find((p) => p._id === program.pkg)}
         narrow={narrow}
       />
-      <ProgramEdit program={program} onEdit={onEdit} narrow={narrow} />
+      <ProgramEdit programId={program._id} narrow={narrow} />
       {program.locked && <ProgramLock narrow={narrow} />}
       {!program.locked && userLevel >= level.EDIT && (
         <ProgramMove narrow={narrow} />
@@ -268,13 +269,14 @@ function ProgramViolations({ violations }) {
   );
 }
 
-function ProgramEdit({ onEdit, program, narrow }) {
+function ProgramEdit({ programId, narrow }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
+  const navigate = useNavigate();
 
   return (
     <div
       className={"program-edit" + (narrow ? " narrow" : "")}
-      onClick={() => onEdit(program)}
+      onClick={() => navigate(`edit/${programId}`)}
     >
       {userLevel >= level.EDIT ? (
         <i className="fa fa-pencil" />

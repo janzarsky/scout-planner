@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
@@ -47,9 +47,6 @@ export default function App() {
   const [violations, setViolations] = useState(new Map());
   const [otherProblems, setOtherProblems] = useState([]);
   const [rulesSatisfied, setRulesSatisfied] = useState(true);
-  const [addModalEnabled, setAddModalEnabled] = useState(false);
-  const [addProgramOptions, setAddProgramOptions] = useState({});
-  const [editProgramId, setEditProgramId] = useState(undefined);
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const { user, initializing } = useAuth();
@@ -203,18 +200,39 @@ export default function App() {
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
 
-  const addProgramCallback = useCallback(
-    (options) => {
-      setAddModalEnabled(true);
-      setAddProgramOptions(options);
-    },
-    [setAddModalEnabled, setAddProgramOptions]
-  );
-
-  const onEditCallback = useCallback(
-    (program) => setEditProgramId(program._id),
-    [setEditProgramId]
-  );
+  function getTimetableElement() {
+    return (
+      <>
+        {userLevel >= level.VIEW &&
+          dataLoaded &&
+          (peopleMigrationState === "finishedPrograms" ||
+            peopleMigrationState === "failedPrograms" ||
+            peopleMigrationState === "failedPeople") && (
+            <Timetable violations={violationsPerProgram} />
+          )}
+        {(!dataLoaded ||
+          (peopleMigrationState !== "finishedPrograms" &&
+            peopleMigrationState !== "failedPrograms" &&
+            peopleMigrationState !== "failedPeople")) && (
+          <Container fluid>
+            <Alert variant="primary">
+              <i className="fa fa-spinner fa-pulse" />
+              &nbsp; Načítání&hellip;
+            </Alert>
+          </Container>
+        )}
+        {userLevel === level.NONE && dataLoaded && (
+          <Container fluid>
+            <Alert variant="danger">
+              <i className="fa fa-exclamation-triangle" />
+              &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
+              oprávnění.
+            </Alert>
+          </Container>
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="App">
@@ -230,18 +248,10 @@ export default function App() {
           </Alert>
         </Container>
       )}
-      {addModalEnabled && (
-        <AddProgramModal
-          options={addProgramOptions}
-          handleClose={() => setAddModalEnabled(false)}
-        />
-      )}
-      {editProgramId && (
-        <EditProgramModal
-          programId={editProgramId}
-          handleClose={() => setEditProgramId(undefined)}
-        />
-      )}
+      <Routes>
+        <Route path="add" element={<AddProgramModal />} />
+        <Route path="edit/:id" element={<EditProgramModal />} />
+      </Routes>
       <Tab.Container>
         <Nav variant="pills" className="control-panel">
           <Nav.Link as={NavLink} to="" end>
@@ -308,44 +318,9 @@ export default function App() {
         </Nav>
       </Tab.Container>
       <Routes>
-        <Route
-          index
-          element={
-            <>
-              {userLevel >= level.VIEW &&
-                dataLoaded &&
-                (peopleMigrationState === "finishedPrograms" ||
-                  peopleMigrationState === "failedPrograms" ||
-                  peopleMigrationState === "failedPeople") && (
-                  <Timetable
-                    violations={violationsPerProgram}
-                    addProgramModal={addProgramCallback}
-                    onEdit={onEditCallback}
-                  />
-                )}
-              {(!dataLoaded ||
-                (peopleMigrationState !== "finishedPrograms" &&
-                  peopleMigrationState !== "failedPrograms" &&
-                  peopleMigrationState !== "failedPeople")) && (
-                <Container fluid>
-                  <Alert variant="primary">
-                    <i className="fa fa-spinner fa-pulse" />
-                    &nbsp; Načítání&hellip;
-                  </Alert>
-                </Container>
-              )}
-              {userLevel === level.NONE && dataLoaded && (
-                <Container fluid>
-                  <Alert variant="danger">
-                    <i className="fa fa-exclamation-triangle" />
-                    &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
-                    oprávnění.
-                  </Alert>
-                </Container>
-              )}
-            </>
-          }
-        />
+        <Route index element={getTimetableElement()} />
+        <Route path="add" element={getTimetableElement()} />
+        <Route path="edit/*" element={getTimetableElement()} />
         <Route
           path="rules"
           element={userLevel >= level.VIEW && <Rules violations={violations} />}

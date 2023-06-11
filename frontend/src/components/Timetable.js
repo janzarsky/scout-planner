@@ -12,13 +12,9 @@ import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
 import { useCallback, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Timetable({
-  violations,
-  addProgramModal,
-  onEdit,
-  timeProvider = null,
-}) {
+export default function Timetable({ violations, timeProvider = null }) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
@@ -101,13 +97,12 @@ export default function Timetable({
             begin={begin}
             group={group}
             onDrop={onDroppableDrop}
-            addProgramModal={addProgramModal}
           />
         ))}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
-        {getBlocks(blocksData, onEdit, onDroppableDrop, addProgramModal)}
+        {getBlocks(blocksData, onDroppableDrop)}
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -119,8 +114,6 @@ export default function Timetable({
       <Tray
         settings={settings}
         programs={programs}
-        onEdit={onEdit}
-        addProgramModal={addProgramModal}
         onDroppableDrop={onDroppableDrop}
       />
     </DndProvider>
@@ -173,7 +166,7 @@ function getBlocksData(programs, settings, violations) {
   });
 }
 
-function getBlocks(blocksData, onEdit, onDrop, addProgramModal) {
+function getBlocks(blocksData, onDrop) {
   return blocksData.map((block) => (
     <Block key={block.key} rect={block.rect}>
       {block.programs.map(({ key, rect, program, violations }) => (
@@ -182,7 +175,6 @@ function getBlocks(blocksData, onEdit, onDrop, addProgramModal) {
           rect={rect}
           program={program}
           violations={violations}
-          onEdit={onEdit}
         />
       ))}
       {block.droppablesData.map(({ key, x, y, begin, group }) => (
@@ -193,7 +185,6 @@ function getBlocks(blocksData, onEdit, onDrop, addProgramModal) {
           begin={begin}
           group={group}
           onDrop={onDrop}
-          addProgramModal={addProgramModal}
         />
       ))}
     </Block>
@@ -286,8 +277,9 @@ function getGroupHeaders(settings) {
   );
 }
 
-function Droppable({ onDrop, x, y, addProgramModal, begin, group }) {
+function Droppable({ onDrop, x, y, begin, group }) {
   const { programs } = useSelector((state) => state.programs);
+  const navigate = useNavigate();
 
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -305,7 +297,7 @@ function Droppable({ onDrop, x, y, addProgramModal, begin, group }) {
       ref={drop}
       className={"droppable " + (isOver ? "drag-over" : "")}
       style={{ gridColumnStart: x, gridRowStart: y }}
-      onClick={(_) => addProgramModal({ begin, groupId: group })}
+      onClick={() => navigate("add", { state: { begin, groupId: group } })}
     />
   );
 }
@@ -374,7 +366,7 @@ function Block({ rect, children }) {
   );
 }
 
-function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
+function Tray({ settings, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
   const { packages } = useSelector((state) => state.packages);
 
@@ -402,6 +394,8 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
   );
 
   const [pinned, setPinned] = useState(false);
+
+  const navigate = useNavigate();
 
   return (
     <div
@@ -453,7 +447,9 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
             <button
               ref={drop}
               className="tray-add-program"
-              onClick={() => addProgramModal({ begin: null, groupId: null })}
+              onClick={() =>
+                navigate("add", { state: { begin: null, groupId: null } })
+              }
             >
               {!isOver && (
                 <i
@@ -465,14 +461,7 @@ function Tray({ settings, onEdit, addProgramModal, onDroppableDrop }) {
             </button>
           )}
           {programRects.map(([program, rect]) => {
-            return (
-              <Program
-                key={program._id}
-                rect={rect}
-                program={program}
-                onEdit={onEdit}
-              />
-            );
+            return <Program key={program._id} rect={rect} program={program} />;
           })}
         </Block>
       </div>
