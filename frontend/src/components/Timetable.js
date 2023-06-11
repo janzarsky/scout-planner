@@ -92,9 +92,9 @@ export default function Timetable({ violations, timeProvider = null }) {
         {userLevel >= level.EDIT && (
           <Droppables settings={settings} onDrop={onDroppableDrop} />
         )}
-        {getTimeHeaders(settings)}
-        {getDateHeaders(settings)}
-        {getGroupHeaders(settings)}
+        <TimeHeaders settings={settings} />
+        <DateHeaders settings={settings} />
+        <GroupHeaders settings={settings} />
         {getBlocks(blocksData, onDroppableDrop)}
         {timeIndicatorRect && (
           <TimeIndicator
@@ -194,7 +194,7 @@ function getProgramData(prog, blockRect, settings, violations) {
   };
 }
 
-function getTimeHeaders(settings) {
+function TimeHeaders({ settings }) {
   return settings.timeHeaders.map((time, idx) => (
     <TimeHeader
       key={time}
@@ -205,7 +205,7 @@ function getTimeHeaders(settings) {
   ));
 }
 
-function getDateHeaders(settings) {
+function DateHeaders({ settings }) {
   return settings.days.map((date, idx) => (
     <DateHeader
       key={date}
@@ -216,7 +216,7 @@ function getDateHeaders(settings) {
   ));
 }
 
-function getGroupHeaders(settings) {
+function GroupHeaders({ settings }) {
   return settings.days.flatMap((date, idx) =>
     settings.groups.map((group, groupIdx) => (
       <GroupHeader
