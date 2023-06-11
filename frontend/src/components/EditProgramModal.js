@@ -653,7 +653,7 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
 
 export function AddProgramModal() {
   const location = useLocation();
-  const options = location.state;
+  const options = { begin: null, groupId: null, ...location.state };
 
   const navigate = useNavigate();
 
