@@ -2,7 +2,7 @@ import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
 import { clientFactory } from "../Client";
-import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
+import { getRect } from "../helpers/TimetableUtils";
 import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
@@ -12,12 +12,9 @@ import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { getProgramRects, sortTrayPrograms } from "./Tray";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  BlockDroppables,
-  Droppables,
-  getBlockDroppablesData,
-} from "./Droppables";
+import { Droppables } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
+import { Block, Blocks } from "./Blocks";
 
 export default function Timetable({ violations, timeProvider = null }) {
   const dispatch = useDispatch();
@@ -67,11 +64,6 @@ export default function Timetable({ violations, timeProvider = null }) {
 
   const width = useSelector((state) => state.settings.settings.width);
 
-  const blocksData = useMemo(
-    () => getBlocksData(programs, settings, violations),
-    [programs, settings, violations]
-  );
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -95,7 +87,11 @@ export default function Timetable({ violations, timeProvider = null }) {
         <TimeHeaders settings={settings} />
         <DateHeaders settings={settings} />
         <GroupHeaders settings={settings} />
-        {getBlocks(blocksData, onDroppableDrop)}
+        <Blocks
+          settings={settings}
+          violations={violations}
+          onDrop={onDroppableDrop}
+        />
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -110,111 +106,6 @@ export default function Timetable({ violations, timeProvider = null }) {
         onDroppableDrop={onDroppableDrop}
       />
     </DndProvider>
-  );
-}
-
-function getBlocksData(programs, settings, violations) {
-  const allGroups = settings.groups.map((g) => g._id);
-  const programsGroupFix = programs.map((p) => ({
-    ...p,
-    groups: p.groups.length > 0 ? p.groups : allGroups,
-  }));
-  const programsNotInTray = programsGroupFix.filter(
-    (p) => typeof p.begin === "number"
-  );
-  const blocks = groupProgramsToBlocks(programsNotInTray);
-
-  return blocks.map((block) => {
-    const blockRect = getRect(
-      block.begin,
-      block.duration,
-      block.groups,
-      settings
-    );
-
-    const maxBlockOrder = block.programs
-      .map((p) => (p.blockOrder ? p.blockOrder : 0))
-      .reduce((acc, curr) => (curr > acc ? curr : acc), 0);
-
-    const blockDroppablesData = getBlockDroppablesData(
-      blockRect.width,
-      maxBlockOrder + 1,
-      block.programs[0].begin,
-      settings.timeStep,
-      block.programs[0].groups.length > 0 ? block.programs[0].groups[0] : null
-    );
-
-    const programsData = block.programs.map((program) =>
-      getProgramData(program, blockRect, settings, violations)
-    );
-
-    return {
-      key: `${block.programs[0].begin}-${
-        block.programs[0].duration
-      }-${block.programs[0].groups.join("-")}`,
-      rect: blockRect,
-      programs: programsData,
-      droppablesData: blockDroppablesData,
-    };
-  });
-}
-
-function getBlocks(blocksData, onDrop) {
-  return blocksData.map((block) => (
-    <Block key={block.key} rect={block.rect}>
-      {block.programs.map(({ key, rect, program, violations }) => (
-        <Program
-          key={key}
-          rect={rect}
-          program={program}
-          violations={violations}
-        />
-      ))}
-      <BlockDroppables data={block.droppablesData} onDrop={onDrop} />
-    </Block>
-  ));
-}
-
-function getProgramData(prog, blockRect, settings, violations) {
-  const programRect = getRect(prog.begin, prog.duration, prog.groups, settings);
-
-  const blockOrder = prog.blockOrder ? prog.blockOrder : 0;
-  const relativeRect = {
-    x: programRect.x - blockRect.x,
-    y: programRect.y - blockRect.y + blockOrder,
-    width: programRect.width,
-    height: 1,
-  };
-
-  return {
-    key: prog._id,
-    rect: relativeRect,
-    program: prog,
-    violations: violations.get(prog._id),
-  };
-}
-
-function Block({ rect, children }) {
-  const width = useSelector((state) => state.settings.settings.width);
-
-  return (
-    <div
-      className="block"
-      style={{
-        gridColumnStart: rect.x + 3,
-        gridRowStart: rect.y + 2,
-        gridColumnEnd: "span " + rect.width,
-        gridRowEnd: "span " + rect.height,
-        gridTemplateColumns:
-          "repeat(" +
-          rect.width +
-          ", minmax(" +
-          (width * 20) / 100 +
-          "px, 1fr))",
-      }}
-    >
-      {children}
-    </div>
   );
 }
 
