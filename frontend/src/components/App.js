@@ -216,8 +216,6 @@ export default function App() {
     [setEditProgramId]
   );
 
-  const activeTab = "timetable";
-
   return (
     <div className="App">
       {errors.length > 0 && (
@@ -294,13 +292,18 @@ export default function App() {
               Nastavení
             </Nav.Link>
           )}
-          {userLevel >= level.VIEW && activeTab === "timetable" && <Filters />}
-          {userLevel >= level.VIEW && activeTab === "timetable" && (
-            <ViewSettings />
-          )}
-          {userLevel >= level.VIEW && activeTab === "timetable" && (
-            <RangesSettings />
-          )}
+          <Routes>
+            <Route
+              index
+              element={
+                <>
+                  {userLevel >= level.VIEW && <Filters />}
+                  {userLevel >= level.VIEW && <ViewSettings />}
+                  {userLevel >= level.VIEW && <RangesSettings />}
+                </>
+              }
+            />
+          </Routes>
           <GoogleLogin />
         </Nav>
       </Tab.Container>
