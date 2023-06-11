@@ -62,11 +62,6 @@ export default function Timetable({ violations, timeProvider = null }) {
 
   const width = useSelector((state) => state.settings.settings.width);
 
-  const droppablesData = useMemo(
-    () => (userLevel >= level.EDIT ? getDroppablesData(settings) : []),
-    [settings, userLevel]
-  );
-
   const blocksData = useMemo(
     () => getBlocksData(programs, settings, violations),
     [programs, settings, violations]
@@ -89,7 +84,9 @@ export default function Timetable({ violations, timeProvider = null }) {
             "px, 1fr))",
         }}
       >
-        <Droppables data={droppablesData} onDrop={onDroppableDrop} />
+        {userLevel >= level.EDIT && (
+          <Droppables settings={settings} onDrop={onDroppableDrop} />
+        )}
         {getTimeHeaders(settings)}
         {getDateHeaders(settings)}
         {getGroupHeaders(settings)}
@@ -201,7 +198,9 @@ function getProgramData(prog, blockRect, settings, violations) {
   };
 }
 
-function Droppables({ data, onDrop }) {
+function Droppables({ settings, onDrop }) {
+  const data = useMemo(() => getDroppablesData(settings), [settings]);
+
   return data.map(({ key, x, y, begin, group }) => (
     <Droppable
       key={key}
