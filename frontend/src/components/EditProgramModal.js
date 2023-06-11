@@ -30,9 +30,10 @@ export function EditProgramModal() {
   const { id: programId } = useParams();
   const navigate = useNavigate();
 
-  const program = useSelector((state) =>
-    state.programs.programs.find((p) => p._id === programId)
-  );
+  const program = useSelector((state) => {
+    const program = state.programs.programs.find((p) => p._id === programId);
+    return program ? program : {};
+  });
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
@@ -57,7 +58,7 @@ export function EditProgramModal() {
 
   const handleClose = () => navigate(`/${table}`);
 
-  if (!program) {
+  if (program._id === undefined) {
     handleClose();
     return null;
   }
