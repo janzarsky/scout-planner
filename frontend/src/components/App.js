@@ -72,7 +72,6 @@ export default function App() {
   const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth
   );
-  const errors = useSelector((state) => state.errors);
 
   const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
@@ -202,127 +201,42 @@ export default function App() {
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
 
-  function getTimetableElement() {
-    return (
-      <>
-        {userLevel >= level.VIEW &&
-          dataLoaded &&
-          (peopleMigrationState === "finishedPrograms" ||
-            peopleMigrationState === "failedPrograms" ||
-            peopleMigrationState === "failedPeople") && (
-            <Timetable violations={violationsPerProgram} />
-          )}
-        {(!dataLoaded ||
-          (peopleMigrationState !== "finishedPrograms" &&
-            peopleMigrationState !== "failedPrograms" &&
-            peopleMigrationState !== "failedPeople")) && (
-          <Container fluid>
-            <Alert variant="primary">
-              <i className="fa fa-spinner fa-pulse" />
-              &nbsp; Načítání&hellip;
-            </Alert>
-          </Container>
-        )}
-        {userLevel === level.NONE && dataLoaded && (
-          <Container fluid>
-            <Alert variant="danger">
-              <i className="fa fa-exclamation-triangle" />
-              &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
-              oprávnění.
-            </Alert>
-          </Container>
-        )}
-      </>
-    );
-  }
-
   return (
     <div className="App">
-      {errors.length > 0 && (
-        <Container fluid className="notifications">
-          <Alert
-            variant="danger"
-            dismissible
-            onClose={() => dispatch(removeError())}
-          >
-            <i className="fa fa-exclamation-triangle" />
-            &nbsp; {errors[0]}
-          </Alert>
-        </Container>
-      )}
+      <Notifications />
       <Routes>
         <Route path="add" element={<AddProgramModal />} />
         <Route path="edit/:id" element={<EditProgramModal />} />
       </Routes>
-      <Tab.Container>
-        <Nav variant="pills" className="control-panel">
-          <Nav.Link as={NavLink} to="" end>
-            Harmonogram
-          </Nav.Link>
-          {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="rules">
-              Pravidla{" "}
-              {rulesSatisfied ? (
-                <i className="fa fa-check text-success" />
-              ) : (
-                <i className="fa fa-times text-danger" />
-              )}
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="packages" end>
-              Balíčky
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="groups" end>
-              Skupiny
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="people" end>
-              Organizátoři
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="ranges" end>
-              Linky
-            </Nav.Link>
-          )}
-          {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="stats" end>
-              Statistiky
-            </Nav.Link>
-          )}
-          {userLevel >= level.ADMIN && (
-            <Nav.Link as={NavLink} to="users" end>
-              Uživatelé
-            </Nav.Link>
-          )}
-          {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="settings" end>
-              Nastavení
-            </Nav.Link>
-          )}
-          <Routes>
-            <Route
-              index
-              element={
-                <>
-                  {userLevel >= level.VIEW && <Filters />}
-                  {userLevel >= level.VIEW && <ViewSettings />}
-                  {userLevel >= level.VIEW && <RangesSettings />}
-                </>
-              }
-            />
-          </Routes>
-          <GoogleLogin />
-        </Nav>
-      </Tab.Container>
+      <NavBar rulesSatisfied={rulesSatisfied} />
       <Routes>
-        <Route index element={getTimetableElement()} />
-        <Route path="add" element={getTimetableElement()} />
-        <Route path="edit/*" element={getTimetableElement()} />
+        <Route
+          index
+          element={
+            <TimetableWrapper
+              dataLoaded={dataLoaded}
+              violationsPerProgram={violationsPerProgram}
+            />
+          }
+        />
+        <Route
+          path="add"
+          element={
+            <TimetableWrapper
+              dataLoaded={dataLoaded}
+              violationsPerProgram={violationsPerProgram}
+            />
+          }
+        />
+        <Route
+          path="edit/*"
+          element={
+            <TimetableWrapper
+              dataLoaded={dataLoaded}
+              violationsPerProgram={violationsPerProgram}
+            />
+          }
+        />
         <Route
           path="rules"
           element={userLevel >= level.VIEW && <Rules violations={violations} />}
@@ -346,6 +260,98 @@ export default function App() {
         <Route path="settings" element={<Settings />} />
       </Routes>
     </div>
+  );
+}
+
+function Notifications() {
+  const errors = useSelector((state) => state.errors);
+  const dispatch = useDispatch();
+
+  if (errors.length === 0) return null;
+
+  return (
+    <Container fluid className="notifications">
+      <Alert
+        variant="danger"
+        dismissible
+        onClose={() => dispatch(removeError())}
+      >
+        <i className="fa fa-exclamation-triangle" />
+        &nbsp; {errors[0]}
+      </Alert>
+    </Container>
+  );
+}
+
+function NavBar({ rulesSatisfied }) {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+
+  return (
+    <Tab.Container>
+      <Nav variant="pills" className="control-panel">
+        <Nav.Link as={NavLink} to="" end>
+          Harmonogram
+        </Nav.Link>
+        {userLevel >= level.VIEW && (
+          <Nav.Link as={NavLink} to="rules">
+            Pravidla{" "}
+            {rulesSatisfied ? (
+              <i className="fa fa-check text-success" />
+            ) : (
+              <i className="fa fa-times text-danger" />
+            )}
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="packages" end>
+            Balíčky
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="groups" end>
+            Skupiny
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="people" end>
+            Organizátoři
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="ranges" end>
+            Linky
+          </Nav.Link>
+        )}
+        {userLevel >= level.VIEW && (
+          <Nav.Link as={NavLink} to="stats" end>
+            Statistiky
+          </Nav.Link>
+        )}
+        {userLevel >= level.ADMIN && (
+          <Nav.Link as={NavLink} to="users" end>
+            Uživatelé
+          </Nav.Link>
+        )}
+        {userLevel >= level.VIEW && (
+          <Nav.Link as={NavLink} to="settings" end>
+            Nastavení
+          </Nav.Link>
+        )}
+        <Routes>
+          <Route
+            index
+            element={
+              <>
+                {userLevel >= level.VIEW && <Filters />}
+                {userLevel >= level.VIEW && <ViewSettings />}
+                {userLevel >= level.VIEW && <RangesSettings />}
+              </>
+            }
+          />
+        </Routes>
+        <GoogleLogin />
+      </Nav>
+    </Tab.Container>
   );
 }
 
@@ -383,5 +389,44 @@ function GoogleLogin() {
         <i className="fa fa-sign-in" />
       </Nav.Link>
     </Nav.Item>
+  );
+}
+
+function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+  const peopleMigrationState = useSelector(
+    (state) => state.people.peopleMigrationState
+  );
+
+  return (
+    <>
+      {userLevel >= level.VIEW &&
+        dataLoaded &&
+        (peopleMigrationState === "finishedPrograms" ||
+          peopleMigrationState === "failedPrograms" ||
+          peopleMigrationState === "failedPeople") && (
+          <Timetable violations={violationsPerProgram} />
+        )}
+      {(!dataLoaded ||
+        (peopleMigrationState !== "finishedPrograms" &&
+          peopleMigrationState !== "failedPrograms" &&
+          peopleMigrationState !== "failedPeople")) && (
+        <Container fluid>
+          <Alert variant="primary">
+            <i className="fa fa-spinner fa-pulse" />
+            &nbsp; Načítání&hellip;
+          </Alert>
+        </Container>
+      )}
+      {userLevel === level.NONE && dataLoaded && (
+        <Container fluid>
+          <Alert variant="danger">
+            <i className="fa fa-exclamation-triangle" />
+            &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
+            oprávnění.
+          </Alert>
+        </Container>
+      )}
+    </>
   );
 }
