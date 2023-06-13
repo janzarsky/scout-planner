@@ -153,13 +153,14 @@ export default function App() {
 
   useEffect(() => {
     if (
-      programsLoaded &&
-      rangesLoaded &&
-      groupsLoaded &&
-      packagesLoaded &&
-      rulesLoaded &&
-      peopleLoaded &&
-      settingsLoaded
+      (permissionsLoaded && userLevel === level.NONE) ||
+      (programsLoaded &&
+        rangesLoaded &&
+        groupsLoaded &&
+        packagesLoaded &&
+        rulesLoaded &&
+        peopleLoaded &&
+        settingsLoaded)
     )
       setDataLoaded(true);
   }, [
@@ -170,6 +171,8 @@ export default function App() {
     rulesLoaded,
     peopleLoaded,
     settingsLoaded,
+    permissionsLoaded,
+    userLevel,
   ]);
 
   const violationsPerProgram = useMemo(() => {
