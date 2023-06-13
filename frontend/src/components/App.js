@@ -7,7 +7,6 @@ import Groups from "./Groups";
 import People from "./People";
 import Ranges from "./Ranges";
 import Rules from "./Rules";
-import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -301,74 +300,72 @@ function NavBar({ rulesSatisfied }) {
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
-      <Container>
+      <Container fluid>
         <Nav.Link as={NavLink} to="" end>
           Harmonogram
         </Nav.Link>
         <Navbar.Toggle aria-controls="navbar-toggle" />
         <Navbar.Collapse id="navbar-toggle">
-          <Nav className="me-auto">
-            {userLevel >= level.VIEW && (
-              <Nav.Link as={NavLink} to="rules">
-                Pravidla{" "}
-                {rulesSatisfied ? (
-                  <i className="fa fa-check text-success" />
-                ) : (
-                  <i className="fa fa-times text-danger" />
-                )}
-              </Nav.Link>
+          {userLevel >= level.VIEW && (
+            <Nav.Link as={NavLink} to="rules">
+              Pravidla{" "}
+              {rulesSatisfied ? (
+                <i className="fa fa-check text-success" />
+              ) : (
+                <i className="fa fa-times text-danger" />
+              )}
+            </Nav.Link>
+          )}
+          {userLevel >= level.VIEW && (
+            <Nav.Link as={NavLink} to="stats" end>
+              Statistiky
+            </Nav.Link>
+          )}
+          <NavDropdown title="Nastavení">
+            {userLevel >= level.EDIT && (
+              <NavDropdown.Item as={NavLink} to="packages" end>
+                Balíčky
+              </NavDropdown.Item>
+            )}
+            {userLevel >= level.EDIT && (
+              <NavDropdown.Item as={NavLink} to="groups" end>
+                Skupiny
+              </NavDropdown.Item>
+            )}
+            {userLevel >= level.EDIT && (
+              <NavDropdown.Item as={NavLink} to="people" end>
+                Organizátoři
+              </NavDropdown.Item>
+            )}
+            {userLevel >= level.EDIT && (
+              <NavDropdown.Item as={NavLink} to="ranges" end>
+                Linky
+              </NavDropdown.Item>
+            )}
+            {userLevel >= level.ADMIN && (
+              <NavDropdown.Item as={NavLink} to="users" end>
+                Uživatelé
+              </NavDropdown.Item>
             )}
             {userLevel >= level.VIEW && (
-              <Nav.Link as={NavLink} to="stats" end>
-                Statistiky
-              </Nav.Link>
+              <NavDropdown.Item as={NavLink} to="settings" end>
+                Nastavení
+              </NavDropdown.Item>
             )}
-            <NavDropdown title="Nastavení">
-              {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="packages" end>
-                  Balíčky
-                </NavDropdown.Item>
-              )}
-              {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="groups" end>
-                  Skupiny
-                </NavDropdown.Item>
-              )}
-              {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="people" end>
-                  Organizátoři
-                </NavDropdown.Item>
-              )}
-              {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="ranges" end>
-                  Linky
-                </NavDropdown.Item>
-              )}
-              {userLevel >= level.ADMIN && (
-                <NavDropdown.Item as={NavLink} to="users" end>
-                  Uživatelé
-                </NavDropdown.Item>
-              )}
-              {userLevel >= level.VIEW && (
-                <NavDropdown.Item as={NavLink} to="settings" end>
-                  Nastavení
-                </NavDropdown.Item>
-              )}
-            </NavDropdown>
-            <Routes>
-              <Route
-                index
-                element={
-                  <>
-                    {userLevel >= level.VIEW && <FiltersToggle />}
-                    {userLevel >= level.VIEW && <ViewSettingsToggle />}
-                    {userLevel >= level.VIEW && <RangesSettingsToggle />}
-                  </>
-                }
-              />
-            </Routes>
-            <GoogleLogin />
-          </Nav>
+          </NavDropdown>
+          <Routes>
+            <Route
+              index
+              element={
+                <>
+                  {userLevel >= level.VIEW && <FiltersToggle />}
+                  {userLevel >= level.VIEW && <ViewSettingsToggle />}
+                  {userLevel >= level.VIEW && <RangesSettingsToggle />}
+                </>
+              }
+            />
+          </Routes>
+          <GoogleLogin />
         </Navbar.Collapse>
       </Container>
     </Navbar>
@@ -381,9 +378,9 @@ function GoogleLogin() {
 
   return !!user ? (
     <Nav.Link
-      as={Button}
       variant="light"
       data-test="auth-logout-button"
+      className="ms-auto"
       onClick={() =>
         logout()
           .then(() => dispatch(setAuthenticated(false)))
@@ -396,9 +393,9 @@ function GoogleLogin() {
     </Nav.Link>
   ) : (
     <Nav.Link
-      as={Button}
       variant="light"
       data-test="auth-login-button"
+      className="ms-auto"
       onClick={() =>
         login()
           .then(() => dispatch(setAuthenticated(true)))
