@@ -201,40 +201,6 @@ export default function App() {
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
 
-  function getTimetableElement() {
-    return (
-      <>
-        {userLevel >= level.VIEW &&
-          dataLoaded &&
-          (peopleMigrationState === "finishedPrograms" ||
-            peopleMigrationState === "failedPrograms" ||
-            peopleMigrationState === "failedPeople") && (
-            <Timetable violations={violationsPerProgram} />
-          )}
-        {(!dataLoaded ||
-          (peopleMigrationState !== "finishedPrograms" &&
-            peopleMigrationState !== "failedPrograms" &&
-            peopleMigrationState !== "failedPeople")) && (
-          <Container fluid>
-            <Alert variant="primary">
-              <i className="fa fa-spinner fa-pulse" />
-              &nbsp; Načítání&hellip;
-            </Alert>
-          </Container>
-        )}
-        {userLevel === level.NONE && dataLoaded && (
-          <Container fluid>
-            <Alert variant="danger">
-              <i className="fa fa-exclamation-triangle" />
-              &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
-              oprávnění.
-            </Alert>
-          </Container>
-        )}
-      </>
-    );
-  }
-
   return (
     <div className="App">
       <Notifications />
@@ -244,9 +210,33 @@ export default function App() {
       </Routes>
       <NavBar rulesSatisfied={rulesSatisfied} />
       <Routes>
-        <Route index element={getTimetableElement()} />
-        <Route path="add" element={getTimetableElement()} />
-        <Route path="edit/*" element={getTimetableElement()} />
+        <Route
+          index
+          element={
+            <TimetableWrapper
+              dataLoaded={dataLoaded}
+              violationsPerProgram={violationsPerProgram}
+            />
+          }
+        />
+        <Route
+          path="add"
+          element={
+            <TimetableWrapper
+              dataLoaded={dataLoaded}
+              violationsPerProgram={violationsPerProgram}
+            />
+          }
+        />
+        <Route
+          path="edit/*"
+          element={
+            <TimetableWrapper
+              dataLoaded={dataLoaded}
+              violationsPerProgram={violationsPerProgram}
+            />
+          }
+        />
         <Route
           path="rules"
           element={userLevel >= level.VIEW && <Rules violations={violations} />}
@@ -399,5 +389,44 @@ function GoogleLogin() {
         <i className="fa fa-sign-in" />
       </Nav.Link>
     </Nav.Item>
+  );
+}
+
+function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+  const peopleMigrationState = useSelector(
+    (state) => state.people.peopleMigrationState
+  );
+
+  return (
+    <>
+      {userLevel >= level.VIEW &&
+        dataLoaded &&
+        (peopleMigrationState === "finishedPrograms" ||
+          peopleMigrationState === "failedPrograms" ||
+          peopleMigrationState === "failedPeople") && (
+          <Timetable violations={violationsPerProgram} />
+        )}
+      {(!dataLoaded ||
+        (peopleMigrationState !== "finishedPrograms" &&
+          peopleMigrationState !== "failedPrograms" &&
+          peopleMigrationState !== "failedPeople")) && (
+        <Container fluid>
+          <Alert variant="primary">
+            <i className="fa fa-spinner fa-pulse" />
+            &nbsp; Načítání&hellip;
+          </Alert>
+        </Container>
+      )}
+      {userLevel === level.NONE && dataLoaded && (
+        <Container fluid>
+          <Alert variant="danger">
+            <i className="fa fa-exclamation-triangle" />
+            &nbsp; Pro zobrazení tohoto harmonogramu nemáte dostatečná
+            oprávnění.
+          </Alert>
+        </Container>
+      )}
+    </>
   );
 }
