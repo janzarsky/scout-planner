@@ -430,3 +430,7 @@ function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
     </>
   );
 }
+
+export const testing = {
+  NavBar,
+};
