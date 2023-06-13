@@ -364,6 +364,7 @@ function GoogleLogin() {
       <Nav.Link
         as={Button}
         variant="light"
+        data-test="auth-logout-button"
         onClick={() =>
           logout()
             .then(() => dispatch(setAuthenticated(false)))
@@ -380,6 +381,7 @@ function GoogleLogin() {
       <Nav.Link
         as={Button}
         variant="light"
+        data-test="auth-login-button"
         onClick={() =>
           login()
             .then(() => dispatch(setAuthenticated(true)))
@@ -433,4 +435,5 @@ function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
 
 export const testing = {
   NavBar,
+  GoogleLogin,
 };
