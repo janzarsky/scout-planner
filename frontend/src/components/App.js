@@ -10,6 +10,7 @@ import Rules from "./Rules";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 import Alert from "react-bootstrap/Alert";
 import { clientFactory } from "../Client";
 import { checkRules } from "../Checker";
@@ -305,41 +306,43 @@ function NavBar({ rulesSatisfied }) {
                 )}
               </Nav.Link>
             )}
-            {userLevel >= level.EDIT && (
-              <Nav.Link as={NavLink} to="packages" end>
-                Balíčky
-              </Nav.Link>
-            )}
-            {userLevel >= level.EDIT && (
-              <Nav.Link as={NavLink} to="groups" end>
-                Skupiny
-              </Nav.Link>
-            )}
-            {userLevel >= level.EDIT && (
-              <Nav.Link as={NavLink} to="people" end>
-                Organizátoři
-              </Nav.Link>
-            )}
-            {userLevel >= level.EDIT && (
-              <Nav.Link as={NavLink} to="ranges" end>
-                Linky
-              </Nav.Link>
-            )}
             {userLevel >= level.VIEW && (
               <Nav.Link as={NavLink} to="stats" end>
                 Statistiky
               </Nav.Link>
             )}
-            {userLevel >= level.ADMIN && (
-              <Nav.Link as={NavLink} to="users" end>
-                Uživatelé
-              </Nav.Link>
-            )}
-            {userLevel >= level.VIEW && (
-              <Nav.Link as={NavLink} to="settings" end>
-                Nastavení
-              </Nav.Link>
-            )}
+            <NavDropdown title="Nastavení">
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="packages" end>
+                  Balíčky
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="groups" end>
+                  Skupiny
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="people" end>
+                  Organizátoři
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="ranges" end>
+                  Linky
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.ADMIN && (
+                <NavDropdown.Item as={NavLink} to="users" end>
+                  Uživatelé
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.VIEW && (
+                <NavDropdown.Item as={NavLink} to="settings" end>
+                  Nastavení
+                </NavDropdown.Item>
+              )}
+            </NavDropdown>
             <Routes>
               <Route
                 index
