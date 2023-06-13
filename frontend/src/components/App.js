@@ -321,38 +321,40 @@ function NavBar({ rulesSatisfied }) {
               Statistiky
             </Nav.Link>
           )}
-          <NavDropdown title="Nastavení">
-            {userLevel >= level.EDIT && (
-              <NavDropdown.Item as={NavLink} to="packages" end>
-                Balíčky
-              </NavDropdown.Item>
-            )}
-            {userLevel >= level.EDIT && (
-              <NavDropdown.Item as={NavLink} to="groups" end>
-                Skupiny
-              </NavDropdown.Item>
-            )}
-            {userLevel >= level.EDIT && (
-              <NavDropdown.Item as={NavLink} to="people" end>
-                Organizátoři
-              </NavDropdown.Item>
-            )}
-            {userLevel >= level.EDIT && (
-              <NavDropdown.Item as={NavLink} to="ranges" end>
-                Linky
-              </NavDropdown.Item>
-            )}
-            {userLevel >= level.ADMIN && (
-              <NavDropdown.Item as={NavLink} to="users" end>
-                Uživatelé
-              </NavDropdown.Item>
-            )}
-            {userLevel >= level.VIEW && (
-              <NavDropdown.Item as={NavLink} to="settings" end>
-                Nastavení
-              </NavDropdown.Item>
-            )}
-          </NavDropdown>
+          {userLevel >= level.VIEW && (
+            <NavDropdown title="Nastavení">
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="packages" end>
+                  Balíčky
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="groups" end>
+                  Skupiny
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="people" end>
+                  Organizátoři
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="ranges" end>
+                  Linky
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.ADMIN && (
+                <NavDropdown.Item as={NavLink} to="users" end>
+                  Uživatelé
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.VIEW && (
+                <NavDropdown.Item as={NavLink} to="settings" end>
+                  Nastavení
+                </NavDropdown.Item>
+              )}
+            </NavDropdown>
+          )}
           <Routes>
             <Route
               index
