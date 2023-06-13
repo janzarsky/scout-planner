@@ -254,71 +254,7 @@ export default function App() {
         <Route path="add" element={<AddProgramModal />} />
         <Route path="edit/:id" element={<EditProgramModal />} />
       </Routes>
-      <Tab.Container>
-        <Nav variant="pills" className="control-panel">
-          <Nav.Link as={NavLink} to="" end>
-            Harmonogram
-          </Nav.Link>
-          {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="rules">
-              Pravidla{" "}
-              {rulesSatisfied ? (
-                <i className="fa fa-check text-success" />
-              ) : (
-                <i className="fa fa-times text-danger" />
-              )}
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="packages" end>
-              Balíčky
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="groups" end>
-              Skupiny
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="people" end>
-              Organizátoři
-            </Nav.Link>
-          )}
-          {userLevel >= level.EDIT && (
-            <Nav.Link as={NavLink} to="ranges" end>
-              Linky
-            </Nav.Link>
-          )}
-          {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="stats" end>
-              Statistiky
-            </Nav.Link>
-          )}
-          {userLevel >= level.ADMIN && (
-            <Nav.Link as={NavLink} to="users" end>
-              Uživatelé
-            </Nav.Link>
-          )}
-          {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="settings" end>
-              Nastavení
-            </Nav.Link>
-          )}
-          <Routes>
-            <Route
-              index
-              element={
-                <>
-                  {userLevel >= level.VIEW && <Filters />}
-                  {userLevel >= level.VIEW && <ViewSettings />}
-                  {userLevel >= level.VIEW && <RangesSettings />}
-                </>
-              }
-            />
-          </Routes>
-          <GoogleLogin />
-        </Nav>
-      </Tab.Container>
+      <NavBar rulesSatisfied={rulesSatisfied} />
       <Routes>
         <Route index element={getTimetableElement()} />
         <Route path="add" element={getTimetableElement()} />
@@ -346,6 +282,78 @@ export default function App() {
         <Route path="settings" element={<Settings />} />
       </Routes>
     </div>
+  );
+}
+
+function NavBar({ rulesSatisfied }) {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+
+  return (
+    <Tab.Container>
+      <Nav variant="pills" className="control-panel">
+        <Nav.Link as={NavLink} to="" end>
+          Harmonogram
+        </Nav.Link>
+        {userLevel >= level.VIEW && (
+          <Nav.Link as={NavLink} to="rules">
+            Pravidla{" "}
+            {rulesSatisfied ? (
+              <i className="fa fa-check text-success" />
+            ) : (
+              <i className="fa fa-times text-danger" />
+            )}
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="packages" end>
+            Balíčky
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="groups" end>
+            Skupiny
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="people" end>
+            Organizátoři
+          </Nav.Link>
+        )}
+        {userLevel >= level.EDIT && (
+          <Nav.Link as={NavLink} to="ranges" end>
+            Linky
+          </Nav.Link>
+        )}
+        {userLevel >= level.VIEW && (
+          <Nav.Link as={NavLink} to="stats" end>
+            Statistiky
+          </Nav.Link>
+        )}
+        {userLevel >= level.ADMIN && (
+          <Nav.Link as={NavLink} to="users" end>
+            Uživatelé
+          </Nav.Link>
+        )}
+        {userLevel >= level.VIEW && (
+          <Nav.Link as={NavLink} to="settings" end>
+            Nastavení
+          </Nav.Link>
+        )}
+        <Routes>
+          <Route
+            index
+            element={
+              <>
+                {userLevel >= level.VIEW && <Filters />}
+                {userLevel >= level.VIEW && <ViewSettings />}
+                {userLevel >= level.VIEW && <RangesSettings />}
+              </>
+            }
+          />
+        </Routes>
+        <GoogleLogin />
+      </Nav>
+    </Tab.Container>
   );
 }
 
