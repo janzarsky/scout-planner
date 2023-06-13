@@ -72,7 +72,6 @@ export default function App() {
   const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth
   );
-  const errors = useSelector((state) => state.errors);
 
   const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
@@ -238,18 +237,7 @@ export default function App() {
 
   return (
     <div className="App">
-      {errors.length > 0 && (
-        <Container fluid className="notifications">
-          <Alert
-            variant="danger"
-            dismissible
-            onClose={() => dispatch(removeError())}
-          >
-            <i className="fa fa-exclamation-triangle" />
-            &nbsp; {errors[0]}
-          </Alert>
-        </Container>
-      )}
+      <Notifications />
       <Routes>
         <Route path="add" element={<AddProgramModal />} />
         <Route path="edit/:id" element={<EditProgramModal />} />
@@ -282,6 +270,26 @@ export default function App() {
         <Route path="settings" element={<Settings />} />
       </Routes>
     </div>
+  );
+}
+
+function Notifications() {
+  const errors = useSelector((state) => state.errors);
+  const dispatch = useDispatch();
+
+  if (errors.length === 0) return null;
+
+  return (
+    <Container fluid className="notifications">
+      <Alert
+        variant="danger"
+        dismissible
+        onClose={() => dispatch(removeError())}
+      >
+        <i className="fa fa-exclamation-triangle" />
+        &nbsp; {errors[0]}
+      </Alert>
+    </Container>
   );
 }
 
