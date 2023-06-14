@@ -9,6 +9,22 @@ import {
   toggleViewViolations,
 } from "../store/viewSlice";
 
+function ViewSettingsToggle() {
+  const dispatch = useDispatch();
+  const viewSettingsEnabled = useSelector(
+    (state) => state.view.viewSettingsEnabled
+  );
+
+  return (
+    <Nav.Link
+      className={viewSettingsEnabled ? "dark" : ""}
+      onClick={() => dispatch(toggleViewSettingsEnabled())}
+    >
+      <i className="fa fa-eye" />
+    </Nav.Link>
+  );
+}
+
 export function ViewSettings() {
   const dispatch = useDispatch();
   const viewSettingsEnabled = useSelector(
@@ -19,12 +35,7 @@ export function ViewSettings() {
 
   return (
     <>
-      <Nav.Link
-        className={viewSettingsEnabled ? "dark" : ""}
-        onClick={() => dispatch(toggleViewSettingsEnabled())}
-      >
-        <i className="fa fa-eye" />
-      </Nav.Link>
+      <ViewSettingsToggle />
       {viewSettingsEnabled && (
         <>
           <Nav.Link
