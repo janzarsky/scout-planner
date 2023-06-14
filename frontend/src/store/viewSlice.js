@@ -5,6 +5,7 @@ export const viewSlice = createSlice({
   initialState: {
     highlightingEnabled: false,
     highlightedPackages: [],
+    viewSettingsEnabled: false,
     viewPkg: true,
     viewTime: false,
     viewPeople: true,
@@ -25,6 +26,9 @@ export const viewSlice = createSlice({
           state.highlightedPackages.indexOf(action.payload),
           1
         );
+    },
+    toggleViewSettingsEnabled(state) {
+      state.viewSettingsEnabled = !state.viewSettingsEnabled;
     },
     toggleViewPkg(state) {
       state.viewPkg = !state.viewPkg;
@@ -53,6 +57,7 @@ export const viewSlice = createSlice({
 export const {
   toggleHighlighting,
   toggleHighlightedPackage,
+  toggleViewSettingsEnabled,
   toggleViewPkg,
   toggleViewTime,
   toggleViewPeople,
