@@ -6,7 +6,7 @@ import {
   toggleHighlighting,
 } from "../store/viewSlice";
 
-export default function Filters() {
+export function Filters() {
   const dispatch = useDispatch();
   const packages = useSelector((state) => state.packages.packages);
   const { highlightedPackages, highlightingEnabled } = useSelector(

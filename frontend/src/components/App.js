@@ -25,9 +25,9 @@ import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import { getPermissions, setAuthenticated } from "../store/authSlice";
-import Filters from "./Filters";
-import ViewSettings from "./ViewSettings";
-import RangesSettings from "./RangesSettings";
+import { Filters } from "./Filters";
+import { ViewSettings } from "./ViewSettings";
+import { RangesSettings } from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
 import {

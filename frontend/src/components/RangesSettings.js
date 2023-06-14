@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Nav from "react-bootstrap/Nav";
 import { setActiveRange, toggleRangesEnabled } from "../store/viewSlice";
 
-export default function RangesSettings() {
+export function RangesSettings() {
   const dispatch = useDispatch();
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   const ranges = useSelector((state) => state.ranges.ranges);

@@ -9,7 +9,7 @@ import {
   toggleViewViolations,
 } from "../store/viewSlice";
 
-export default function ViewSettings() {
+export function ViewSettings() {
   const dispatch = useDispatch();
   const viewSettingsEnabled = useSelector(
     (state) => state.view.viewSettingsEnabled
