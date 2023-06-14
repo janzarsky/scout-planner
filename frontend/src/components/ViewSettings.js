@@ -9,7 +9,7 @@ import {
   toggleViewViolations,
 } from "../store/viewSlice";
 
-function ViewSettingsToggle() {
+export function ViewSettingsToggle() {
   const dispatch = useDispatch();
   const viewSettingsEnabled = useSelector(
     (state) => state.view.viewSettingsEnabled
@@ -33,43 +33,40 @@ export function ViewSettings() {
   const { viewPkg, viewTime, viewPeople, viewPlace, viewViolations } =
     useSelector((state) => state.view);
 
+  if (!viewSettingsEnabled) return null;
+
   return (
     <>
-      <ViewSettingsToggle />
-      {viewSettingsEnabled && (
-        <>
-          <Nav.Link
-            className={viewPkg ? "dark" : ""}
-            onClick={() => dispatch(toggleViewPkg())}
-          >
-            Balíček
-          </Nav.Link>
-          <Nav.Link
-            className={viewTime ? "dark" : ""}
-            onClick={() => dispatch(toggleViewTime())}
-          >
-            Čas
-          </Nav.Link>
-          <Nav.Link
-            className={viewPeople ? "dark" : ""}
-            onClick={() => dispatch(toggleViewPeople())}
-          >
-            Lidi
-          </Nav.Link>
-          <Nav.Link
-            className={viewPlace ? "dark" : ""}
-            onClick={() => dispatch(toggleViewPlace())}
-          >
-            Místo
-          </Nav.Link>
-          <Nav.Link
-            className={viewViolations ? "dark" : ""}
-            onClick={() => dispatch(toggleViewViolations())}
-          >
-            Porušení pravidel
-          </Nav.Link>
-        </>
-      )}
+      <Nav.Link
+        className={viewPkg ? "dark" : ""}
+        onClick={() => dispatch(toggleViewPkg())}
+      >
+        Balíček
+      </Nav.Link>
+      <Nav.Link
+        className={viewTime ? "dark" : ""}
+        onClick={() => dispatch(toggleViewTime())}
+      >
+        Čas
+      </Nav.Link>
+      <Nav.Link
+        className={viewPeople ? "dark" : ""}
+        onClick={() => dispatch(toggleViewPeople())}
+      >
+        Lidi
+      </Nav.Link>
+      <Nav.Link
+        className={viewPlace ? "dark" : ""}
+        onClick={() => dispatch(toggleViewPlace())}
+      >
+        Místo
+      </Nav.Link>
+      <Nav.Link
+        className={viewViolations ? "dark" : ""}
+        onClick={() => dispatch(toggleViewViolations())}
+      >
+        Porušení pravidel
+      </Nav.Link>
     </>
   );
 }
