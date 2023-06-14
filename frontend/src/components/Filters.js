@@ -6,6 +6,22 @@ import {
   toggleHighlighting,
 } from "../store/viewSlice";
 
+function FiltersToggle() {
+  const dispatch = useDispatch();
+  const highlightingEnabled = useSelector(
+    (state) => state.view.highlightingEnabled
+  );
+
+  return (
+    <Nav.Link
+      className={highlightingEnabled ? "dark" : ""}
+      onClick={() => dispatch(toggleHighlighting())}
+    >
+      <i className="fa fa-filter" />
+    </Nav.Link>
+  );
+}
+
 export function Filters() {
   const dispatch = useDispatch();
   const packages = useSelector((state) => state.packages.packages);
@@ -15,12 +31,7 @@ export function Filters() {
 
   return (
     <>
-      <Nav.Link
-        className={highlightingEnabled ? "dark" : ""}
-        onClick={() => dispatch(toggleHighlighting())}
-      >
-        <i className="fa fa-filter" />
-      </Nav.Link>
+      <FiltersToggle />
       {highlightingEnabled &&
         [...packages].sort(byName).map((pkg) => (
           <Nav.Link
