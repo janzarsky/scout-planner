@@ -27,7 +27,7 @@ import { getPrograms } from "../store/programsSlice";
 import { getPermissions, setAuthenticated } from "../store/authSlice";
 import { Filters, FiltersToggle } from "./Filters";
 import { ViewSettings } from "./ViewSettings";
-import { RangesSettings } from "./RangesSettings";
+import { RangesSettings, RangesSettingsToggle } from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
 import {
@@ -349,7 +349,12 @@ function NavBar({ rulesSatisfied }) {
                   </>
                 )}
                 {userLevel >= level.VIEW && <ViewSettings />}
-                {userLevel >= level.VIEW && <RangesSettings />}
+                {userLevel >= level.VIEW && (
+                  <>
+                    <RangesSettingsToggle />
+                    <RangesSettings />
+                  </>
+                )}
               </>
             }
           />
