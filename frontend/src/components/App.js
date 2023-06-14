@@ -214,6 +214,18 @@ export default function App() {
         <Route
           index
           element={
+            <>
+              {userLevel >= level.VIEW && <Filters />}
+              {userLevel >= level.VIEW && <ViewSettings />}
+              {userLevel >= level.VIEW && <RangesSettings />}
+            </>
+          }
+        />
+      </Routes>
+      <Routes>
+        <Route
+          index
+          element={
             <TimetableWrapper
               dataLoaded={dataLoaded}
               violationsPerProgram={violationsPerProgram}
@@ -348,24 +360,9 @@ function NavBar({ rulesSatisfied }) {
                 index
                 element={
                   <>
-                    {userLevel >= level.VIEW && (
-                      <>
-                        <FiltersToggle />
-                        <Filters />
-                      </>
-                    )}
-                    {userLevel >= level.VIEW && (
-                      <>
-                        <ViewSettingsToggle />
-                        <ViewSettings />
-                      </>
-                    )}
-                    {userLevel >= level.VIEW && (
-                      <>
-                        <RangesSettingsToggle />
-                        <RangesSettings />
-                      </>
-                    )}
+                    {userLevel >= level.VIEW && <FiltersToggle />}
+                    {userLevel >= level.VIEW && <ViewSettingsToggle />}
+                    {userLevel >= level.VIEW && <RangesSettingsToggle />}
                   </>
                 }
               />
