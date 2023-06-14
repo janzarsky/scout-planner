@@ -25,7 +25,7 @@ import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import { getPermissions, setAuthenticated } from "../store/authSlice";
-import { Filters } from "./Filters";
+import { Filters, FiltersToggle } from "./Filters";
 import { ViewSettings } from "./ViewSettings";
 import { RangesSettings } from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
@@ -342,7 +342,12 @@ function NavBar({ rulesSatisfied }) {
             index
             element={
               <>
-                {userLevel >= level.VIEW && <Filters />}
+                {userLevel >= level.VIEW && (
+                  <>
+                    <FiltersToggle />
+                    <Filters />
+                  </>
+                )}
                 {userLevel >= level.VIEW && <ViewSettings />}
                 {userLevel >= level.VIEW && <RangesSettings />}
               </>
