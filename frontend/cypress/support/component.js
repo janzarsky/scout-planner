@@ -7,12 +7,15 @@ import { getStore } from "../../src/store";
 import "../../src/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { MemoryRouter } from "react-router-dom";
+import { testing } from "../../src/components/AuthProvider";
 
 Cypress.Commands.add("mount", (component, options = {}) => {
   const {
     reduxStore = getStore(),
     dndProvider = false,
     router = false,
+    auth = false,
+    authValue = {},
     initialEntries = ["/"],
     ...mountOptions
   } = options;
@@ -31,5 +34,13 @@ Cypress.Commands.add("mount", (component, options = {}) => {
     dndWrapped
   );
 
-  return mount(routerWrapped, mountOptions);
+  const authWrapped = auth ? (
+    <testing.AuthContext.Provider value={authValue}>
+      {routerWrapped}
+    </testing.AuthContext.Provider>
+  ) : (
+    routerWrapped
+  );
+
+  return mount(authWrapped, mountOptions);
 });
