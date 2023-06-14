@@ -1,29 +1,31 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Nav from "react-bootstrap/Nav";
 import {
   toggleViewPeople,
   toggleViewPkg,
   toggleViewPlace,
+  toggleViewSettingsEnabled,
   toggleViewTime,
   toggleViewViolations,
 } from "../store/viewSlice";
 
 export default function ViewSettings() {
   const dispatch = useDispatch();
-  const [active, setActive] = useState(false);
+  const viewSettingsEnabled = useSelector(
+    (state) => state.view.viewSettingsEnabled
+  );
   const { viewPkg, viewTime, viewPeople, viewPlace, viewViolations } =
     useSelector((state) => state.view);
 
   return (
     <>
       <Nav.Link
-        className={active ? "dark" : ""}
-        onClick={() => setActive(!active)}
+        className={viewSettingsEnabled ? "dark" : ""}
+        onClick={() => dispatch(toggleViewSettingsEnabled())}
       >
         <i className="fa fa-eye" />
       </Nav.Link>
-      {active && (
+      {viewSettingsEnabled && (
         <>
           <Nav.Link
             className={viewPkg ? "dark" : ""}
