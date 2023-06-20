@@ -300,7 +300,7 @@ function NavBar({ rulesSatisfied }) {
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
-      <Container fluid>
+      <Container fluid className="ps-0 pe-0">
         <Nav.Link as={NavLink} to="" end>
           Harmonogram
         </Nav.Link>
