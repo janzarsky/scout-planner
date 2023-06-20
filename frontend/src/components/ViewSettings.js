@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import {
   toggleViewPeople,
@@ -37,36 +38,36 @@ export function ViewSettings() {
 
   return (
     <>
-      <Nav.Link
-        className={viewPkg ? "dark" : ""}
+      <Button
+        variant={viewPkg ? "dark" : "light"}
         onClick={() => dispatch(toggleViewPkg())}
       >
         Balíček
-      </Nav.Link>
-      <Nav.Link
-        className={viewTime ? "dark" : ""}
+      </Button>
+      <Button
+        variant={viewTime ? "dark" : "light"}
         onClick={() => dispatch(toggleViewTime())}
       >
         Čas
-      </Nav.Link>
-      <Nav.Link
-        className={viewPeople ? "dark" : ""}
+      </Button>
+      <Button
+        variant={viewPeople ? "dark" : "light"}
         onClick={() => dispatch(toggleViewPeople())}
       >
         Lidi
-      </Nav.Link>
-      <Nav.Link
-        className={viewPlace ? "dark" : ""}
+      </Button>
+      <Button
+        variant={viewPlace ? "dark" : "light"}
         onClick={() => dispatch(toggleViewPlace())}
       >
         Místo
-      </Nav.Link>
-      <Nav.Link
-        className={viewViolations ? "dark" : ""}
+      </Button>
+      <Button
+        variant={viewViolations ? "dark" : "light"}
         onClick={() => dispatch(toggleViewViolations())}
       >
         Porušení pravidel
-      </Nav.Link>
+      </Button>
     </>
   );
 }

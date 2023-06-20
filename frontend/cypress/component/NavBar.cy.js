@@ -8,8 +8,10 @@ import { Filters } from "../../src/components/Filters";
 import {
   toggleHighlightedPackage,
   toggleHighlighting,
+  toggleViewSettingsEnabled,
 } from "../../src/store/viewSlice";
 import { addPackage } from "../../src/store/packagesSlice";
+import { ViewSettings } from "../../src/components/ViewSettings";
 
 describe("Navigation Bar", () => {
   let store;
@@ -221,6 +223,30 @@ describe("Filters", () => {
     cy.contains("Package 2")
       .should("have.class", "btn-dark")
       .should("not.have.css", "background-color", "rgb(197, 202, 233)");
+  });
+});
+
+describe("View settings", () => {
+  let store;
+
+  function mountViewSettings() {
+    cy.mount(<ViewSettings />, { reduxStore: store, router: true });
+  }
+
+  beforeEach(() => {
+    store = getStore();
+    store.dispatch(toggleViewSettingsEnabled());
+  });
+
+  it("displays settings", () => {
+    cy.viewport(500, 200);
+    mountViewSettings();
+
+    cy.contains("Balíček").should("have.class", "btn-dark");
+    cy.contains("Čas").should("have.class", "btn-light");
+    cy.contains("Lidi").should("have.class", "btn-dark");
+    cy.contains("Místo").should("have.class", "btn-dark");
+    cy.contains("Porušení pravidel").should("have.class", "btn-dark");
   });
 });
 
