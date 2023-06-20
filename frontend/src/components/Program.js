@@ -111,13 +111,12 @@ export default function Program({ program, rect, violations }) {
 }
 
 function ProgramBody({ program, pkg, violations, narrow }) {
-  const { highlighted, faded } = useSelector((state) => {
-    const highlighted =
-      state.view.highlightingEnabled &&
-      state.view.highlightedPackages.indexOf(program.pkg) !== -1;
-    const faded = state.view.highlightingEnabled && !highlighted;
-    return { highlighted, faded };
-  });
+  const { highlightingEnabled, highlightedPackages } = useSelector(
+    (state) => state.view
+  );
+  const highlighted =
+    highlightingEnabled && highlightedPackages.indexOf(program.pkg) !== -1;
+  const faded = highlightingEnabled && !highlighted;
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   let rangeValue =
