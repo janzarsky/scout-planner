@@ -4,10 +4,12 @@ import { Provider } from "react-redux";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getStore } from "../../src/store";
-import "../../src/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { MemoryRouter } from "react-router-dom";
 import { testing } from "../../src/components/AuthProvider";
+
+// the order is important for CSS
+import "../../src/index.css";
 
 Cypress.Commands.add("mount", (component, options = {}) => {
   const {
