@@ -209,18 +209,20 @@ export default function App() {
         <Route path="edit/:id" element={<EditProgramModal />} />
       </Routes>
       <NavBar rulesSatisfied={rulesSatisfied} />
-      <Routes>
-        <Route
-          index
-          element={
-            <>
-              {userLevel >= level.VIEW && <Filters />}
-              {userLevel >= level.VIEW && <ViewSettings />}
-              {userLevel >= level.VIEW && <RangesSettings />}
-            </>
-          }
-        />
-      </Routes>
+      <Container fluid className="ms-0 me-0 mb-1">
+        <Routes>
+          <Route
+            index
+            element={
+              <>
+                {userLevel >= level.VIEW && <Filters />}
+                {userLevel >= level.VIEW && <ViewSettings />}
+                {userLevel >= level.VIEW && <RangesSettings />}
+              </>
+            }
+          />
+        </Routes>
+      </Container>
       <Routes>
         <Route
           index
