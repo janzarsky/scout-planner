@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import { setActiveRange, toggleRangesEnabled } from "../store/viewSlice";
 
@@ -24,12 +25,12 @@ export function RangesSettings() {
   if (!rangesEnabled) return null;
 
   return ranges.map((range) => (
-    <Nav.Link
+    <Button
       key={range._id}
-      className={activeRange === range._id ? "dark" : ""}
+      variant={activeRange === range._id ? "dark" : "light"}
       onClick={() => dispatch(setActiveRange(range._id))}
     >
       {range.name}
-    </Nav.Link>
+    </Button>
   ));
 }

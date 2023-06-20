@@ -7,9 +7,9 @@ import Groups from "./Groups";
 import People from "./People";
 import Ranges from "./Ranges";
 import Rules from "./Rules";
-import Tab from "react-bootstrap/Tab";
-import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 import Alert from "react-bootstrap/Alert";
 import { clientFactory } from "../Client";
 import { checkRules } from "../Checker";
@@ -209,6 +209,20 @@ export default function App() {
         <Route path="edit/:id" element={<EditProgramModal />} />
       </Routes>
       <NavBar rulesSatisfied={rulesSatisfied} />
+      <Container fluid className="ms-0 me-0 mb-1">
+        <Routes>
+          <Route
+            index
+            element={
+              <>
+                {userLevel >= level.VIEW && <Filters />}
+                {userLevel >= level.VIEW && <ViewSettings />}
+                {userLevel >= level.VIEW && <RangesSettings />}
+              </>
+            }
+          />
+        </Routes>
+      </Container>
       <Routes>
         <Route
           index
@@ -287,86 +301,81 @@ function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
-    <Tab.Container>
-      <Nav variant="pills" className="control-panel">
+    <Navbar bg="light" className="control-panel" expand="lg">
+      <Container fluid className="ps-0 pe-0">
         <Nav.Link as={NavLink} to="" end>
           Harmonogram
         </Nav.Link>
-        {userLevel >= level.VIEW && (
-          <Nav.Link as={NavLink} to="rules">
-            Pravidla{" "}
-            {rulesSatisfied ? (
-              <i className="fa fa-check text-success" />
-            ) : (
-              <i className="fa fa-times text-danger" />
-            )}
-          </Nav.Link>
-        )}
-        {userLevel >= level.EDIT && (
-          <Nav.Link as={NavLink} to="packages" end>
-            Balíčky
-          </Nav.Link>
-        )}
-        {userLevel >= level.EDIT && (
-          <Nav.Link as={NavLink} to="groups" end>
-            Skupiny
-          </Nav.Link>
-        )}
-        {userLevel >= level.EDIT && (
-          <Nav.Link as={NavLink} to="people" end>
-            Organizátoři
-          </Nav.Link>
-        )}
-        {userLevel >= level.EDIT && (
-          <Nav.Link as={NavLink} to="ranges" end>
-            Linky
-          </Nav.Link>
-        )}
-        {userLevel >= level.VIEW && (
-          <Nav.Link as={NavLink} to="stats" end>
-            Statistiky
-          </Nav.Link>
-        )}
-        {userLevel >= level.ADMIN && (
-          <Nav.Link as={NavLink} to="users" end>
-            Uživatelé
-          </Nav.Link>
-        )}
-        {userLevel >= level.VIEW && (
-          <Nav.Link as={NavLink} to="settings" end>
-            Nastavení
-          </Nav.Link>
-        )}
-        <Routes>
-          <Route
-            index
-            element={
-              <>
-                {userLevel >= level.VIEW && (
-                  <>
-                    <FiltersToggle />
-                    <Filters />
-                  </>
-                )}
-                {userLevel >= level.VIEW && (
-                  <>
-                    <ViewSettingsToggle />
-                    <ViewSettings />
-                  </>
-                )}
-                {userLevel >= level.VIEW && (
-                  <>
-                    <RangesSettingsToggle />
-                    <RangesSettings />
-                  </>
-                )}
-              </>
-            }
-          />
-        </Routes>
-        <GoogleLogin />
-      </Nav>
-    </Tab.Container>
+        <Navbar.Toggle
+          aria-controls="navbar-toggle"
+          data-test="navbar-toggle"
+        />
+        <Navbar.Collapse id="navbar-toggle">
+          {userLevel >= level.VIEW && (
+            <Nav.Link as={NavLink} to="rules">
+              Pravidla{" "}
+              {rulesSatisfied ? (
+                <i className="fa fa-check text-success" />
+              ) : (
+                <i className="fa fa-times text-danger" />
+              )}
+            </Nav.Link>
+          )}
+          {userLevel >= level.VIEW && (
+            <Nav.Link as={NavLink} to="stats" end>
+              Statistiky
+            </Nav.Link>
+          )}
+          {userLevel >= level.VIEW && (
+            <NavDropdown title="Nastavení">
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="packages" end>
+                  Balíčky
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="groups" end>
+                  Skupiny
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="people" end>
+                  Organizátoři
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.EDIT && (
+                <NavDropdown.Item as={NavLink} to="ranges" end>
+                  Linky
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.ADMIN && (
+                <NavDropdown.Item as={NavLink} to="users" end>
+                  Uživatelé
+                </NavDropdown.Item>
+              )}
+              {userLevel >= level.VIEW && (
+                <NavDropdown.Item as={NavLink} to="settings" end>
+                  Nastavení
+                </NavDropdown.Item>
+              )}
+            </NavDropdown>
+          )}
+          <Routes>
+            <Route
+              index
+              element={
+                <>
+                  {userLevel >= level.VIEW && <FiltersToggle />}
+                  {userLevel >= level.VIEW && <ViewSettingsToggle />}
+                  {userLevel >= level.VIEW && <RangesSettingsToggle />}
+                </>
+              }
+            />
+          </Routes>
+          <GoogleLogin />
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
 
@@ -375,37 +384,33 @@ function GoogleLogin() {
   const { user, login, logout } = useAuth();
 
   return !!user ? (
-    <Nav.Item>
-      <Nav.Link
-        as={Button}
-        variant="light"
-        data-test="auth-logout-button"
-        onClick={() =>
-          logout()
-            .then(() => dispatch(setAuthenticated(false)))
-            .catch((e) => dispatch(addError(e.message)))
-        }
-      >
-        {user.displayName}
-        &nbsp;
-        <i className="fa fa-sign-out" />
-      </Nav.Link>
-    </Nav.Item>
+    <Nav.Link
+      variant="light"
+      data-test="auth-logout-button"
+      className="ms-auto"
+      onClick={() =>
+        logout()
+          .then(() => dispatch(setAuthenticated(false)))
+          .catch((e) => dispatch(addError(e.message)))
+      }
+    >
+      {user.displayName}
+      &nbsp;
+      <i className="fa fa-sign-out" />
+    </Nav.Link>
   ) : (
-    <Nav.Item>
-      <Nav.Link
-        as={Button}
-        variant="light"
-        data-test="auth-login-button"
-        onClick={() =>
-          login()
-            .then(() => dispatch(setAuthenticated(true)))
-            .catch((e) => dispatch(addError(e.message)))
-        }
-      >
-        <i className="fa fa-sign-in" />
-      </Nav.Link>
-    </Nav.Item>
+    <Nav.Link
+      variant="light"
+      data-test="auth-login-button"
+      className="ms-auto"
+      onClick={() =>
+        login()
+          .then(() => dispatch(setAuthenticated(true)))
+          .catch((e) => dispatch(addError(e.message)))
+      }
+    >
+      <i className="fa fa-sign-in" />
+    </Nav.Link>
   );
 }
 
