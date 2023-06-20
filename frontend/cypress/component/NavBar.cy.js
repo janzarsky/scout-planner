@@ -6,12 +6,16 @@ import { getStore } from "../../src/store";
 import { level } from "../../src/helpers/Level";
 import { Filters } from "../../src/components/Filters";
 import {
+  setActiveRange,
   toggleHighlightedPackage,
   toggleHighlighting,
+  toggleRangesEnabled,
   toggleViewSettingsEnabled,
 } from "../../src/store/viewSlice";
 import { addPackage } from "../../src/store/packagesSlice";
 import { ViewSettings } from "../../src/components/ViewSettings";
+import { RangesSettings } from "../../src/components/RangesSettings";
+import { addRange } from "../../src/store/rangesSlice";
 
 describe("Navigation Bar", () => {
   let store;
@@ -247,6 +251,40 @@ describe("View settings", () => {
     cy.contains("Lidi").should("have.class", "btn-dark");
     cy.contains("Místo").should("have.class", "btn-dark");
     cy.contains("Porušení pravidel").should("have.class", "btn-dark");
+  });
+});
+
+describe("Ranges settings", () => {
+  let store;
+
+  function mountRangesSettings() {
+    cy.mount(<RangesSettings />, { reduxStore: store, router: true });
+  }
+
+  beforeEach(() => {
+    store = getStore();
+    store.dispatch(toggleRangesEnabled());
+  });
+
+  it.only("displays all ranges", () => {
+    store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
+    store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
+    cy.viewport(500, 200);
+    mountRangesSettings();
+
+    cy.contains("Range 1").should("have.class", "btn-light");
+    cy.contains("Range 2").should("have.class", "btn-light");
+  });
+
+  it.only("highlights active range", () => {
+    store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
+    store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
+    store.dispatch(setActiveRange("range2"));
+    cy.viewport(500, 200);
+    mountRangesSettings();
+
+    cy.contains("Range 1").should("have.class", "btn-light");
+    cy.contains("Range 2").should("have.class", "btn-dark");
   });
 });
 
