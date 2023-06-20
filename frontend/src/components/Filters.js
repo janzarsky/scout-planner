@@ -1,3 +1,4 @@
+import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import { useDispatch, useSelector } from "react-redux";
 import { byName } from "../helpers/Sorting";
@@ -32,9 +33,9 @@ export function Filters() {
   if (!highlightingEnabled) return null;
 
   return [...packages].sort(byName).map((pkg) => (
-    <Nav.Link
+    <Button
       key={pkg._id}
-      className={highlightedPackages.indexOf(pkg._id) !== -1 ? "dark" : ""}
+      variant={highlightedPackages.indexOf(pkg._id) !== -1 ? "dark" : "light"}
       style={
         highlightedPackages.indexOf(pkg._id) === -1
           ? { backgroundColor: pkg.color }
@@ -43,6 +44,6 @@ export function Filters() {
       onClick={() => dispatch(toggleHighlightedPackage(pkg._id))}
     >
       {pkg.name}
-    </Nav.Link>
+    </Button>
   ));
 }

@@ -4,6 +4,12 @@ import { testing } from "../../src/components/App";
 import { testing as authTesting } from "../../src/store/authSlice";
 import { getStore } from "../../src/store";
 import { level } from "../../src/helpers/Level";
+import { Filters } from "../../src/components/Filters";
+import {
+  toggleHighlightedPackage,
+  toggleHighlighting,
+} from "../../src/store/viewSlice";
+import { addPackage } from "../../src/store/packagesSlice";
 
 describe("Navigation Bar", () => {
   let store;
@@ -159,6 +165,62 @@ describe("Navigation Bar", () => {
     cy.get("[href='/settings']")
       .should("have.text", "Nastavení")
       .should("be.visible");
+  });
+});
+
+describe("Filters", () => {
+  let store;
+
+  function mountFilters() {
+    cy.mount(<Filters />, { reduxStore: store, router: true });
+  }
+
+  beforeEach(() => {
+    store = getStore();
+    store.dispatch(toggleHighlighting());
+  });
+
+  it("displays all packages", () => {
+    store.dispatch(
+      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" })
+    );
+    store.dispatch(
+      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" })
+    );
+    cy.viewport(500, 200);
+    mountFilters();
+
+    cy.contains("Package 1").should(
+      "have.css",
+      "background-color",
+      "rgb(197, 225, 165)"
+    );
+    cy.contains("Package 2").should(
+      "have.css",
+      "background-color",
+      "rgb(197, 202, 233)"
+    );
+  });
+
+  it("highlights selected package", () => {
+    store.dispatch(
+      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" })
+    );
+    store.dispatch(
+      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" })
+    );
+    store.dispatch(toggleHighlightedPackage("package2"));
+    cy.viewport(500, 200);
+    mountFilters();
+
+    cy.contains("Package 1").should(
+      "have.css",
+      "background-color",
+      "rgb(197, 225, 165)"
+    );
+    cy.contains("Package 2")
+      .should("have.class", "btn-dark")
+      .should("not.have.css", "background-color", "rgb(197, 202, 233)");
   });
 });
 
