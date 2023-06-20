@@ -304,7 +304,10 @@ function NavBar({ rulesSatisfied }) {
         <Nav.Link as={NavLink} to="" end>
           Harmonogram
         </Nav.Link>
-        <Navbar.Toggle aria-controls="navbar-toggle" />
+        <Navbar.Toggle
+          aria-controls="navbar-toggle"
+          data-test="navbar-toggle"
+        />
         <Navbar.Collapse id="navbar-toggle">
           {userLevel >= level.VIEW && (
             <Nav.Link as={NavLink} to="rules">

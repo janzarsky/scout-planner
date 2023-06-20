@@ -26,7 +26,139 @@ describe("Navigation Bar", () => {
     cy.viewport(1000, 200);
     mountNavBar();
 
-    cy.contains("Harmonogram").should("have.class", "active");
+    cy.contains("Harmonogram")
+      .should("have.class", "active")
+      .should("have.attr", "href", "/");
+    cy.get("[data-test=navbar-toggle]").should("not.be.visible");
+  });
+
+  it("displays no links when having no access on mobile", () => {
+    store.dispatch(authTesting.setUserLevel(level.NONE));
+    cy.viewport(320, 200);
+    mountNavBar();
+
+    cy.contains("Harmonogram")
+      .should("have.class", "active")
+      .should("have.attr", "href", "/");
+    cy.get("[data-test=auth-login-button]").should("not.be.visible");
+    cy.get("[data-test=navbar-toggle]").click();
+    cy.get("[data-test=auth-login-button]").should("be.visible");
+  });
+
+  it("displays set of links when having view access", () => {
+    store.dispatch(authTesting.setUserLevel(level.VIEW));
+    cy.viewport(1000, 200);
+    mountNavBar();
+
+    cy.contains("Harmonogram")
+      .should("have.class", "active")
+      .should("have.attr", "href", "/");
+    cy.contains("Pravidla")
+      .should("have.attr", "href", "/rules")
+      .should("be.visible");
+    cy.contains("Statistiky")
+      .should("have.attr", "href", "/stats")
+      .should("be.visible");
+    cy.contains("Nastavení").click();
+    cy.get("[href='/settings']")
+      .should("have.text", "Nastavení")
+      .should("be.visible");
+  });
+
+  it("displays set of links when having view access on mobile", () => {
+    store.dispatch(authTesting.setUserLevel(level.VIEW));
+    cy.viewport(320, 600);
+    mountNavBar();
+
+    cy.contains("Harmonogram")
+      .should("have.class", "active")
+      .should("have.attr", "href", "/");
+
+    cy.contains("Pravidla")
+      .should("have.attr", "href", "/rules")
+      .should("not.be.visible");
+    cy.contains("Statistiky")
+      .should("have.attr", "href", "/stats")
+      .should("not.be.visible");
+
+    cy.get("[data-test=navbar-toggle]").click();
+
+    cy.contains("Pravidla").should("be.visible");
+    cy.contains("Statistiky").should("be.visible");
+
+    cy.contains("Nastavení").click();
+    cy.get("[href='/settings']")
+      .should("have.text", "Nastavení")
+      .should("be.visible");
+  });
+
+  it("displays everything except users when having edit access", () => {
+    store.dispatch(authTesting.setUserLevel(level.EDIT));
+    cy.viewport(1000, 400);
+    mountNavBar();
+
+    cy.contains("Harmonogram")
+      .should("have.class", "active")
+      .should("have.attr", "href", "/");
+    cy.contains("Pravidla")
+      .should("have.attr", "href", "/rules")
+      .should("be.visible");
+    cy.contains("Statistiky")
+      .should("have.attr", "href", "/stats")
+      .should("be.visible");
+    cy.contains("Nastavení").click();
+
+    cy.contains("Balíčky")
+      .should("have.attr", "href", "/packages")
+      .should("be.visible");
+    cy.contains("Skupiny")
+      .should("have.attr", "href", "/groups")
+      .should("be.visible");
+    cy.contains("Organizátoři")
+      .should("have.attr", "href", "/people")
+      .should("be.visible");
+    cy.contains("Linky")
+      .should("have.attr", "href", "/ranges")
+      .should("be.visible");
+    cy.get("[href='/settings']")
+      .should("have.text", "Nastavení")
+      .should("be.visible");
+  });
+
+  it("displays everything when having admin access", () => {
+    store.dispatch(authTesting.setUserLevel(level.ADMIN));
+    cy.viewport(1000, 400);
+    mountNavBar();
+
+    cy.contains("Harmonogram")
+      .should("have.class", "active")
+      .should("have.attr", "href", "/");
+    cy.contains("Pravidla")
+      .should("have.attr", "href", "/rules")
+      .should("be.visible");
+    cy.contains("Statistiky")
+      .should("have.attr", "href", "/stats")
+      .should("be.visible");
+    cy.contains("Nastavení").click();
+
+    cy.contains("Balíčky")
+      .should("have.attr", "href", "/packages")
+      .should("be.visible");
+    cy.contains("Skupiny")
+      .should("have.attr", "href", "/groups")
+      .should("be.visible");
+    cy.contains("Organizátoři")
+      .should("have.attr", "href", "/people")
+      .should("be.visible");
+    cy.contains("Linky")
+      .should("have.attr", "href", "/ranges")
+      .should("be.visible");
+    cy.contains("Uživatelé")
+      .should("have.attr", "href", "/users")
+      .should("be.visible");
+    cy.get("[href='/settings']")
+      .should("have.text", "Nastavení")
+      .should("be.visible");
   });
 });
 
