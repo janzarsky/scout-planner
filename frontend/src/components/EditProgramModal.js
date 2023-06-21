@@ -95,10 +95,11 @@ export function EditProgramModal() {
     handleClose();
 
     const begin = parseDate(date) + parseTime(time);
+    const parsedDuration = parseDuration(duration);
     const updatedProgram = {
       ...program,
       begin: isNaN(begin) ? null : begin,
-      duration: parseDuration(duration),
+      duration: isNaN(parsedDuration) ? parseDuration("1:00") : parsedDuration,
       title: title,
       pkg: pkg,
       groups: groups,
@@ -687,11 +688,14 @@ export function AddProgramModal() {
     handleClose();
 
     const begin = parseDate(date) + parseTime(time);
+    const parsedDuration = parseDuration(duration);
 
     client
       .addProgram({
         begin: isNaN(begin) ? null : begin,
-        duration: parseDuration(duration),
+        duration: isNaN(parsedDuration)
+          ? parseDuration("1:00")
+          : parsedDuration,
         title: title,
         pkg: pkg,
         groups: groups,
