@@ -11,13 +11,11 @@ export default function Import() {
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
-  const firestore = useSelector((state) => state.config.firestore);
-
   async function handleSubmit(event) {
     event.preventDefault();
 
     const data = JSON.parse(dataToImport);
-    await importData(data, client, firestore);
+    await importData(data, client);
 
     window.location.reload();
   }
@@ -39,7 +37,7 @@ export default function Import() {
   );
 }
 
-async function importData(data, client, firestore = false) {
+async function importData(data, client) {
   // data fixes
   if (data.ranges === undefined) data.ranges = [];
   if (data.users === undefined) data.users = [];
@@ -146,11 +144,7 @@ async function importData(data, client, firestore = false) {
     // add all rules
     .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))
     // add all users (at the end, so there are no issues with permissions)
-    .then(() =>
-      firestore
-        ? importUsersFirestore(data.users, client)
-        : Promise.all([...data.users.map((user) => client.addUser(user))])
-    );
+    .then(() => importUsersFirestore(data.users, client));
 }
 
 function importUsersFirestore(users, client) {
