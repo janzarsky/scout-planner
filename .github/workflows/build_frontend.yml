@@ -1,7 +1,4 @@
-on:
-  pull_request:
-    paths:
-      - "frontend/**"
+on: []
 
 jobs:
   build_frontend:
