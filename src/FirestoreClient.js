@@ -71,17 +71,6 @@ class FirestoreClient {
     }
   }
 
-  async getSettings() {
-    try {
-      const snapshot = await getDoc(doc(this.db, `timetables/${this.table}`));
-      return snapshot.exists() && snapshot.data().settings
-        ? snapshot.data().settings
-        : {};
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  }
-
   async updateSettings(data) {
     try {
       const timetableDoc = doc(this.db, `timetables/${this.table}`);
