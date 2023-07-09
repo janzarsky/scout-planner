@@ -11,13 +11,11 @@ export default function Import() {
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
-  const firestore = useSelector((state) => state.config.firestore);
-
   async function handleSubmit(event) {
     event.preventDefault();
 
     const data = JSON.parse(dataToImport);
-    await importData(data, client, firestore);
+    await importData(data, client, true);
 
     window.location.reload();
   }
