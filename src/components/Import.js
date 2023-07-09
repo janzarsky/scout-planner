@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { useSelector } from "react-redux";
 import { level } from "../helpers/Level";
 
@@ -9,7 +9,7 @@ export default function Import() {
   const [dataToImport, setDataToImport] = useState();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   async function handleSubmit(event) {
     event.preventDefault();

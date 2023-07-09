@@ -3,7 +3,7 @@ import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Table from "react-bootstrap/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
 import { formatDateTime, parseDateTime } from "../helpers/DateUtils";
@@ -19,7 +19,7 @@ export default function People() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   const attendanceFlag = useSelector((state) => state.config.attendance);
 

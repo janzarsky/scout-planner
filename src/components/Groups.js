@@ -5,7 +5,7 @@ import { byOrder } from "../helpers/Sorting";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addGroup, deleteGroup, updateGroup } from "../store/groupsSlice";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 
@@ -20,7 +20,7 @@ export default function Groups() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();

@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 
 export default function Ranges() {
@@ -17,7 +17,7 @@ export default function Ranges() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();

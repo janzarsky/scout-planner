@@ -11,7 +11,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Alert from "react-bootstrap/Alert";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { checkRules } from "../Checker";
 import Settings from "./Settings";
 import Users from "./Users";
@@ -79,14 +79,14 @@ export default function App() {
 
   useEffect(() => {
     if (!permissionsLoaded && !initializing) {
-      const client = clientFactory.getClient(table);
+      const client = firestoreClientFactory.getClient(table);
       dispatch(getPermissions(client));
     }
   }, [table, permissionsLoaded, initializing, dispatch]);
 
   useEffect(() => {
     if (permissionsLoaded) {
-      const client = clientFactory.getClient(table);
+      const client = firestoreClientFactory.getClient(table);
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
@@ -110,14 +110,14 @@ export default function App() {
     );
 
     if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
-      const client = clientFactory.getClient(table);
+      const client = firestoreClientFactory.getClient(table);
       migratePeople(programs, people, userLevel, client, dispatch);
     } else if (
       peopleMigration &&
       dataLoaded &&
       peopleMigrationState === "finishedPeople"
     ) {
-      const client = clientFactory.getClient(table);
+      const client = firestoreClientFactory.getClient(table);
       migratePrograms(programs, people, userLevel, client, dispatch);
     } else if (!peopleMigration && dataLoaded) {
       dispatch(setPeopleMigrationState("failedPeople"));
