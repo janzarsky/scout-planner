@@ -23,14 +23,10 @@ describe("Users", () => {
     store = getStore();
   });
 
-  function setPublicLevelOrUser(level) {
-    store.dispatch(setPublicLevel(level));
-  }
-
   describe("public user", () => {
     it("displays warning when not logged in and there is no public access", () => {
       store.dispatch(testing.setUserLevel(level.EDIT));
-      setPublicLevelOrUser(level.EDIT);
+      store.dispatch(setPublicLevel(level.EDIT));
       cy.mount(<Users />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
@@ -40,7 +36,7 @@ describe("Users", () => {
 
     it("displays warning when not logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      setPublicLevelOrUser(level.ADMIN);
+      store.dispatch(setPublicLevel(level.ADMIN));
       cy.mount(<Users />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
@@ -50,7 +46,7 @@ describe("Users", () => {
 
     it("displays instructions when logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      setPublicLevelOrUser(level.ADMIN);
+      store.dispatch(setPublicLevel(level.ADMIN));
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
@@ -61,7 +57,7 @@ describe("Users", () => {
 
     it("allows editing when logged in and there is user access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      setPublicLevelOrUser(level.ADMIN);
+      store.dispatch(setPublicLevel(level.ADMIN));
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -78,7 +74,7 @@ describe("Users", () => {
 
     it("updates public user", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      setPublicLevelOrUser(level.ADMIN);
+      store.dispatch(setPublicLevel(level.ADMIN));
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -95,7 +91,7 @@ describe("Users", () => {
   describe("current user", () => {
     it("allows editing when there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      setPublicLevelOrUser(level.ADMIN);
+      store.dispatch(setPublicLevel(level.ADMIN));
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.NONE })
       );
@@ -112,7 +108,7 @@ describe("Users", () => {
 
     it("displays warning when there is no public access and no other admins", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      setPublicLevelOrUser(level.NONE);
+      store.dispatch(setPublicLevel(level.NONE));
       store.dispatch(
         addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
       );
@@ -132,7 +128,7 @@ describe("Users", () => {
         "and there are other admins",
       () => {
         store.dispatch(testing.setUserLevel(level.ADMIN));
-        setPublicLevelOrUser(level.NONE);
+        store.dispatch(setPublicLevel(level.NONE));
         store.dispatch(
           addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
         );
@@ -158,7 +154,7 @@ describe("Users", () => {
 
     it("updates current user", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      setPublicLevelOrUser(level.ADMIN);
+      store.dispatch(setPublicLevel(level.ADMIN));
       store.dispatch(
         addUser({
           _id: "test@email.com",
@@ -182,7 +178,7 @@ describe("Users", () => {
 
   it("adds new user", () => {
     store.dispatch(testing.setUserLevel(level.ADMIN));
-    setPublicLevelOrUser(level.ADMIN);
+    store.dispatch(setPublicLevel(level.ADMIN));
     cy.mount(<Users />, { reduxStore: store });
 
     cy.get("input").clear().type("another@email.com");
