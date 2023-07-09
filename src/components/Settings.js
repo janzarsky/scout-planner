@@ -57,7 +57,7 @@ function DeleteAll() {
       ...ranges.map((it) => client.deleteRange(it._id)),
       ...users.map((it) => client.deleteUser(it._id)),
       ...people.map((it) => client.deletePerson(it._id)),
-      client.updateSettings({}),
+      client.updateTimetable({ settings: {} }),
       client.setPublicLevel(level.ADMIN),
     ]).then(() => window.location.reload());
   }
@@ -86,7 +86,7 @@ function TimeStep() {
 
     if (editing) {
       const data = { ...settings, timeStep: step };
-      client.updateSettings(data).then(
+      client.updateTimetable({ settings: data }).then(
         () => dispatch(updateSettings(data)),
         (e) => dispatch(addError(e.message)),
       );
@@ -146,7 +146,7 @@ function Width() {
 
     if (editing) {
       const data = { ...settings, width: parseInt(width) };
-      client.updateSettings(data).then(
+      client.updateTimetable({ settings: data }).then(
         () => dispatch(updateSettings(data)),
         (e) => dispatch(addError(e.message)),
       );
