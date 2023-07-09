@@ -25,10 +25,8 @@ export default function Settings() {
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
-  const firestore = useSelector((state) => state.config.firestore);
-
   async function deleteAll() {
-    if (firestore) await client.setPublicLevel(level.ADMIN);
+    await client.setPublicLevel(level.ADMIN);
 
     await Promise.all([
       ...programs.map((it) => client.deleteProgram(it._id)),
@@ -39,8 +37,8 @@ export default function Settings() {
       ...ranges.map((it) => client.deleteRange(it._id)),
       ...users.map((it) => client.deleteUser(it._id)),
       ...people.map((it) => client.deletePerson(it._id)),
-      firestore ? client.updateSettings({}) : Promise.resolve(),
-      firestore ? client.setPublicLevel(level.ADMIN) : Promise.resolve(),
+      client.updateSettings({}),
+      client.setPublicLevel(level.ADMIN),
     ]).then(() => window.location.reload());
   }
 
