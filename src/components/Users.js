@@ -27,51 +27,17 @@ export default function Users({ userEmail }) {
   const { table } = useSelector((state) => state.auth);
   const client = clientFactory.getClient(table);
 
-  const firestore = useSelector((state) => state.config.firestore);
-
-  const publicUser = users.find((user) => user.email === "public");
-
-  const defaultPublicLevel = firestore
-    ? publicLevel
-    : publicUser
-    ? publicUser.level
-    : level.ADMIN;
+  const defaultPublicLevel = publicLevel;
   const [publicLevelState, setPublicLevelState] = useState(defaultPublicLevel);
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editKey && editKey === "public_user") {
-      if (firestore) {
-        client.setPublicLevel(publicLevelState).then(
-          (level) => dispatch(setPublicLevel(level)),
-          (e) => dispatch(addError(e.message))
-        );
-      } else {
-        const publicUser = users.find((user) => user.email === "public");
-
-        if (publicUser)
-          client
-            .updateUser({
-              _id: publicUser._id,
-              email: publicUser.email,
-              level: publicLevelState,
-            })
-            .then(
-              (resp) => dispatch(updateUser(resp)),
-              (e) => dispatch(addError(e.message))
-            );
-        else
-          client
-            .addUser({
-              email: "public",
-              level: publicLevelState,
-            })
-            .then(
-              (resp) => dispatch(addUser(resp)),
-              (e) => dispatch(addError(e.message))
-            );
-      }
+      client.setPublicLevel(publicLevelState).then(
+        (level) => dispatch(setPublicLevel(level)),
+        (e) => dispatch(addError(e.message))
+      );
       setEditKey(undefined);
     } else if (editKey) {
       client
@@ -86,27 +52,16 @@ export default function Users({ userEmail }) {
         );
       setEditKey(undefined);
     } else {
-      if (firestore)
-        client
-          .updateUser({
-            _id: newEmail,
-            email: newEmail,
-            level: newLevel,
-          })
-          .then(
-            (resp) => dispatch(addUser(resp)),
-            (e) => dispatch(addError(e.message))
-          );
-      else
-        client
-          .addUser({
-            email: newEmail,
-            level: newLevel,
-          })
-          .then(
-            (resp) => dispatch(addUser(resp)),
-            (e) => dispatch(addError(e.message))
-          );
+      client
+        .updateUser({
+          _id: newEmail,
+          email: newEmail,
+          level: newLevel,
+        })
+        .then(
+          (resp) => dispatch(addUser(resp)),
+          (e) => dispatch(addError(e.message))
+        );
     }
   }
 
@@ -117,7 +72,7 @@ export default function Users({ userEmail }) {
 
   // allow editing of current user only in case they are other users with ADMIN rights
   // (or there is a implicit public user which also has ADMIN rights)
-  const hasPublicAccess = firestore ? publicLevel >= level.ADMIN : !publicUser;
+  const hasPublicAccess = publicLevel >= level.ADMIN;
   const currentUserEditable =
     userEmail &&
     (hasPublicAccess ||
@@ -127,9 +82,7 @@ export default function Users({ userEmail }) {
 
   // when it is allowed to edit current user, there is a warning about losing access,
   // the warning should not be shown in case there is still public ADMIN access
-  const warningPublicLevel = firestore
-    ? publicLevel < level.ADMIN
-    : publicUser && publicUser.level < level.ADMIN;
+  const warningPublicLevel = publicLevel < level.ADMIN;
   const currentUserWarning = currentUserEditable && warningPublicLevel;
 
   return (
