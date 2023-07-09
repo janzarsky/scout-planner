@@ -132,6 +132,15 @@ class FirestoreClient {
     }
   }
 
+  async getTimetable() {
+    try {
+      const snapshot = await getDoc(doc(this.db, `timetables/${this.table}`));
+      return snapshot.data();
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
   async get(coll, id) {
     try {
       const snapshot = await getDoc(
