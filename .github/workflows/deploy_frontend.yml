@@ -8,10 +8,6 @@ jobs:
   deploy_frontend:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: frontend
-
     permissions:
       contents: read
       id-token: write
@@ -40,5 +36,4 @@ jobs:
       - name: Deploy
         uses: "google-github-actions/deploy-appengine@v1.1.0"
         with:
-          working_directory: frontend
           version: "v0-1-0"
