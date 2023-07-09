@@ -172,22 +172,8 @@ class Client {
   }
 }
 
-var localConfig = {};
-
-try {
-  localConfig = require("./config.local.json");
-} catch {}
-
-const completeConfig = {
-  ...config,
-  ...localConfig,
-};
-
 export const clientFactory = {
   getClient() {
-    if (completeConfig.firestore)
-      return firestoreClientFactory.getClient(...arguments);
-
-    return new Client(...arguments);
+    return firestoreClientFactory.getClient(...arguments);
   },
 };
