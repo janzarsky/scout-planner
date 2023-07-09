@@ -1,8 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { firestoreClientFactory } from "./FirestoreClient";
 
-const config = require("./config.json");
-
 class Client {
   constructor(timetable) {
     [
