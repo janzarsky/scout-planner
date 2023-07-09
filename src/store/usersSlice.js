@@ -2,14 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { level } from "../helpers/Level";
 
 export const getUsers = createAsyncThunk("users/getUsers", async (client) => {
-  // checking whether the function is present (effectively signals whether firestore flag is on)
-  if (client.getPublicLevel) {
-    return await Promise.all([client.getUsers(), client.getPublicLevel()]).then(
-      ([users, publicLevel]) => ({ users, publicLevel })
-    );
-  } else {
-    return { users: await client.getUsers() };
-  }
+  return await Promise.all([client.getUsers(), client.getPublicLevel()]).then(
+    ([users, publicLevel]) => ({ users, publicLevel })
+  );
 });
 
 export const usersSlice = createSlice({
