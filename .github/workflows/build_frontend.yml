@@ -1,12 +1,8 @@
-on: []
+on: [pull_request]
 
 jobs:
   build_frontend:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout
@@ -24,5 +20,4 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v5.1.0
         with:
-          working-directory: frontend
           component: true
