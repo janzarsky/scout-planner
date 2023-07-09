@@ -43,7 +43,7 @@ describe("Timetable", () => {
         timeProvider={() => now}
         violations={new Map()}
       />,
-      { reduxStore: store, router: true }
+      { reduxStore: store, router: true },
     );
   }
 
@@ -84,7 +84,7 @@ describe("Timetable", () => {
         cy.get(".program-wrapper").should(
           "have.css",
           "grid-area",
-          "1 / 1 / span 1 / span 8"
+          "1 / 1 / span 1 / span 8",
         );
       });
   });
@@ -125,7 +125,7 @@ describe("Timetable", () => {
         cy.get(".program-wrapper").should(
           "have.css",
           "grid-area",
-          "1 / 1 / span 1 / span 18"
+          "1 / 1 / span 1 / span 18",
         );
       });
   });

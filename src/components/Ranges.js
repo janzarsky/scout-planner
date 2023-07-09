@@ -25,13 +25,13 @@ export default function Ranges() {
     if (editKey) {
       client.updateRange({ _id: editKey, name: editedName }).then(
         (resp) => dispatch(updateRange(resp)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
       setEditKey(undefined);
     } else {
       client.addRange({ name: newName }).then(
         (resp) => dispatch(addRange(resp)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
     }
   }
@@ -55,7 +55,7 @@ export default function Ranges() {
                 deleteRange={() =>
                   client.deleteRange(range._id).then(
                     () => dispatch(deleteRange(range._id)),
-                    (e) => dispatch(addError(e.message))
+                    (e) => dispatch(addError(e.message)),
                   )
                 }
                 editRange={() => {
@@ -63,7 +63,7 @@ export default function Ranges() {
                   setEditedName(range.name);
                 }}
               />
-            )
+            ),
           )}
           <EditedRange name={newName} setName={setNewName} isNew={true} />
         </tbody>

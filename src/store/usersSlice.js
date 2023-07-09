@@ -3,7 +3,7 @@ import { level } from "../helpers/Level";
 
 export const getUsers = createAsyncThunk("users/getUsers", async (client) => {
   return await Promise.all([client.getUsers(), client.getPublicLevel()]).then(
-    ([users, publicLevel]) => ({ users, publicLevel })
+    ([users, publicLevel]) => ({ users, publicLevel }),
   );
 });
 

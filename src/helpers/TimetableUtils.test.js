@@ -112,8 +112,8 @@ describe("getRect()", () => {
         parseDateTime("11:30 11.06.2022"),
         parseDuration("1:00"),
         [],
-        settings
-      )
+        settings,
+      ),
     ).toEqual({
       x: 6,
       y: 1,
@@ -128,8 +128,8 @@ describe("getRect()", () => {
         parseDateTime("11:23 11.06.2022"),
         parseDuration("1:14"),
         [],
-        settings
-      )
+        settings,
+      ),
     ).toEqual({ x: 6, y: 1, width: 5, height: 1 }));
 
   it("returns rectangle for short program", () =>
@@ -138,8 +138,8 @@ describe("getRect()", () => {
         parseDateTime("11:30 11.06.2022"),
         parseDuration("0:01"),
         [],
-        settings
-      )
+        settings,
+      ),
     ).toEqual({ x: 6, y: 1, width: 1, height: 1 }));
 
   it("returns rectangle for program with groups", () => {
@@ -158,8 +158,8 @@ describe("getRect()", () => {
         parseDateTime("11:30 11.06.2022"),
         parseDuration("1:00"),
         ["group2", "group3"],
-        settingsWithGroups
-      )
+        settingsWithGroups,
+      ),
     ).toEqual({ x: 6, y: 5, width: 4, height: 2 });
   });
 });

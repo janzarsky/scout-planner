@@ -43,7 +43,7 @@ export function getTimetableSettings(programs, groups, timeStep, now) {
 
   settings.timeHeaders = Array.from(
     { length: Math.ceil((settings.dayEnd - settings.dayStart) / hour) },
-    (_, idx) => settings.dayStart + idx * hour
+    (_, idx) => settings.dayStart + idx * hour,
   );
   settings.timeStep = timeStep;
   settings.timeSpan = Math.ceil(hour / timeStep);

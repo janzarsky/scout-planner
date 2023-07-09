@@ -17,7 +17,7 @@ export function getProgramRects(programs, settings, addButton = true) {
         y: rect.y,
       };
     },
-    { programs: [], x: addButton ? 4 : 0, y: 0 } // make space for "new program" button
+    { programs: [], x: addButton ? 4 : 0, y: 0 }, // make space for "new program" button
   ).programs;
 }
 
@@ -27,7 +27,7 @@ export function sortTrayPrograms(programs, packages) {
     const pkgB = packages.find((pkg) => pkg._id === b.pkg);
 
     const resPkg = (pkgA && pkgA.name ? pkgA.name : "").localeCompare(
-      pkgB && pkgB.name ? pkgB.name : ""
+      pkgB && pkgB.name ? pkgB.name : "",
     );
     if (resPkg !== 0) return resPkg;
 

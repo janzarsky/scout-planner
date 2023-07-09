@@ -21,7 +21,7 @@ export function addEmptyDays(days) {
     curr - last < (missingDaysLimit + 2) * dayLength
       ? Array.from(
           { length: (curr - last) / dayLength - 1 },
-          (_, i) => last + (i + 1) * dayLength
+          (_, i) => last + (i + 1) * dayLength,
         )
       : [];
 
@@ -39,8 +39,8 @@ export function addEmptyDays(days) {
     return extendedDays.concat(
       Array.from(
         { length: minDaysLimit - extendedDays.length },
-        (_, i) => extendedDays[extendedDays.length - 1] + (i + 1) * dayLength
-      )
+        (_, i) => extendedDays[extendedDays.length - 1] + (i + 1) * dayLength,
+      ),
     );
 
   return extendedDays;

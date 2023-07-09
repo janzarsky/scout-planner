@@ -188,10 +188,10 @@ describe("Filters", () => {
 
   it("displays all packages", () => {
     store.dispatch(
-      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" })
+      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" }),
     );
     store.dispatch(
-      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" })
+      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" }),
     );
     cy.viewport(500, 200);
     mountFilters();
@@ -199,21 +199,21 @@ describe("Filters", () => {
     cy.contains("Package 1").should(
       "have.css",
       "background-color",
-      "rgb(197, 225, 165)"
+      "rgb(197, 225, 165)",
     );
     cy.contains("Package 2").should(
       "have.css",
       "background-color",
-      "rgb(197, 202, 233)"
+      "rgb(197, 202, 233)",
     );
   });
 
   it("highlights selected package", () => {
     store.dispatch(
-      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" })
+      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" }),
     );
     store.dispatch(
-      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" })
+      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" }),
     );
     store.dispatch(toggleHighlightedPackage("package2"));
     cy.viewport(500, 200);
@@ -222,7 +222,7 @@ describe("Filters", () => {
     cy.contains("Package 1").should(
       "have.css",
       "background-color",
-      "rgb(197, 225, 165)"
+      "rgb(197, 225, 165)",
     );
     cy.contains("Package 2")
       .should("have.class", "btn-dark")

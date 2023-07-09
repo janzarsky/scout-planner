@@ -38,7 +38,7 @@ const Homepage = () => {
 
   const random = useCallback(
     () => navigate(`/${Math.floor(Math.random() * 10e13).toString(16)}`),
-    [navigate]
+    [navigate],
   );
 
   return (
@@ -76,5 +76,5 @@ root.render(
         <Route path="/:table/*" element={<AppWrapper />} />
       </Routes>
     </BrowserRouter>
-  </Provider>
+  </Provider>,
 );

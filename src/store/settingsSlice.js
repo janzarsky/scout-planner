@@ -6,7 +6,7 @@ export const getSettings = createAsyncThunk(
     timeStep: 15 * 60 * 1000,
     width: 100,
     ...(await client.getSettings()),
-  })
+  }),
 );
 
 export const settingsSlice = createSlice({

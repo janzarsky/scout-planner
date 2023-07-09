@@ -20,7 +20,7 @@ export function Tray({ settings, onDroppableDrop }) {
         isOver: !!monitor.isOver(),
       }),
     }),
-    [programs]
+    [programs],
   );
 
   const width = useSelector((state) => state.settings.settings.width);
@@ -32,7 +32,7 @@ export function Tray({ settings, onDroppableDrop }) {
   const programRects = getProgramRects(
     sortedPrograms,
     settings,
-    userLevel >= level.EDIT
+    userLevel >= level.EDIT,
   );
 
   const [pinned, setPinned] = useState(false);
@@ -82,7 +82,7 @@ export function Tray({ settings, onDroppableDrop }) {
             settings.dayStart,
             settings.dayEnd - settings.dayStart,
             [],
-            settings
+            settings,
           )}
         >
           {userLevel >= level.EDIT && (

@@ -52,8 +52,8 @@ async function importData(data, client) {
       ...data.pkgs.map((pkg) =>
         client.addPackage(pkg).then(
           // create package ID replacement map
-          (newPkg) => [pkg._id, newPkg._id]
-        )
+          (newPkg) => [pkg._id, newPkg._id],
+        ),
       ),
     ]).then((pkgs) => new Map(pkgs)),
     // add all groups
@@ -61,8 +61,8 @@ async function importData(data, client) {
       ...data.groups.map((group) =>
         client.addGroup(group).then(
           // create group ID replacement map
-          (newGroup) => [group._id, newGroup._id]
-        )
+          (newGroup) => [group._id, newGroup._id],
+        ),
       ),
     ]).then((groups) => new Map(groups)),
     // add all ranges
@@ -70,8 +70,8 @@ async function importData(data, client) {
       ...data.ranges.map((range) =>
         client.addRange(range).then(
           // create range ID replacement map
-          (newRange) => [range._id, newRange._id]
-        )
+          (newRange) => [range._id, newRange._id],
+        ),
       ),
     ]).then((ranges) => new Map(ranges)),
     // add all people
@@ -79,8 +79,8 @@ async function importData(data, client) {
       ...data.people.map((person) =>
         client.addPerson(person).then(
           // create person ID replacement map
-          (newPerson) => [person._id, newPerson._id]
-        )
+          (newPerson) => [person._id, newPerson._id],
+        ),
       ),
     ]).then((people) => new Map(people)),
     client.updateSettings(data.settings),
@@ -92,14 +92,14 @@ async function importData(data, client) {
           ...prog,
           pkg: pkgs.get(prog.pkg) ? pkgs.get(prog.pkg) : null,
           groups: prog.groups.map((oldGroup) =>
-            groups.get(oldGroup) ? groups.get(oldGroup) : null
+            groups.get(oldGroup) ? groups.get(oldGroup) : null,
           ),
           ranges: prog.ranges
             ? Object.fromEntries(
                 Object.entries(prog.ranges).map(([oldRange, val]) => [
                   ranges.get(oldRange),
                   val,
-                ])
+                ]),
               )
             : null,
           people: prog.people.map((oldPerson) =>
@@ -110,10 +110,10 @@ async function importData(data, client) {
                   person: people.get(oldPerson.person)
                     ? people.get(oldPerson.person)
                     : null,
-                }
+                },
           ),
         };
-      })
+      }),
     )
     // add all programs
     .then((programs) =>
@@ -121,10 +121,10 @@ async function importData(data, client) {
         programs.map((prog) =>
           client.addProgram(prog).then(
             // create program ID replacement map
-            (newProg) => [prog._id, newProg._id]
-          )
-        )
-      )
+            (newProg) => [prog._id, newProg._id],
+          ),
+        ),
+      ),
     )
     .then((programs) => new Map(programs))
     // replace program IDs in rules
@@ -141,7 +141,7 @@ async function importData(data, client) {
           program: programs.get(rule.program),
           value: value,
         };
-      })
+      }),
     )
     // add all rules
     .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))

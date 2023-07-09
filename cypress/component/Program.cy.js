@@ -49,7 +49,7 @@ describe("Program", () => {
   function mountProgram(program, violations) {
     cy.mount(
       <Program program={program} rect={rect} violations={violations} />,
-      { dndProvider: true, reduxStore: store, router: true }
+      { dndProvider: true, reduxStore: store, router: true },
     );
   }
 
@@ -78,7 +78,7 @@ describe("Program", () => {
     cy.get(".program-url a").should(
       "have.attr",
       "href",
-      "https://some.program.url"
+      "https://some.program.url",
     );
   });
 
@@ -99,7 +99,7 @@ describe("Program", () => {
     cy.get(".program").should(
       "have.css",
       "background-color",
-      "rgb(238, 238, 238)"
+      "rgb(238, 238, 238)",
     );
   });
 
@@ -148,7 +148,7 @@ describe("Program", () => {
       cy.get(".program").should(
         "have.css",
         "background-color",
-        "rgb(238, 238, 238)"
+        "rgb(238, 238, 238)",
       );
     });
 
@@ -171,7 +171,7 @@ describe("Program", () => {
       mountProgram(prog, ["First violation", "Second violation - Alice"]);
 
       cy.contains("First violation, Second violation - Alice").should(
-        "not.exist"
+        "not.exist",
       );
       cy.get(".program")
         .should("have.css", "background-image")

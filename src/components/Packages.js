@@ -25,7 +25,7 @@ export default function Packages() {
   const { table } = useSelector((state) => state.auth);
   const client = useMemo(
     () => firestoreClientFactory.getClient(table),
-    [table]
+    [table],
   );
 
   const handleSubmit = useCallback(
@@ -41,7 +41,7 @@ export default function Packages() {
           })
           .then(
             (resp) => dispatch(updatePackage(resp)),
-            (e) => dispatch(addError(e.message))
+            (e) => dispatch(addError(e.message)),
           );
         setEditKey(undefined);
       } else {
@@ -52,22 +52,22 @@ export default function Packages() {
           })
           .then(
             (resp) => dispatch(addPackage(resp)),
-            (e) => dispatch(addError(e.message))
+            (e) => dispatch(addError(e.message)),
           );
       }
     },
-    [client, dispatch, editKey, editedColor, editedName, newColor, newName]
+    [client, dispatch, editKey, editedColor, editedName, newColor, newName],
   );
 
   const deletePackageCallback = useCallback(
     (id) => {
       client.deletePackage(id).then(
         () => dispatch(deletePackage(id)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
       setEditKey(undefined);
     },
-    [client, dispatch, setEditKey]
+    [client, dispatch, setEditKey],
   );
 
   const editPackageCallback = useCallback(
@@ -76,7 +76,7 @@ export default function Packages() {
       setEditedName(name);
       setEditedColor(color);
     },
-    [setEditKey, setEditedName, setEditedColor]
+    [setEditKey, setEditedName, setEditedColor],
   );
 
   return (
@@ -106,7 +106,7 @@ export default function Packages() {
                   deletePkg={deletePackageCallback}
                   editPkg={editPackageCallback}
                 />
-              )
+              ),
             )}
           <NewPackage
             name={newName}

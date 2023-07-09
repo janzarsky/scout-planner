@@ -34,8 +34,8 @@ function getDroppablesData(settings) {
           begin,
           group: group._id,
         }));
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -57,7 +57,7 @@ export function getBlockDroppablesData(
   height,
   blockBegin,
   timeStep,
-  groupId
+  groupId,
 ) {
   return [...Array(width).keys()].flatMap((x) =>
     [...Array(height).keys()].map((y) => ({
@@ -66,7 +66,7 @@ export function getBlockDroppablesData(
       y: y + 1,
       begin: blockBegin + x * timeStep,
       group: groupId,
-    }))
+    })),
   );
 }
 
@@ -82,7 +82,7 @@ function Droppable({ onDrop, x, y, begin, group }) {
         isOver: !!monitor.isOver(),
       }),
     }),
-    [programs]
+    [programs],
   );
 
   return (

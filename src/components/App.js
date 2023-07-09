@@ -54,11 +54,11 @@ export default function App() {
   const { groups, loaded: groupsLoaded } = useSelector((state) => state.groups);
   const { ranges, loaded: rangesLoaded } = useSelector((state) => state.ranges);
   const { packages, loaded: packagesLoaded } = useSelector(
-    (state) => state.packages
+    (state) => state.packages,
   );
   const { rules, loaded: rulesLoaded } = useSelector((state) => state.rules);
   const { programs, loaded: programsLoaded } = useSelector(
-    (state) => state.programs
+    (state) => state.programs,
   );
   const {
     people,
@@ -67,10 +67,10 @@ export default function App() {
     peopleMigrationState,
   } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
-    (state) => state.settings
+    (state) => state.settings,
   );
   const { table, userLevel, permissionsLoaded } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   const peopleMigration = useSelector((state) => state.config.peopleMigration);
@@ -106,7 +106,7 @@ export default function App() {
     const allPeople = convertLegacyPeople(legacyPeople, people);
     const convertedPrograms = replaceLegacyPeopleInPrograms(
       programs,
-      allPeople
+      allPeople,
     );
 
     if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
@@ -130,8 +130,8 @@ export default function App() {
     setRulesSatisfied(
       [...problems.violations.values()].reduce(
         (acc, curr) => acc && curr.satisfied,
-        true
-      ) && problems.other.length === 0
+        true,
+      ) && problems.other.length === 0,
     );
   }, [
     table,
@@ -194,8 +194,8 @@ export default function App() {
     const people = [
       ...new Set(
         [...programs].flatMap((program) =>
-          program.people.filter((person) => typeof person === "string")
-        )
+          program.people.filter((person) => typeof person === "string"),
+        ),
       ),
     ];
     dispatch(setLegacyPeople(people));
@@ -417,7 +417,7 @@ function GoogleLogin() {
 function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
   const peopleMigrationState = useSelector(
-    (state) => state.people.peopleMigrationState
+    (state) => state.people.peopleMigrationState,
   );
 
   return (

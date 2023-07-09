@@ -10,8 +10,8 @@ export function convertLegacyPeople(legacyPeople, people) {
     convertedLegacyPeople.filter(
       (person) =>
         people.find((existingPerson) => existingPerson.name === person.name) ===
-        undefined
-    )
+        undefined,
+    ),
   );
 }
 

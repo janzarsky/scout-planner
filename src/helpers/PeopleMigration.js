@@ -8,7 +8,7 @@ export async function migratePeople(
   people,
   userLevel,
   client,
-  dispatch
+  dispatch,
 ) {
   const legacyPeople = getLegacyPeople(programs);
   const peopleToAdd = getPeopleToBeAdded(legacyPeople, people);
@@ -41,9 +41,9 @@ async function addMissingPeople(peopleToAdd, client, dispatch) {
           dispatch(addPerson(resp));
           return resp._id;
         },
-        (e) => dispatch(addError(e.message))
-      )
-    )
+        (e) => dispatch(addError(e.message)),
+      ),
+    ),
   );
 }
 
@@ -51,8 +51,8 @@ function getLegacyPeople(programs) {
   return [
     ...new Set(
       programs.flatMap((prog) =>
-        prog.people.filter((person) => typeof person === "string")
-      )
+        prog.people.filter((person) => typeof person === "string"),
+      ),
     ),
   ];
 }
@@ -68,7 +68,7 @@ export async function migratePrograms(
   people,
   userLevel,
   client,
-  dispatch
+  dispatch,
 ) {
   const programsToBeUpdated = getProgramsToBeUpdated(programs, people);
 
@@ -95,12 +95,12 @@ export async function migratePrograms(
 function getProgramsToBeUpdated(programs, people) {
   return programs.flatMap((prog) => {
     const stringPeople = prog.people.filter(
-      (person) => typeof person === "string"
+      (person) => typeof person === "string",
     );
 
     if (stringPeople.length > 0) {
       const objectPeople = prog.people.filter(
-        (person) => typeof person !== "string"
+        (person) => typeof person !== "string",
       );
       const convertedPeople = stringPeople
         .map((name) => people.find((person) => person.name === name))
@@ -122,9 +122,9 @@ async function updatePrograms(programs, client, dispatch) {
           dispatch(updateProgram(resp));
           return resp._id;
         },
-        (e) => dispatch(addError(e.message))
-      )
-    )
+        (e) => dispatch(addError(e.message)),
+      ),
+    ),
   );
 }
 

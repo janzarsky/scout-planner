@@ -3,7 +3,7 @@ import { arraysEqualWithSorting } from "./Sorting";
 
 export function groupProgramsToBlocks(unsortedPrograms) {
   const programs = [...unsortedPrograms].sort((a, b) =>
-    a.begin < b.begin ? -1 : 1
+    a.begin < b.begin ? -1 : 1,
   );
   const alreadyInBlock = new Array(programs.length).fill(false);
   const blocks = [];
@@ -45,15 +45,15 @@ export function getRect(begin, duration, groups, settings) {
 
   if (groups && groups.length > 0) {
     const groupMap = settings.groups.map(
-      (group) => groups.findIndex((idx) => idx === group._id) !== -1
+      (group) => groups.findIndex((idx) => idx === group._id) !== -1,
     );
     first = groupMap.reduce(
       (acc, cur, idx) => (cur && idx < acc ? idx : acc),
-      settings.groupCnt - 1
+      settings.groupCnt - 1,
     );
     last = groupMap.reduce(
       (acc, cur, idx) => (cur && idx > acc ? idx : acc),
-      0
+      0,
     );
   }
 

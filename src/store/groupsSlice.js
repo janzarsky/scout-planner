@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getGroups = createAsyncThunk(
   "groups/getGroups",
-  async (client) => await client.getGroups()
+  async (client) => await client.getGroups(),
 );
 
 export const groupsSlice = createSlice({

@@ -62,7 +62,7 @@ export default function Program({ program, rect, violations }) {
         isOver: !!monitor.isOver(),
       }),
     }),
-    []
+    [],
   );
 
   drag(drop(ref));
@@ -70,7 +70,7 @@ export default function Program({ program, rect, violations }) {
   const clone = (p) =>
     client.addProgram(p).then(
       (resp) => dispatch(addProgram(resp)),
-      (e) => dispatch(addError(e.message))
+      (e) => dispatch(addError(e.message)),
     );
 
   const timeStep = useSelector((state) => state.settings.settings.timeStep);
@@ -112,7 +112,7 @@ export default function Program({ program, rect, violations }) {
 
 function ProgramBody({ program, pkg, violations, narrow }) {
   const { highlightingEnabled, highlightedPackages } = useSelector(
-    (state) => state.view
+    (state) => state.view,
   );
   const highlighted =
     highlightingEnabled && highlightedPackages.indexOf(program.pkg) !== -1;
@@ -229,7 +229,7 @@ function ProgramPeople({ programPeople, violations }) {
               violations.find(
                 (violation) =>
                   violation.people &&
-                  violation.people.indexOf(attendance.person) !== -1
+                  violation.people.indexOf(attendance.person) !== -1,
               )
                 ? "program-violated"
                 : ""

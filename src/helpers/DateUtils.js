@@ -74,7 +74,7 @@ export function parseDate(str) {
   return Date.UTC(
     parseInt(vals[2], 10),
     parseInt(vals[1], 10) - 1,
-    parseInt(vals[0], 10)
+    parseInt(vals[0], 10),
   );
 }
 

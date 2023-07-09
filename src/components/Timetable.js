@@ -20,7 +20,7 @@ export default function Timetable({ violations, timeProvider = null }) {
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = useMemo(
     () => firestoreClientFactory.getClient(table),
-    [table]
+    [table],
   );
 
   const onDroppableDrop = useCallback(
@@ -36,16 +36,16 @@ export default function Timetable({ violations, timeProvider = null }) {
 
         client.updateProgram({ ...prog, begin, groups }).then(
           (resp) => dispatch(updateProgram(resp)),
-          (e) => dispatch(addError(e.message))
+          (e) => dispatch(addError(e.message)),
         );
       }
     },
-    [client, dispatch]
+    [client, dispatch],
   );
 
   const { groups } = useSelector((state) => state.groups);
   const { settings: timetableSettings } = useSelector(
-    (state) => state.settings
+    (state) => state.settings,
   );
   const settings = useMemo(
     () =>
@@ -53,13 +53,13 @@ export default function Timetable({ violations, timeProvider = null }) {
         programs,
         groups,
         timetableSettings.timeStep,
-        timeProvider ? timeProvider() : Date.now()
+        timeProvider ? timeProvider() : Date.now(),
       ),
-    [programs, groups, timetableSettings, timeProvider]
+    [programs, groups, timetableSettings, timeProvider],
   );
   const timeIndicatorRect = getTimeIndicatorRect(
     settings,
-    timeProvider ? timeProvider() : Date.now()
+    timeProvider ? timeProvider() : Date.now(),
   );
 
   const width = useSelector((state) => state.settings.settings.width);
