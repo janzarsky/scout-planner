@@ -22,7 +22,7 @@ beforeEach(() => {
       .mockImplementationOnce(async (a) => ({ ...a, _id: `${prefix}2_new` }));
 
   client = {
-    updateSettings: jest.fn(async (a) => a),
+    updateTimetable: jest.fn(),
     addProgram: mockAddingFunction("program"),
     addPackage: mockAddingFunction("pkg"),
     addGroup: mockAddingFunction("group"),
@@ -36,7 +36,7 @@ beforeEach(() => {
 
 test("empty data", async () => {
   return testing.importData(emptyData, client).then(() => {
-    expect(client.updateSettings).toHaveBeenCalledWith({});
+    expect(client.updateTimetable).toHaveBeenCalledWith({ settings: {} });
   });
 });
 

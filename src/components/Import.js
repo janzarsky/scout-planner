@@ -83,7 +83,7 @@ async function importData(data, client) {
         ),
       ),
     ]).then((people) => new Map(people)),
-    client.updateSettings(data.settings),
+    client.updateTimetable({ settings: data.settings }),
   ])
     // replace package, group, and range IDs in programs
     .then(([pkgs, groups, ranges, people]) =>
