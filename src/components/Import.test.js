@@ -274,32 +274,18 @@ test("program with mixed people", async () => {
 });
 
 describe("users", () => {
-  const config = require("../config.json");
-  var localConfig = {};
-
-  try {
-    localConfig = require("../config.local.json");
-  } catch {}
-
-  const completeConfig = {
-    ...config,
-    ...localConfig,
-  };
-
   it("imports one user", async () => {
     const data = {
       ...emptyData,
       users: [{ _id: "user0", email: "test@user.com", level: level.ADMIN }],
     };
 
-    await testing.importData(data, client, completeConfig.firestore);
+    await testing.importData(data, client);
 
-    if (completeConfig.firestore)
-      expect(client.updateUser).toHaveBeenCalledWith({
-        ...data.users[0],
-        _id: "test@user.com",
-      });
-    else expect(client.addUser).toHaveBeenCalledWith(data.users[0]);
+    expect(client.updateUser).toHaveBeenCalledWith({
+      ...data.users[0],
+      _id: "test@user.com",
+    });
   });
 
   it("sets public user", async () => {
@@ -308,11 +294,9 @@ describe("users", () => {
       users: [{ _id: "public", email: "public", level: level.ADMIN }],
     };
 
-    await testing.importData(data, client, completeConfig.firestore);
+    await testing.importData(data, client);
 
-    if (completeConfig.firestore)
-      expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
-    else expect(client.addUser).toHaveBeenCalledWith(data.users[0]);
+    expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
   });
 
   it("imports both real and public users", async () => {
@@ -325,22 +309,16 @@ describe("users", () => {
       ],
     };
 
-    await testing.importData(data, client, completeConfig.firestore);
+    await testing.importData(data, client);
 
-    if (completeConfig.firestore) {
-      expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
-      expect(client.updateUser).toHaveBeenCalledWith({
-        ...data.users[1],
-        _id: data.users[1].email,
-      });
-      expect(client.updateUser).toHaveBeenCalledWith({
-        ...data.users[2],
-        _id: data.users[2].email,
-      });
-    } else {
-      expect(client.addUser).toHaveBeenCalledWith(data.users[0]);
-      expect(client.addUser).toHaveBeenCalledWith(data.users[1]);
-      expect(client.addUser).toHaveBeenCalledWith(data.users[2]);
-    }
+    expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
+    expect(client.updateUser).toHaveBeenCalledWith({
+      ...data.users[1],
+      _id: data.users[1].email,
+    });
+    expect(client.updateUser).toHaveBeenCalledWith({
+      ...data.users[2],
+      _id: data.users[2].email,
+    });
   });
 });
