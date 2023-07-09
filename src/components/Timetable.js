@@ -1,7 +1,7 @@
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { level } from "../helpers/Level";
 import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
@@ -18,7 +18,10 @@ export default function Timetable({ violations, timeProvider = null }) {
   const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = useMemo(() => clientFactory.getClient(table), [table]);
+  const client = useMemo(
+    () => firestoreClientFactory.getClient(table),
+    [table]
+  );
 
   const onDroppableDrop = useCallback(
     (item, begin, groupId, currentPrograms) => {

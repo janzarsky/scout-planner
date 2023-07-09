@@ -1,6 +1,6 @@
 import { useDrag, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import {
@@ -17,7 +17,7 @@ export default function Program({ program, rect, violations }) {
   const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   const ref = useRef(null);
 

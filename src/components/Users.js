@@ -11,7 +11,7 @@ import {
   setPublicLevel,
   updateUser,
 } from "../store/usersSlice";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 
 export default function Users({ userEmail }) {
@@ -25,7 +25,7 @@ export default function Users({ userEmail }) {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   const defaultPublicLevel = publicLevel;
   const [publicLevelState, setPublicLevelState] = useState(defaultPublicLevel);

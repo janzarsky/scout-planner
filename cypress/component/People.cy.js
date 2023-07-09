@@ -1,6 +1,6 @@
 /// <reference types="cypress"/>
 
-import { clientFactory } from "../../src/Client";
+import { firestoreClientFactory } from "../../src/FirestoreClient";
 import People from "../../src/components/People";
 import { getStore } from "../../src/store";
 import { setTable } from "../../src/store/authSlice";
@@ -13,7 +13,7 @@ describe("People", () => {
     store = getStore();
     store.dispatch(setTable("table1"));
 
-    cy.stub(clientFactory, "getClient")
+    cy.stub(firestoreClientFactory, "getClient")
       .returns({
         addPerson: cy
           .spy(async (person) => ({ _id: "newperson", ...person }))

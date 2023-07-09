@@ -13,7 +13,7 @@ import {
 import { level } from "../helpers/Level";
 import { useDispatch, useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
 
@@ -30,7 +30,7 @@ export default function Rules({ violations }) {
   const dispatch = useDispatch();
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();

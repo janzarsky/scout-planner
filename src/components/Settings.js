@@ -9,7 +9,7 @@ import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSettings } from "../store/settingsSlice";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
 
@@ -23,7 +23,7 @@ export default function Settings() {
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   async function deleteAll() {
     await client.setPublicLevel(level.ADMIN);
@@ -64,7 +64,7 @@ function TimeStep() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   const [step, setStep] = useState(settings.timeStep);
   const [editing, setEditing] = useState(false);
@@ -122,7 +122,7 @@ function Width() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   const [width, setWidth] = useState(settings.width);
   const [editing, setEditing] = useState(false);

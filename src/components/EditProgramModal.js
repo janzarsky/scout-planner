@@ -21,7 +21,7 @@ import {
   updateProgram,
 } from "../store/programsSlice";
 import { addPerson } from "../store/peopleSlice";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -54,7 +54,7 @@ export function EditProgramModal() {
   const dispatch = useDispatch();
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   const handleClose = () => navigate(`/${table}`);
 
@@ -439,7 +439,7 @@ function ProgramPeople({
 
   const dispatch = useDispatch();
   const table = useSelector((state) => state.auth.table);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   return (
     <Form.Group as={Row} className="mb-3">
@@ -678,7 +678,7 @@ export function AddProgramModal() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = clientFactory.getClient(table);
+  const client = firestoreClientFactory.getClient(table);
 
   const handleClose = () => navigate(`/${table}`);
 

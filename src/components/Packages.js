@@ -9,7 +9,7 @@ import {
   deletePackage,
   updatePackage,
 } from "../store/packagesSlice";
-import { clientFactory } from "../Client";
+import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 
 export default function Packages() {
@@ -23,7 +23,10 @@ export default function Packages() {
   const dispatch = useDispatch();
 
   const { table } = useSelector((state) => state.auth);
-  const client = useMemo(() => clientFactory.getClient(table), [table]);
+  const client = useMemo(
+    () => firestoreClientFactory.getClient(table),
+    [table]
+  );
 
   const handleSubmit = useCallback(
     (event) => {
