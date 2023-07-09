@@ -14,6 +14,22 @@ import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
 
 export default function Settings() {
+  const userLevel = useSelector((state) => state.auth.userLevel);
+
+  return (
+    <>
+      <Container fluid>
+        <Export />
+        {userLevel >= level.ADMIN && <Import />}
+        {userLevel >= level.ADMIN && <DeleteAll />}
+        {userLevel >= level.EDIT && <TimeStep />}
+        {userLevel >= level.EDIT && <Width />}
+      </Container>
+    </>
+  );
+}
+
+function DeleteAll() {
   const { groups } = useSelector((state) => state.groups);
   const { ranges } = useSelector((state) => state.ranges);
   const { packages } = useSelector((state) => state.packages);
@@ -22,7 +38,7 @@ export default function Settings() {
   const { people } = useSelector((state) => state.people);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
-  const { table, userLevel } = useSelector((state) => state.auth);
+  const table = useSelector((state) => state.auth.table);
   const client = firestoreClientFactory.getClient(table);
 
   async function deleteAll() {
@@ -43,19 +59,9 @@ export default function Settings() {
   }
 
   return (
-    <>
-      <Container fluid>
-        <Export />
-        {userLevel >= level.ADMIN && <Import />}
-        {userLevel >= level.ADMIN && (
-          <Form.Group className="mb-3">
-            <Button onClick={deleteAll}>Smazat vše</Button>
-          </Form.Group>
-        )}
-        {userLevel >= level.EDIT && <TimeStep />}
-        {userLevel >= level.EDIT && <Width />}
-      </Container>
-    </>
+    <Form.Group className="mb-3">
+      <Button onClick={deleteAll}>Smazat vše</Button>
+    </Form.Group>
   );
 }
 
