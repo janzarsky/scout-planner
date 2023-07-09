@@ -31,7 +31,9 @@ export default function Import() {
         />
       </Form.Group>
       <Form.Group className="mb-3">
-        <Button type="submit">Importovat</Button>
+        <Button type="submit">
+          <i className="fa fa-cloud-upload"></i> Importovat
+        </Button>
       </Form.Group>
     </Form>
   );

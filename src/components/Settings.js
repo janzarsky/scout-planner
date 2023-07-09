@@ -19,11 +19,15 @@ export default function Settings() {
   return (
     <>
       <Container fluid>
+        <h2 className="mt-3">Nastavení</h2>
+        {userLevel >= level.EDIT && <TimeStep />}
+        {userLevel >= level.EDIT && <Width />}
+        <h2 className="mt-5 text-danger">
+          <i className="fa fa-exclamation-triangle"></i> Pokročilé
+        </h2>
         <Export />
         {userLevel >= level.ADMIN && <Import />}
         {userLevel >= level.ADMIN && <DeleteAll />}
-        {userLevel >= level.EDIT && <TimeStep />}
-        {userLevel >= level.EDIT && <Width />}
       </Container>
     </>
   );
@@ -60,7 +64,9 @@ function DeleteAll() {
 
   return (
     <Form.Group className="mb-3">
-      <Button onClick={deleteAll}>Smazat vše</Button>
+      <Button className="btn-danger" onClick={deleteAll}>
+        <i className="fa fa-trash"></i> Smazat vše
+      </Button>
     </Form.Group>
   );
 }
@@ -104,7 +110,9 @@ function TimeStep() {
               <option value={5 * 60 * 1000}>5 min</option>
             </Form.Select>
           ) : (
-            formatDurationInMinutes(settings.timeStep)
+            <Form.Label className="pt-2">
+              {formatDurationInMinutes(settings.timeStep)}
+            </Form.Label>
           )}
         </Col>
         <Col>
@@ -166,9 +174,13 @@ function Width() {
               <option value={150}>Širší</option>
             </Form.Select>
           ) : (
-            { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
-              settings.width
-            ]
+            <Form.Label className="pt-2">
+              {
+                { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
+                  settings.width
+                ]
+              }
+            </Form.Label>
           )}
         </Col>
         <Col>
