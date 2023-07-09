@@ -110,7 +110,9 @@ function TimeStep() {
               <option value={5 * 60 * 1000}>5 min</option>
             </Form.Select>
           ) : (
-            formatDurationInMinutes(settings.timeStep)
+            <Form.Label className="pt-2">
+              {formatDurationInMinutes(settings.timeStep)}
+            </Form.Label>
           )}
         </Col>
         <Col>
@@ -172,9 +174,13 @@ function Width() {
               <option value={150}>Širší</option>
             </Form.Select>
           ) : (
-            { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
-              settings.width
-            ]
+            <Form.Label className="pt-2">
+              {
+                { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
+                  settings.width
+                ]
+              }
+            </Form.Label>
           )}
         </Col>
         <Col>
