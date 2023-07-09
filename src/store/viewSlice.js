@@ -24,7 +24,7 @@ export const viewSlice = createSlice({
       else
         state.highlightedPackages.splice(
           state.highlightedPackages.indexOf(action.payload),
-          1
+          1,
         );
     },
     toggleViewSettingsEnabled(state) {

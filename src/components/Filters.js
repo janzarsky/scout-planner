@@ -10,7 +10,7 @@ import {
 export function FiltersToggle() {
   const dispatch = useDispatch();
   const highlightingEnabled = useSelector(
-    (state) => state.view.highlightingEnabled
+    (state) => state.view.highlightingEnabled,
   );
 
   return (
@@ -27,7 +27,7 @@ export function Filters() {
   const dispatch = useDispatch();
   const packages = useSelector((state) => state.packages.packages);
   const { highlightedPackages, highlightingEnabled } = useSelector(
-    (state) => state.view
+    (state) => state.view,
   );
 
   if (!highlightingEnabled) return null;

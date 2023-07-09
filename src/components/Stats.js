@@ -45,7 +45,7 @@ function PackageStats() {
                   {durationPerPackageAndGroup[pkg._id] &&
                   durationPerPackageAndGroup[pkg._id][group._id]
                     ? formatDuration(
-                        durationPerPackageAndGroup[pkg._id][group._id]
+                        durationPerPackageAndGroup[pkg._id][group._id],
                       )
                     : ""}
                 </td>
@@ -68,7 +68,7 @@ function PeopleStats() {
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
     convertedPrograms,
-    packages
+    packages,
   );
 
   return (
@@ -92,7 +92,7 @@ function PeopleStats() {
                   {durationPerPersonAndGroup[person._id] &&
                   durationPerPersonAndGroup[person._id][group._id]
                     ? formatDuration(
-                        durationPerPersonAndGroup[person._id][group._id]
+                        durationPerPersonAndGroup[person._id][group._id],
                       )
                     : ""}
                 </td>

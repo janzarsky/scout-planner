@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getRanges = createAsyncThunk(
   "ranges/getRanges",
-  async (client) => await client.getRanges()
+  async (client) => await client.getRanges(),
 );
 
 export const rangesSlice = createSlice({

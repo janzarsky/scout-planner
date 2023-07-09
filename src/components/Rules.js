@@ -57,7 +57,7 @@ export default function Rules({ violations }) {
       })
       .then(
         (resp) => dispatch(addRule(resp)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
   }
 
@@ -69,7 +69,7 @@ export default function Rules({ violations }) {
           ...rule,
           formatted: formatRule(rule, programs, groups),
         })),
-    [rules, programs, groups]
+    [rules, programs, groups],
   );
 
   return (
@@ -87,7 +87,7 @@ export default function Rules({ violations }) {
               deleteRule={() =>
                 client.deleteRule(rule._id).then(
                   () => dispatch(deleteRule(rule._id)),
-                  (e) => dispatch(addError(e.message))
+                  (e) => dispatch(addError(e.message)),
                 )
               }
             />
@@ -186,7 +186,7 @@ function NewRule({
       [...programs]
         .sort(programSort)
         .map((prog) => ({ _id: prog._id, text: formatProgram(prog, groups) })),
-    [programs, groups]
+    [programs, groups],
   );
 
   return (
@@ -287,7 +287,7 @@ function programSort(a, b) {
 function formatRule(rule, programs, groups) {
   const prog_title = formatProgram(
     programs.find((program) => program._id === rule.program),
-    groups
+    groups,
   );
 
   switch (rule.condition) {
@@ -310,7 +310,7 @@ function formatRule(rule, programs, groups) {
 
   var prog2_title = formatProgram(
     programs.find((program) => program._id === rule.value),
-    groups
+    groups,
   );
 
   switch (rule.condition) {
@@ -346,7 +346,7 @@ function formatProgram(prog, groups) {
 
   if (prog) {
     return `${prog.title === "" ? "(bez názvu)" : prog.title} (${formatDateTime(
-      prog.begin
+      prog.begin,
     )}) ${
       prog.groups &&
       prog.groups.length > 0 &&

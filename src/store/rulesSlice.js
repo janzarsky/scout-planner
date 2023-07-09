@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getRules = createAsyncThunk(
   "rules/getRules",
-  async (client) => await client.getRules()
+  async (client) => await client.getRules(),
 );
 
 export const rulesSlice = createSlice({

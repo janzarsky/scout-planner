@@ -62,7 +62,7 @@ export function GroupHeaders({ settings }) {
         pos={idx * settings.groupCnt + groupIdx + 2}
         name={group.name}
       />
-    ))
+    )),
   );
 }
 

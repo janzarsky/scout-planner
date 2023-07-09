@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getPrograms = createAsyncThunk(
   "programs/getPrograms",
-  async (client) => await client.getPrograms()
+  async (client) => await client.getPrograms(),
 );
 
 export const programsSlice = createSlice({
@@ -26,7 +26,7 @@ export const programsSlice = createSlice({
     },
     deleteProgram(state, action) {
       state.deletedPrograms.push(
-        state.programs.find((p) => p._id === action.payload)
+        state.programs.find((p) => p._id === action.payload),
       );
       state.programs = state.programs.filter((p) => p._id !== action.payload);
     },

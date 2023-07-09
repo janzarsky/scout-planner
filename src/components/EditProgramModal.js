@@ -48,7 +48,7 @@ export function EditProgramModal() {
   const [locked, setLocked] = useState(!!program.locked);
   const [ranges, setRanges] = useState(program.ranges);
   const [blockOrder, setBlockOrder] = useState(
-    program.blockOrder ? program.blockOrder : 0 // data fix
+    program.blockOrder ? program.blockOrder : 0, // data fix
   );
 
   const dispatch = useDispatch();
@@ -85,7 +85,7 @@ export function EditProgramModal() {
 
     client.addProgram(newProgram).then(
       (resp) => dispatch(addProgram(resp)),
-      (e) => dispatch(addError(e.message))
+      (e) => dispatch(addError(e.message)),
     );
   }
 
@@ -460,7 +460,7 @@ function ProgramPeople({
                           person._id,
                           objectPeople,
                           begin,
-                          duration
+                          duration,
                         )
                           ? ""
                           : "text-danger"
@@ -484,8 +484,8 @@ function ProgramPeople({
             : [
                 ...new Set(
                   [...stringPeople, ...programPeople].sort((a, b) =>
-                    a.localeCompare(b)
-                  )
+                    a.localeCompare(b),
+                  ),
                 ),
               ].map((person) => (
                 <Col key={person}>
@@ -519,7 +519,7 @@ function ProgramPeople({
                       ? addPersonObject({ person: resp._id })
                       : addPersonString(name);
                   },
-                  (e) => dispatch(addError(e.message))
+                  (e) => dispatch(addError(e.message)),
                 );
               }
             }}
@@ -665,7 +665,7 @@ export function AddProgramModal() {
   const [duration, setDuration] = useState(formatDuration(60 * 60 * 1000));
   const [pkg, setPkg] = useState(null);
   const [groups, setGroups] = useState(
-    options.groupId ? [options.groupId] : []
+    options.groupId ? [options.groupId] : [],
   );
   const [attendance, setAttendance] = useState([]);
   const [place, setPlace] = useState("");
@@ -709,7 +709,7 @@ export function AddProgramModal() {
       })
       .then(
         (resp) => dispatch(addProgram(resp)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
   }
 

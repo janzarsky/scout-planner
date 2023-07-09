@@ -29,7 +29,7 @@ describe("EditProgramModal", () => {
         reduxStore: store,
         router: true,
         initialEntries: [`/edit/${programId}`],
-      }
+      },
     );
   }
 

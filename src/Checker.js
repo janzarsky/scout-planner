@@ -35,14 +35,14 @@ function checkRule(rule, programs) {
     return program.begin + program.duration <= rule.value
       ? success()
       : failure(
-          `Program by měl skončit nejpozději v ${formatDateTime(rule.value)}`
+          `Program by měl skončit nejpozději v ${formatDateTime(rule.value)}`,
         );
 
   if (rule.condition === "is_after_date")
     return program.begin >= rule.value
       ? success()
       : failure(
-          `Program by měl začínat nejdříve v ${formatDateTime(rule.value)}`
+          `Program by měl začínat nejdříve v ${formatDateTime(rule.value)}`,
         );
 
   if (
@@ -164,7 +164,7 @@ function getAbsentPeople(program, allPeople) {
       !isPersonAvailable(
         person.absence,
         program.begin,
-        program.begin + program.duration
+        program.begin + program.duration,
       )
     )
       return [person._id];

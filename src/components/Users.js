@@ -36,7 +36,7 @@ export default function Users({ userEmail }) {
     if (editKey && editKey === "public_user") {
       client.setPublicLevel(publicLevelState).then(
         (level) => dispatch(setPublicLevel(level)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
       setEditKey(undefined);
     } else if (editKey) {
@@ -48,7 +48,7 @@ export default function Users({ userEmail }) {
         })
         .then(
           (resp) => dispatch(updateUser(resp)),
-          (e) => dispatch(addError(e.message))
+          (e) => dispatch(addError(e.message)),
         );
       setEditKey(undefined);
     } else {
@@ -60,7 +60,7 @@ export default function Users({ userEmail }) {
         })
         .then(
           (resp) => dispatch(addUser(resp)),
-          (e) => dispatch(addError(e.message))
+          (e) => dispatch(addError(e.message)),
         );
     }
   }
@@ -77,7 +77,7 @@ export default function Users({ userEmail }) {
     userEmail &&
     (hasPublicAccess ||
       users.some(
-        (user) => user.email !== userEmail && user.level >= level.ADMIN
+        (user) => user.email !== userEmail && user.level >= level.ADMIN,
       ));
 
   // when it is allowed to edit current user, there is a warning about losing access,
@@ -132,7 +132,7 @@ export default function Users({ userEmail }) {
                   deleteUser={() =>
                     client.deleteUser(user._id).then(
                       () => dispatch(deleteUser(user._id)),
-                      (e) => dispatch(addError(e.message))
+                      (e) => dispatch(addError(e.message)),
                     )
                   }
                   editUser={() => {
@@ -141,7 +141,7 @@ export default function Users({ userEmail }) {
                     setEditedLevel(user.level);
                   }}
                 />
-              )
+              ),
             )}
           <NewUser
             email={newEmail}

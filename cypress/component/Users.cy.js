@@ -59,7 +59,7 @@ describe("Users", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
       store.dispatch(setPublicLevel(level.ADMIN));
       store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
+        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN }),
       );
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
@@ -76,7 +76,7 @@ describe("Users", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
       store.dispatch(setPublicLevel(level.ADMIN));
       store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
+        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN }),
       );
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
@@ -93,7 +93,7 @@ describe("Users", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
       store.dispatch(setPublicLevel(level.ADMIN));
       store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.NONE })
+        addUser({ _id: "user1", email: "test@email.com", level: level.NONE }),
       );
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
@@ -110,7 +110,7 @@ describe("Users", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
       store.dispatch(setPublicLevel(level.NONE));
       store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
+        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN }),
       );
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
@@ -130,14 +130,18 @@ describe("Users", () => {
         store.dispatch(testing.setUserLevel(level.ADMIN));
         store.dispatch(setPublicLevel(level.NONE));
         store.dispatch(
-          addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN })
+          addUser({
+            _id: "user1",
+            email: "test@email.com",
+            level: level.ADMIN,
+          }),
         );
         store.dispatch(
           addUser({
             _id: "user2",
             email: "another@user.com",
             level: level.ADMIN,
-          })
+          }),
         );
         cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
@@ -149,7 +153,7 @@ describe("Users", () => {
             cy.contains("Upravit");
             cy.contains("Upozornění: pokud změníte vlastní oprávnění");
           });
-      }
+      },
     );
 
     it("updates current user", () => {
@@ -160,7 +164,7 @@ describe("Users", () => {
           _id: "test@email.com",
           email: "test@email.com",
           level: level.ADMIN,
-        })
+        }),
       );
       cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 

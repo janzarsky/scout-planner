@@ -34,7 +34,7 @@ export default function Groups() {
         })
         .then(
           (resp) => dispatch(updateGroup(resp)),
-          (e) => dispatch(addError(e.message))
+          (e) => dispatch(addError(e.message)),
         );
       setEditKey(undefined);
     } else {
@@ -45,7 +45,7 @@ export default function Groups() {
         })
         .then(
           (resp) => dispatch(addGroup(resp)),
-          (e) => dispatch(addError(e.message))
+          (e) => dispatch(addError(e.message)),
         );
     }
   }
@@ -72,7 +72,7 @@ export default function Groups() {
                 deleteGroup={() =>
                   client.deleteGroup(group._id).then(
                     () => dispatch(deleteGroup(group._id)),
-                    (e) => dispatch(addError(e.message))
+                    (e) => dispatch(addError(e.message)),
                   )
                 }
                 editGroup={() => {
@@ -81,7 +81,7 @@ export default function Groups() {
                   setEditedOrder(group.order);
                 }}
               />
-            )
+            ),
           )}
           <EditedGroup
             name={newName}

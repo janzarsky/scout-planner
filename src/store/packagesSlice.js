@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getPackages = createAsyncThunk(
   "packages/getPackages",
-  async (client) => await client.getPackages()
+  async (client) => await client.getPackages(),
 );
 
 export const packagesSlice = createSlice({

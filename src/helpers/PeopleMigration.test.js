@@ -32,10 +32,10 @@ describe("migratePeople()", () => {
       [{ _id: "person0", name: "Person 0" }],
       level.EDIT,
       client,
-      dispatch
+      dispatch,
     ).then(() => {
       expect(dispatch).toHaveBeenCalledWith(
-        setPeopleMigrationState("pendingPeople")
+        setPeopleMigrationState("pendingPeople"),
       );
 
       expect(client.addPerson).not.toHaveBeenCalledWith({ name: "Person 0" });
@@ -44,14 +44,14 @@ describe("migratePeople()", () => {
       expect(client.addPerson).not.toHaveBeenCalledWith({ name: "Person 3" });
 
       expect(dispatch).toHaveBeenCalledWith(
-        addPerson({ _id: "person1_new", name: "Person 1" })
+        addPerson({ _id: "person1_new", name: "Person 1" }),
       );
       expect(dispatch).toHaveBeenCalledWith(
-        addPerson({ _id: "person2_new", name: "Person 2" })
+        addPerson({ _id: "person2_new", name: "Person 2" }),
       );
 
       expect(dispatch).toHaveBeenCalledWith(
-        setPeopleMigrationState("finishedPeople")
+        setPeopleMigrationState("finishedPeople"),
       );
     });
   });
@@ -62,7 +62,7 @@ describe("migratePeople()", () => {
     await migratePeople([prog1], [], level.VIEW, client, dispatch);
 
     expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("failedPeople")
+      setPeopleMigrationState("failedPeople"),
     );
   });
 
@@ -72,7 +72,7 @@ describe("migratePeople()", () => {
     await migratePeople([prog1], [], level.VIEW, client, dispatch);
 
     expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("finishedPeople")
+      setPeopleMigrationState("finishedPeople"),
     );
   });
 });
@@ -105,7 +105,7 @@ describe("addMissingPeople()", () => {
         expect(data).toEqual(["person1_new"]);
         expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 1" });
         expect(dispatch).toHaveBeenCalledWith(
-          addPerson({ _id: "person1_new", name: "Person 1" })
+          addPerson({ _id: "person1_new", name: "Person 1" }),
         );
       }));
 
@@ -114,17 +114,17 @@ describe("addMissingPeople()", () => {
       .addMissingPeople(
         [{ name: "Person 1" }, { name: "Person 2" }],
         client,
-        dispatch
+        dispatch,
       )
       .then((data) => {
         expect(data).toEqual(["person1_new", "person2_new"]);
         expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 1" });
         expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 2" });
         expect(dispatch).toHaveBeenCalledWith(
-          addPerson({ _id: "person1_new", name: "Person 1" })
+          addPerson({ _id: "person1_new", name: "Person 1" }),
         );
         expect(dispatch).toHaveBeenCalledWith(
-          addPerson({ _id: "person2_new", name: "Person 2" })
+          addPerson({ _id: "person2_new", name: "Person 2" }),
         );
       }));
 });
@@ -193,16 +193,16 @@ describe("getPeopleToBeAdded()", () => {
     expect(
       testing.getPeopleToBeAdded(
         ["Person 1"],
-        [{ _id: "person2", name: "Person 2" }]
-      )
+        [{ _id: "person2", name: "Person 2" }],
+      ),
     ).toEqual([{ name: "Person 1" }]));
 
   it("does not return new person when the person is in existing people", () =>
     expect(
       testing.getPeopleToBeAdded(
         ["Person 1"],
-        [{ _id: "person1", name: "Person 1" }]
-      )
+        [{ _id: "person1", name: "Person 1" }],
+      ),
     ).toEqual([]));
 });
 
@@ -237,11 +237,11 @@ describe("migratePrograms()", () => {
       ],
       level.EDIT,
       client,
-      dispatch
+      dispatch,
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("pendingPrograms")
+      setPeopleMigrationState("pendingPrograms"),
     );
 
     expect(client.updateProgram).toHaveBeenCalledWith({
@@ -258,7 +258,7 @@ describe("migratePrograms()", () => {
     });
 
     expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("finishedPrograms")
+      setPeopleMigrationState("finishedPrograms"),
     );
   });
 
@@ -270,11 +270,11 @@ describe("migratePrograms()", () => {
       [{ _id: "person1", name: "Person 1" }],
       level.VIEW,
       client,
-      dispatch
+      dispatch,
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("failedPrograms")
+      setPeopleMigrationState("failedPrograms"),
     );
   });
 
@@ -284,7 +284,7 @@ describe("migratePrograms()", () => {
     await migratePrograms([prog1], [], level.VIEW, client, dispatch);
 
     expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("finishedPrograms")
+      setPeopleMigrationState("finishedPrograms"),
     );
   });
 });
@@ -301,7 +301,7 @@ describe("getProgramsToBeUpdated()", () => {
       people: [{ person: "person1" }, { person: "person2" }],
     };
     expect(testing.getProgramsToBeUpdated([prog], [person1, person2])).toEqual(
-      []
+      [],
     );
   });
 

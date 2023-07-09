@@ -27,13 +27,13 @@ describe("Packages", () => {
     cy.get("[data-test='pkgs-new-color']").should(
       "have.css",
       "background-color",
-      "rgb(129, 212, 250)"
+      "rgb(129, 212, 250)",
     );
     cy.get("[data-test=pkgs-new-color]").select("#f48fb1");
     cy.get("[data-test=pkgs-new-color]").should(
       "have.css",
       "background-color",
-      "rgb(244, 143, 177)"
+      "rgb(244, 143, 177)",
     );
   });
 });

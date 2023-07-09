@@ -9,7 +9,7 @@ export function Blocks({ settings, violations, onDrop }) {
 
   const data = useMemo(
     () => getBlocksData(programs, settings, violations),
-    [programs, settings, violations]
+    [programs, settings, violations],
   );
 
   return data.map((block) => (
@@ -58,7 +58,7 @@ function getBlocksData(programs, settings, violations) {
     groups: p.groups.length > 0 ? p.groups : allGroups,
   }));
   const programsNotInTray = programsGroupFix.filter(
-    (p) => typeof p.begin === "number"
+    (p) => typeof p.begin === "number",
   );
   const blocks = groupProgramsToBlocks(programsNotInTray);
 
@@ -67,7 +67,7 @@ function getBlocksData(programs, settings, violations) {
       block.begin,
       block.duration,
       block.groups,
-      settings
+      settings,
     );
 
     const maxBlockOrder = block.programs
@@ -79,11 +79,11 @@ function getBlocksData(programs, settings, violations) {
       maxBlockOrder + 1,
       block.programs[0].begin,
       settings.timeStep,
-      block.programs[0].groups.length > 0 ? block.programs[0].groups[0] : null
+      block.programs[0].groups.length > 0 ? block.programs[0].groups[0] : null,
     );
 
     const programsData = block.programs.map((program) =>
-      getProgramData(program, blockRect, settings, violations)
+      getProgramData(program, blockRect, settings, violations),
     );
 
     return {

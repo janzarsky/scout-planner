@@ -13,8 +13,8 @@ describe("getTimetableSettings()", () => {
         [],
         [],
         parseDuration("0:15"),
-        parseDateTime("11:30 11.06.2022")
-      )
+        parseDateTime("11:30 11.06.2022"),
+      ),
     ).toEqual({
       days: [
         parseDate("11.06.2022"),
@@ -49,8 +49,8 @@ describe("getTimetableSettings()", () => {
         [prog],
         [],
         parseDuration("0:15"),
-        parseDateTime("11:30 11.06.2022")
-      )
+        parseDateTime("11:30 11.06.2022"),
+      ),
     ).toEqual({
       days: [
         parseDate("10.10.2022"),
@@ -89,8 +89,8 @@ describe("getTimetableSettings()", () => {
         [prog],
         [],
         parseDuration("0:15"),
-        parseDateTime("11:30 11.06.2022")
-      )
+        parseDateTime("11:30 11.06.2022"),
+      ),
     ).toEqual({
       days: [
         parseDate("10.10.2022"),
@@ -130,8 +130,8 @@ describe("getTimetableSettings()", () => {
         [prog],
         [],
         parseDuration("0:15"),
-        parseDateTime("11:30 11.06.2022")
-      )
+        parseDateTime("11:30 11.06.2022"),
+      ),
     ).toEqual({
       days: [
         parseDate("11.06.2022"),

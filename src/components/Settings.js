@@ -88,7 +88,7 @@ function TimeStep() {
       const data = { ...settings, timeStep: step };
       client.updateSettings(data).then(
         () => dispatch(updateSettings(data)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
       setEditing(false);
     } else {
@@ -148,7 +148,7 @@ function Width() {
       const data = { ...settings, width: parseInt(width) };
       client.updateSettings(data).then(
         () => dispatch(updateSettings(data)),
-        (e) => dispatch(addError(e.message))
+        (e) => dispatch(addError(e.message)),
       );
       setEditing(false);
     } else {

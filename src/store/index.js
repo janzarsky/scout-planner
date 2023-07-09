@@ -34,6 +34,6 @@ export function getStore() {
         config: configReducer,
       },
     },
-    composedEnhancer
+    composedEnhancer,
   );
 }

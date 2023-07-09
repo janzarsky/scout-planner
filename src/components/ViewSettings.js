@@ -13,7 +13,7 @@ import {
 export function ViewSettingsToggle() {
   const dispatch = useDispatch();
   const viewSettingsEnabled = useSelector(
-    (state) => state.view.viewSettingsEnabled
+    (state) => state.view.viewSettingsEnabled,
   );
 
   return (
@@ -29,7 +29,7 @@ export function ViewSettingsToggle() {
 export function ViewSettings() {
   const dispatch = useDispatch();
   const viewSettingsEnabled = useSelector(
-    (state) => state.view.viewSettingsEnabled
+    (state) => state.view.viewSettingsEnabled,
   );
   const { viewPkg, viewTime, viewPeople, viewPlace, viewViolations } =
     useSelector((state) => state.view);

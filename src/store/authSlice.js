@@ -3,7 +3,7 @@ import { level } from "../helpers/Level";
 
 export const getPermissions = createAsyncThunk(
   "auth/getPermissions",
-  async (client) => await client.getPermissions()
+  async (client) => await client.getPermissions(),
 );
 
 export const authSlice = createSlice({

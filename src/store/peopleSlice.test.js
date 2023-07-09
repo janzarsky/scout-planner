@@ -28,8 +28,8 @@ test("delete person", () => {
   expect(
     reducer(
       { people: [testPerson1, testPerson2] },
-      deletePerson(testPerson1._id)
-    )
+      deletePerson(testPerson1._id),
+    ),
   ).toEqual({
     people: [testPerson2],
   });
@@ -40,8 +40,8 @@ test("update person", () => {
   expect(
     reducer(
       { people: [testPerson1, testPerson2] },
-      updatePerson(updatedPerson1)
-    )
+      updatePerson(updatedPerson1),
+    ),
   ).toEqual({
     people: [testPerson2, updatedPerson1],
   });

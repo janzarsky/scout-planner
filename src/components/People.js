@@ -35,7 +35,7 @@ export default function People() {
         })
         .then(
           (resp) => dispatch(updatePerson(resp)),
-          (e) => dispatch(addError(e.message))
+          (e) => dispatch(addError(e.message)),
         );
       setEditKey(undefined);
     } else {
@@ -45,7 +45,7 @@ export default function People() {
         })
         .then(
           (resp) => dispatch(addPerson(resp)),
-          (e) => dispatch(addError(e.message))
+          (e) => dispatch(addError(e.message)),
         );
     }
   }
@@ -90,17 +90,17 @@ export default function People() {
                     setEditKey(person._id);
                     setEditedName(person.name);
                     setAbsence(
-                      formatAbsence(person.absence ? person.absence : [])
+                      formatAbsence(person.absence ? person.absence : []),
                     );
                   }}
                   deletePerson={() =>
                     client.deletePerson(person._id).then(
                       () => dispatch(deletePerson(person._id)),
-                      (e) => dispatch(addError(e.message))
+                      (e) => dispatch(addError(e.message)),
                     )
                   }
                 />
-              )
+              ),
             )}
           <EditedPerson name={newName} setName={setNewName} isNew={true} />
         </tbody>
@@ -123,8 +123,8 @@ function Person({ name, absence, deletePerson, editPerson }) {
                 .map(
                   (entry) =>
                     `od ${formatDateTime(entry.begin)} do ${formatDateTime(
-                      entry.end
-                    )}`
+                      entry.end,
+                    )}`,
                 )
                 .join(", ")
             : "celou dobu"}
@@ -198,7 +198,8 @@ function EditedPerson({
 function formatAbsence(absence) {
   return absence
     .map(
-      (entry) => `${formatDateTime(entry.begin)} - ${formatDateTime(entry.end)}`
+      (entry) =>
+        `${formatDateTime(entry.begin)} - ${formatDateTime(entry.end)}`,
     )
     .join(", ");
 }

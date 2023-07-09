@@ -39,27 +39,27 @@ class FirestoreClient {
   async getPermissions() {
     try {
       const publicLevel = await getDoc(
-        doc(this.db, `timetables/${this.table}`)
+        doc(this.db, `timetables/${this.table}`),
       ).then(
         (table) =>
           table.exists() && table.data().publicLevel !== undefined
             ? table.data().publicLevel
             : level.ADMIN,
-        () => level.NONE
+        () => level.NONE,
       );
 
       if (this.auth.currentUser) {
         const userLevel = await getDoc(
           doc(
             this.db,
-            `timetables/${this.table}/users/${this.auth.currentUser.email}`
-          )
+            `timetables/${this.table}/users/${this.auth.currentUser.email}`,
+          ),
         ).then(
           (user) =>
             user.exists() && user.data().level !== undefined
               ? user.data().level
               : level.NONE,
-          () => level.NONE
+          () => level.NONE,
         );
 
         return { level: userLevel > publicLevel ? userLevel : publicLevel };
@@ -108,7 +108,7 @@ class FirestoreClient {
         table.exists() && table.data().publicLevel
           ? table.data().publicLevel
           : level.ADMIN,
-      () => level.NONE
+      () => level.NONE,
     );
   }
 
@@ -135,7 +135,7 @@ class FirestoreClient {
   async get(coll, id) {
     try {
       const snapshot = await getDoc(
-        doc(this.db, `timetables/${this.table}/${coll}/${id}`)
+        doc(this.db, `timetables/${this.table}/${coll}/${id}`),
       );
       return { ...snapshot.data(), _id: snapshot.id };
     } catch (e) {
@@ -160,7 +160,7 @@ class FirestoreClient {
     try {
       const docRef = await addDoc(
         collection(this.db, `timetables/${this.table}/${coll}`),
-        data
+        data,
       );
 
       return { ...data, _id: docRef.id };
@@ -173,7 +173,7 @@ class FirestoreClient {
     try {
       await setDoc(
         doc(this.db, `timetables/${this.table}/${coll}/${data._id}`),
-        data
+        data,
       );
 
       return data;

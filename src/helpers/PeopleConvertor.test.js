@@ -41,7 +41,7 @@ describe("convertProgramPeople()", () => {
     const person1 = { _id: "person1", name: "Person 1" };
     const programPeople = [{ person: "person1" }];
     expect(convertProgramPeople(programPeople, [person1])).toEqual(
-      programPeople
+      programPeople,
     );
   });
 
@@ -59,8 +59,8 @@ describe("convertProgramPeople()", () => {
         [
           { _id: "person1", name: "Person 1" },
           { _id: "person2", name: "Person 2" },
-        ]
-      )
+        ],
+      ),
     ).toEqual([{ person: "person1" }, { person: "person2" }]);
   });
 
@@ -105,7 +105,7 @@ describe("replaceLegacyPeopleInPrograms()", () => {
       people: [{ person: "person1" }, "Person 2"],
     };
     expect(
-      replaceLegacyPeopleInPrograms([program1], [person1, person2])
+      replaceLegacyPeopleInPrograms([program1], [person1, person2]),
     ).toEqual([
       {
         ...program1,
