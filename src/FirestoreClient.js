@@ -71,18 +71,6 @@ class FirestoreClient {
     }
   }
 
-  async updateTimetable(data) {
-    try {
-      const timetableDoc = doc(this.db, `timetables/${this.table}`);
-      const snapshot = await getDoc(timetableDoc);
-
-      if (snapshot.exists()) await updateDoc(timetableDoc, data);
-      else await setDoc(timetableDoc, data);
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  }
-
   async getPublicLevel() {
     return await getDoc(doc(this.db, `timetables/${this.table}`)).then(
       (table) =>
@@ -117,6 +105,18 @@ class FirestoreClient {
     try {
       const snapshot = await getDoc(doc(this.db, `timetables/${this.table}`));
       return snapshot.data();
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async updateTimetable(data) {
+    try {
+      const timetableDoc = doc(this.db, `timetables/${this.table}`);
+      const snapshot = await getDoc(timetableDoc);
+
+      if (snapshot.exists()) await updateDoc(timetableDoc, data);
+      else await setDoc(timetableDoc, data);
     } catch (e) {
       throw new Error(e.message);
     }
