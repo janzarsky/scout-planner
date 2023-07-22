@@ -6,16 +6,16 @@ automatic_scaling:
   max_idle_instances: 1
 handlers:
   - url: /static
-    static_dir: build/static
+    static_dir: dist/static
     redirect_http_response_code: 301
     secure: always
   - url: /(.*\..+)$
-    static_files: build/\1
-    upload: build/(.*\..+)$
+    static_files: dist/\1
+    upload: dist/(.*\..+)$
     redirect_http_response_code: 301
     secure: always
   - url: /.*
-    static_files: build/index.html
-    upload: build/index.html
+    static_files: dist/index.html
+    upload: dist/index.html
     redirect_http_response_code: 301
     secure: always

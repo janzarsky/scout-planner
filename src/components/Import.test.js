@@ -16,21 +16,21 @@ const emptyData = {
 
 beforeEach(() => {
   const mockAddingFunction = (prefix) =>
-    jest
+    vi
       .fn()
       .mockImplementationOnce(async (a) => ({ ...a, _id: `${prefix}1_new` }))
       .mockImplementationOnce(async (a) => ({ ...a, _id: `${prefix}2_new` }));
 
   client = {
-    updateTimetable: jest.fn(),
+    updateTimetable: vi.fn(),
     addProgram: mockAddingFunction("program"),
     addPackage: mockAddingFunction("pkg"),
     addGroup: mockAddingFunction("group"),
     addRange: mockAddingFunction("range"),
     addPerson: mockAddingFunction("person"),
     addUser: mockAddingFunction("user"),
-    updateUser: jest.fn().mockImplementation(async (a) => a),
-    setPublicLevel: jest.fn().mockImplementation(async (a) => a),
+    updateUser: vi.fn().mockImplementation(async (a) => a),
+    setPublicLevel: vi.fn().mockImplementation(async (a) => a),
   };
 });
 
