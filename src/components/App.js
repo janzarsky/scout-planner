@@ -273,6 +273,7 @@ export default function App() {
         />
         <Route path="settings" element={<Settings />} />
       </Routes>
+      <PrintCss />
     </div>
   );
 }
@@ -451,6 +452,13 @@ function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
       )}
     </>
   );
+}
+
+function PrintCss() {
+  const width = 800;
+  const height = 1108;
+
+  return <style>{`@page { size: ${width}mm ${height}mm; }`}</style>;
 }
 
 export const testing = {

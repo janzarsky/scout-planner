@@ -22,7 +22,7 @@ p {
 }
 
 .control-panel {
-  margin-bottom: 4px;
+  margin-bottom: 0.25rem;
   font-weight: 400;
   padding: 0;
 }
@@ -32,7 +32,7 @@ p {
 }
 .control-panel .nav-link {
   padding: 0.5rem;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   color: var(--bs-body-color);
 }
 .control-panel .nav-link.active {
@@ -57,32 +57,32 @@ p {
   font-weight: 400;
 }
 .timeheader {
-  padding: 2px 6px;
+  padding: 0.125rem 0.375rem;
   grid-row-start: 1;
   position: sticky;
   top: 0;
-  margin: 0 2px 2px 2px;
-  border-radius: 0 0 4px 4px;
+  margin: 0 0.125rem 0.125rem 0.125rem;
+  border-radius: 0 0 0.25rem 0.25rem;
 }
 .timeheader-minutes {
   color: #78909C;
 }
 .dateheader {
-  padding: 2px 6px;
+  padding: 0.125rem 0.375rem;
   grid-column-start: 1;
   display: flex;
   align-items: center;
-  margin: 2px 0 2px 0;
+  margin: 0.125rem 0 0.125rem 0;
   min-height: 5rem;
   text-align: right;
 }
 .groupheader {
-  padding: 0 4px 0 0;
+  padding: 0 0.25rem 0 0;
   grid-column-start: 2;
   display: flex;
   align-items: center;
-  margin: 2px 2px 2px 0;
-  border-radius: 0 4px 4px 0;
+  margin: 0.125rem 0.125rem 0.125rem 0;
+  border-radius: 0 0.25rem 0.25rem 0;
   font-size: 0.8rem;
   text-align: right;
 }
@@ -90,7 +90,7 @@ p {
 .tray-wrapper {
   display: grid;
   background-color: #fff;
-  padding-top: 2px;
+  padding-top: 0.125rem;
   z-index: 200;
 }
 .tray-wrapper.pinned {
@@ -103,11 +103,11 @@ p {
   grid-column-start: 3;
 }
 .tray-header {
-  padding: 2px 6px;
-  margin: 2px 2px 2px 0;
+  padding: 0.125rem 0.375rem;
+  margin: 0.125rem 0.125rem 0.125rem 0;
   grid-column-start: 1;
   grid-column-end: 3;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 0.25rem 0.25rem 0;
   background-color: #cfd8dc;
   display: flex;
   flex-direction: column;
@@ -116,12 +116,12 @@ p {
   text-align: center;
 }
 .tray-header-icon {
-  margin: 4px 0;
+  margin: 0.25rem 0;
 }
 .tray-add-program {
   display: flex;
-  padding: 5px;
-  margin: 2px;
+  padding: 0.25rem;
+  margin: 0.125rem;
   grid-column-start: 1;
   grid-row-start: 1;
   grid-column-end: 5;
@@ -129,7 +129,7 @@ p {
   justify-content: center;
   background-color: #dcedc8;
   border: none;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   min-height: 2rem;
 }
 .tray.drag-over .tray-add-program {
@@ -142,7 +142,7 @@ p {
 
 .program-wrapper {
   flex: 1 1 100%;
-  padding: 2px;
+  padding: 0.125rem;
   text-align: center;
   display: flex;
   align-items: stretch;
@@ -161,8 +161,8 @@ p {
   min-height: 0;
   display: flex;
   align-items: center;
-  padding: 5px;
-  border-radius: 4px;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
   background-color: #81d4fa;
   line-height: 1.2;
 }
@@ -170,9 +170,9 @@ p {
   background-image: repeating-linear-gradient(
     135deg,
     rgba(0, 0, 0, 0),
-    rgba(0, 0, 0, 0) 20px,
-    rgba(66, 66, 66, 0.15) 20px,
-    rgba(66, 66, 66, 0.15) 40px
+    rgba(0, 0, 0, 0) 1.25rem,
+    rgba(66, 66, 66, 0.15) 1.25rem,
+    rgba(66, 66, 66, 0.15) 2.5rem
   );
 }
 .program.highlighted {
@@ -269,7 +269,7 @@ p {
   height: 2rem;
   position: absolute;
   line-height: 1;
-  padding: 6px;
+  padding: 0.375rem;
   cursor: pointer;
   color: #455a64;
 }
@@ -320,7 +320,7 @@ p {
 }
 
 .droppable {
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 .droppable:hover {
   background-color: #dcedc8;
@@ -333,14 +333,14 @@ p {
 }
 
 .timeindicator {
-  border-left: 3px solid #b71c1c;
+  border-left: 0.1875rem solid #b71c1c;
   z-index: 999;
 }
 
 .color-sample {
   display: inline-block;
   width: 1.5em;
-  margin-right: 5px;
+  margin-right: 0.3125rem;
 }
 
 .jumbotron .container {
@@ -354,8 +354,7 @@ p {
 }
 
 @page {
-    size: 800mm 1108mm;
-    margin: 10mm;
+  margin: 10mm;
 }
 
 @media print {
