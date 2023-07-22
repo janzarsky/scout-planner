@@ -354,8 +354,7 @@ p {
 }
 
 @page {
-    size: 800mm 1108mm;
-    margin: 10mm;
+  margin: 10mm;
 }
 
 @media print {
