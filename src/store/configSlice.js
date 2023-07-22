@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import config from "../config.json";
 
 var localConfig = {};
 
@@ -9,7 +10,7 @@ try {
 export const configSlice = createSlice({
   name: "config",
   initialState: {
-    ...require("../config.json"),
+    ...config,
     ...localConfig,
   },
 });

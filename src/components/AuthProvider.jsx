@@ -14,8 +14,7 @@ import {
   useEffect,
   useState,
 } from "react";
-
-const config = require("../config.json");
+import config from "../config.json"
 
 const AuthContext = createContext(null);
 
