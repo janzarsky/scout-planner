@@ -9,12 +9,12 @@ describe("migratePeople()", () => {
 
   beforeEach(() => {
     client = {
-      addPerson: jest
+      addPerson: vi
         .fn()
         .mockImplementationOnce(async (a) => ({ ...a, _id: `person1_new` }))
         .mockImplementationOnce(async (a) => ({ ...a, _id: `person2_new` })),
     };
-    dispatch = jest.fn();
+    dispatch = vi.fn();
   });
 
   it("updates migration state and adds new people", () => {
@@ -83,12 +83,12 @@ describe("addMissingPeople()", () => {
 
   beforeEach(() => {
     client = {
-      addPerson: jest
+      addPerson: vi
         .fn()
         .mockImplementationOnce(async (a) => ({ ...a, _id: `person1_new` }))
         .mockImplementationOnce(async (a) => ({ ...a, _id: `person2_new` })),
     };
-    dispatch = jest.fn();
+    dispatch = vi.fn();
   });
 
   it("returns empty promise when there are no people", () =>
@@ -212,9 +212,9 @@ describe("migratePrograms()", () => {
 
   beforeEach(() => {
     client = {
-      updateProgram: jest.fn().mockImplementation(async (a) => a),
+      updateProgram: vi.fn().mockImplementation(async (a) => a),
     };
-    dispatch = jest.fn();
+    dispatch = vi.fn();
   });
 
   it("updates migration state and updates two programs", async () => {
@@ -353,9 +353,9 @@ describe("updatePrograms()", () => {
 
   beforeEach(() => {
     client = {
-      updateProgram: jest.fn().mockImplementation(async (a) => a),
+      updateProgram: vi.fn().mockImplementation(async (a) => a),
     };
-    dispatch = jest.fn();
+    dispatch = vi.fn();
   });
 
   it("returns empty promise when there are no programs", () =>
