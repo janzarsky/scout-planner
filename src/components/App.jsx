@@ -463,7 +463,7 @@ function PrintCss({ preset = "default" }) {
   return (
     <style>
       {`@page{ size: ${presets[preset].pageSize}; margin: ${presets[preset].margin}; }` +
-        `@media print{ *{ font-size: ${presets[preset].fontSize}; }}`}
+        `@media print{ html{ font-size: ${presets[preset].fontSize}; }}`}
     </style>
   );
 }
