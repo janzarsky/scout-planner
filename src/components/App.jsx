@@ -456,7 +456,11 @@ function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
 
 function PrintCss({ preset = "default" }) {
   const presets = {
-    a4: { pageSize: "A4", fontSize: "6pt", margin: "6mm" },
+    a4: { pageSize: "a4", fontSize: "6pt", margin: "6mm" },
+    a4landscape: { pageSize: "a4 landscape", fontSize: "6pt", margin: "6mm" },
+    a3: { pageSize: "a3", fontSize: "9pt", margin: "10mm" },
+    a3landscape: { pageSize: "a3 landscape", fontSize: "9pt", margin: "10mm" },
+    a2: { pageSize: "420mm 594mm", fontSize: "11pt", margin: "10mm" },
     default: { pageSize: "800mm 1108mm", fontSize: "12pt", margin: "10mm" },
   };
 
