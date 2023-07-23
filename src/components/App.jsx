@@ -454,11 +454,18 @@ function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
   );
 }
 
-function PrintCss() {
-  const width = 800;
-  const height = 1108;
+function PrintCss({ preset = "default" }) {
+  const presets = {
+    a4: { pageSize: "A4", fontSize: "9pt" },
+    default: { pageSize: "800mm 1108mm", fontSize: "12pt" },
+  };
 
-  return <style>{`@page { size: ${width}mm ${height}mm; }`}</style>;
+  return (
+    <style>
+      {`@page{ size: ${presets[preset].pageSize}; }` +
+        `@media print{ *{ font-size: ${presets[preset].fontSize}; }}`}
+    </style>
+  );
 }
 
 export const testing = {
