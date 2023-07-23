@@ -456,13 +456,13 @@ function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
 
 function PrintCss({ preset = "default" }) {
   const presets = {
-    a4: { pageSize: "A4", fontSize: "9pt" },
-    default: { pageSize: "800mm 1108mm", fontSize: "12pt" },
+    a4: { pageSize: "A4", fontSize: "6pt", margin: "6mm" },
+    default: { pageSize: "800mm 1108mm", fontSize: "12pt", margin: "10mm" },
   };
 
   return (
     <style>
-      {`@page{ size: ${presets[preset].pageSize}; }` +
+      {`@page{ size: ${presets[preset].pageSize}; margin: ${presets[preset].margin}; }` +
         `@media print{ *{ font-size: ${presets[preset].fontSize}; }}`}
     </style>
   );
