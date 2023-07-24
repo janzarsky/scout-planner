@@ -3,8 +3,14 @@
 import PrintOptions from "../../src/components/PrintOptions";
 
 describe("Print options", () => {
-  it("default", () => {
-    cy.mount(<PrintOptions />);
+  it("prints A4 version", () => {
+    const callback = cy.stub();
+
+    cy.mount(<PrintOptions printCallback={callback} />);
+
     cy.contains("Tisk");
+    cy.contains("A4").click();
+
+    expect(callback).to.have.been.calledOnceWith("a4");
   });
 });
