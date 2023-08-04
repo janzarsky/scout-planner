@@ -110,13 +110,20 @@ export default function Program({ program, rect, violations }) {
   );
 }
 
-function ProgramBody({ program, pkg, violations, narrow }) {
+function getHighlightStatus(pkg) {
   const { highlightingEnabled, highlightedPackages } = useSelector(
     (state) => state.view,
   );
+
   const highlighted =
-    highlightingEnabled && highlightedPackages.indexOf(program.pkg) !== -1;
+    highlightingEnabled && highlightedPackages.indexOf(pkg) !== -1;
   const faded = highlightingEnabled && !highlighted;
+
+  return { highlighted, faded };
+}
+
+function ProgramBody({ program, pkg, violations, narrow }) {
+  const { highlighted, faded } = getHighlightStatus(program.pkg);
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   let rangeValue =
