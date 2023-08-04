@@ -219,6 +219,12 @@ describe("Program", () => {
       store.dispatch(addPackage(pkg2));
     });
 
+    it("is normal when highlighting disabled", () => {
+      mountProgram(prog);
+      cy.get(".program").should("not.have.class", "faded");
+      cy.get(".program").should("not.have.class", "highlighted");
+    });
+
     it("is faded when having no package", () => {
       store.dispatch(toggleHighlighting());
       store.dispatch(toggleHighlightedPackage(pkg1._id));
