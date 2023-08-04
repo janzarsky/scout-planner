@@ -8,8 +8,10 @@ import { testing } from "../../src/store/authSlice";
 import { addPackage } from "../../src/store/packagesSlice";
 import { addPerson, setLegacyPeople } from "../../src/store/peopleSlice";
 import {
+  toggleActivePerson,
   toggleHighlightedPackage,
   toggleHighlighting,
+  togglePeopleEnabled,
   toggleViewPeople,
   toggleViewPkg,
   toggleViewTime,
@@ -254,6 +256,102 @@ describe("Program", () => {
       mountProgram({ ...prog, pkg: pkg1._id });
 
       cy.get(".program").should("not.have.class", "highlighted");
+    });
+  });
+
+  describe("People highlighting", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    const person2 = { _id: "person2", name: "Person 2" };
+
+    beforeEach(() => {
+      store.dispatch(addPerson(person1));
+      store.dispatch(addPerson(person2));
+    });
+
+    it("is normal when highlighting disabled", () => {
+      mountProgram(prog);
+      cy.get(".program").should("not.have.class", "faded");
+      cy.get(".program").should("not.have.class", "highlighted");
+    });
+
+    it("is faded when having no person", () => {
+      store.dispatch(togglePeopleEnabled());
+      mountProgram({ ...prog, people: [] });
+
+      cy.get(".program").should("have.class", "faded");
+    });
+
+    it("is faded when having person that is not highlighted", () => {
+      store.dispatch(togglePeopleEnabled());
+      store.dispatch(toggleActivePerson(person1._id));
+      mountProgram({ ...prog, people: [{ person: person2._id }] });
+
+      cy.get(".program").should("have.class", "faded");
+    });
+
+    it("is highlighted when having person that is highlighted", () => {
+      store.dispatch(togglePeopleEnabled());
+      store.dispatch(toggleActivePerson(person1._id));
+      mountProgram({
+        ...prog,
+        people: [{ person: person1._id }, { person: person2._id }],
+      });
+
+      cy.get(".program").should("have.class", "highlighted");
+    });
+  });
+
+  describe("People and package highlighting", () => {
+    const person1 = { _id: "person1", name: "Person 1" };
+    const person2 = { _id: "person2", name: "Person 2" };
+    const pkg1 = { _id: "pkg1", name: "Package 1" };
+    const pkg2 = { _id: "pkg2", name: "Package 2" };
+
+    beforeEach(() => {
+      store.dispatch(addPackage(pkg1));
+      store.dispatch(addPackage(pkg2));
+      store.dispatch(addPerson(person1));
+      store.dispatch(addPerson(person2));
+      store.dispatch(togglePeopleEnabled());
+      store.dispatch(toggleHighlighting());
+      store.dispatch(toggleHighlightedPackage(pkg1._id));
+      store.dispatch(toggleActivePerson(person1._id));
+    });
+
+    it("is faded when not having people and package", () => {
+      mountProgram({
+        ...prog,
+        people: [{ person: person2._id }],
+        pkg: pkg2._id,
+      });
+      cy.get(".program").should("have.class", "faded");
+    });
+
+    it("is highlighted when having package but not people", () => {
+      mountProgram({
+        ...prog,
+        people: [{ person: person2._id }],
+        pkg: pkg1._id,
+      });
+      cy.get(".program").should("have.class", "highlighted");
+    });
+
+    it("is highlighted when having people but not package", () => {
+      mountProgram({
+        ...prog,
+        people: [{ person: person1._id }],
+        pkg: pkg2._id,
+      });
+      cy.get(".program").should("have.class", "highlighted");
+    });
+
+    it("is highlighted when having both people and package", () => {
+      mountProgram({
+        ...prog,
+        people: [{ person: person1._id }],
+        pkg: pkg1._id,
+      });
+      cy.get(".program").should("have.class", "highlighted");
     });
   });
 });
