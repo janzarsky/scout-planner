@@ -8,6 +8,8 @@ import { testing } from "../../src/store/authSlice";
 import { addPackage } from "../../src/store/packagesSlice";
 import { addPerson, setLegacyPeople } from "../../src/store/peopleSlice";
 import {
+  toggleHighlightedPackage,
+  toggleHighlighting,
   toggleViewPeople,
   toggleViewPkg,
   toggleViewTime,
@@ -205,6 +207,47 @@ describe("Program", () => {
 
       cy.get(".program-move").should("not.exist");
       cy.get(".program-clone").should("not.exist");
+    });
+  });
+
+  describe("Package highlighting", () => {
+    const pkg1 = { _id: "pkg1", name: "Package 1" };
+    const pkg2 = { _id: "pkg2", name: "Package 2" };
+
+    beforeEach(() => {
+      store.dispatch(addPackage(pkg1));
+      store.dispatch(addPackage(pkg2));
+    });
+
+    it("is faded when having no package", () => {
+      store.dispatch(toggleHighlighting());
+      store.dispatch(toggleHighlightedPackage(pkg1._id));
+      mountProgram({ ...prog, pkg: null });
+
+      cy.get(".program").should("have.class", "faded");
+    });
+
+    it("is faded when having package that is not highlighted", () => {
+      store.dispatch(toggleHighlighting());
+      store.dispatch(toggleHighlightedPackage(pkg1._id));
+      mountProgram({ ...prog, pkg: pkg2._id });
+
+      cy.get(".program").should("have.class", "faded");
+    });
+
+    it("is highlighted when having package that is highlighted", () => {
+      store.dispatch(toggleHighlighting());
+      store.dispatch(toggleHighlightedPackage(pkg1._id));
+      mountProgram({ ...prog, pkg: pkg1._id });
+
+      cy.get(".program").should("have.class", "highlighted");
+    });
+
+    it("is faded when having package that is highlighted but the highlighting is turned off", () => {
+      store.dispatch(toggleHighlightedPackage(pkg1._id));
+      mountProgram({ ...prog, pkg: pkg1._id });
+
+      cy.get(".program").should("not.have.class", "highlighted");
     });
   });
 });
