@@ -111,13 +111,11 @@ export default function Program({ program, rect, violations }) {
 }
 
 function getHighlightStatus(pkg) {
-  const { highlightingEnabled, highlightedPackages } = useSelector(
-    (state) => state.view,
-  );
+  const { highlightingEnabled: pkgsEnabled, highlightedPackages: activePkgs } =
+    useSelector((state) => state.view);
 
-  const highlighted =
-    highlightingEnabled && highlightedPackages.indexOf(pkg) !== -1;
-  const faded = highlightingEnabled && !highlighted;
+  const highlighted = pkgsEnabled && activePkgs.indexOf(pkg) !== -1;
+  const faded = pkgsEnabled && !activePkgs;
 
   return { highlighted, faded };
 }
