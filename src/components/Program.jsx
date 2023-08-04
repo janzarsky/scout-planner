@@ -11,6 +11,7 @@ import { addError } from "../store/errorsSlice";
 import { addProgram, updateProgram } from "../store/programsSlice";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { arraysIntersect } from "../helpers/Sorting";
 
 export default function Program({ program, rect, violations }) {
   const { packages } = useSelector((state) => state.packages);
@@ -110,13 +111,33 @@ export default function Program({ program, rect, violations }) {
   );
 }
 
+function getHighlightStatus(pkg, people) {
+  const {
+    highlightingEnabled: pkgsEnabled,
+    highlightedPackages: activePkgs,
+    peopleEnabled,
+    activePeople,
+  } = useSelector((state) => state.view);
+
+  const pkgHighlight = pkgsEnabled && activePkgs.indexOf(pkg) !== -1;
+
+  const peopleHighlight =
+    peopleEnabled &&
+    people.length > 0 &&
+    activePeople.length > 0 &&
+    arraysIntersect(people, activePeople);
+
+  return {
+    highlighted: pkgHighlight || peopleHighlight,
+    faded: !pkgHighlight && !peopleHighlight && (pkgsEnabled || peopleEnabled),
+  };
+}
+
 function ProgramBody({ program, pkg, violations, narrow }) {
-  const { highlightingEnabled, highlightedPackages } = useSelector(
-    (state) => state.view,
+  const { highlighted, faded } = getHighlightStatus(
+    program.pkg,
+    program.people.map((attendance) => attendance.person),
   );
-  const highlighted =
-    highlightingEnabled && highlightedPackages.indexOf(program.pkg) !== -1;
-  const faded = highlightingEnabled && !highlighted;
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   let rangeValue =

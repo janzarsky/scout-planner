@@ -14,7 +14,7 @@ export const viewSlice = createSlice({
     rangesEnabled: false,
     activeRange: undefined,
     peopleEnabled: false,
-    activePerson: null,
+    activePeople: [],
   },
   reducers: {
     toggleHighlighting(state) {
@@ -56,8 +56,14 @@ export const viewSlice = createSlice({
     togglePeopleEnabled(state) {
       state.peopleEnabled = !state.peopleEnabled;
     },
-    setActivePerson(state, action) {
-      state.activePerson = action.payload;
+    toggleActivePerson(state, action) {
+      if (state.activePeople.indexOf(action.payload) === -1)
+        state.activePeople.push(action.payload);
+      else
+        state.activePeople.splice(
+          state.activePeople.indexOf(action.payload),
+          1,
+        );
     },
   },
 });
@@ -74,7 +80,7 @@ export const {
   toggleRangesEnabled,
   setActiveRange,
   togglePeopleEnabled,
-  setActivePerson,
+  toggleActivePerson,
 } = viewSlice.actions;
 
 export default viewSlice.reducer;
