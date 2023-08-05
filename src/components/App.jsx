@@ -42,6 +42,7 @@ import {
 import { migratePeople, migratePrograms } from "../helpers/PeopleMigration";
 import { useAuth } from "./AuthProvider";
 import { NavLink, Route, Routes } from "react-router-dom";
+import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -201,6 +202,8 @@ export default function App() {
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
 
+  const peopleFilter = useSelector((state) => state.config.peopleFilter);
+
   return (
     <div className="App">
       <Notifications />
@@ -216,6 +219,7 @@ export default function App() {
             element={
               <>
                 {userLevel >= level.VIEW && <PackageFilter />}
+                {peopleFilter && userLevel >= level.VIEW && <PeopleFilter />}
                 {userLevel >= level.VIEW && <ViewSettings />}
                 {userLevel >= level.VIEW && <RangesSettings />}
               </>
@@ -300,6 +304,7 @@ function Notifications() {
 
 function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
+  const peopleFilter = useSelector((state) => state.config.peopleFilter);
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
@@ -367,6 +372,9 @@ function NavBar({ rulesSatisfied }) {
               element={
                 <>
                   {userLevel >= level.VIEW && <PackageFilterToggle />}
+                  {peopleFilter && userLevel >= level.VIEW && (
+                    <PeopleFilterToggle />
+                  )}
                   {userLevel >= level.VIEW && <ViewSettingsToggle />}
                   {userLevel >= level.VIEW && <RangesSettingsToggle />}
                 </>
