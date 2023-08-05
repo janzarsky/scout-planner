@@ -25,7 +25,7 @@ import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import { getPermissions, setAuthenticated } from "../store/authSlice";
-import { Filters, FiltersToggle } from "./Filters";
+import { PackageFilter, PackageFilterToggle } from "./PackageFilter";
 import { ViewSettings, ViewSettingsToggle } from "./ViewSettings";
 import { RangesSettings, RangesSettingsToggle } from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
@@ -215,7 +215,7 @@ export default function App() {
             index
             element={
               <>
-                {userLevel >= level.VIEW && <Filters />}
+                {userLevel >= level.VIEW && <PackageFilter />}
                 {userLevel >= level.VIEW && <ViewSettings />}
                 {userLevel >= level.VIEW && <RangesSettings />}
               </>
@@ -366,7 +366,7 @@ function NavBar({ rulesSatisfied }) {
               index
               element={
                 <>
-                  {userLevel >= level.VIEW && <FiltersToggle />}
+                  {userLevel >= level.VIEW && <PackageFilterToggle />}
                   {userLevel >= level.VIEW && <ViewSettingsToggle />}
                   {userLevel >= level.VIEW && <RangesSettingsToggle />}
                 </>

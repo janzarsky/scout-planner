@@ -7,7 +7,7 @@ import {
   toggleHighlighting,
 } from "../store/viewSlice";
 
-export function FiltersToggle() {
+export function PackageFilterToggle() {
   const dispatch = useDispatch();
   const highlightingEnabled = useSelector(
     (state) => state.view.highlightingEnabled,
@@ -23,7 +23,7 @@ export function FiltersToggle() {
   );
 }
 
-export function Filters() {
+export function PackageFilter() {
   const dispatch = useDispatch();
   const packages = useSelector((state) => state.packages.packages);
   const { highlightedPackages, highlightingEnabled } = useSelector(

@@ -4,7 +4,6 @@ import { testing } from "../../src/components/App";
 import { testing as authTesting } from "../../src/store/authSlice";
 import { getStore } from "../../src/store";
 import { level } from "../../src/helpers/Level";
-import { Filters } from "../../src/components/Filters";
 import {
   setActiveRange,
   toggleHighlightedPackage,
@@ -16,6 +15,7 @@ import { addPackage } from "../../src/store/packagesSlice";
 import { ViewSettings } from "../../src/components/ViewSettings";
 import { RangesSettings } from "../../src/components/RangesSettings";
 import { addRange } from "../../src/store/rangesSlice";
+import { PackageFilter } from "../../src/components/PackageFilter";
 
 describe("Navigation Bar", () => {
   let store;
@@ -178,7 +178,7 @@ describe("Filters", () => {
   let store;
 
   function mountFilters() {
-    cy.mount(<Filters />, { reduxStore: store, router: true });
+    cy.mount(<PackageFilter />, { reduxStore: store, router: true });
   }
 
   beforeEach(() => {
