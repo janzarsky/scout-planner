@@ -1,11 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import config from "../config.json";
-
-var localConfig = {};
-
-try {
-  localConfig = require("../config.local.json");
-} catch {}
+import localConfig from "../config.local.json";
 
 export const configSlice = createSlice({
   name: "config",
