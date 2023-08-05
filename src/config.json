@@ -5,5 +5,5 @@
   "projectId": "scout-planner-343913",
   "peopleMigration": true,
   "attendance": true,
-  "peopleFilter": false
+  "peopleFilter": true
 }
