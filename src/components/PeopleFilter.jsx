@@ -13,7 +13,7 @@ export function PeopleFilterToggle() {
       className={peopleEnabled ? "dark" : ""}
       onClick={() => dispatch(togglePeopleEnabled())}
     >
-      <i className="fa fa-user-o" />
+      <i className="fa fa-user" />
     </Nav.Link>
   );
 }
