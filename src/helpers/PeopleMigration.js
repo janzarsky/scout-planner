@@ -13,20 +13,6 @@ export async function migratePeople(
   dispatch(setPeopleMigrationState("finishedPeople"));
 }
 
-async function addMissingPeople(peopleToAdd, client, dispatch) {
-  return await Promise.all(
-    peopleToAdd.map((person) =>
-      client.addPerson(person).then(
-        (resp) => {
-          dispatch(addPerson(resp));
-          return resp._id;
-        },
-        (e) => dispatch(addError(e.message)),
-      ),
-    ),
-  );
-}
-
 export async function migratePrograms(
   programs,
   people,
@@ -93,7 +79,6 @@ async function updatePrograms(programs, client, dispatch) {
 }
 
 export const testing = {
-  addMissingPeople,
   getProgramsToBeUpdated,
   updatePrograms,
 };

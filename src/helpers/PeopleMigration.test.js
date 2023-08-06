@@ -54,58 +54,6 @@ describe("migratePeople()", () => {
   });
 });
 
-describe("addMissingPeople()", () => {
-  var client;
-  var dispatch;
-
-  beforeEach(() => {
-    client = {
-      addPerson: vi
-        .fn()
-        .mockImplementationOnce(async (a) => ({ ...a, _id: `person1_new` }))
-        .mockImplementationOnce(async (a) => ({ ...a, _id: `person2_new` })),
-    };
-    dispatch = vi.fn();
-  });
-
-  it("returns empty promise when there are no people", () =>
-    testing.addMissingPeople([], client, dispatch).then((data) => {
-      expect(data).toEqual([]);
-      expect(dispatch).not.toHaveBeenCalled();
-      expect(client.addPerson).not.toHaveBeenCalled();
-    }));
-
-  it("adds one person", () =>
-    testing
-      .addMissingPeople([{ name: "Person 1" }], client, dispatch)
-      .then((data) => {
-        expect(data).toEqual(["person1_new"]);
-        expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 1" });
-        expect(dispatch).toHaveBeenCalledWith(
-          addPerson({ _id: "person1_new", name: "Person 1" }),
-        );
-      }));
-
-  it("adds two people", () =>
-    testing
-      .addMissingPeople(
-        [{ name: "Person 1" }, { name: "Person 2" }],
-        client,
-        dispatch,
-      )
-      .then((data) => {
-        expect(data).toEqual(["person1_new", "person2_new"]);
-        expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 1" });
-        expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 2" });
-        expect(dispatch).toHaveBeenCalledWith(
-          addPerson({ _id: "person1_new", name: "Person 1" }),
-        );
-        expect(dispatch).toHaveBeenCalledWith(
-          addPerson({ _id: "person2_new", name: "Person 2" }),
-        );
-      }));
-});
-
 describe("migratePrograms()", () => {
   var client;
   var dispatch;
