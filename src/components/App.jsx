@@ -422,23 +422,13 @@ function GoogleLogin() {
 
 function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
-  const peopleMigrationState = useSelector(
-    (state) => state.people.peopleMigrationState,
-  );
 
   return (
     <>
-      {userLevel >= level.VIEW &&
-        dataLoaded &&
-        (peopleMigrationState === "finishedPrograms" ||
-          peopleMigrationState === "failedPrograms" ||
-          peopleMigrationState === "failedPeople") && (
-          <Timetable violations={violationsPerProgram} />
-        )}
-      {(!dataLoaded ||
-        (peopleMigrationState !== "finishedPrograms" &&
-          peopleMigrationState !== "failedPrograms" &&
-          peopleMigrationState !== "failedPeople")) && (
+      {userLevel >= level.VIEW && dataLoaded && (
+        <Timetable violations={violationsPerProgram} />
+      )}
+      {!dataLoaded && (
         <Container fluid>
           <Alert variant="primary">
             <i className="fa fa-spinner fa-pulse" />
