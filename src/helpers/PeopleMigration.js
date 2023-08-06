@@ -27,16 +27,6 @@ async function addMissingPeople(peopleToAdd, client, dispatch) {
   );
 }
 
-function getLegacyPeople(programs) {
-  return [
-    ...new Set(
-      programs.flatMap((prog) =>
-        prog.people.filter((person) => typeof person === "string"),
-      ),
-    ),
-  ];
-}
-
 function getPeopleToBeAdded(legacyPeople, existingPeople) {
   return legacyPeople
     .filter((person) => !existingPeople.find((p) => p.name === person))
@@ -110,7 +100,6 @@ async function updatePrograms(programs, client, dispatch) {
 
 export const testing = {
   addMissingPeople,
-  getLegacyPeople,
   getPeopleToBeAdded,
   getProgramsToBeUpdated,
   updatePrograms,

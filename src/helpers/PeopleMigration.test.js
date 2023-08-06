@@ -106,57 +106,6 @@ describe("addMissingPeople()", () => {
       }));
 });
 
-describe("getLegacyPeople()", () => {
-  it("returns nothing when there are object people in programs", () => {
-    const prog = {
-      _id: "program1",
-      people: [{ person: "person1" }],
-    };
-    expect(testing.getLegacyPeople([prog])).toEqual([]);
-  });
-
-  it("returns new person when there is string person in a program", () => {
-    const prog = {
-      _id: "program1",
-      people: ["Person 1"],
-    };
-    expect(testing.getLegacyPeople([prog])).toEqual(["Person 1"]);
-  });
-
-  it("returns new people from multiple programs", () => {
-    const prog1 = {
-      _id: "program1",
-      people: ["Person 1", "Person 2"],
-    };
-    const prog2 = {
-      _id: "program2",
-      people: ["Person 3", "Person 4"],
-    };
-    expect(testing.getLegacyPeople([prog1, prog2])).toEqual([
-      "Person 1",
-      "Person 2",
-      "Person 3",
-      "Person 4",
-    ]);
-  });
-
-  it("removes duplicates", () => {
-    const prog1 = {
-      _id: "program1",
-      people: ["Person 1", "Person 2"],
-    };
-    const prog2 = {
-      _id: "program2",
-      people: ["Person 2", "Person 3"],
-    };
-    expect(testing.getLegacyPeople([prog1, prog2])).toEqual([
-      "Person 1",
-      "Person 2",
-      "Person 3",
-    ]);
-  });
-});
-
 describe("getPeopleToBeAdded()", () => {
   it("returns empty array when there are no legacy people", () =>
     expect(testing.getPeopleToBeAdded([], [])).toEqual([]));
