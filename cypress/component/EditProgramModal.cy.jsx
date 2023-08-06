@@ -46,15 +46,14 @@ describe("EditProgramModal", () => {
     store.dispatch(addPerson(bob));
   });
 
-  it("combined people", () => {
+  it("shows attendance", () => {
     const prog1 = {
       _id: "prog1",
-      people: [alice.name, bob.name, "Cecil"],
+      people: [{ person: alice._id }, { person: bob._id }],
     };
     store.dispatch(addProgram(prog1));
     mountModal(prog1._id);
-    cy.get("#Alice").should("be.checked");
-    cy.get("#Bob").should("be.checked");
-    cy.get("#Cecil").should("be.checked");
+    cy.get("#testuseralice").should("be.checked");
+    cy.get("#testuserbob").should("be.checked");
   });
 });
