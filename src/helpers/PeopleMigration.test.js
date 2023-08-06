@@ -106,32 +106,6 @@ describe("addMissingPeople()", () => {
       }));
 });
 
-describe("getPeopleToBeAdded()", () => {
-  it("returns empty array when there are no legacy people", () =>
-    expect(testing.getPeopleToBeAdded([], [])).toEqual([]));
-
-  it("returns new person when there are no existing people", () =>
-    expect(testing.getPeopleToBeAdded(["Person 1"], [])).toEqual([
-      { name: "Person 1" },
-    ]));
-
-  it("returns new person when the person is not in existing people", () =>
-    expect(
-      testing.getPeopleToBeAdded(
-        ["Person 1"],
-        [{ _id: "person2", name: "Person 2" }],
-      ),
-    ).toEqual([{ name: "Person 1" }]));
-
-  it("does not return new person when the person is in existing people", () =>
-    expect(
-      testing.getPeopleToBeAdded(
-        ["Person 1"],
-        [{ _id: "person1", name: "Person 1" }],
-      ),
-    ).toEqual([]));
-});
-
 describe("migratePrograms()", () => {
   var client;
   var dispatch;

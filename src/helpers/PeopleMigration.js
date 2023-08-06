@@ -27,12 +27,6 @@ async function addMissingPeople(peopleToAdd, client, dispatch) {
   );
 }
 
-function getPeopleToBeAdded(legacyPeople, existingPeople) {
-  return legacyPeople
-    .filter((person) => !existingPeople.find((p) => p.name === person))
-    .map((name) => ({ name }));
-}
-
 export async function migratePrograms(
   programs,
   people,
@@ -100,7 +94,6 @@ async function updatePrograms(programs, client, dispatch) {
 
 export const testing = {
   addMissingPeople,
-  getPeopleToBeAdded,
   getProgramsToBeUpdated,
   updatePrograms,
 };
