@@ -1,17 +1,7 @@
 import { addError } from "../store/errorsSlice";
-import { addPerson, setPeopleMigrationState } from "../store/peopleSlice";
+import { setPeopleMigrationState } from "../store/peopleSlice";
 import { updateProgram } from "../store/programsSlice";
 import { level } from "./Level";
-
-export async function migratePeople(
-  programs,
-  people,
-  userLevel,
-  client,
-  dispatch,
-) {
-  dispatch(setPeopleMigrationState("finishedPeople"));
-}
 
 export async function migratePrograms(
   programs,

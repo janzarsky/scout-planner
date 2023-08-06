@@ -1,58 +1,7 @@
 import { addPerson, setPeopleMigrationState } from "../store/peopleSlice";
 import { updateProgram } from "../store/programsSlice";
 import { level } from "./Level";
-import { migratePeople, migratePrograms, testing } from "./PeopleMigration";
-
-describe("migratePeople()", () => {
-  var client;
-  var dispatch;
-
-  beforeEach(() => {
-    client = {
-      addPerson: vi
-        .fn()
-        .mockImplementationOnce(async (a) => ({ ...a, _id: `person1_new` }))
-        .mockImplementationOnce(async (a) => ({ ...a, _id: `person2_new` })),
-    };
-    dispatch = vi.fn();
-  });
-
-  it("just updates the migration state", () => {
-    const prog1 = {
-      _id: "program1",
-      people: ["Person 0", "Person 1", "Person 2"],
-    };
-    const prog2 = {
-      _id: "program2",
-      people: ["Person 2", { person: "person3" }],
-    };
-
-    return migratePeople(
-      [prog1, prog2],
-      [{ _id: "person0", name: "Person 0" }],
-      level.EDIT,
-      client,
-      dispatch,
-    ).then(() => {
-      expect(dispatch).not.toHaveBeenCalledWith(
-        setPeopleMigrationState("pendingPeople"),
-      );
-
-      expect(client.addPerson).not.toHaveBeenCalled();
-
-      expect(dispatch).not.toHaveBeenCalledWith(
-        addPerson({ _id: "person1_new", name: "Person 1" }),
-      );
-      expect(dispatch).not.toHaveBeenCalledWith(
-        addPerson({ _id: "person2_new", name: "Person 2" }),
-      );
-
-      expect(dispatch).toHaveBeenCalledWith(
-        setPeopleMigrationState("finishedPeople"),
-      );
-    });
-  });
-});
+import { migratePrograms, testing } from "./PeopleMigration";
 
 describe("migratePrograms()", () => {
   var client;
