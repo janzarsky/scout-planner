@@ -1,53 +1,7 @@
 import { addPerson, setPeopleMigrationState } from "../store/peopleSlice";
 import { updateProgram } from "../store/programsSlice";
 import { level } from "./Level";
-import { migratePrograms, testing } from "./PeopleMigration";
-
-describe("migratePrograms()", () => {
-  var client;
-  var dispatch;
-
-  beforeEach(() => {
-    client = {
-      updateProgram: vi.fn().mockImplementation(async (a) => a),
-    };
-    dispatch = vi.fn();
-  });
-
-  it("just updates the migration state", async () => {
-    const prog1 = {
-      _id: "program1",
-      people: ["Person 0", "Person 1", "Person 2"],
-    };
-    const prog2 = {
-      _id: "program2",
-      people: ["Person 2", { person: "person3" }],
-    };
-
-    await migratePrograms(
-      [prog1, prog2],
-      [
-        { _id: "person0", name: "Person 0" },
-        { _id: "person1", name: "Person 1" },
-        { _id: "person2", name: "Person 2" },
-        { _id: "person3", name: "Person 3" },
-      ],
-      level.EDIT,
-      client,
-      dispatch,
-    );
-
-    expect(dispatch).not.toHaveBeenCalledWith(
-      setPeopleMigrationState("pendingPrograms"),
-    );
-
-    expect(client.updateProgram).not.toHaveBeenCalled();
-
-    expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("finishedPrograms"),
-    );
-  });
-});
+import { testing } from "./PeopleMigration";
 
 describe("getProgramsToBeUpdated()", () => {
   it("returns no programs when there are no programs", () =>

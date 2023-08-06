@@ -1,17 +1,5 @@
 import { addError } from "../store/errorsSlice";
-import { setPeopleMigrationState } from "../store/peopleSlice";
 import { updateProgram } from "../store/programsSlice";
-import { level } from "./Level";
-
-export async function migratePrograms(
-  programs,
-  people,
-  userLevel,
-  client,
-  dispatch,
-) {
-  dispatch(setPeopleMigrationState("finishedPrograms"));
-}
 
 function getProgramsToBeUpdated(programs, people) {
   return programs.flatMap((prog) => {

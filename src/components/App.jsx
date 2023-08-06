@@ -117,8 +117,7 @@ export default function App() {
       dataLoaded &&
       peopleMigrationState === "finishedPeople"
     ) {
-      const client = firestoreClientFactory.getClient(table);
-      migratePrograms(programs, people, userLevel, client, dispatch);
+      dispatch(setPeopleMigrationState("finishedPrograms"));
     } else if (!peopleMigration && dataLoaded) {
       dispatch(setPeopleMigrationState("failedPeople"));
     }
