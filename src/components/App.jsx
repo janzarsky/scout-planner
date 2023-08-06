@@ -39,7 +39,6 @@ import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
 } from "../helpers/PeopleConvertor";
-import { migratePeople, migratePrograms } from "../helpers/PeopleMigration";
 import { useAuth } from "./AuthProvider";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
@@ -111,15 +110,13 @@ export default function App() {
     );
 
     if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
-      const client = firestoreClientFactory.getClient(table);
-      migratePeople(programs, people, userLevel, client, dispatch);
+      dispatch(setPeopleMigrationState("finishedPeople"));
     } else if (
       peopleMigration &&
       dataLoaded &&
       peopleMigrationState === "finishedPeople"
     ) {
-      const client = firestoreClientFactory.getClient(table);
-      migratePrograms(programs, people, userLevel, client, dispatch);
+      dispatch(setPeopleMigrationState("finishedPrograms"));
     } else if (!peopleMigration && dataLoaded) {
       dispatch(setPeopleMigrationState("failedPeople"));
     }
