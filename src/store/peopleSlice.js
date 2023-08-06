@@ -13,7 +13,6 @@ export const peopleSlice = createSlice({
     loading: "idle",
     error: null,
     loaded: false,
-    peopleMigrationState: "idle",
   },
   reducers: {
     addPerson(state, action) {
@@ -30,9 +29,6 @@ export const peopleSlice = createSlice({
     },
     setLegacyPeople(state, action) {
       state.legacyPeople = action.payload;
-    },
-    setPeopleMigrationState(state, action) {
-      state.peopleMigrationState = action.payload;
     },
   },
   extraReducers(builder) {
@@ -59,12 +55,7 @@ export const peopleSlice = createSlice({
   },
 });
 
-export const {
-  addPerson,
-  updatePerson,
-  deletePerson,
-  setLegacyPeople,
-  setPeopleMigrationState,
-} = peopleSlice.actions;
+export const { addPerson, updatePerson, deletePerson, setLegacyPeople } =
+  peopleSlice.actions;
 
 export default peopleSlice.reducer;
