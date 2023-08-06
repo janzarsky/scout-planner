@@ -30,11 +30,7 @@ import { ViewSettings, ViewSettingsToggle } from "./ViewSettings";
 import { RangesSettings, RangesSettingsToggle } from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
-import {
-  getPeople,
-  setLegacyPeople,
-  setPeopleMigrationState,
-} from "../store/peopleSlice";
+import { getPeople, setLegacyPeople } from "../store/peopleSlice";
 import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
@@ -64,7 +60,6 @@ export default function App() {
     people,
     legacyPeople,
     loaded: peopleLoaded,
-    peopleMigrationState,
   } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings,
@@ -72,8 +67,6 @@ export default function App() {
   const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth,
   );
-
-  const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
   const dispatch = useDispatch();
 
@@ -109,18 +102,6 @@ export default function App() {
       allPeople,
     );
 
-    if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
-      dispatch(setPeopleMigrationState("finishedPeople"));
-    } else if (
-      peopleMigration &&
-      dataLoaded &&
-      peopleMigrationState === "finishedPeople"
-    ) {
-      dispatch(setPeopleMigrationState("finishedPrograms"));
-    } else if (!peopleMigration && dataLoaded) {
-      dispatch(setPeopleMigrationState("failedPeople"));
-    }
-
     const problems = checkRules(rules, convertedPrograms, people);
 
     setViolations(problems.violations);
@@ -143,8 +124,6 @@ export default function App() {
     people,
     rules,
     settings,
-    peopleMigration,
-    peopleMigrationState,
     dispatch,
   ]);
 
@@ -422,23 +401,13 @@ function GoogleLogin() {
 
 function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
-  const peopleMigrationState = useSelector(
-    (state) => state.people.peopleMigrationState,
-  );
 
   return (
     <>
-      {userLevel >= level.VIEW &&
-        dataLoaded &&
-        (peopleMigrationState === "finishedPrograms" ||
-          peopleMigrationState === "failedPrograms" ||
-          peopleMigrationState === "failedPeople") && (
-          <Timetable violations={violationsPerProgram} />
-        )}
-      {(!dataLoaded ||
-        (peopleMigrationState !== "finishedPrograms" &&
-          peopleMigrationState !== "failedPrograms" &&
-          peopleMigrationState !== "failedPeople")) && (
+      {userLevel >= level.VIEW && dataLoaded && (
+        <Timetable violations={violationsPerProgram} />
+      )}
+      {!dataLoaded && (
         <Container fluid>
           <Alert variant="primary">
             <i className="fa fa-spinner fa-pulse" />

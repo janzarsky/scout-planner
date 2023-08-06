@@ -162,10 +162,6 @@ export function EditProgramModal() {
           />
           <ProgramPeople
             programPeople={attendance}
-            addPersonString={(person) => setAttendance([...attendance, person])}
-            removePersonString={(person) =>
-              setAttendance(attendance.filter((p) => p !== person))
-            }
             addPersonObject={(person) => setAttendance([...attendance, person])}
             removePersonObject={(id) =>
               setAttendance(attendance.filter((att) => att.person !== id))
@@ -423,19 +419,13 @@ function ProgramGroups({
 
 function ProgramPeople({
   programPeople,
-  addPersonString,
-  removePersonString,
   addPersonObject,
   removePersonObject,
   disabled = false,
   begin,
   duration,
 }) {
-  const {
-    legacyPeople: stringPeople,
-    people: objectPeople,
-    peopleMigrationState,
-  } = useSelector((state) => state.people);
+  const { people: objectPeople } = useSelector((state) => state.people);
 
   const dispatch = useDispatch();
   const table = useSelector((state) => state.auth.table);
@@ -448,63 +438,33 @@ function ProgramPeople({
       </Form.Label>
       <Col>
         <Row>
-          {peopleMigrationState === "finishedPrograms"
-            ? [...objectPeople]
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((person) => (
-                  <Col key={person._id}>
-                    <Form.Check
-                      type="checkbox"
-                      className={
-                        isPersonAvailable(
-                          person._id,
-                          objectPeople,
-                          begin,
-                          duration,
-                        )
-                          ? ""
-                          : "text-danger"
-                      }
-                      label={person.name}
-                      id={person._id}
-                      checked={
-                        !!programPeople.find((att) => att.person === person._id)
-                      }
-                      disabled={disabled}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          addPersonObject({ person: person._id });
-                        } else {
-                          removePersonObject(person._id);
-                        }
-                      }}
-                    />
-                  </Col>
-                ))
-            : [
-                ...new Set(
-                  [...stringPeople, ...programPeople].sort((a, b) =>
-                    a.localeCompare(b),
-                  ),
-                ),
-              ].map((person) => (
-                <Col key={person}>
-                  <Form.Check
-                    type="checkbox"
-                    label={person}
-                    id={person}
-                    checked={programPeople.includes(person)}
-                    disabled={disabled}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        addPersonString(person);
-                      } else {
-                        removePersonString(person);
-                      }
-                    }}
-                  />
-                </Col>
-              ))}
+          {[...objectPeople]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((person) => (
+              <Col key={person._id}>
+                <Form.Check
+                  type="checkbox"
+                  className={
+                    isPersonAvailable(person._id, objectPeople, begin, duration)
+                      ? ""
+                      : "text-danger"
+                  }
+                  label={person.name}
+                  id={person._id}
+                  checked={
+                    !!programPeople.find((att) => att.person === person._id)
+                  }
+                  disabled={disabled}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      addPersonObject({ person: person._id });
+                    } else {
+                      removePersonObject(person._id);
+                    }
+                  }}
+                />
+              </Col>
+            ))}
         </Row>
         {!disabled && (
           <Button
@@ -515,9 +475,7 @@ function ProgramPeople({
                 client.addPerson({ name }).then(
                   (resp) => {
                     dispatch(addPerson(resp));
-                    peopleMigrationState === "finishedPrograms"
-                      ? addPersonObject({ person: resp._id })
-                      : addPersonString(name);
+                    addPersonObject({ person: resp._id });
                   },
                   (e) => dispatch(addError(e.message)),
                 );
@@ -743,10 +701,6 @@ export function AddProgramModal() {
           />
           <ProgramPeople
             programPeople={attendance}
-            addPersonString={(person) => setAttendance([...attendance, person])}
-            removePersonString={(person) =>
-              setAttendance(attendance.filter((p) => p !== person))
-            }
             addPersonObject={(person) => setAttendance([...attendance, person])}
             removePersonObject={(id) =>
               setAttendance(attendance.filter((att) => att.person !== id))
