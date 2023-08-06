@@ -39,7 +39,6 @@ import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
 } from "../helpers/PeopleConvertor";
-import { migratePeople, migratePrograms } from "../helpers/PeopleMigration";
 import { useAuth } from "./AuthProvider";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
