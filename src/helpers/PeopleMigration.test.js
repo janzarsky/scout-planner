@@ -14,7 +14,7 @@ describe("migratePrograms()", () => {
     dispatch = vi.fn();
   });
 
-  it("updates migration state and updates two programs", async () => {
+  it("just updates the migration state", async () => {
     const prog1 = {
       _id: "program1",
       people: ["Person 0", "Person 1", "Person 2"],
@@ -37,48 +37,11 @@ describe("migratePrograms()", () => {
       dispatch,
     );
 
-    expect(dispatch).toHaveBeenCalledWith(
+    expect(dispatch).not.toHaveBeenCalledWith(
       setPeopleMigrationState("pendingPrograms"),
     );
 
-    expect(client.updateProgram).toHaveBeenCalledWith({
-      ...prog1,
-      people: [
-        { person: "person0" },
-        { person: "person1" },
-        { person: "person2" },
-      ],
-    });
-    expect(client.updateProgram).toHaveBeenCalledWith({
-      ...prog2,
-      people: [{ person: "person2" }, { person: "person3" }],
-    });
-
-    expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("finishedPrograms"),
-    );
-  });
-
-  it("skips migration when the user level is not sufficient and there are programs to be updated", async () => {
-    const prog1 = { _id: "program1", people: ["Person 1"] };
-
-    await migratePrograms(
-      [prog1],
-      [{ _id: "person1", name: "Person 1" }],
-      level.VIEW,
-      client,
-      dispatch,
-    );
-
-    expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("failedPrograms"),
-    );
-  });
-
-  it("finishes migration when the user level is not sufficient but there are no programs to be updated", async () => {
-    const prog1 = { _id: "program1", people: [] };
-
-    await migratePrograms([prog1], [], level.VIEW, client, dispatch);
+    expect(client.updateProgram).not.toHaveBeenCalled();
 
     expect(dispatch).toHaveBeenCalledWith(
       setPeopleMigrationState("finishedPrograms"),

@@ -10,26 +10,7 @@ export async function migratePrograms(
   client,
   dispatch,
 ) {
-  const programsToBeUpdated = getProgramsToBeUpdated(programs, people);
-
-  if (programsToBeUpdated.length === 0) {
-    dispatch(setPeopleMigrationState("finishedPrograms"));
-    return;
-  }
-
-  if (userLevel < level.EDIT) {
-    dispatch(setPeopleMigrationState("failedPrograms"));
-    return;
-  }
-
-  dispatch(setPeopleMigrationState("pendingPrograms"));
-
-  try {
-    await updatePrograms(programsToBeUpdated, client, dispatch);
-    dispatch(setPeopleMigrationState("finishedPrograms"));
-  } catch (e) {
-    dispatch(addError(e.message));
-  }
+  dispatch(setPeopleMigrationState("finishedPrograms"));
 }
 
 function getProgramsToBeUpdated(programs, people) {
