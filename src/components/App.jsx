@@ -30,11 +30,7 @@ import { ViewSettings, ViewSettingsToggle } from "./ViewSettings";
 import { RangesSettings, RangesSettingsToggle } from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
-import {
-  getPeople,
-  setLegacyPeople,
-  setPeopleMigrationState,
-} from "../store/peopleSlice";
+import { getPeople, setLegacyPeople } from "../store/peopleSlice";
 import {
   convertLegacyPeople,
   replaceLegacyPeopleInPrograms,
@@ -64,7 +60,6 @@ export default function App() {
     people,
     legacyPeople,
     loaded: peopleLoaded,
-    peopleMigrationState,
   } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings,
@@ -72,8 +67,6 @@ export default function App() {
   const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth,
   );
-
-  const peopleMigration = useSelector((state) => state.config.peopleMigration);
 
   const dispatch = useDispatch();
 
@@ -109,18 +102,6 @@ export default function App() {
       allPeople,
     );
 
-    if (peopleMigration && dataLoaded && peopleMigrationState === "idle") {
-      dispatch(setPeopleMigrationState("finishedPeople"));
-    } else if (
-      peopleMigration &&
-      dataLoaded &&
-      peopleMigrationState === "finishedPeople"
-    ) {
-      dispatch(setPeopleMigrationState("finishedPrograms"));
-    } else if (!peopleMigration && dataLoaded) {
-      dispatch(setPeopleMigrationState("failedPeople"));
-    }
-
     const problems = checkRules(rules, convertedPrograms, people);
 
     setViolations(problems.violations);
@@ -143,8 +124,6 @@ export default function App() {
     people,
     rules,
     settings,
-    peopleMigration,
-    peopleMigrationState,
     dispatch,
   ]);
 
