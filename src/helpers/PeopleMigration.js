@@ -10,27 +10,7 @@ export async function migratePeople(
   client,
   dispatch,
 ) {
-  const legacyPeople = getLegacyPeople(programs);
-  const peopleToAdd = getPeopleToBeAdded(legacyPeople, people);
-
-  if (peopleToAdd.length === 0) {
-    dispatch(setPeopleMigrationState("finishedPeople"));
-    return;
-  }
-
-  if (userLevel < level.EDIT) {
-    dispatch(setPeopleMigrationState("failedPeople"));
-    return;
-  }
-
-  dispatch(setPeopleMigrationState("pendingPeople"));
-
-  try {
-    await addMissingPeople(peopleToAdd, client, dispatch);
-    dispatch(setPeopleMigrationState("finishedPeople"));
-  } catch (e) {
-    dispatch(addError(e.message));
-  }
+  dispatch(setPeopleMigrationState("finishedPeople"));
 }
 
 async function addMissingPeople(peopleToAdd, client, dispatch) {

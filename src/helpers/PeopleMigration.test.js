@@ -17,7 +17,7 @@ describe("migratePeople()", () => {
     dispatch = vi.fn();
   });
 
-  it("updates migration state and adds new people", () => {
+  it("just updates the migration state", () => {
     const prog1 = {
       _id: "program1",
       people: ["Person 0", "Person 1", "Person 2"],
@@ -34,19 +34,16 @@ describe("migratePeople()", () => {
       client,
       dispatch,
     ).then(() => {
-      expect(dispatch).toHaveBeenCalledWith(
+      expect(dispatch).not.toHaveBeenCalledWith(
         setPeopleMigrationState("pendingPeople"),
       );
 
-      expect(client.addPerson).not.toHaveBeenCalledWith({ name: "Person 0" });
-      expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 1" });
-      expect(client.addPerson).toHaveBeenCalledWith({ name: "Person 2" });
-      expect(client.addPerson).not.toHaveBeenCalledWith({ name: "Person 3" });
+      expect(client.addPerson).not.toHaveBeenCalled();
 
-      expect(dispatch).toHaveBeenCalledWith(
+      expect(dispatch).not.toHaveBeenCalledWith(
         addPerson({ _id: "person1_new", name: "Person 1" }),
       );
-      expect(dispatch).toHaveBeenCalledWith(
+      expect(dispatch).not.toHaveBeenCalledWith(
         addPerson({ _id: "person2_new", name: "Person 2" }),
       );
 
@@ -54,26 +51,6 @@ describe("migratePeople()", () => {
         setPeopleMigrationState("finishedPeople"),
       );
     });
-  });
-
-  it("skips migration when the user level is not sufficient and there are people to be migrated", async () => {
-    const prog1 = { _id: "program1", people: ["Person 1"] };
-
-    await migratePeople([prog1], [], level.VIEW, client, dispatch);
-
-    expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("failedPeople"),
-    );
-  });
-
-  it("finishes migration when the user level is not sufficient but there are no people to be migrated", async () => {
-    const prog1 = { _id: "program1", people: [] };
-
-    await migratePeople([prog1], [], level.VIEW, client, dispatch);
-
-    expect(dispatch).toHaveBeenCalledWith(
-      setPeopleMigrationState("finishedPeople"),
-    );
   });
 });
 
