@@ -398,7 +398,7 @@ function GoogleLogin() {
   );
 }
 
-function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
+export function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (

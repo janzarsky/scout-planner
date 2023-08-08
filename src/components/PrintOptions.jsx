@@ -1,4 +1,7 @@
+import { useEffect, useRef, useState } from "react";
 import { Button, ButtonToolbar, Container } from "react-bootstrap";
+import { useReactToPrint } from "react-to-print";
+import { TimetableWrapper } from "./App";
 
 export function PrintOptions({ printCallback }) {
   const presets = {
@@ -42,5 +45,29 @@ export function PrintCss({ preset = "default" }) {
       {`@page{ size: ${presets[preset].pageSize}; margin: ${presets[preset].margin}; }` +
         `@media print{ html{ font-size: ${presets[preset].fontSize}; }}`}
     </style>
+  );
+}
+
+export function PrintWrapper({ dataLoaded, violationsPerProgram }) {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({ content: () => componentRef.current });
+
+  const [preset, setPreset] = useState(null);
+
+  useEffect(() => {
+    if (preset) handlePrint(preset);
+  }, [preset]);
+
+  return (
+    <>
+      <div ref={componentRef} className="print-preview">
+        <PrintCss preset={preset ? preset : "default"} />
+        <TimetableWrapper
+          dataLoaded={dataLoaded}
+          violationsPerProgram={violationsPerProgram}
+        />
+      </div>
+      <PrintOptions printCallback={(preset) => setPreset(preset)} />
+    </>
   );
 }
