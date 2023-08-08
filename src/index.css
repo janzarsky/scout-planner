@@ -362,3 +362,9 @@ p {
     display: none;
   }
 }
+
+@media screen {
+  .print-preview {
+    display: none;
+  }
+}

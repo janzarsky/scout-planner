@@ -38,6 +38,7 @@ import {
 import { useAuth } from "./AuthProvider";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
+import { PrintWrapper } from "./PrintOptions";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -178,7 +179,7 @@ export default function App() {
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
 
-  const peopleFilter = useSelector((state) => state.config.peopleFilter);
+  const { peopleFilter, printing } = useSelector((state) => state.config);
 
   return (
     <div className="App">
@@ -252,8 +253,18 @@ export default function App() {
           }
         />
         <Route path="settings" element={<Settings />} />
+        {printing && (
+          <Route
+            path="print"
+            element={
+              <PrintWrapper
+                dataLoaded={dataLoaded}
+                violationsPerProgram={violationsPerProgram}
+              />
+            }
+          />
+        )}
       </Routes>
-      <PrintCss />
     </div>
   );
 }
@@ -280,7 +291,7 @@ function Notifications() {
 
 function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
-  const peopleFilter = useSelector((state) => state.config.peopleFilter);
+  const { peopleFilter, printing } = useSelector((state) => state.config);
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
@@ -338,6 +349,11 @@ function NavBar({ rulesSatisfied }) {
               {userLevel >= level.VIEW && (
                 <NavDropdown.Item as={NavLink} to="settings" end>
                   Nastavení
+                </NavDropdown.Item>
+              )}
+              {printing && userLevel >= level.VIEW && (
+                <NavDropdown.Item as={NavLink} to="print" end>
+                  Tisk
                 </NavDropdown.Item>
               )}
             </NavDropdown>
@@ -399,7 +415,7 @@ function GoogleLogin() {
   );
 }
 
-function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
+export function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
@@ -425,24 +441,6 @@ function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
         </Container>
       )}
     </>
-  );
-}
-
-function PrintCss({ preset = "default" }) {
-  const presets = {
-    a4: { pageSize: "a4", fontSize: "6pt", margin: "6mm" },
-    a4landscape: { pageSize: "a4 landscape", fontSize: "6pt", margin: "6mm" },
-    a3: { pageSize: "a3", fontSize: "9pt", margin: "10mm" },
-    a3landscape: { pageSize: "a3 landscape", fontSize: "9pt", margin: "10mm" },
-    a2: { pageSize: "420mm 594mm", fontSize: "11pt", margin: "10mm" },
-    default: { pageSize: "800mm 1108mm", fontSize: "12pt", margin: "10mm" },
-  };
-
-  return (
-    <style>
-      {`@page{ size: ${presets[preset].pageSize}; margin: ${presets[preset].margin}; }` +
-        `@media print{ html{ font-size: ${presets[preset].fontSize}; }}`}
-    </style>
   );
 }
 
