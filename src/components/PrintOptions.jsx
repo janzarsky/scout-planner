@@ -1,6 +1,6 @@
 import { Button, ButtonToolbar, Container } from "react-bootstrap";
 
-export default function PrintOptions({ printCallback }) {
+export function PrintOptions({ printCallback }) {
   const presets = {
     a4: { text: "A4" },
     a4landscape: { text: "A4 (na šířku)" },

@@ -1,6 +1,6 @@
 /// <reference types="cypress"/>
 
-import PrintOptions from "../../src/components/PrintOptions";
+import { PrintOptions } from "../../src/components/PrintOptions";
 
 describe("Print options", () => {
   it("prints A4 version", () => {
