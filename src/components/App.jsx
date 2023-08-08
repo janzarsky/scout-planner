@@ -38,6 +38,7 @@ import {
 import { useAuth } from "./AuthProvider";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
+import { PrintWrapper } from "./PrintOptions";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -178,7 +179,7 @@ export default function App() {
     dispatch(setLegacyPeople(people));
   }, [programs, dispatch]);
 
-  const peopleFilter = useSelector((state) => state.config.peopleFilter);
+  const { peopleFilter, printing } = useSelector((state) => state.config);
 
   return (
     <div className="App">
@@ -252,6 +253,17 @@ export default function App() {
           }
         />
         <Route path="settings" element={<Settings />} />
+        {printing && (
+          <Route
+            path="print"
+            element={
+              <PrintWrapper
+                dataLoaded={dataLoaded}
+                violationsPerProgram={violationsPerProgram}
+              />
+            }
+          />
+        )}
       </Routes>
     </div>
   );
@@ -279,7 +291,7 @@ function Notifications() {
 
 function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
-  const peopleFilter = useSelector((state) => state.config.peopleFilter);
+  const { peopleFilter, printing } = useSelector((state) => state.config);
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
@@ -337,6 +349,11 @@ function NavBar({ rulesSatisfied }) {
               {userLevel >= level.VIEW && (
                 <NavDropdown.Item as={NavLink} to="settings" end>
                   Nastavení
+                </NavDropdown.Item>
+              )}
+              {printing && userLevel >= level.VIEW && (
+                <NavDropdown.Item as={NavLink} to="print" end>
+                  Tisk
                 </NavDropdown.Item>
               )}
             </NavDropdown>
