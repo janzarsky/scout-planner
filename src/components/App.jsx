@@ -30,11 +30,7 @@ import { ViewSettings, ViewSettingsToggle } from "./ViewSettings";
 import { RangesSettings, RangesSettingsToggle } from "./RangesSettings";
 import { addError, removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
-import { getPeople, setLegacyPeople } from "../store/peopleSlice";
-import {
-  convertLegacyPeople,
-  replaceLegacyPeopleInPrograms,
-} from "../helpers/PeopleConvertor";
+import { getPeople } from "../store/peopleSlice";
 import { useAuth } from "./AuthProvider";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
@@ -57,11 +53,7 @@ export default function App() {
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs,
   );
-  const {
-    people,
-    legacyPeople,
-    loaded: peopleLoaded,
-  } = useSelector((state) => state.people);
+  const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
   const { settings, loaded: settingsLoaded } = useSelector(
     (state) => state.settings,
   );
@@ -97,13 +89,7 @@ export default function App() {
   }, [table, userLevel, permissionsLoaded, dispatch]);
 
   useEffect(() => {
-    const allPeople = convertLegacyPeople(legacyPeople, people);
-    const convertedPrograms = replaceLegacyPeopleInPrograms(
-      programs,
-      allPeople,
-    );
-
-    const problems = checkRules(rules, convertedPrograms, people);
+    const problems = checkRules(rules, programs, people);
 
     setViolations(problems.violations);
     setOtherProblems(problems.other);
@@ -121,7 +107,6 @@ export default function App() {
     groups,
     packages,
     ranges,
-    legacyPeople,
     people,
     rules,
     settings,
@@ -167,17 +152,6 @@ export default function App() {
     });
     return tmp;
   }, [violations, otherProblems]);
-
-  useEffect(() => {
-    const people = [
-      ...new Set(
-        [...programs].flatMap((program) =>
-          program.people.filter((person) => typeof person === "string"),
-        ),
-      ),
-    ];
-    dispatch(setLegacyPeople(people));
-  }, [programs, dispatch]);
 
   const { peopleFilter, printing } = useSelector((state) => state.config);
 
