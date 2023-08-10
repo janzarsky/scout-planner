@@ -25,6 +25,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { ButtonGroup } from "react-bootstrap";
 
 export function EditProgramModal() {
   const { id: programId } = useParams();
@@ -431,20 +432,63 @@ function PersonCheck({
   setAttendance,
   removeAttendance,
 }) {
-  return (
-    <Form.Check
-      type="checkbox"
-      className={available ? "" : "text-danger"}
-      label={name}
-      id={id}
-      checked={!!attendance}
-      disabled={disabled}
-      onChange={(e) => {
-        if (e.currentTarget.checked) setAttendance(id, {});
-        else removeAttendance(id);
-      }}
-    />
+  const optionalAttendance = useSelector(
+    (state) => state.config.optionalAttendance,
   );
+
+  if (optionalAttendance) {
+    return (
+      <Button
+        variant="link"
+        className={
+          "person-button " +
+          (available
+            ? attendance
+              ? attendance.optional
+                ? "text-info"
+                : "text-success"
+              : "text-dark"
+            : "text-danger")
+        }
+        id={id}
+        disabled={disabled}
+        onClick={() => {
+          if (!attendance) setAttendance(id, {});
+          else if (attendance && !attendance.optional)
+            setAttendance(id, { optional: true });
+          else removeAttendance(id);
+        }}
+      >
+        {attendance && !attendance.optional && (
+          <i className="fa fa-check" aria-hidden="true" />
+        )}
+        {attendance && attendance.optional && (
+          <>
+            {"("}
+            <i className="fa fa-check" aria-hidden="true" />
+            {")"}
+          </>
+        )}
+        &nbsp;
+        {name}
+      </Button>
+    );
+  } else {
+    return (
+      <Form.Check
+        type="checkbox"
+        className={available ? "" : "text-danger"}
+        label={name}
+        id={id}
+        checked={!!attendance}
+        disabled={disabled}
+        onChange={(e) => {
+          if (e.currentTarget.checked) setAttendance(id, {});
+          else removeAttendance(id);
+        }}
+      />
+    );
+  }
 }
 
 function ProgramPeople({
@@ -467,30 +511,27 @@ function ProgramPeople({
         Lidi
       </Form.Label>
       <Col>
-        <Row>
-          {[...objectPeople]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((person) => (
-              <Col key={person._id}>
-                <PersonCheck
-                  name={person.name}
-                  id={person._id}
-                  available={isPersonAvailable(
-                    person._id,
-                    objectPeople,
-                    begin,
-                    duration,
-                  )}
-                  attendance={programPeople.find(
-                    (att) => att.person === person._id,
-                  )}
-                  disabled={disabled}
-                  setAttendance={setAttendance}
-                  removeAttendance={removeAttendance}
-                />
-              </Col>
-            ))}
-        </Row>
+        {[...objectPeople]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((person) => (
+            <PersonCheck
+              key={person._id}
+              name={person.name}
+              id={person._id}
+              available={isPersonAvailable(
+                person._id,
+                objectPeople,
+                begin,
+                duration,
+              )}
+              attendance={programPeople.find(
+                (att) => att.person === person._id,
+              )}
+              disabled={disabled}
+              setAttendance={setAttendance}
+              removeAttendance={removeAttendance}
+            />
+          ))}
         {!disabled && (
           <Button
             variant="outline-secondary"

@@ -353,6 +353,13 @@ p {
   z-index: 1000;
 }
 
+.person-button {
+  text-decoration: none;
+  font-weight: 300;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+}
+
 @page {
   margin: 10mm;
 }
