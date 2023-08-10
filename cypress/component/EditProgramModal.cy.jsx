@@ -1,57 +1,117 @@
 /// <reference types="cypress"/>
 
-import { firestoreClientFactory } from "../../src/FirestoreClient";
-import { EditProgramModal } from "../../src/components/EditProgramModal";
+import { testing } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
-import { addPerson } from "../../src/store/peopleSlice";
-import { addProgram } from "../../src/store/programsSlice";
-import { Route, Routes } from "react-router-dom";
+import { overrideConfig } from "../../src/store/configSlice";
 
-describe("EditProgramModal", () => {
-  const alice = {
-    _id: "testuseralice",
-    name: "Alice",
-  };
-  const bob = {
-    _id: "testuserbob",
-    name: "Bob",
-  };
-
+describe("PersonCheck", () => {
   let store;
 
-  function mountModal(programId) {
-    cy.mount(
-      <Routes>
-        <Route path="/edit/:id" element={<EditProgramModal />} />
-      </Routes>,
-      {
-        dndProvider: false,
-        reduxStore: store,
-        router: true,
-        initialEntries: [`/edit/${programId}`],
-      },
-    );
-  }
-
   beforeEach(() => {
-    cy.viewport(400, 600);
-
-    cy.stub(firestoreClientFactory, "getClient").log(false);
-
     store = getStore();
-
-    store.dispatch(addPerson(alice));
-    store.dispatch(addPerson(bob));
   });
 
-  it("shows attendance", () => {
-    const prog1 = {
-      _id: "prog1",
-      people: [{ person: alice._id }, { person: bob._id }],
-    };
-    store.dispatch(addProgram(prog1));
-    mountModal(prog1._id);
-    cy.get("#testuseralice").should("be.checked");
-    cy.get("#testuserbob").should("be.checked");
+  describe("as checkbox", () => {
+    beforeEach(() => {
+      store.dispatch(overrideConfig({ optionalAttendance: false }));
+    });
+
+    it("sets attendance", () => {
+      cy.mount(
+        <testing.PersonCheck
+          name={"Person 1"}
+          id={"person1"}
+          available={true}
+          attendance={null}
+          disabled={false}
+          setAttendance={cy.stub().as("set")}
+          removeAttendance={cy.stub().as("remove")}
+        />,
+        { reduxStore: store },
+      );
+
+      cy.contains("Person 1").click();
+      cy.get("@set").should("have.been.calledOnceWith", "person1", {});
+    });
+
+    it("removes attendance", () => {
+      cy.mount(
+        <testing.PersonCheck
+          name={"Person 1"}
+          id={"person1"}
+          available={true}
+          attendance={{ person: "person1" }}
+          disabled={false}
+          setAttendance={cy.stub().as("set")}
+          removeAttendance={cy.stub().as("remove")}
+        />,
+        { reduxStore: store },
+      );
+
+      cy.contains("Person 1").click();
+      cy.get("@remove").should("have.been.calledOnceWith", "person1");
+    });
+  });
+
+  describe("as button", () => {
+    beforeEach(() => {
+      store.dispatch(overrideConfig({ optionalAttendance: true }));
+    });
+
+    it("sets attendance", () => {
+      cy.mount(
+        <testing.PersonCheck
+          name={"Person 1"}
+          id={"person1"}
+          available={true}
+          attendance={null}
+          disabled={false}
+          setAttendance={cy.stub().as("set")}
+          removeAttendance={cy.stub().as("remove")}
+        />,
+        { reduxStore: store },
+      );
+
+      cy.contains("Person 1").click();
+      cy.get("@set").should("have.been.calledOnceWith", "person1", {});
+    });
+
+    it("sets optional attendance", () => {
+      cy.mount(
+        <testing.PersonCheck
+          name={"Person 1"}
+          id={"person1"}
+          available={true}
+          attendance={{ person: "person1" }}
+          disabled={false}
+          setAttendance={cy.stub().as("set")}
+          removeAttendance={cy.stub().as("remove")}
+        />,
+        { reduxStore: store },
+      );
+
+      cy.contains("Person 1").click();
+      cy.get("@set").should("have.been.calledOnceWith", "person1", {
+        optional: true,
+      });
+    });
+
+    it("removes attendance", () => {
+      cy.mount(
+        <testing.PersonCheck
+          name={"Person 1"}
+          id={"person1"}
+          available={true}
+          attendance={{ person: "person1", optional: true }}
+          disabled={false}
+          setAttendance={cy.stub().as("set")}
+          removeAttendance={cy.stub().as("remove")}
+        />,
+        { reduxStore: store },
+      );
+
+      cy.contains("Person 1").click();
+      cy.get("@remove").should("have.been.calledOnceWith", "person1");
+    });
   });
 });
