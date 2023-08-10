@@ -417,6 +417,20 @@ function ProgramGroups({
   );
 }
 
+function PersonCheck({ available, name, id, attendance, disabled, onChange }) {
+  return (
+    <Form.Check
+      type="checkbox"
+      className={available ? "" : "text-danger"}
+      label={name}
+      id={id}
+      checked={!!attendance}
+      disabled={disabled}
+      onChange={onChange}
+    />
+  );
+}
+
 function ProgramPeople({
   programPeople,
   addPersonObject,
@@ -442,18 +456,18 @@ function ProgramPeople({
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((person) => (
               <Col key={person._id}>
-                <Form.Check
-                  type="checkbox"
-                  className={
-                    isPersonAvailable(person._id, objectPeople, begin, duration)
-                      ? ""
-                      : "text-danger"
-                  }
-                  label={person.name}
+                <PersonCheck
+                  name={person.name}
                   id={person._id}
-                  checked={
-                    !!programPeople.find((att) => att.person === person._id)
-                  }
+                  available={isPersonAvailable(
+                    person._id,
+                    objectPeople,
+                    begin,
+                    duration,
+                  )}
+                  attendance={programPeople.find(
+                    (att) => att.person === person._id,
+                  )}
                   disabled={disabled}
                   onChange={(e) => {
                     if (e.target.checked) {
