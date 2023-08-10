@@ -343,4 +343,22 @@ describe("Absence", () => {
       other: [],
     });
   });
+
+  it("does not show violation if the person is optional", () => {
+    const prog = {
+      _id: "prog1",
+      begin: 30,
+      duration: 60,
+      people: [{ person: "person1", optional: true }],
+    };
+    const person = {
+      _id: "person1",
+      name: "Person 1",
+      absence: [{ begin: 0, end: 120 }],
+    };
+    expect(checkRules([], [prog], [person])).toEqual({
+      violations: new Map(),
+      other: [],
+    });
+  });
 });

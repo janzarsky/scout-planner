@@ -158,23 +158,25 @@ function isPersonAvailable(absence, begin, end) {
 }
 
 function getAbsentPeople(program, allPeople) {
-  return program.people.flatMap((attendance) => {
-    const person = allPeople.find((p) => p._id === attendance.person);
+  return program.people
+    .filter((attendance) => !attendance.optional)
+    .flatMap((attendance) => {
+      const person = allPeople.find((p) => p._id === attendance.person);
 
-    if (
-      person &&
-      person.absence &&
-      person.absence.length > 0 &&
-      !isPersonAvailable(
-        person.absence,
-        program.begin,
-        program.begin + program.duration,
+      if (
+        person &&
+        person.absence &&
+        person.absence.length > 0 &&
+        !isPersonAvailable(
+          person.absence,
+          program.begin,
+          program.begin + program.duration,
+        )
       )
-    )
-      return [person._id];
+        return [person._id];
 
-    return [];
-  });
+      return [];
+    });
 }
 
 function checkAbsence(programs, people) {
