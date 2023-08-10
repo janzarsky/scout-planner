@@ -486,6 +486,12 @@ function PersonCheck({
           if (e.currentTarget.checked) setAttendance(id, {});
           else removeAttendance(id);
         }}
+        style={{
+          display: "inline-block",
+          marginRight: "0.75rem",
+          paddingTop: "0.25rem",
+          paddingBottom: "0.25rem",
+        }}
       />
     );
   }
