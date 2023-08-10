@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
@@ -21,7 +21,10 @@ import { AuthProvider } from "./components/AuthProvider";
 function AppWrapper() {
   const dispatch = useDispatch();
   let { table } = useParams();
-  dispatch(setTable(table));
+
+  useEffect(() => {
+    dispatch(setTable(table));
+  }, []);
 
   return (
     <AuthProvider>
