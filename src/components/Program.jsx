@@ -3,10 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
-import {
-  convertLegacyPeople,
-  convertProgramPeople,
-} from "../helpers/PeopleConvertor";
 import { addError } from "../store/errorsSlice";
 import { addProgram, updateProgram } from "../store/programsSlice";
 import { useRef } from "react";
@@ -228,12 +224,9 @@ function lookUpPeople(programPeople, allPeople) {
 
 function ProgramPeople({ programPeople, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
-  const { legacyPeople, people } = useSelector((state) => state.people);
+  const people = useSelector((state) => state.people.people);
 
-  const allPeople = convertLegacyPeople(legacyPeople, people);
-  const convertedProgramPeople = convertProgramPeople(programPeople, allPeople);
-
-  const lookedUpPeople = lookUpPeople(convertedProgramPeople, allPeople);
+  const lookedUpPeople = lookUpPeople(programPeople, people);
 
   return (
     <div className="program-people">
