@@ -162,8 +162,13 @@ export function EditProgramModal() {
           />
           <ProgramPeople
             programPeople={attendance}
-            addPersonObject={(person) => setAttendance([...attendance, person])}
-            removePersonObject={(id) =>
+            setAttendance={(id, att) =>
+              setAttendance([
+                ...attendance.filter((att) => att.person !== id),
+                { person: id, ...att },
+              ])
+            }
+            removeAttendance={(id) =>
               setAttendance(attendance.filter((att) => att.person !== id))
             }
             disabled={userLevel < level.EDIT}
@@ -433,8 +438,8 @@ function PersonCheck({ available, name, id, attendance, disabled, onChange }) {
 
 function ProgramPeople({
   programPeople,
-  addPersonObject,
-  removePersonObject,
+  setAttendance,
+  removeAttendance,
   disabled = false,
   begin,
   duration,
@@ -471,9 +476,9 @@ function ProgramPeople({
                   disabled={disabled}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      addPersonObject({ person: person._id });
+                      setAttendance(person._id, {});
                     } else {
-                      removePersonObject(person._id);
+                      removeAttendance(person._id);
                     }
                   }}
                 />
@@ -715,8 +720,13 @@ export function AddProgramModal() {
           />
           <ProgramPeople
             programPeople={attendance}
-            addPersonObject={(person) => setAttendance([...attendance, person])}
-            removePersonObject={(id) =>
+            setAttendance={(id, att) =>
+              setAttendance([
+                ...attendance.filter((att) => att.person !== id),
+                { person: id, ...att },
+              ])
+            }
+            removeAttendance={(id) =>
               setAttendance(attendance.filter((att) => att.person !== id))
             }
             begin={parseDate(date) + parseTime(time)}
