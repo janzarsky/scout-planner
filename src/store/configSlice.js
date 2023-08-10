@@ -8,6 +8,13 @@ export const configSlice = createSlice({
     ...config,
     ...localConfig,
   },
+  reducers: {
+    overrideConfig(state, action) {
+      return { ...state, ...action.payload };
+    },
+  },
 });
+
+export const { overrideConfig } = configSlice.actions;
 
 export default configSlice.reducer;
