@@ -233,12 +233,17 @@ function ProgramPeople({ programPeople, violations }) {
       <i className="fa fa-user-o" />
       &nbsp;
       {[...lookedUpPeople]
-        .sort((a, b) => a.data.name.localeCompare(b.data.name))
+        .sort((a, b) => {
+          if (!a.optional && b.optional) return -1;
+          if (a.optional && !b.optional) return 1;
+
+          return a.data.name.localeCompare(b.data.name);
+        })
         .map((attendance) => (
           <span
             key={attendance.person}
             className={
-              viewViolations &&
+              (viewViolations &&
               violations &&
               violations.find(
                 (violation) =>
@@ -246,7 +251,7 @@ function ProgramPeople({ programPeople, violations }) {
                   violation.people.indexOf(attendance.person) !== -1,
               )
                 ? "program-violated"
-                : ""
+                : "") + (attendance.optional ? " program-optional" : "")
             }
           >
             {attendance.data.name}

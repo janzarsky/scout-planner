@@ -203,6 +203,9 @@ p {
 .program-violated {
   color: #b71c1c;
 }
+.program-optional {
+  font-style: italic;
+}
 .program-title {
   flex: 0 0 100%;
   min-width: 0;
