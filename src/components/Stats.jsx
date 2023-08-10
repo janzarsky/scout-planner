@@ -2,10 +2,6 @@ import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
-import {
-  convertLegacyPeople,
-  replaceLegacyPeopleInPrograms,
-} from "../helpers/PeopleConvertor";
 
 export default function Stats() {
   return (
@@ -58,16 +54,13 @@ function PackageStats() {
 }
 
 function PeopleStats() {
-  const { people, legacyPeople } = useSelector((state) => state.people);
+  const { people } = useSelector((state) => state.people);
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
   const { programs } = useSelector((state) => state.programs);
 
-  const allPeople = convertLegacyPeople(legacyPeople, people);
-  const convertedPrograms = replaceLegacyPeopleInPrograms(programs, allPeople);
-
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
-    convertedPrograms,
+    programs,
     packages,
   );
 
@@ -82,7 +75,7 @@ function PeopleStats() {
         </tr>
       </thead>
       <tbody>
-        {[...allPeople]
+        {[...people]
           .sort((a, b) => a.name.localeCompare(b.name))
           .map((person) => (
             <tr key={person._id}>
