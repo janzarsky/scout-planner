@@ -422,7 +422,15 @@ function ProgramGroups({
   );
 }
 
-function PersonCheck({ available, name, id, attendance, disabled, onChange }) {
+function PersonCheck({
+  available,
+  name,
+  id,
+  attendance,
+  disabled,
+  setAttendance,
+  removeAttendance,
+}) {
   return (
     <Form.Check
       type="checkbox"
@@ -431,7 +439,10 @@ function PersonCheck({ available, name, id, attendance, disabled, onChange }) {
       id={id}
       checked={!!attendance}
       disabled={disabled}
-      onChange={onChange}
+      onChange={(e) => {
+        if (e.currentTarget.checked) setAttendance(id, {});
+        else removeAttendance(id);
+      }}
     />
   );
 }
@@ -474,13 +485,8 @@ function ProgramPeople({
                     (att) => att.person === person._id,
                   )}
                   disabled={disabled}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setAttendance(person._id, {});
-                    } else {
-                      removeAttendance(person._id);
-                    }
-                  }}
+                  setAttendance={setAttendance}
+                  removeAttendance={removeAttendance}
                 />
               </Col>
             ))}
