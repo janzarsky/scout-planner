@@ -122,7 +122,11 @@ function checkPeople(programs) {
       if (prog2.begin >= prog1.begin + prog1.duration) break;
 
       const overlap = prog1.people
-        .filter((p1) => prog2.people.find((p2) => p2.person === p1.person))
+        .filter((p1) =>
+          prog2.people.find(
+            (p2) => p2.person === p1.person && !p1.optional && !p2.optional,
+          ),
+        )
         .map((p) => p.person);
 
       if (overlap.length > 0) {
@@ -154,23 +158,25 @@ function isPersonAvailable(absence, begin, end) {
 }
 
 function getAbsentPeople(program, allPeople) {
-  return program.people.flatMap((attendance) => {
-    const person = allPeople.find((p) => p._id === attendance.person);
+  return program.people
+    .filter((attendance) => !attendance.optional)
+    .flatMap((attendance) => {
+      const person = allPeople.find((p) => p._id === attendance.person);
 
-    if (
-      person &&
-      person.absence &&
-      person.absence.length > 0 &&
-      !isPersonAvailable(
-        person.absence,
-        program.begin,
-        program.begin + program.duration,
+      if (
+        person &&
+        person.absence &&
+        person.absence.length > 0 &&
+        !isPersonAvailable(
+          person.absence,
+          program.begin,
+          program.begin + program.duration,
+        )
       )
-    )
-      return [person._id];
+        return [person._id];
 
-    return [];
-  });
+      return [];
+    });
 }
 
 function checkAbsence(programs, people) {
