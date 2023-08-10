@@ -9,7 +9,6 @@ export const peopleSlice = createSlice({
   name: "people",
   initialState: {
     people: [],
-    legacyPeople: [],
     loading: "idle",
     error: null,
     loaded: false,
@@ -26,9 +25,6 @@ export const peopleSlice = createSlice({
     },
     deletePerson(state, action) {
       state.people = state.people.filter((p) => p._id !== action.payload);
-    },
-    setLegacyPeople(state, action) {
-      state.legacyPeople = action.payload;
     },
   },
   extraReducers(builder) {
@@ -55,7 +51,6 @@ export const peopleSlice = createSlice({
   },
 });
 
-export const { addPerson, updatePerson, deletePerson, setLegacyPeople } =
-  peopleSlice.actions;
+export const { addPerson, updatePerson, deletePerson } = peopleSlice.actions;
 
 export default peopleSlice.reducer;
