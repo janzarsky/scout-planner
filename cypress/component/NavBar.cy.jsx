@@ -1,6 +1,6 @@
 /// <reference types="cypress"/>
 
-import { testing } from "../../src/components/App";
+import { GoogleLogin, NavBar } from "../../src/components/App";
 import { testing as authTesting } from "../../src/store/authSlice";
 import { getStore } from "../../src/store";
 import { level } from "../../src/helpers/Level";
@@ -21,7 +21,7 @@ describe("Navigation Bar", () => {
   let store;
 
   function mountNavBar(authValue) {
-    cy.mount(<testing.NavBar />, {
+    cy.mount(<NavBar />, {
       reduxStore: store,
       router: true,
       auth: true,
@@ -292,7 +292,7 @@ describe("Google login button", () => {
   let store;
 
   function mountGoogleLogin(authValue) {
-    cy.mount(<testing.GoogleLogin />, {
+    cy.mount(<GoogleLogin />, {
       reduxStore: store,
       auth: true,
       authValue: authValue,

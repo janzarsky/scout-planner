@@ -263,7 +263,7 @@ function Notifications() {
   );
 }
 
-function NavBar({ rulesSatisfied }) {
+export function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { peopleFilter, printing } = useSelector((state) => state.config);
 
@@ -354,7 +354,7 @@ function NavBar({ rulesSatisfied }) {
   );
 }
 
-function GoogleLogin() {
+export function GoogleLogin() {
   const dispatch = useDispatch();
   const { user, login, logout } = useAuth();
 
@@ -417,8 +417,3 @@ export function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
     </>
   );
 }
-
-export const testing = {
-  NavBar,
-  GoogleLogin,
-};

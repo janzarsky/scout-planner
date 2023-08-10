@@ -423,7 +423,7 @@ function ProgramGroups({
   );
 }
 
-function PersonCheck({
+export function PersonCheck({
   available,
   name,
   id,
@@ -838,7 +838,3 @@ function isPersonAvailable(id, people, begin, duration) {
 
   return true;
 }
-
-export const testing = {
-  PersonCheck,
-};
