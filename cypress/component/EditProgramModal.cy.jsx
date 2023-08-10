@@ -1,6 +1,6 @@
 /// <reference types="cypress"/>
 
-import { testing } from "../../src/components/EditProgramModal";
+import { PersonCheck } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
 import { overrideConfig } from "../../src/store/configSlice";
 
@@ -18,7 +18,7 @@ describe("PersonCheck", () => {
 
     it("sets attendance", () => {
       cy.mount(
-        <testing.PersonCheck
+        <PersonCheck
           name={"Person 1"}
           id={"person1"}
           available={true}
@@ -36,7 +36,7 @@ describe("PersonCheck", () => {
 
     it("removes attendance", () => {
       cy.mount(
-        <testing.PersonCheck
+        <PersonCheck
           name={"Person 1"}
           id={"person1"}
           available={true}
@@ -60,7 +60,7 @@ describe("PersonCheck", () => {
 
     it("sets attendance", () => {
       cy.mount(
-        <testing.PersonCheck
+        <PersonCheck
           name={"Person 1"}
           id={"person1"}
           available={true}
@@ -78,7 +78,7 @@ describe("PersonCheck", () => {
 
     it("sets optional attendance", () => {
       cy.mount(
-        <testing.PersonCheck
+        <PersonCheck
           name={"Person 1"}
           id={"person1"}
           available={true}
@@ -98,7 +98,7 @@ describe("PersonCheck", () => {
 
     it("removes attendance", () => {
       cy.mount(
-        <testing.PersonCheck
+        <PersonCheck
           name={"Person 1"}
           id={"person1"}
           available={true}
