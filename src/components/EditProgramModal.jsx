@@ -791,3 +791,7 @@ function isPersonAvailable(id, people, begin, duration) {
 
   return true;
 }
+
+export const testing = {
+  PersonCheck,
+};
