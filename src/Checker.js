@@ -122,7 +122,11 @@ function checkPeople(programs) {
       if (prog2.begin >= prog1.begin + prog1.duration) break;
 
       const overlap = prog1.people
-        .filter((p1) => prog2.people.find((p2) => p2.person === p1.person))
+        .filter((p1) =>
+          prog2.people.find(
+            (p2) => p2.person === p1.person && !p1.optional && !p2.optional,
+          ),
+        )
         .map((p) => p.person);
 
       if (overlap.length > 0) {

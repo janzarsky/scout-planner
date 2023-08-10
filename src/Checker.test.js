@@ -249,6 +249,27 @@ describe("people", () => {
       ],
     });
   });
+
+  test("two overlapping programs with optional attendance", () => {
+    const progA = {
+      _id: "progA",
+      begin: 0,
+      duration: 60,
+      people: [{ person: "person1" }, { person: "person2" }],
+      groups: ["groupA"],
+    };
+    const progB = {
+      _id: "progB",
+      begin: 30,
+      duration: 60,
+      people: [{ person: "person2", optional: true }, { person: "person3" }],
+      groups: ["groupB"],
+    };
+    expect(checkRules([], [progA, progB])).toEqual({
+      violations: new Map(),
+      other: [],
+    });
+  });
 });
 
 describe("Absence", () => {
