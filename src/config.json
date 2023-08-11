@@ -6,5 +6,5 @@
   "attendance": true,
   "peopleFilter": true,
   "printing": true,
-  "optionalAttendance": false
+  "optionalAttendance": true
 }
