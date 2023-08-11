@@ -45,6 +45,7 @@ p {
 
 .timetable {
   display: grid;
+  overflow: auto;
 }
 
 .timeheader,
@@ -92,6 +93,7 @@ p {
   background-color: #fff;
   padding-top: 0.125rem;
   z-index: 200;
+  overflow: auto;
 }
 .tray-wrapper.pinned {
   position: sticky;
