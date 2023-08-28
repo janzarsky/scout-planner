@@ -45,7 +45,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.4",
     "cypress": "^12.17.4",
-    "prettier": "3.0.1",
+    "prettier": "3.0.2",
     "vite": "^4.4.9",
     "vitest": "^0.34.1"
   }
