@@ -7,7 +7,7 @@ import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Droppables } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
@@ -57,10 +57,19 @@ export default function Timetable({ violations, timeProvider = null }) {
       ),
     [programs, groups, timetableSettings, timeProvider],
   );
-  const timeIndicatorRect = getTimeIndicatorRect(
-    settings,
-    timeProvider ? timeProvider() : Date.now(),
-  );
+
+  const [time, setTime] = useState(timeProvider ? timeProvider() : Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(
+      () => setTime(timeProvider ? timeProvider() : Date.now()),
+      (1000 * timetableSettings.timeStep) / 2,
+    );
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const timeIndicatorRect = getTimeIndicatorRect(settings, time);
 
   const width = useSelector((state) => state.settings.settings.width);
 
