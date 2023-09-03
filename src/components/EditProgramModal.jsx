@@ -545,10 +545,7 @@ function ProgramPeople({
               const name = window.prompt("Jméno");
               if (name) {
                 client.addPerson({ name }).then(
-                  (resp) => {
-                    dispatch(addPerson(resp));
-                    addPersonObject({ person: resp._id });
-                  },
+                  (resp) => dispatch(addPerson(resp)),
                   (e) => dispatch(addError(e.message)),
                 );
               }
