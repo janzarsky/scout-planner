@@ -28,9 +28,6 @@
     "test": "vitest --globals",
     "lint": "eslint src/**/*.js src/**/*.jsx"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
