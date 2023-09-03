@@ -9,7 +9,7 @@ export function GoogleLogin() {
   const dispatch = useDispatch();
   const { user, login, logout } = useAuth();
 
-  return !!user ? (
+  return user ? (
     <Nav.Link
       variant="light"
       data-test="auth-logout-button"
