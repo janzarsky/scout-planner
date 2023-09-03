@@ -42,19 +42,15 @@ export default function App() {
 
   const { user, initializing } = useAuth();
 
-  const { groups, loaded: groupsLoaded } = useSelector((state) => state.groups);
-  const { ranges, loaded: rangesLoaded } = useSelector((state) => state.ranges);
-  const { packages, loaded: packagesLoaded } = useSelector(
-    (state) => state.packages,
-  );
+  const groupsLoaded = useSelector((state) => state.groups.loaded);
+  const rangesLoaded = useSelector((state) => state.ranges.loaded);
+  const packagesLoaded = useSelector((state) => state.packages.loaded);
   const { rules, loaded: rulesLoaded } = useSelector((state) => state.rules);
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs,
   );
   const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
-  const { settings, loaded: settingsLoaded } = useSelector(
-    (state) => state.settings,
-  );
+  const settingsLoaded = useSelector((state) => state.settings.loaded);
   const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth,
   );
@@ -87,29 +83,19 @@ export default function App() {
   }, [table, userLevel, permissionsLoaded, dispatch]);
 
   useEffect(() => {
-    const problems = checkRules(rules, programs, people);
+    if (dataLoaded) {
+      const problems = checkRules(rules, programs, people);
 
-    setViolations(problems.violations);
-    setOtherProblems(problems.other);
-    setRulesSatisfied(
-      [...problems.violations.values()].reduce(
-        (acc, curr) => acc && curr.satisfied,
-        true,
-      ) && problems.other.length === 0,
-    );
-  }, [
-    table,
-    dataLoaded,
-    userLevel,
-    programs,
-    groups,
-    packages,
-    ranges,
-    people,
-    rules,
-    settings,
-    dispatch,
-  ]);
+      setViolations(problems.violations);
+      setOtherProblems(problems.other);
+      setRulesSatisfied(
+        [...problems.violations.values()].reduce(
+          (acc, curr) => acc && curr.satisfied,
+          true,
+        ) && problems.other.length === 0,
+      );
+    }
+  }, [dataLoaded, programs, people, rules, dispatch]);
 
   useEffect(() => {
     if (
