@@ -14,6 +14,12 @@ module.exports = {
         sourceType: "script",
       },
     },
+    {
+      files: ["src/**/*.js", "src/**/*.jsx"],
+      rules: {
+        "react/prop-types": "off",
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: "latest",
