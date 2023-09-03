@@ -1,3 +1,4 @@
+import React from "react";
 import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";

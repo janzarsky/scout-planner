@@ -1,3 +1,4 @@
+import React from "react";
 import { initializeApp } from "firebase/app";
 import {
   GoogleAuthProvider,

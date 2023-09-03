@@ -1,3 +1,4 @@
+import React from "react";
 import { getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
 
 export function TimeIndicator({ x, y, height }) {

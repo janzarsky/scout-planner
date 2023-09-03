@@ -1,3 +1,4 @@
+import React from "react";
 import Nav from "react-bootstrap/Nav";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleActivePerson, togglePeopleEnabled } from "../store/viewSlice";

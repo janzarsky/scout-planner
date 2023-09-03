@@ -1,3 +1,4 @@
+import React from "react";
 import { useDrop } from "react-dnd";
 import { useSelector } from "react-redux";
 import { getProgramRects, sortTrayPrograms } from "../helpers/TrayUtils";

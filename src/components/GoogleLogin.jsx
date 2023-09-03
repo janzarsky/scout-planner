@@ -1,3 +1,4 @@
+import React from "react";
 import { useDispatch } from "react-redux";
 import { useAuth } from "./AuthProvider";
 import { setAuthenticated } from "../store/authSlice";
@@ -8,7 +9,7 @@ export function GoogleLogin() {
   const dispatch = useDispatch();
   const { user, login, logout } = useAuth();
 
-  return !!user ? (
+  return user ? (
     <Nav.Link
       variant="light"
       data-test="auth-logout-button"

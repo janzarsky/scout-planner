@@ -1,3 +1,4 @@
+import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";

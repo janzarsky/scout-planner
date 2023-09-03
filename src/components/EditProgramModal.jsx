@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "react-bootstrap/Modal";
@@ -25,7 +26,6 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ButtonGroup } from "react-bootstrap";
 
 export function EditProgramModal() {
   const { id: programId } = useParams();
@@ -545,10 +545,7 @@ function ProgramPeople({
               const name = window.prompt("Jméno");
               if (name) {
                 client.addPerson({ name }).then(
-                  (resp) => {
-                    dispatch(addPerson(resp));
-                    addPersonObject({ person: resp._id });
-                  },
+                  (resp) => dispatch(addPerson(resp)),
                   (e) => dispatch(addError(e.message)),
                 );
               }
