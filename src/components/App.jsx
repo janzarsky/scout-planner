@@ -24,17 +24,18 @@ import { getPackages } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
-import { getPermissions, setAuthenticated } from "../store/authSlice";
+import { getPermissions } from "../store/authSlice";
 import { PackageFilter, PackageFilterToggle } from "./PackageFilter";
 import { ViewSettings, ViewSettingsToggle } from "./ViewSettings";
 import { RangesSettings, RangesSettingsToggle } from "./RangesSettings";
-import { addError, removeError } from "../store/errorsSlice";
+import { removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
 import { getPeople } from "../store/peopleSlice";
 import { useAuth } from "./AuthProvider";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
 import { PrintWrapper } from "./PrintOptions";
+import { GoogleLogin } from "./GoogleLogin";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -351,41 +352,6 @@ export function NavBar({ rulesSatisfied }) {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-  );
-}
-
-export function GoogleLogin() {
-  const dispatch = useDispatch();
-  const { user, login, logout } = useAuth();
-
-  return !!user ? (
-    <Nav.Link
-      variant="light"
-      data-test="auth-logout-button"
-      className="ms-auto"
-      onClick={() =>
-        logout()
-          .then(() => dispatch(setAuthenticated(false)))
-          .catch((e) => dispatch(addError(e.message)))
-      }
-    >
-      {user.displayName}
-      &nbsp;
-      <i className="fa fa-sign-out" />
-    </Nav.Link>
-  ) : (
-    <Nav.Link
-      variant="light"
-      data-test="auth-login-button"
-      className="ms-auto"
-      onClick={() =>
-        login()
-          .then(() => dispatch(setAuthenticated(true)))
-          .catch((e) => dispatch(addError(e.message)))
-      }
-    >
-      <i className="fa fa-sign-in" />
-    </Nav.Link>
   );
 }
 
