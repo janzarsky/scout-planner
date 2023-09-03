@@ -28,7 +28,6 @@ import { getPermissions } from "../store/authSlice";
 import { PackageFilter, PackageFilterToggle } from "./PackageFilter";
 import { ViewSettings, ViewSettingsToggle } from "./ViewSettings";
 import { RangesSettings, RangesSettingsToggle } from "./RangesSettings";
-import { removeError } from "../store/errorsSlice";
 import { getSettings } from "../store/settingsSlice";
 import { getPeople } from "../store/peopleSlice";
 import { useAuth } from "./AuthProvider";
@@ -36,6 +35,7 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import { PeopleFilter, PeopleFilterToggle } from "./PeopleFilter";
 import { PrintWrapper } from "./PrintOptions";
 import { GoogleLogin } from "./GoogleLogin";
+import { Notifications } from "./Notifications";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -241,26 +241,6 @@ export default function App() {
         )}
       </Routes>
     </div>
-  );
-}
-
-function Notifications() {
-  const errors = useSelector((state) => state.errors);
-  const dispatch = useDispatch();
-
-  if (errors.length === 0) return null;
-
-  return (
-    <Container fluid className="notifications">
-      <Alert
-        variant="danger"
-        dismissible
-        onClose={() => dispatch(removeError())}
-      >
-        <i className="fa fa-exclamation-triangle" />
-        &nbsp; {errors[0]}
-      </Alert>
-    </Container>
   );
 }
 
