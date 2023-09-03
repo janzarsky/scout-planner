@@ -42,11 +42,9 @@ export default function App() {
 
   const { user, initializing } = useAuth();
 
-  const { groups, loaded: groupsLoaded } = useSelector((state) => state.groups);
-  const { ranges, loaded: rangesLoaded } = useSelector((state) => state.ranges);
-  const { packages, loaded: packagesLoaded } = useSelector(
-    (state) => state.packages,
-  );
+  const groupsLoaded = useSelector((state) => state.groups.loaded);
+  const rangesLoaded = useSelector((state) => state.ranges.loaded);
+  const packagesLoaded = useSelector((state) => state.packages.loaded);
   const { rules, loaded: rulesLoaded } = useSelector((state) => state.rules);
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs,
