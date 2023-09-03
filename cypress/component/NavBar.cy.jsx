@@ -1,6 +1,5 @@
 /// <reference types="cypress"/>
 
-import { GoogleLogin, NavBar } from "../../src/components/App";
 import { testing as authTesting } from "../../src/store/authSlice";
 import { getStore } from "../../src/store";
 import { level } from "../../src/helpers/Level";
@@ -16,6 +15,8 @@ import { ViewSettings } from "../../src/components/ViewSettings";
 import { RangesSettings } from "../../src/components/RangesSettings";
 import { addRange } from "../../src/store/rangesSlice";
 import { PackageFilter } from "../../src/components/PackageFilter";
+import { GoogleLogin } from "../../src/components/GoogleLogin";
+import { NavBar } from "../../src/components/NavBar";
 
 describe("Navigation Bar", () => {
   let store;
