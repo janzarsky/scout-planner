@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { removeError } from "../store/errorsSlice";
+import { Alert, Container } from "react-bootstrap";
 
 export function Notifications() {
   const errors = useSelector((state) => state.errors);
