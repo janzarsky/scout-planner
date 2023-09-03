@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import reducer, { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 
 test("initial state", () => {
