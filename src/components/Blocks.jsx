@@ -1,3 +1,4 @@
+import React from "react";
 import { useSelector } from "react-redux";
 import { BlockDroppables, getBlockDroppablesData } from "./Droppables";
 import Program from "./Program";

@@ -1,3 +1,4 @@
+import React from "react";
 import { formatDay } from "../helpers/DateUtils";
 
 export function TimeHeaders({ settings }) {
