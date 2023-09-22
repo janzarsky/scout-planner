@@ -11,7 +11,7 @@ import { GoogleLogin } from "./GoogleLogin";
 
 export function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
-  const { peopleFilter, printing } = useSelector((state) => state.config);
+  const { peopleFilter } = useSelector((state) => state.config);
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
@@ -71,7 +71,7 @@ export function NavBar({ rulesSatisfied }) {
                   Nastavení
                 </NavDropdown.Item>
               )}
-              {printing && userLevel >= level.VIEW && (
+              {userLevel >= level.VIEW && (
                 <NavDropdown.Item as={NavLink} to="print" end>
                   Tisk
                 </NavDropdown.Item>
