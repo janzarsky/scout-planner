@@ -137,8 +137,6 @@ export default function App() {
     return tmp;
   }, [violations, otherProblems]);
 
-  const { peopleFilter } = useSelector((state) => state.config);
-
   return (
     <div className="App">
       <Notifications />
@@ -154,7 +152,7 @@ export default function App() {
             element={
               <>
                 {userLevel >= level.VIEW && <PackageFilter />}
-                {peopleFilter && userLevel >= level.VIEW && <PeopleFilter />}
+                {userLevel >= level.VIEW && <PeopleFilter />}
                 {userLevel >= level.VIEW && <ViewSettings />}
                 {userLevel >= level.VIEW && <RangesSettings />}
               </>

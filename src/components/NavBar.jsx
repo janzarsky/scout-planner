@@ -11,7 +11,6 @@ import { GoogleLogin } from "./GoogleLogin";
 
 export function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
-  const { peopleFilter } = useSelector((state) => state.config);
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
@@ -84,9 +83,7 @@ export function NavBar({ rulesSatisfied }) {
               element={
                 <>
                   {userLevel >= level.VIEW && <PackageFilterToggle />}
-                  {peopleFilter && userLevel >= level.VIEW && (
-                    <PeopleFilterToggle />
-                  )}
+                  {userLevel >= level.VIEW && <PeopleFilterToggle />}
                   {userLevel >= level.VIEW && <ViewSettingsToggle />}
                   {userLevel >= level.VIEW && <RangesSettingsToggle />}
                 </>
