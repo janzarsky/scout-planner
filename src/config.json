@@ -4,6 +4,5 @@
   "authDomain": "scout-planner-343913.firebaseapp.com",
   "projectId": "scout-planner-343913",
   "attendance": true,
-  "peopleFilter": true,
-  "printing": true
+  "peopleFilter": true
 }

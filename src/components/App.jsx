@@ -137,7 +137,7 @@ export default function App() {
     return tmp;
   }, [violations, otherProblems]);
 
-  const { peopleFilter, printing } = useSelector((state) => state.config);
+  const { peopleFilter } = useSelector((state) => state.config);
 
   return (
     <div className="App">
@@ -211,17 +211,15 @@ export default function App() {
           }
         />
         <Route path="settings" element={<Settings />} />
-        {printing && (
-          <Route
-            path="print"
-            element={
-              <PrintWrapper
-                dataLoaded={dataLoaded}
-                violationsPerProgram={violationsPerProgram}
-              />
-            }
-          />
-        )}
+        <Route
+          path="print"
+          element={
+            <PrintWrapper
+              dataLoaded={dataLoaded}
+              violationsPerProgram={violationsPerProgram}
+            />
+          }
+        />
       </Routes>
     </div>
   );
