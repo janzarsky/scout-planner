@@ -5,6 +5,5 @@
   "projectId": "scout-planner-343913",
   "attendance": true,
   "peopleFilter": true,
-  "printing": true,
-  "optionalAttendance": true
+  "printing": true
 }
