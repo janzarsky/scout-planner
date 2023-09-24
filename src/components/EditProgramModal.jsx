@@ -260,7 +260,13 @@ function ProgramTitle({ title, setTitle, disabled = false }) {
   );
 }
 
-function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
+export function ProgramBeginning({
+  time,
+  setTime,
+  date,
+  setDate,
+  disabled = false,
+}) {
   const datepicker = useSelector((state) => state.config.datepicker);
 
   return (
