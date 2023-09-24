@@ -4,6 +4,7 @@ import React from "react";
 import { PersonCheck } from "../../src/components/EditProgramModal";
 import { ProgramBeginning } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
+import { overrideConfig } from "../../src/store/configSlice";
 
 describe("PersonCheck", () => {
   let store;
@@ -72,6 +73,13 @@ describe("PersonCheck", () => {
 });
 
 describe("Program beginning", () => {
+  let store;
+
+  beforeEach(() => {
+    store = getStore();
+    store.dispatch(overrideConfig({ datepicker: true }));
+  });
+
   function mountBeginning(disabled = false) {
     cy.mount(
       <ProgramBeginning
@@ -81,7 +89,7 @@ describe("Program beginning", () => {
         setDate={cy.stub().as("setDate")}
         disabled={disabled}
       />,
-      {},
+      { reduxStore: store },
     );
   }
 
