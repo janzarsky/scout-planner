@@ -284,6 +284,7 @@ function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
             dateFormat="d.M.yyyy"
             selected={new Date(parseDate(date))}
             onChange={(val) => setDate(formatDateWithTray(val.getTime()))}
+            disabled={disabled}
           />
         ) : (
           <Form.Control
