@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import React from "react";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import Users from "../../src/components/Users";
 import { level } from "../../src/helpers/Level";
@@ -185,7 +186,8 @@ describe("Users", () => {
     store.dispatch(setPublicLevel(level.ADMIN));
     cy.mount(<Users />, { reduxStore: store });
 
-    cy.get("input").clear().type("another@email.com");
+    cy.get("input").clear();
+    cy.get("input").type("another@email.com");
     cy.get("select").select("zobrazovat");
     cy.contains("Přidat").click();
 

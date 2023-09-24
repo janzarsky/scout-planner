@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import React from "react";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import People from "../../src/components/People";
 import { getStore } from "../../src/store";
@@ -18,7 +19,7 @@ describe("People", () => {
         addPerson: cy
           .spy(async (person) => ({ _id: "newperson", ...person }))
           .as("addPerson"),
-        deletePerson: cy.spy(async (id) => {}).as("deletePerson"),
+        deletePerson: cy.spy(async () => {}).as("deletePerson"),
         updatePerson: cy.spy(async (person) => person).as("updatePerson"),
       })
       .log(false);
@@ -44,7 +45,8 @@ describe("People", () => {
 
   it("add person", () => {
     cy.mount(<People />, { reduxStore: store });
-    cy.get("[data-test='people-new-name']").clear().type("Person 1");
+    cy.get("[data-test='people-new-name']").clear();
+    cy.get("[data-test='people-new-name']").type("Person 1");
     cy.get("[data-test='people-new-add']").click();
 
     cy.get("@addPerson").should("be.calledOnceWith", { name: "Person 1" });
@@ -78,7 +80,8 @@ describe("People", () => {
     cy.mount(<People />, { reduxStore: store });
 
     cy.contains("Upravit").click();
-    cy.get("[data-test='people-edit-name']").clear().type("Person 2");
+    cy.get("[data-test='people-edit-name']").clear();
+    cy.get("[data-test='people-edit-name']").type("Person 2");
     cy.get("[data-test='people-edit-save']").click();
 
     cy.get("@updatePerson").should("be.calledOnceWith");

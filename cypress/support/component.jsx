@@ -1,4 +1,5 @@
 import "./commands";
+import React from "react";
 import { mount } from "cypress/react18";
 import { Provider } from "react-redux";
 import { DndProvider } from "react-dnd";
