@@ -8,6 +8,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
 import { formatDateTime, parseDateTime } from "../helpers/DateUtils";
+import { InputGroup } from "react-bootstrap";
 
 export default function People() {
   const { people } = useSelector((state) => state.people);
@@ -201,13 +202,47 @@ function EditedPerson({
   );
 }
 
-function AbsenceSelector({ absence, setAbsence }) {
+export function AbsenceSelector({ absence: stringAbsence, setAbsence }) {
+  const absences = parseAbsence(stringAbsence);
+
+  const [newAbsence, setNewAbsence] = useState("");
+
+  const removeAbsence = (absence) => {
+    const updatedAbsences = absences.filter(
+      (a) => a.begin != absence.begin || a.end != absence.end,
+    );
+    setAbsence(formatAbsence(updatedAbsences));
+  };
+
   return (
-    <Form.Control
-      value={absence}
-      onChange={(e) => setAbsence(e.target.value)}
-      placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
-    />
+    <>
+      {absences.map((absence) => (
+        <span key={`${absence.begin},${absence.end}`}>
+          {formatAbsence([absence])}
+          <Button
+            className="btn-sm text-danger"
+            variant="link"
+            onClick={() => removeAbsence(absence)}
+          >
+            <i className="fa fa-trash" />
+          </Button>
+        </span>
+      ))}
+      <InputGroup>
+        <Form.Control
+          key="new"
+          placeholder="Přidat neúčast"
+          value={newAbsence}
+          onChange={(e) => setNewAbsence(e.target.value)}
+        />
+        <Button
+          variant="success"
+          onClick={() => setAbsence(stringAbsence + ", " + newAbsence)}
+        >
+          <i className="fa fa-check" />
+        </Button>
+      </InputGroup>
+    </>
   );
 }
 

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
-import People from "../../src/components/People";
+import People, { AbsenceSelector } from "../../src/components/People";
 import { getStore } from "../../src/store";
 import { setTable } from "../../src/store/authSlice";
 import { addPerson } from "../../src/store/peopleSlice";
@@ -97,5 +97,15 @@ describe("People", () => {
 
     cy.contains("Person 2");
     cy.contains("Upravit");
+  });
+});
+
+describe.only("Absence selector", () => {
+  it("adds new absence", () => {
+    cy.mount(<AbsenceSelector absence="" />);
+
+    cy.get("input[placeholder='Přidat neúčast']").type(
+      "9:42 11.6.2022 - 11:03 12.6.2022",
+    );
   });
 });
