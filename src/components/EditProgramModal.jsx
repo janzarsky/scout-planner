@@ -27,8 +27,13 @@ import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
+import { registerLocale, setDefaultLocale } from "react-datepicker";
+import cs from "date-fns/locale/cs";
 
 import "react-datepicker/dist/react-datepicker.css";
+
+registerLocale("cs", cs);
+setDefaultLocale("cs");
 
 export function EditProgramModal() {
   const { id: programId } = useParams();
