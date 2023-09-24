@@ -153,7 +153,9 @@ function EditedPerson({
   setAbsence = null,
   isNew = false,
 }) {
-  const attendanceFlag = useSelector((state) => state.config.attendance);
+  const { attendance: attendanceFlag, datepicker } = useSelector(
+    (state) => state.config,
+  );
 
   return (
     <tr>
@@ -166,13 +168,16 @@ function EditedPerson({
       </td>
       {attendanceFlag && (
         <td>
-          {absence !== null && (
-            <Form.Control
-              value={absence}
-              onChange={(e) => setAbsence(e.target.value)}
-              placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
-            />
-          )}
+          {absence !== null &&
+            (datepicker ? (
+              <AbsenceSelector absence={absence} setAbsence={setAbsence} />
+            ) : (
+              <Form.Control
+                value={absence}
+                onChange={(e) => setAbsence(e.target.value)}
+                placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
+              />
+            ))}
         </td>
       )}
       <td>
@@ -193,6 +198,16 @@ function EditedPerson({
         </Button>
       </td>
     </tr>
+  );
+}
+
+function AbsenceSelector({ absence, setAbsence }) {
+  return (
+    <Form.Control
+      value={absence}
+      onChange={(e) => setAbsence(e.target.value)}
+      placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
+    />
   );
 }
 
