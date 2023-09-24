@@ -26,6 +26,9 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 export function EditProgramModal() {
   const { id: programId } = useParams();
@@ -253,6 +256,8 @@ function ProgramTitle({ title, setTitle, disabled = false }) {
 }
 
 function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
+  const datepicker = useSelector((state) => state.config.datepicker);
+
   return (
     <Form.Group as={Row} className="mb-1">
       <Form.Label column sm="2">
@@ -268,13 +273,21 @@ function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
         />
       </Col>
       <Col>
-        <Form.Control
-          type="text"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          placeholder="DD.MM.YYYY"
-          disabled={disabled}
-        />
+        {datepicker ? (
+          <DatePicker
+            dateFormat="d.M.yyyy"
+            selected={new Date(parseDate(date))}
+            onChange={(val) => setDate(formatDateWithTray(val.getTime()))}
+          />
+        ) : (
+          <Form.Control
+            type="text"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            placeholder="DD.MM.YYYY"
+            disabled={disabled}
+          />
+        )}
       </Col>
     </Form.Group>
   );
