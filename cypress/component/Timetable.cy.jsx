@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import React from "react";
 import Timetable from "../../src/components/Timetable";
 import { getStore } from "../../src/store";
 import { addProgram } from "../../src/store/programsSlice";

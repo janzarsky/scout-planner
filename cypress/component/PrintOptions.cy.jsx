@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import React from "react";
 import { PrintOptions } from "../../src/components/PrintOptions";
 
 describe("Print options", () => {

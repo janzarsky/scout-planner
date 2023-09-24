@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import React from "react";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import Program from "../../src/components/Program";
 import { level } from "../../src/helpers/Level";

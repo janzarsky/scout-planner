@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import React from "react";
 import { testing as authTesting } from "../../src/store/authSlice";
 import { getStore } from "../../src/store";
 import { level } from "../../src/helpers/Level";

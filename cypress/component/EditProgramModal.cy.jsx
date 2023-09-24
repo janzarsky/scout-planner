@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+import React from "react";
 import { PersonCheck } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
 
