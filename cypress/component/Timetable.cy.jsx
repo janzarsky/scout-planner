@@ -19,19 +19,6 @@ describe("Timetable", () => {
     name: "Bob",
   };
 
-  const prog = {
-    _id: "testprogramid",
-    title: "Test program",
-    url: "https://some.program.url",
-    people: [{ personId: alice._id }, { personId: bob._id }],
-    notes: "Test program notes",
-    locked: false,
-    duration: 16200000,
-    begin: 1660636800000,
-    groups: [],
-    ranges: {},
-  };
-
   const now = Date.parse("Sun Mar 05 11:00:00 2023 UTC");
 
   let store;

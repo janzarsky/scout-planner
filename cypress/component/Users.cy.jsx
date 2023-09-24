@@ -186,7 +186,8 @@ describe("Users", () => {
     store.dispatch(setPublicLevel(level.ADMIN));
     cy.mount(<Users />, { reduxStore: store });
 
-    cy.get("input").clear().type("another@email.com");
+    cy.get("input").clear();
+    cy.get("input").type("another@email.com");
     cy.get("select").select("zobrazovat");
     cy.contains("Přidat").click();
 
