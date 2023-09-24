@@ -280,6 +280,7 @@ function ProgramBeginning({ time, setTime, date, setDate, disabled = false }) {
       <Col>
         {datepicker ? (
           <DatePicker
+            className="form-control"
             dateFormat="d.M.yyyy"
             selected={new Date(parseDate(date))}
             onChange={(val) => setDate(formatDateWithTray(val.getTime()))}
