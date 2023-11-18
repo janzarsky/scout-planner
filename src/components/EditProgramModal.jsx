@@ -691,7 +691,16 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
   return (
     <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
-        Pořadí v bloku
+        Pořadí v bloku{" "}
+        <OverlayTrigger
+          overlay={
+            <Tooltip>
+              Pro více programů současně, každý program musí mít jiné číslo.
+            </Tooltip>
+          }
+        >
+          <i className="fa fa-question-circle" aria-hidden="true"></i>
+        </OverlayTrigger>
       </Form.Label>
       <Col>
         {disabled ? (
