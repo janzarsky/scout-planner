@@ -14,7 +14,11 @@ import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
 
-export default function Timetable({ violations, timeProvider = null }) {
+export default function Timetable({
+  violations,
+  timeProvider = null,
+  printView = false,
+}) {
   const dispatch = useDispatch();
   const { programs } = useSelector((state) => state.programs);
 
@@ -110,11 +114,13 @@ export default function Timetable({ violations, timeProvider = null }) {
           />
         )}
       </div>
-      <Tray
-        settings={settings}
-        programs={programs}
-        onDroppableDrop={onDroppableDrop}
-      />
+      {!printView && (
+        <Tray
+          settings={settings}
+          programs={programs}
+          onDroppableDrop={onDroppableDrop}
+        />
+      )}
     </DndProvider>
   );
 }

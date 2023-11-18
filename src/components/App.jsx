@@ -223,13 +223,17 @@ export default function App() {
   );
 }
 
-export function TimetableWrapper({ violationsPerProgram, dataLoaded }) {
+export function TimetableWrapper({
+  violationsPerProgram,
+  dataLoaded,
+  printView = false,
+}) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   return (
     <>
       {userLevel >= level.VIEW && dataLoaded && (
-        <Timetable violations={violationsPerProgram} />
+        <Timetable violations={violationsPerProgram} printView={printView} />
       )}
       {!dataLoaded && (
         <Container fluid>

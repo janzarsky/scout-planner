@@ -66,6 +66,7 @@ export function PrintWrapper({ dataLoaded, violationsPerProgram }) {
         <TimetableWrapper
           dataLoaded={dataLoaded}
           violationsPerProgram={violationsPerProgram}
+          printView={true}
         />
       </div>
       <PrintOptions printCallback={(preset) => setPreset(preset)} />
