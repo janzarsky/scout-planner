@@ -527,7 +527,16 @@ function ProgramPeople({
   return (
     <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
-        Lidi
+        Lidi{" "}
+        <OverlayTrigger
+          overlay={
+            <Tooltip>
+              Organizátoři označení červeně v průběhu programu chybí.
+            </Tooltip>
+          }
+        >
+          <i className="fa fa-question-circle" aria-hidden="true"></i>
+        </OverlayTrigger>
       </Form.Label>
       <Col>
         {[...objectPeople]
