@@ -23,13 +23,14 @@ describe("Timetable", () => {
 
   let store;
 
-  function mountTimetable() {
+  function mountTimetable(printView) {
     cy.mount(
       <Timetable
         addProgramModal={cy.stub().as("addProgram")}
         onEdit={cy.stub().as("onEdit")}
         timeProvider={() => now}
         violations={new Map()}
+        printView={printView}
       />,
       { reduxStore: store, router: true },
     );
@@ -116,5 +117,15 @@ describe("Timetable", () => {
           "1 / 1 / span 1 / span 18",
         );
       });
+  });
+
+  it("tray is shown when not printing", () => {
+    mountTimetable(false);
+    cy.get(".tray");
+  });
+
+  it("tray is hidden when printing", () => {
+    mountTimetable(true);
+    cy.get(".tray").should("not.exist");
   });
 });
