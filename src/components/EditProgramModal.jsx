@@ -31,6 +31,7 @@ import { registerLocale, setDefaultLocale } from "react-datepicker";
 import cs from "date-fns/locale/cs";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -357,14 +358,19 @@ function ProgramDuration({
           />
         </Col>
         <Col>
-          <Form.Check
-            type="checkbox"
-            label="Zamknout"
-            checked={locked}
-            onChange={(e) => setLocked(e.target.checked)}
-            id="locked"
-            disabled={disabled}
-          />
+          <Form.Check>
+            <Form.Check.Input
+              type="checkbox"
+              checked={locked}
+              onChange={(e) => setLocked(e.target.checked)}
+              id="locked"
+              disabled={disabled}
+            />
+            <Form.Check.Label>
+              Zamknout &nbsp;
+              <InfoIcon text="Zamknuté programy nelze v harmonogramu přesouvat" />
+            </Form.Check.Label>
+          </Form.Check>
         </Col>
       </Form.Group>
       {!disabled && defaultDurations && (
@@ -513,7 +519,8 @@ function ProgramPeople({
   return (
     <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
-        Lidi
+        Lidi{" "}
+        <InfoIcon text="Organizátoři označení červeně v průběhu programu chybí." />
       </Form.Label>
       <Col>
         {[...objectPeople]
@@ -583,7 +590,8 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
   return (
     <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
-        URL
+        URL{" "}
+        <InfoIcon text="Odkaz na více informací. Zobrazuje se v levém dolním rohu programu." />
       </Form.Label>
       <Col>
         {disabled ? (
@@ -658,7 +666,8 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
   return (
     <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
-        Pořadí v bloku
+        Pořadí v bloku{" "}
+        <InfoIcon text="Pro více programů současně, každý program musí mít jiné číslo." />
       </Form.Label>
       <Col>
         {disabled ? (
@@ -804,6 +813,14 @@ export function AddProgramModal() {
         </Modal.Footer>
       </Form>
     </Modal>
+  );
+}
+
+function InfoIcon({ text }) {
+  return (
+    <OverlayTrigger overlay={<Tooltip>{text}</Tooltip>}>
+      <i className="fa fa-question-circle" aria-hidden="true"></i>
+    </OverlayTrigger>
   );
 }
 
