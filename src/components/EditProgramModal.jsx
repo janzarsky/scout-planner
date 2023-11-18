@@ -606,7 +606,17 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
   return (
     <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
-        URL
+        URL{" "}
+        <OverlayTrigger
+          overlay={
+            <Tooltip>
+              Odkaz na více informací. Zobrazuje se v levém dolním rohu
+              programu.
+            </Tooltip>
+          }
+        >
+          <i className="fa fa-question-circle" aria-hidden="true"></i>
+        </OverlayTrigger>
       </Form.Label>
       <Col>
         {disabled ? (
