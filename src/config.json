@@ -4,5 +4,5 @@
   "authDomain": "scout-planner-343913.firebaseapp.com",
   "projectId": "scout-planner-343913",
   "attendance": true,
-  "datepicker": false
+  "datepicker": true
 }
