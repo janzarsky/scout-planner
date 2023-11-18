@@ -368,15 +368,7 @@ function ProgramDuration({
             />
             <Form.Check.Label>
               Zamknout &nbsp;
-              <OverlayTrigger
-                overlay={
-                  <Tooltip>
-                    Zamknuté programy nelze v harmonogramu přesouvat
-                  </Tooltip>
-                }
-              >
-                <i className="fa fa-question-circle" aria-hidden="true"></i>
-              </OverlayTrigger>
+              <InfoIcon text="Zamknuté programy nelze v harmonogramu přesouvat" />
             </Form.Check.Label>
           </Form.Check>
         </Col>
@@ -528,15 +520,7 @@ function ProgramPeople({
     <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
         Lidi{" "}
-        <OverlayTrigger
-          overlay={
-            <Tooltip>
-              Organizátoři označení červeně v průběhu programu chybí.
-            </Tooltip>
-          }
-        >
-          <i className="fa fa-question-circle" aria-hidden="true"></i>
-        </OverlayTrigger>
+        <InfoIcon text="Organizátoři označení červeně v průběhu programu chybí." />
       </Form.Label>
       <Col>
         {[...objectPeople]
@@ -607,16 +591,7 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
     <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
         URL{" "}
-        <OverlayTrigger
-          overlay={
-            <Tooltip>
-              Odkaz na více informací. Zobrazuje se v levém dolním rohu
-              programu.
-            </Tooltip>
-          }
-        >
-          <i className="fa fa-question-circle" aria-hidden="true"></i>
-        </OverlayTrigger>
+        <InfoIcon text="Odkaz na více informací. Zobrazuje se v levém dolním rohu programu." />
       </Form.Label>
       <Col>
         {disabled ? (
@@ -692,15 +667,7 @@ function ProgramBlockOrder({ blockOrder, setBlockOrder, disabled = false }) {
     <Form.Group as={Row} className="mb-2">
       <Form.Label column sm="2">
         Pořadí v bloku{" "}
-        <OverlayTrigger
-          overlay={
-            <Tooltip>
-              Pro více programů současně, každý program musí mít jiné číslo.
-            </Tooltip>
-          }
-        >
-          <i className="fa fa-question-circle" aria-hidden="true"></i>
-        </OverlayTrigger>
+        <InfoIcon text="Pro více programů současně, každý program musí mít jiné číslo." />
       </Form.Label>
       <Col>
         {disabled ? (
@@ -846,6 +813,14 @@ export function AddProgramModal() {
         </Modal.Footer>
       </Form>
     </Modal>
+  );
+}
+
+function InfoIcon({ text }) {
+  return (
+    <OverlayTrigger overlay={<Tooltip>{text}</Tooltip>}>
+      <i className="fa fa-question-circle" aria-hidden="true"></i>
+    </OverlayTrigger>
   );
 }
 
