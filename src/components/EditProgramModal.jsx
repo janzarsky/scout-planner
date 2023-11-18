@@ -31,6 +31,7 @@ import { registerLocale, setDefaultLocale } from "react-datepicker";
 import cs from "date-fns/locale/cs";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -357,14 +358,27 @@ function ProgramDuration({
           />
         </Col>
         <Col>
-          <Form.Check
-            type="checkbox"
-            label="Zamknout"
-            checked={locked}
-            onChange={(e) => setLocked(e.target.checked)}
-            id="locked"
-            disabled={disabled}
-          />
+          <Form.Check>
+            <Form.Check.Input
+              type="checkbox"
+              checked={locked}
+              onChange={(e) => setLocked(e.target.checked)}
+              id="locked"
+              disabled={disabled}
+            />
+            <Form.Check.Label>
+              Zamknout &nbsp;
+              <OverlayTrigger
+                overlay={
+                  <Tooltip>
+                    Zamknuté programy nelze v harmonogramu přesouvat
+                  </Tooltip>
+                }
+              >
+                <i className="fa fa-question-circle" aria-hidden="true"></i>
+              </OverlayTrigger>
+            </Form.Check.Label>
+          </Form.Check>
         </Col>
       </Form.Group>
       {!disabled && defaultDurations && (
