@@ -59,6 +59,12 @@ export default function App() {
 
   const dispatch = useDispatch();
 
+  const pageTitle = useSelector((state) => state.timetable.timetable.title);
+
+  useEffect(() => {
+    if (pageTitle) document.title = `${pageTitle} – Skautský plánovač`;
+  }, [pageTitle]);
+
   useEffect(() => {
     if (!permissionsLoaded && !initializing) {
       const client = firestoreClientFactory.getClient(table);
