@@ -5,5 +5,5 @@
   "projectId": "scout-planner-343913",
   "attendance": true,
   "datepicker": true,
-  "timetableTitle": false
+  "timetableTitle": true
 }
