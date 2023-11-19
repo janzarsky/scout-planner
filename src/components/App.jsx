@@ -33,6 +33,7 @@ import { PeopleFilter } from "./PeopleFilter";
 import { PrintWrapper } from "./PrintOptions";
 import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
+import { getTimetable } from "../store/timetableSlice";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -51,6 +52,7 @@ export default function App() {
   );
   const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
   const settingsLoaded = useSelector((state) => state.settings.loaded);
+  const timetableLoaded = useSelector((state) => state.timetable.loaded);
   const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth,
   );
@@ -76,6 +78,7 @@ export default function App() {
         dispatch(getRules(client));
         dispatch(getPeople(client));
         dispatch(getSettings(client));
+        dispatch(getTimetable(client));
       }
 
       if (userLevel >= level.ADMIN) dispatch(getUsers(client));
@@ -106,7 +109,8 @@ export default function App() {
         packagesLoaded &&
         rulesLoaded &&
         peopleLoaded &&
-        settingsLoaded)
+        settingsLoaded &&
+        timetableLoaded)
     )
       setDataLoaded(true);
   }, [
@@ -117,6 +121,7 @@ export default function App() {
     rulesLoaded,
     peopleLoaded,
     settingsLoaded,
+    timetableLoaded,
     permissionsLoaded,
     userLevel,
   ]);

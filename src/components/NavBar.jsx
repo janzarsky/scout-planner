@@ -11,12 +11,13 @@ import { GoogleLogin } from "./GoogleLogin";
 
 export function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
+  const title = useSelector((state) => state.timetable.timetable.title);
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
       <Container fluid className="ps-0 pe-0">
         <Nav.Link as={NavLink} to="" end>
-          Harmonogram
+          {title ? title : "Harmonogram"}
         </Nav.Link>
         <Navbar.Toggle
           aria-controls="navbar-toggle"
