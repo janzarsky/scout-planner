@@ -6,6 +6,7 @@ import groupsReducer from "./groupsSlice";
 import packagesReducer from "./packagesSlice";
 import rulesReducer from "./rulesSlice";
 import settingsReducer from "./settingsSlice";
+import timetableReducer from "./timetableSlice";
 import usersReducer from "./usersSlice";
 import programsReducer from "./programsSlice";
 import peopleReducer from "./peopleSlice";
@@ -25,6 +26,7 @@ export function getStore() {
         packages: packagesReducer,
         rules: rulesReducer,
         settings: settingsReducer,
+        timetable: timetableReducer,
         users: usersReducer,
         programs: programsReducer,
         people: peopleReducer,
