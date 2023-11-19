@@ -80,12 +80,12 @@ describe("Program beginning", () => {
     store.dispatch(overrideConfig({ datepicker: true }));
   });
 
-  function mountBeginning(disabled = false) {
+  function mountBeginning(disabled = false, tray = false) {
     cy.mount(
       <ProgramBeginning
-        time={"11:30"}
+        time={tray ? "(odkladiště)" : "11:30"}
         setTime={cy.stub().as("setTime")}
-        date={"11.6.2022"}
+        date={tray ? "(odkladiště)" : "11.6.2022"}
         setDate={cy.stub().as("setDate")}
         disabled={disabled}
       />,
@@ -117,5 +117,10 @@ describe("Program beginning", () => {
 
     cy.get("input[value='11:30']").should("have.attr", "disabled");
     cy.get("input[value='11.6.2022']").should("have.attr", "disabled");
+  });
+
+  it("works even when in tray", () => {
+    mountBeginning(false, true);
+    cy.get("input[value='(odkladiště)']");
   });
 });
