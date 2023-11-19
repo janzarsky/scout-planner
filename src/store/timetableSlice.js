@@ -2,7 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getTimetable = createAsyncThunk(
   "timetable/getTimetable",
-  async (client) => await client.getTimetable(),
+  async (client) => ({
+    title: null,
+    ...(await client.getTimetable()),
+  }),
 );
 
 export const timetableSlice = createSlice({
