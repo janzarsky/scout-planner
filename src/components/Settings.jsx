@@ -13,14 +13,17 @@ import { updateSettings } from "../store/settingsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
+import { TimetableTitle } from "./TimetableTitle";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
+  const timetableTitle = useSelector((state) => state.config.timetableTitle);
 
   return (
     <>
       <Container fluid>
         <h2 className="mt-3">Nastavení</h2>
+        {userLevel >= level.EDIT && timetableTitle && <TimetableTitle />}
         {userLevel >= level.EDIT && <TimeStep />}
         {userLevel >= level.EDIT && <Width />}
         <h2 className="mt-5 text-danger">

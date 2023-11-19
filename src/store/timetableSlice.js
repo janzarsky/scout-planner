@@ -17,8 +17,8 @@ export const timetableSlice = createSlice({
     loaded: false,
   },
   reducers: {
-    updateTimetable(state, action) {
-      state.timetable = action.payload;
+    updateTitle(state, action) {
+      state.timetable.title = action.payload;
     },
   },
   extraReducers(builder) {
@@ -45,6 +45,6 @@ export const timetableSlice = createSlice({
   },
 });
 
-export const { updateTimetable } = timetableSlice.actions;
+export const { updateTitle } = timetableSlice.actions;
 
 export default timetableSlice.reducer;

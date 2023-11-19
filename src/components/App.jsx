@@ -62,7 +62,9 @@ export default function App() {
   const pageTitle = useSelector((state) => state.timetable.timetable.title);
 
   useEffect(() => {
-    if (pageTitle) document.title = `${pageTitle} – Skautský plánovač`;
+    document.title = pageTitle
+      ? `${pageTitle} – Skautský plánovač`
+      : "Skautský plánovač";
   }, [pageTitle]);
 
   useEffect(() => {
