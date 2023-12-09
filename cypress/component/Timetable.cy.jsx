@@ -32,7 +32,7 @@ describe("Timetable", () => {
         violations={new Map()}
         printView={printView}
       />,
-      { reduxStore: store, router: true },
+      { reduxStore: store, router: true, command: true },
     );
   }
 

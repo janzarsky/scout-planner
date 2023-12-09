@@ -19,3 +19,7 @@ export function CommandProvider({ children }) {
 export function useCommandHandler() {
   return useContext(CommandContext);
 }
+
+export const testing = {
+  CommandContext,
+};

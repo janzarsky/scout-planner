@@ -9,6 +9,7 @@ import { addProgram, updateProgram } from "../store/programsSlice";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
+import { useCommandHandler } from "./CommandContext";
 
 export default function Program({ program, rect, violations }) {
   const { packages } = useSelector((state) => state.packages);
@@ -20,6 +21,7 @@ export default function Program({ program, rect, violations }) {
   const ref = useRef(null);
 
   const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "program",
@@ -65,12 +67,6 @@ export default function Program({ program, rect, violations }) {
 
   drag(drop(ref));
 
-  const clone = (p) =>
-    client.addProgram(p).then(
-      (resp) => dispatch(addProgram(resp)),
-      (e) => dispatch(addError(e.message)),
-    );
-
   const timeStep = useSelector((state) => state.settings.settings.timeStep);
   const narrow = program.duration <= 2 * timeStep;
 
@@ -102,7 +98,10 @@ export default function Program({ program, rect, violations }) {
       )}
       {program.url && <ProgramUrl url={program.url} narrow={narrow} />}
       {userLevel >= level.EDIT && (
-        <ProgramClone clone={() => clone(program)} narrow={narrow} />
+        <ProgramClone
+          clone={() => dispatchCommand(client, addProgram(program))}
+          narrow={narrow}
+        />
       )}
     </div>
   );
