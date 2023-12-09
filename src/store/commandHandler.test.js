@@ -18,7 +18,7 @@ describe("Command handler", () => {
     const commandHandler = getCommandHandler(store);
     expect(() =>
       commandHandler.dispatchCommand(client, {
-        action: "testcommand",
+        type: "testcommand",
         payload: "testpayload",
       }),
     ).toThrowError(/testcommand/);
@@ -27,7 +27,7 @@ describe("Command handler", () => {
   it("executes command", async () => {
     const commandHandler = getCommandHandler(store);
     commandHandler.dispatchCommand(client, {
-      action: "programs/addProgram",
+      type: "programs/addProgram",
       payload: { id: "test" },
     });
     expect(client.addProgram).toHaveBeenCalledWith({ id: "test" });

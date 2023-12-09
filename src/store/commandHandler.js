@@ -3,7 +3,7 @@ import { addProgram } from "./programsSlice";
 
 export function getCommandHandler(store) {
   return {
-    dispatchCommand(client, { action, payload }) {
+    dispatchCommand(client, { type, payload }) {
       const actions = {
         [addProgram().type]: (payload) => {
           client.addProgram(payload).then(
@@ -14,9 +14,9 @@ export function getCommandHandler(store) {
         },
       };
 
-      if (!actions[action]) throw new Error(`Unsupported command: ${action}`);
+      if (!actions[type]) throw new Error(`Unsupported command: ${type}`);
 
-      actions[action](payload);
+      actions[type](payload);
     },
   };
 }
