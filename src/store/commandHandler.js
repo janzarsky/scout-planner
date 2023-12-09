@@ -4,7 +4,7 @@ export function getCommandHandler(store) {
   return {
     dispatchCommand({ action, payload }) {
       const actions = {
-        "programs/addProgram"(store, payload) {
+        [addProgram().type]: (store, payload) => {
           store.dispatch(addProgram(payload));
         },
       };
