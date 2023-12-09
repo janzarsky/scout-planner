@@ -26,6 +26,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useCommandHandler } from "./CommandContext";
 import DatePicker from "react-datepicker";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import cs from "date-fns/locale/cs";
@@ -62,6 +63,7 @@ export function EditProgramModal() {
   );
 
   const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -93,10 +95,7 @@ export function EditProgramModal() {
     const newProgram = { ...program };
     delete newProgram._id;
 
-    client.addProgram(newProgram).then(
-      (resp) => dispatch(addProgram(resp)),
-      (e) => dispatch(addError(e.message)),
-    );
+    dispatchCommand(client, addProgram(newProgram));
   }
 
   function handleSubmit(event) {
