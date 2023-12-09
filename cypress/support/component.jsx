@@ -8,6 +8,8 @@ import { getStore } from "../../src/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { MemoryRouter } from "react-router-dom";
 import { testing } from "../../src/components/AuthProvider";
+import { testing as commandTesting } from "../../src/components/CommandContext";
+import { getCommandHandler } from "../../src/store/commandHandler";
 
 // the order is important for CSS
 import "../../src/index.css";
@@ -18,6 +20,7 @@ Cypress.Commands.add("mount", (component, options = {}) => {
     dndProvider = false,
     router = false,
     auth = false,
+    command = false,
     authValue = {},
     initialEntries = ["/"],
     ...mountOptions
@@ -37,12 +40,22 @@ Cypress.Commands.add("mount", (component, options = {}) => {
     dndWrapped
   );
 
-  const authWrapped = auth ? (
-    <testing.AuthContext.Provider value={authValue}>
+  const commandWrapped = command ? (
+    <commandTesting.CommandContext.Provider
+      value={getCommandHandler(reduxStore)}
+    >
       {routerWrapped}
-    </testing.AuthContext.Provider>
+    </commandTesting.CommandContext.Provider>
   ) : (
     routerWrapped
+  );
+
+  const authWrapped = auth ? (
+    <testing.AuthContext.Provider value={authValue}>
+      {commandWrapped}
+    </testing.AuthContext.Provider>
+  ) : (
+    commandWrapped
   );
 
   return mount(authWrapped, mountOptions);
