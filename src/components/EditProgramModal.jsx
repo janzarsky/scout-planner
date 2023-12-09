@@ -121,11 +121,7 @@ export function EditProgramModal() {
       blockOrder: blockOrder,
     };
 
-    dispatch(updateProgram(updatedProgram));
-
-    client
-      .updateProgram(updatedProgram)
-      .catch((e) => dispatch(addError(e.message)));
+    dispatchCommand(client, updateProgram(updatedProgram));
   }
 
   return (

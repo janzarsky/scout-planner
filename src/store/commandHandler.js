@@ -1,16 +1,22 @@
 import { addError } from "./errorsSlice";
-import { addProgram } from "./programsSlice";
+import { addProgram, updateProgram } from "./programsSlice";
 
 export function getCommandHandler(store) {
   return {
     dispatchCommand(client, { type, payload }) {
       const actions = {
+        // throwing out promise on purpose in all actions
         [addProgram().type]: (payload) => {
           client.addProgram(payload).then(
             (resp) => store.dispatch(addProgram(resp)),
             (e) => store.dispatch(addError(e.message)),
           );
-          // throwing out promise on purpose
+        },
+        [updateProgram().type]: (payload) => {
+          client.updateProgram(payload).then(
+            (resp) => store.dispatch(updateProgram(resp)),
+            (e) => store.dispatch(addError(e.message)),
+          );
         },
       };
 
