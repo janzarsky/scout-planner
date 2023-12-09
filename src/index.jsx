@@ -17,6 +17,7 @@ import { Provider, useDispatch } from "react-redux";
 import { getStore } from "./store";
 import { setTable } from "./store/authSlice";
 import { AuthProvider } from "./components/AuthProvider";
+import { CommandProvider } from "./components/CommandContext";
 
 function AppWrapper() {
   const dispatch = useDispatch();
@@ -28,7 +29,9 @@ function AppWrapper() {
 
   return (
     <AuthProvider>
-      <App />
+      <CommandProvider>
+        <App />
+      </CommandProvider>
     </AuthProvider>
   );
 }
