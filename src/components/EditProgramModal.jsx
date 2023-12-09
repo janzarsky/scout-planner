@@ -711,7 +711,7 @@ export function AddProgramModal() {
   const [ranges, setRanges] = useState({});
   const [blockOrder, setBlockOrder] = useState(0);
 
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -726,27 +726,21 @@ export function AddProgramModal() {
     const begin = parseDate(date) + parseTime(time);
     const parsedDuration = parseDuration(duration);
 
-    client
-      .addProgram({
-        begin: isNaN(begin) ? null : begin,
-        duration: isNaN(parsedDuration)
-          ? parseDuration("1:00")
-          : parsedDuration,
-        title: title,
-        pkg: pkg,
-        groups: groups,
-        people: attendance,
-        ranges: ranges,
-        place: place,
-        url: url,
-        notes: notes,
-        locked: locked,
-        blockOrder: blockOrder,
-      })
-      .then(
-        (resp) => dispatch(addProgram(resp)),
-        (e) => dispatch(addError(e.message)),
-      );
+    const newProgram = {
+      begin: isNaN(begin) ? null : begin,
+      duration: isNaN(parsedDuration) ? parseDuration("1:00") : parsedDuration,
+      title: title,
+      pkg: pkg,
+      groups: groups,
+      people: attendance,
+      ranges: ranges,
+      place: place,
+      url: url,
+      notes: notes,
+      locked: locked,
+      blockOrder: blockOrder,
+    };
+    dispatchCommand(client, addProgram(newProgram));
   }
 
   return (
