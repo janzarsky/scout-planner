@@ -1,6 +1,6 @@
 import { describe, vi } from "vitest";
-import { dispatchCommand } from "./commandHandler";
 import { addProgram } from "./programsSlice";
+import { getCommandHandler } from "./commandHandler";
 
 describe("Command handler", () => {
   let store;
@@ -11,13 +11,19 @@ describe("Command handler", () => {
     };
   });
 
-  it("throws error when the command is not recognized", () =>
+  it("throws error when the command is not recognized", () => {
+    const commandHandler = getCommandHandler(store);
     expect(() =>
-      dispatchCommand(store, { action: "testcommand", payload: "testpayload" }),
-    ).toThrowError(/testcommand/));
+      commandHandler.dispatchCommand({
+        action: "testcommand",
+        payload: "testpayload",
+      }),
+    ).toThrowError(/testcommand/);
+  });
 
   it("executes command", () => {
-    dispatchCommand(store, {
+    const commandHandler = getCommandHandler(store);
+    commandHandler.dispatchCommand({
       action: "programs/addProgram",
       payload: { id: "test" },
     });
