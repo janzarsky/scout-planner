@@ -1,19 +1,21 @@
-import { createContext, useContext, useEffect } from "react";
-import { getCommandHandler } from "./commandHandler";
+import React from "react";
+import { createContext, useContext } from "react";
+import { getCommandHandler } from "../store/commandHandler";
+import { useStore } from "react-redux";
 
 const CommandContext = createContext();
 
-export function useCommandHandler(store) {
-  let commandHandler = useContext(CommandContext);
+export function CommandProvider({ children }) {
+  const store = useStore();
+  const commandHandler = getCommandHandler(store);
 
-  if (!commandHandler) {
-    const initCommandHandler = () => {
-      commandHandler = getCommandHandler();
-      useContext(CommandContext, () => commandHandler);
-    };
+  return (
+    <CommandContext.Provider value={commandHandler}>
+      {children}
+    </CommandContext.Provider>
+  );
+}
 
-    useEffect(() => initCommandHandler(), [store]);
-  }
-
-  return { dispatchCommand: commandHandler.dispatchCommand };
+export function useCommandHandler() {
+  return useContext(CommandContext);
 }
