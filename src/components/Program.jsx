@@ -1,10 +1,9 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
-import { addError } from "../store/errorsSlice";
 import { addProgram, updateProgram } from "../store/programsSlice";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +19,6 @@ export default function Program({ program, rect, violations }) {
 
   const ref = useRef(null);
 
-  const dispatch = useDispatch();
   const { dispatchCommand } = useCommandHandler();
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -48,14 +46,8 @@ export default function Program({ program, rect, violations }) {
             groups: [...program.groups],
             begin: program.begin,
           };
-          dispatch(updateProgram(newProg));
-          dispatch(updateProgram(newOtherProg));
-          client
-            .updateProgram(newProg)
-            .catch((e) => dispatch(addError(e.message)));
-          client
-            .updateProgram(newOtherProg)
-            .catch((e) => dispatch(addError(e.message)));
+          dispatchCommand(client, updateProgram(newProg));
+          dispatchCommand(client, updateProgram(newOtherProg));
         }
       },
       collect: (monitor) => ({

@@ -4,7 +4,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { level } from "../helpers/Level";
-import { addError } from "../store/errorsSlice";
 import { updateProgram } from "../store/programsSlice";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
@@ -13,6 +12,7 @@ import { Droppables } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
+import { useCommandHandler } from "./CommandContext";
 
 export default function Timetable({
   violations,
@@ -20,6 +20,7 @@ export default function Timetable({
   printView = false,
 }) {
   const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
   const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -39,10 +40,7 @@ export default function Timetable({
             ? prog.groups
             : [groupId];
 
-        client.updateProgram({ ...prog, begin, groups }).then(
-          (resp) => dispatch(updateProgram(resp)),
-          (e) => dispatch(addError(e.message)),
-        );
+        dispatchCommand(client, updateProgram({ ...prog, begin, groups }));
       }
     },
     [client, dispatch],

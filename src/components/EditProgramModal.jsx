@@ -26,6 +26,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useCommandHandler } from "./CommandContext";
 import DatePicker from "react-datepicker";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import cs from "date-fns/locale/cs";
@@ -62,6 +63,7 @@ export function EditProgramModal() {
   );
 
   const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -93,10 +95,7 @@ export function EditProgramModal() {
     const newProgram = { ...program };
     delete newProgram._id;
 
-    client.addProgram(newProgram).then(
-      (resp) => dispatch(addProgram(resp)),
-      (e) => dispatch(addError(e.message)),
-    );
+    dispatchCommand(client, addProgram(newProgram));
   }
 
   function handleSubmit(event) {
@@ -122,11 +121,7 @@ export function EditProgramModal() {
       blockOrder: blockOrder,
     };
 
-    dispatch(updateProgram(updatedProgram));
-
-    client
-      .updateProgram(updatedProgram)
-      .catch((e) => dispatch(addError(e.message)));
+    dispatchCommand(client, updateProgram(updatedProgram));
   }
 
   return (
@@ -712,7 +707,7 @@ export function AddProgramModal() {
   const [ranges, setRanges] = useState({});
   const [blockOrder, setBlockOrder] = useState(0);
 
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -727,27 +722,21 @@ export function AddProgramModal() {
     const begin = parseDate(date) + parseTime(time);
     const parsedDuration = parseDuration(duration);
 
-    client
-      .addProgram({
-        begin: isNaN(begin) ? null : begin,
-        duration: isNaN(parsedDuration)
-          ? parseDuration("1:00")
-          : parsedDuration,
-        title: title,
-        pkg: pkg,
-        groups: groups,
-        people: attendance,
-        ranges: ranges,
-        place: place,
-        url: url,
-        notes: notes,
-        locked: locked,
-        blockOrder: blockOrder,
-      })
-      .then(
-        (resp) => dispatch(addProgram(resp)),
-        (e) => dispatch(addError(e.message)),
-      );
+    const newProgram = {
+      begin: isNaN(begin) ? null : begin,
+      duration: isNaN(parsedDuration) ? parseDuration("1:00") : parsedDuration,
+      title: title,
+      pkg: pkg,
+      groups: groups,
+      people: attendance,
+      ranges: ranges,
+      place: place,
+      url: url,
+      notes: notes,
+      locked: locked,
+      blockOrder: blockOrder,
+    };
+    dispatchCommand(client, addProgram(newProgram));
   }
 
   return (
