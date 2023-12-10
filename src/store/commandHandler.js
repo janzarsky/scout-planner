@@ -4,6 +4,7 @@ import { addPackage, deletePackage, updatePackage } from "./packagesSlice";
 import { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 import { addRange, deleteRange, updateRange } from "./rangesSlice";
+import { addRule, deleteRule } from "./rulesSlice";
 import { addUser, deleteUser, setPublicLevel, updateUser } from "./usersSlice";
 
 export function getCommandHandler(store) {
@@ -104,6 +105,20 @@ export function getCommandHandler(store) {
         [deleteRange().type]: (id) => {
           client.deleteRange(id).then(
             () => store.dispatch(deleteRange(id)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        // rules
+        [addRule().type]: (payload) => {
+          client.addRule(payload).then(
+            (resp) => store.dispatch(addRule(resp)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        // (update rule is not used anywhere)
+        [deleteRule().type]: (id) => {
+          client.deleteRule(id).then(
+            () => store.dispatch(deleteRule(id)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
