@@ -62,7 +62,6 @@ export function EditProgramModal() {
     program.blockOrder ? program.blockOrder : 0, // data fix
   );
 
-  const dispatch = useDispatch();
   const { dispatchCommand } = useCommandHandler();
 
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -80,11 +79,7 @@ export function EditProgramModal() {
 
     handleClose();
 
-    dispatch(deleteProgram(program._id));
-
-    client
-      .updateProgram({ ...program, deleted: true })
-      .catch((e) => dispatch(addError(e.message)));
+    dispatchCommand(client, deleteProgram(program));
   }
 
   function handleClone(event) {

@@ -1,5 +1,5 @@
 import { addError } from "./errorsSlice";
-import { addProgram, updateProgram } from "./programsSlice";
+import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 
 export function getCommandHandler(store) {
   return {
@@ -15,6 +15,12 @@ export function getCommandHandler(store) {
         [updateProgram().type]: (payload) => {
           client.updateProgram(payload).then(
             (resp) => store.dispatch(updateProgram(resp)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        [deleteProgram().type]: (payload) => {
+          client.updateProgram({ ...payload, deleted: true }).then(
+            () => store.dispatch(deleteProgram(payload._id)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
