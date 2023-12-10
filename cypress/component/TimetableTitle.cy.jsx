@@ -10,7 +10,7 @@ describe("Timetable title", () => {
   let store;
 
   function mountTimetableTitle() {
-    cy.mount(<TimetableTitle />, { reduxStore: store });
+    cy.mount(<TimetableTitle />, { reduxStore: store, command: true });
   }
 
   beforeEach(() => {

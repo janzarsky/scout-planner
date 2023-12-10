@@ -6,6 +6,7 @@ import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 import { addRange, deleteRange, updateRange } from "./rangesSlice";
 import { addRule, deleteRule } from "./rulesSlice";
 import { updateSettings } from "./settingsSlice";
+import { updateTitle } from "./timetableSlice";
 import { addUser, deleteUser, setPublicLevel, updateUser } from "./usersSlice";
 
 export function getCommandHandler(store) {
@@ -153,6 +154,12 @@ export function getCommandHandler(store) {
         [updateSettings().type]: (payload) => {
           client.updateTimetable({ settings: payload }).then(
             () => store.dispatch(updateSettings(payload)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        [updateTitle().type]: (payload) => {
+          client.updateTimetable({ title: payload }).then(
+            () => store.dispatch(updateTitle(payload)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
