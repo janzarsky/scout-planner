@@ -5,6 +5,7 @@ import { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 import { addRange, deleteRange, updateRange } from "./rangesSlice";
 import { addRule, deleteRule } from "./rulesSlice";
+import { updateSettings } from "./settingsSlice";
 import { addUser, deleteUser, setPublicLevel, updateUser } from "./usersSlice";
 
 export function getCommandHandler(store) {
@@ -145,6 +146,13 @@ export function getCommandHandler(store) {
         [setPublicLevel().type]: (payload) => {
           client.setPublicLevel(payload).then(
             (level) => store.dispatch(setPublicLevel(level)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        // settings
+        [updateSettings().type]: (payload) => {
+          client.updateTimetable({ settings: payload }).then(
+            () => store.dispatch(updateSettings(payload)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
