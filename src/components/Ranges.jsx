@@ -1,13 +1,13 @@
 import React from "react";
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addError } from "../store/errorsSlice";
+import { useCommandHandler } from "./CommandContext";
 
 export default function Ranges() {
   const [newName, setNewName] = useState("Nová linka");
@@ -15,7 +15,7 @@ export default function Ranges() {
   const [editKey, setEditKey] = useState(undefined);
 
   const { ranges } = useSelector((state) => state.ranges);
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -24,16 +24,10 @@ export default function Ranges() {
     event.preventDefault();
 
     if (editKey) {
-      client.updateRange({ _id: editKey, name: editedName }).then(
-        (resp) => dispatch(updateRange(resp)),
-        (e) => dispatch(addError(e.message)),
-      );
+      dispatchCommand(client, updateRange({ _id: editKey, name: editedName }));
       setEditKey(undefined);
     } else {
-      client.addRange({ name: newName }).then(
-        (resp) => dispatch(addRange(resp)),
-        (e) => dispatch(addError(e.message)),
-      );
+      dispatchCommand(client, addRange({ name: newName }));
     }
   }
 
@@ -54,10 +48,7 @@ export default function Ranges() {
                 key={range._id}
                 name={range.name}
                 deleteRange={() =>
-                  client.deleteRange(range._id).then(
-                    () => dispatch(deleteRange(range._id)),
-                    (e) => dispatch(addError(e.message)),
-                  )
+                  dispatchCommand(client, deleteRange(range._id))
                 }
                 editRange={() => {
                   setEditKey(range._id);

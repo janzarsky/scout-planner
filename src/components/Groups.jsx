@@ -4,11 +4,11 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byOrder } from "../helpers/Sorting";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { addGroup, deleteGroup, updateGroup } from "../store/groupsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
+import { useCommandHandler } from "./CommandContext";
 
 export default function Groups() {
   const [newName, setNewName] = useState("Nová skupina");
@@ -18,7 +18,7 @@ export default function Groups() {
   const [editKey, setEditKey] = useState(undefined);
 
   const { groups } = useSelector((state) => state.groups);
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -27,27 +27,15 @@ export default function Groups() {
     event.preventDefault();
 
     if (editKey) {
-      client
-        .updateGroup({
-          _id: editKey,
-          name: editedName,
-          order: editedOrder,
-        })
-        .then(
-          (resp) => dispatch(updateGroup(resp)),
-          (e) => dispatch(addError(e.message)),
-        );
+      const updatedGroup = {
+        _id: editKey,
+        name: editedName,
+        order: editedOrder,
+      };
+      dispatchCommand(client, updateGroup(updatedGroup));
       setEditKey(undefined);
     } else {
-      client
-        .addGroup({
-          name: newName,
-          order: newOrder,
-        })
-        .then(
-          (resp) => dispatch(addGroup(resp)),
-          (e) => dispatch(addError(e.message)),
-        );
+      dispatchCommand(client, addGroup({ name: newName, order: newOrder }));
     }
   }
 
@@ -71,10 +59,7 @@ export default function Groups() {
                 name={group.name}
                 order={group.order}
                 deleteGroup={() =>
-                  client.deleteGroup(group._id).then(
-                    () => dispatch(deleteGroup(group._id)),
-                    (e) => dispatch(addError(e.message)),
-                  )
+                  dispatchCommand(client, deleteGroup(group._id))
                 }
                 editGroup={() => {
                   setEditKey(group._id);

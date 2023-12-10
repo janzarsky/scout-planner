@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   addUser,
   deleteUser,
@@ -13,7 +13,7 @@ import {
   updateUser,
 } from "../store/usersSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addError } from "../store/errorsSlice";
+import { useCommandHandler } from "./CommandContext";
 
 export default function Users({ userEmail }) {
   const [newEmail, setNewEmail] = useState("E-mailová adresa");
@@ -23,7 +23,7 @@ export default function Users({ userEmail }) {
   const [editKey, setEditKey] = useState(undefined);
 
   const { users, publicLevel } = useSelector((state) => state.users);
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -35,34 +35,19 @@ export default function Users({ userEmail }) {
     event.preventDefault();
 
     if (editKey && editKey === "public_user") {
-      client.setPublicLevel(publicLevelState).then(
-        (level) => dispatch(setPublicLevel(level)),
-        (e) => dispatch(addError(e.message)),
-      );
+      dispatchCommand(client, setPublicLevel(publicLevelState));
       setEditKey(undefined);
     } else if (editKey) {
-      client
-        .updateUser({
-          _id: editKey,
-          email: editedEmail,
-          level: editedLevel,
-        })
-        .then(
-          (resp) => dispatch(updateUser(resp)),
-          (e) => dispatch(addError(e.message)),
-        );
+      const updatedUser = {
+        _id: editKey,
+        email: editedEmail,
+        level: editedLevel,
+      };
+      dispatchCommand(client, updateUser(updatedUser));
       setEditKey(undefined);
     } else {
-      client
-        .updateUser({
-          _id: newEmail,
-          email: newEmail,
-          level: newLevel,
-        })
-        .then(
-          (resp) => dispatch(addUser(resp)),
-          (e) => dispatch(addError(e.message)),
-        );
+      const newUser = { _id: newEmail, email: newEmail, level: newLevel };
+      dispatchCommand(client, addUser(newUser));
     }
   }
 
@@ -131,10 +116,7 @@ export default function Users({ userEmail }) {
                     user.email === userEmail && currentUserWarning
                   }
                   deleteUser={() =>
-                    client.deleteUser(user._id).then(
-                      () => dispatch(deleteUser(user._id)),
-                      (e) => dispatch(addError(e.message)),
-                    )
+                    dispatchCommand(client, deleteUser(user._id))
                   }
                   editUser={() => {
                     setEditKey(user._id);
