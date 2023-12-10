@@ -3,11 +3,11 @@ import { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Table from "react-bootstrap/Table";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addError } from "../store/errorsSlice";
 import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
 import { formatDateTime, parseDateTime } from "../helpers/DateUtils";
+import { useCommandHandler } from "./CommandContext";
 
 export default function People() {
   const { people } = useSelector((state) => state.people);
@@ -17,7 +17,7 @@ export default function People() {
   const [editKey, setEditKey] = useState(undefined);
   const [absence, setAbsence] = useState();
 
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -28,26 +28,15 @@ export default function People() {
     event.preventDefault();
 
     if (editKey) {
-      client
-        .updatePerson({
-          _id: editKey,
-          name: editedName,
-          absence: parseAbsence(absence),
-        })
-        .then(
-          (resp) => dispatch(updatePerson(resp)),
-          (e) => dispatch(addError(e.message)),
-        );
+      const updatedPerson = {
+        _id: editKey,
+        name: editedName,
+        absence: parseAbsence(absence),
+      };
+      dispatchCommand(client, updatePerson(updatedPerson));
       setEditKey(undefined);
     } else {
-      client
-        .addPerson({
-          name: newName,
-        })
-        .then(
-          (resp) => dispatch(addPerson(resp)),
-          (e) => dispatch(addError(e.message)),
-        );
+      dispatchCommand(client, addPerson({ name: newName }));
     }
   }
 
@@ -95,10 +84,7 @@ export default function People() {
                     );
                   }}
                   deletePerson={() =>
-                    client.deletePerson(person._id).then(
-                      () => dispatch(deletePerson(person._id)),
-                      (e) => dispatch(addError(e.message)),
-                    )
+                    dispatchCommand(client, deletePerson(person._id))
                   }
                 />
               ),

@@ -1,4 +1,5 @@
 import { addError } from "./errorsSlice";
+import { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 
 export function getCommandHandler(store) {
@@ -21,6 +22,24 @@ export function getCommandHandler(store) {
         [deleteProgram().type]: (payload) => {
           client.updateProgram({ ...payload, deleted: true }).then(
             () => store.dispatch(deleteProgram(payload._id)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        [addPerson().type]: (payload) => {
+          client.addPerson(payload).then(
+            (resp) => store.dispatch(addPerson(resp)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        [updatePerson().type]: (payload) => {
+          client.updatePerson(payload).then(
+            (resp) => store.dispatch(updatePerson(resp)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        [deletePerson().type]: (id) => {
+          client.deletePerson(id).then(
+            () => store.dispatch(deletePerson(id)),
             (e) => store.dispatch(addError(e.message)),
           );
         },

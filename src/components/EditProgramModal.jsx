@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -23,7 +23,6 @@ import {
 } from "../store/programsSlice";
 import { addPerson } from "../store/peopleSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addError } from "../store/errorsSlice";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCommandHandler } from "./CommandContext";
@@ -504,7 +503,7 @@ function ProgramPeople({
 }) {
   const { people: objectPeople } = useSelector((state) => state.people);
 
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
   const table = useSelector((state) => state.auth.table);
   const client = firestoreClientFactory.getClient(table);
 
@@ -542,10 +541,7 @@ function ProgramPeople({
             onClick={() => {
               const name = window.prompt("Jméno");
               if (name) {
-                client.addPerson({ name }).then(
-                  (resp) => dispatch(addPerson(resp)),
-                  (e) => dispatch(addError(e.message)),
-                );
+                dispatchCommand(client, addPerson({ name }));
               }
             }}
           >
