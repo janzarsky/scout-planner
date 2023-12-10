@@ -12,11 +12,11 @@ import {
   parseTime,
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { addRule, deleteRule } from "../store/rulesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
+import { useCommandHandler } from "./CommandContext";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -28,7 +28,7 @@ export default function Rules({ violations }) {
   const { rules } = useSelector((state) => state.rules);
   const { programs } = useSelector((state) => state.programs);
   const groups = useSelector((state) => state.groups.groups);
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -50,16 +50,12 @@ export default function Rules({ violations }) {
         value = null;
     }
 
-    client
-      .addRule({
-        program: firstProgram,
-        condition: condition,
-        value: value,
-      })
-      .then(
-        (resp) => dispatch(addRule(resp)),
-        (e) => dispatch(addError(e.message)),
-      );
+    const newRule = {
+      program: firstProgram,
+      condition: condition,
+      value: value,
+    };
+    dispatchCommand(client, addRule(newRule));
   }
 
   const rulesData = useMemo(
@@ -85,12 +81,7 @@ export default function Rules({ violations }) {
               rule={rule}
               formattedRule={rule.formatted}
               violation={violations.get(rule._id)}
-              deleteRule={() =>
-                client.deleteRule(rule._id).then(
-                  () => dispatch(deleteRule(rule._id)),
-                  (e) => dispatch(addError(e.message)),
-                )
-              }
+              deleteRule={() => dispatchCommand(client, deleteRule(rule._id))}
             />
           ))}
           {userLevel >= level.EDIT && (

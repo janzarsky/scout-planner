@@ -1,14 +1,14 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { updateTitle } from "../store/timetableSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useState } from "react";
-import { addError } from "../store/errorsSlice";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { useCommandHandler } from "./CommandContext";
 
 export function TimetableTitle() {
   const { timetable } = useSelector((state) => state.timetable);
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -20,11 +20,7 @@ export function TimetableTitle() {
     event.preventDefault();
 
     if (editing) {
-      const newTitle = title ? title : null;
-      client.updateTimetable({ title: newTitle }).then(
-        () => dispatch(updateTitle(newTitle)),
-        (e) => dispatch(addError(e.message)),
-      );
+      dispatchCommand(client, updateTitle(title ? title : null));
       setEditing(false);
     } else {
       setEditing(true);

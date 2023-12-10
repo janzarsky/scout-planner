@@ -4,6 +4,9 @@ import { addPackage, deletePackage, updatePackage } from "./packagesSlice";
 import { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 import { addRange, deleteRange, updateRange } from "./rangesSlice";
+import { addRule, deleteRule } from "./rulesSlice";
+import { updateSettings } from "./settingsSlice";
+import { updateTitle } from "./timetableSlice";
 import { addUser, deleteUser, setPublicLevel, updateUser } from "./usersSlice";
 
 export function getCommandHandler(store) {
@@ -107,6 +110,20 @@ export function getCommandHandler(store) {
             (e) => store.dispatch(addError(e.message)),
           );
         },
+        // rules
+        [addRule().type]: (payload) => {
+          client.addRule(payload).then(
+            (resp) => store.dispatch(addRule(resp)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        // (update rule is not used anywhere)
+        [deleteRule().type]: (id) => {
+          client.deleteRule(id).then(
+            () => store.dispatch(deleteRule(id)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
         // users
         [addUser().type]: (payload) => {
           // note that update here is on purpose (users are indexed by email)
@@ -130,6 +147,19 @@ export function getCommandHandler(store) {
         [setPublicLevel().type]: (payload) => {
           client.setPublicLevel(payload).then(
             (level) => store.dispatch(setPublicLevel(level)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        // settings
+        [updateSettings().type]: (payload) => {
+          client.updateTimetable({ settings: payload }).then(
+            () => store.dispatch(updateSettings(payload)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        [updateTitle().type]: (payload) => {
+          client.updateTimetable({ title: payload }).then(
+            () => store.dispatch(updateTitle(payload)),
             (e) => store.dispatch(addError(e.message)),
           );
         },

@@ -8,12 +8,12 @@ import { level } from "../helpers/Level";
 import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { updateSettings } from "../store/settingsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addError } from "../store/errorsSlice";
 import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
+import { useCommandHandler } from "./CommandContext";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -77,7 +77,7 @@ function DeleteAll() {
 
 function TimeStep() {
   const { settings } = useSelector((state) => state.settings);
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -89,11 +89,7 @@ function TimeStep() {
     event.preventDefault();
 
     if (editing) {
-      const data = { ...settings, timeStep: step };
-      client.updateTimetable({ settings: data }).then(
-        () => dispatch(updateSettings(data)),
-        (e) => dispatch(addError(e.message)),
-      );
+      dispatchCommand(client, updateSettings({ ...settings, timeStep: step }));
       setEditing(false);
     } else {
       setEditing(true);
@@ -137,7 +133,7 @@ function TimeStep() {
 
 function Width() {
   const { settings } = useSelector((state) => state.settings);
-  const dispatch = useDispatch();
+  const { dispatchCommand } = useCommandHandler();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
@@ -149,10 +145,9 @@ function Width() {
     event.preventDefault();
 
     if (editing) {
-      const data = { ...settings, width: parseInt(width) };
-      client.updateTimetable({ settings: data }).then(
-        () => dispatch(updateSettings(data)),
-        (e) => dispatch(addError(e.message)),
+      dispatchCommand(
+        client,
+        updateSettings({ ...settings, width: parseInt(width) }),
       );
       setEditing(false);
     } else {
