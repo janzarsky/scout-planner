@@ -1,7 +1,7 @@
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { level } from "../helpers/Level";
 import { updateProgram } from "../store/programsSlice";
@@ -19,7 +19,6 @@ export default function Timetable({
   timeProvider = null,
   printView = false,
 }) {
-  const dispatch = useDispatch();
   const { dispatchCommand } = useCommandHandler();
   const { programs } = useSelector((state) => state.programs);
 
@@ -43,7 +42,7 @@ export default function Timetable({
         dispatchCommand(client, updateProgram({ ...prog, begin, groups }));
       }
     },
-    [client, dispatch],
+    [client, dispatchCommand],
   );
 
   const { groups } = useSelector((state) => state.groups);
