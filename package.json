@@ -17,7 +17,7 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.1.2",
+    "react-redux": "^9.1.0",
     "react-router-dom": "^6.20.1",
     "react-to-print": "^2.14.15",
     "redux": "^4.2.0",
