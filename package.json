@@ -12,7 +12,7 @@
     "jquery": "^3.7.1",
     "popper.js": "^1.16.1",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.9.1",
+    "react-bootstrap": "^2.10.1",
     "react-datepicker": "^4.25.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
