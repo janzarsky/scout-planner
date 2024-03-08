@@ -7,6 +7,7 @@ import Groups from "./Groups";
 import People from "./People";
 import Ranges from "./Ranges";
 import Rules from "./Rules";
+import About from "./About";
 import Alert from "react-bootstrap/Alert";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { checkRules } from "../Checker";
@@ -231,6 +232,7 @@ export default function App() {
             />
           }
         />
+        <Route path="about" element={<About />} />
       </Routes>
     </div>
   );
