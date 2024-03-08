@@ -92,6 +92,9 @@ export function NavBar({ rulesSatisfied }) {
             />
           </Routes>
           <GoogleLogin />
+          <Nav.Link as={NavLink} to="about" variant="light">
+            <i className="fa fa-question" />
+          </Nav.Link>
         </Navbar.Collapse>
       </Container>
     </Navbar>
