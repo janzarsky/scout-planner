@@ -22,8 +22,6 @@ export default function People() {
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
-  const attendanceFlag = useSelector((state) => state.config.attendance);
-
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -46,16 +44,11 @@ export default function People() {
         <thead>
           <tr>
             <th>Organizátor</th>
-            {attendanceFlag && (
-              <th>
-                Účast{" "}
-                <i
-                  className="fa fa-flask text-secondary"
-                  aria-hidden="true"
-                ></i>{" "}
-                <small className="text-secondary">Experimentální funkce</small>
-              </th>
-            )}
+            <th>
+              Účast{" "}
+              <i className="fa fa-flask text-secondary" aria-hidden="true"></i>{" "}
+              <small className="text-secondary">Experimentální funkce</small>
+            </th>
             <th>Akce</th>
           </tr>
         </thead>
@@ -97,26 +90,22 @@ export default function People() {
 }
 
 function Person({ name, absence, deletePerson, editPerson }) {
-  const attendanceFlag = useSelector((state) => state.config.attendance);
-
   return (
     <tr>
       <td>{name}</td>
-      {attendanceFlag && (
-        <td>
-          {absence && absence.length > 0
-            ? "chybí " +
-              absence
-                .map(
-                  (entry) =>
-                    `od ${formatDateTime(entry.begin)} do ${formatDateTime(
-                      entry.end,
-                    )}`,
-                )
-                .join(", ")
-            : "celou dobu"}
-        </td>
-      )}
+      <td>
+        {absence && absence.length > 0
+          ? "chybí " +
+            absence
+              .map(
+                (entry) =>
+                  `od ${formatDateTime(entry.begin)} do ${formatDateTime(
+                    entry.end,
+                  )}`,
+              )
+              .join(", ")
+          : "celou dobu"}
+      </td>
       <td>
         <span>
           <Button variant="link" onClick={editPerson}>
@@ -139,9 +128,7 @@ function EditedPerson({
   setAbsence = null,
   isNew = false,
 }) {
-  const { attendance: attendanceFlag, datepicker } = useSelector(
-    (state) => state.config,
-  );
+  const datepicker = useSelector((state) => state.config.datepicker);
 
   return (
     <tr>
@@ -152,20 +139,18 @@ function EditedPerson({
           onChange={(e) => setName(e.target.value)}
         />
       </td>
-      {attendanceFlag && (
-        <td>
-          {absence !== null &&
-            (datepicker ? (
-              <AbsenceSelector absence={absence} setAbsence={setAbsence} />
-            ) : (
-              <Form.Control
-                value={absence}
-                onChange={(e) => setAbsence(e.target.value)}
-                placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
-              />
-            ))}
-        </td>
-      )}
+      <td>
+        {absence !== null &&
+          (datepicker ? (
+            <AbsenceSelector absence={absence} setAbsence={setAbsence} />
+          ) : (
+            <Form.Control
+              value={absence}
+              onChange={(e) => setAbsence(e.target.value)}
+              placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
+            />
+          ))}
+      </td>
       <td>
         <Button
           data-test={isNew ? "people-new-add" : "people-edit-save"}
