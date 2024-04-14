@@ -20,16 +20,23 @@ export default function Homepage() {
       <div className="container">
         <h1 className="mb-5">Skautský plánovač</h1>
 
-        <InputGroup className="mb-4">
-          <Form.Control
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            placeholder="Kód"
-          />
-          <Button disabled={!valid} variant="primary" onClick={submit}>
-            Otevřít
-          </Button>
-        </InputGroup>
+        <Form>
+          <InputGroup className="mb-4">
+            <Form.Control
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              placeholder="Kód"
+            />
+            <Button
+              type="submit"
+              disabled={!valid}
+              variant="primary"
+              onClick={submit}
+            >
+              Otevřít
+            </Button>
+          </InputGroup>
+        </Form>
 
         <Button variant="primary" onClick={random}>
           Nový harmonogram
