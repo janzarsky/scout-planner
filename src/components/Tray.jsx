@@ -13,11 +13,12 @@ export function Tray({ settings, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
   const { packages } = useSelector((state) => state.packages);
 
-  const [{ canDrop }, drop] = useDrop(
+  const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "program",
       drop: (item) => onDroppableDrop(item, null, null, programs),
       collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
       }),
     }),
@@ -71,7 +72,11 @@ export function Tray({ settings, onDroppableDrop }) {
         </button>
       </div>
       <div
-        className={"tray" + (canDrop ? " drag-over" : "")}
+        className={
+          "tray" +
+          (isOver ? " drag-over" : "") +
+          (!isOver && canDrop ? " can-drop" : "")
+        }
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
           gridColumnEnd:
