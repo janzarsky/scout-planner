@@ -94,7 +94,13 @@ export function Tray({ settings, onDroppableDrop }) {
                 navigate("add", { state: { begin: null, groupId: null } })
               }
             >
-              {!canDrop && (
+              {canDrop ? (
+                <i
+                  className="fa fa-arrow-down"
+                  aria-hidden="true"
+                  title="Přesunout na odkladiště"
+                />
+              ) : (
                 <i
                   className="fa fa-plus"
                   aria-hidden="true"
