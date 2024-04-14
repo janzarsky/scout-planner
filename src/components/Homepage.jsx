@@ -26,6 +26,7 @@ export default function Homepage() {
               value={state}
               onChange={(e) => setState(e.target.value)}
               placeholder="Kód"
+              autoFocus={true}
             />
             <Button
               type="submit"
