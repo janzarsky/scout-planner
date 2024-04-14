@@ -13,12 +13,13 @@ export function Tray({ settings, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
   const { packages } = useSelector((state) => state.packages);
 
-  const [{ isOver }, drop] = useDrop(
+  const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "program",
       drop: (item) => onDroppableDrop(item, null, null, programs),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
+        canDrop: !!monitor.canDrop(),
       }),
     }),
     [programs],
@@ -71,7 +72,11 @@ export function Tray({ settings, onDroppableDrop }) {
         </button>
       </div>
       <div
-        className={"tray" + (isOver ? " drag-over" : "")}
+        className={
+          "tray" +
+          (isOver ? " drag-over" : "") +
+          (!isOver && canDrop ? " can-drop" : "")
+        }
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,
           gridColumnEnd:
@@ -94,7 +99,13 @@ export function Tray({ settings, onDroppableDrop }) {
                 navigate("add", { state: { begin: null, groupId: null } })
               }
             >
-              {!isOver && (
+              {canDrop ? (
+                <i
+                  className="fa fa-arrow-down"
+                  aria-hidden="true"
+                  title="Přesunout na odkladiště"
+                />
+              ) : (
                 <i
                   className="fa fa-plus"
                   aria-hidden="true"

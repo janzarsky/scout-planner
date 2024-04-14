@@ -142,6 +142,9 @@ p {
 .tray.drag-over .tray-add-program {
   background-color: #29b6f6;
 }
+.tray.can-drop .tray-add-program {
+  background-color: #ffcc80;
+}
 
 .block {
   display: grid;
