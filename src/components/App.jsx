@@ -49,7 +49,7 @@ export default function App() {
   const packagesLoaded = useSelector((state) => state.packages.loaded);
   const { rules, loaded: rulesLoaded } = useSelector((state) => state.rules);
   const { programs, loaded: programsLoaded } = useSelector(
-    (state) => state.programs,
+    (state) => state.programs.present,
   );
   const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
   const settingsLoaded = useSelector((state) => state.settings.loaded);

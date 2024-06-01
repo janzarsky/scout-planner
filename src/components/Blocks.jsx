@@ -6,7 +6,7 @@ import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { useMemo } from "react";
 
 export function Blocks({ settings, violations, onDrop }) {
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
 
   const data = useMemo(
     () => getBlocksData(programs, settings, violations),

@@ -12,7 +12,7 @@ import { useCommandHandler } from "./CommandContext";
 
 export default function Program({ program, rect, violations }) {
   const { packages } = useSelector((state) => state.packages);
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);

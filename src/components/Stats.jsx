@@ -16,7 +16,7 @@ export default function Stats() {
 function PackageStats() {
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
 
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(programs);
 
@@ -58,7 +58,7 @@ function PeopleStats() {
   const { people } = useSelector((state) => state.people);
   const { groups } = useSelector((state) => state.groups);
   const { packages } = useSelector((state) => state.packages);
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
     programs,

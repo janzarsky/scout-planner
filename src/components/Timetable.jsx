@@ -20,7 +20,7 @@ export default function Timetable({
   printView = false,
 }) {
   const { dispatchCommand } = useCommandHandler();
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
 
   const { table, userLevel } = useSelector((state) => state.auth);
   const client = useMemo(

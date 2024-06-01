@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import undoable from "redux-undo";
 
 export const getPrograms = createAsyncThunk(
   "programs/getPrograms",
@@ -59,4 +60,4 @@ export const programsSlice = createSlice({
 export const { addProgram, updateProgram, deleteProgram } =
   programsSlice.actions;
 
-export default programsSlice.reducer;
+export default undoable(programsSlice.reducer);

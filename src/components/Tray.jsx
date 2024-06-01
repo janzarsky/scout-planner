@@ -10,7 +10,7 @@ import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
 
 export function Tray({ settings, onDroppableDrop }) {
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
   const { packages } = useSelector((state) => state.packages);
 
   const [{ isOver, canDrop }, drop] = useDrop(
