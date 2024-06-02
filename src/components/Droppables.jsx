@@ -72,7 +72,7 @@ export function getBlockDroppablesData(
 }
 
 function Droppable({ onDrop, x, y, begin, group }) {
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
   const navigate = useNavigate();
 
   const [{ isOver }, drop] = useDrop(

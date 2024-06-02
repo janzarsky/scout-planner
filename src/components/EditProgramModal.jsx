@@ -41,7 +41,9 @@ export function EditProgramModal() {
   const navigate = useNavigate();
 
   const program = useSelector((state) => {
-    const program = state.programs.programs.find((p) => p._id === programId);
+    const program = state.programs.present.programs.find(
+      (p) => p._id === programId,
+    );
     return program ? program : {};
   });
 

@@ -26,7 +26,7 @@ export default function Rules({ violations }) {
   const [secondProgram, setSecondProgram] = useState("Žádný program");
 
   const { rules } = useSelector((state) => state.rules);
-  const { programs } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs.present);
   const groups = useSelector((state) => state.groups.groups);
   const { dispatchCommand } = useCommandHandler();
 
@@ -171,7 +171,7 @@ function NewRule({
   setDate,
 }) {
   const { groups } = useSelector((state) => state.groups);
-  const programs = useSelector((state) => state.programs.programs);
+  const programs = useSelector((state) => state.programs.programs.present);
 
   const formattedPrograms = useMemo(
     () =>

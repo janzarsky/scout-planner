@@ -44,7 +44,9 @@ function DeleteAll() {
   const { rules } = useSelector((state) => state.rules);
   const { users } = useSelector((state) => state.users);
   const { people } = useSelector((state) => state.people);
-  const { programs, deletedPrograms } = useSelector((state) => state.programs);
+  const { programs, deletedPrograms } = useSelector(
+    (state) => state.programs.present,
+  );
 
   const table = useSelector((state) => state.auth.table);
   const client = firestoreClientFactory.getClient(table);

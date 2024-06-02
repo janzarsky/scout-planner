@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import undoable, { combineFilters, excludeAction } from "redux-undo";
 
 export const getPrograms = createAsyncThunk(
   "programs/getPrograms",
@@ -59,4 +60,14 @@ export const programsSlice = createSlice({
 export const { addProgram, updateProgram, deleteProgram } =
   programsSlice.actions;
 
-export default programsSlice.reducer;
+const undoConfig = {
+  limit: 100,
+  debug: true,
+  ignoreInitialState: true,
+  filter: combineFilters(
+    excludeAction([getPrograms.pending.type, getPrograms.rejected.type]),
+    (action) => action.type.startsWith("programs/"),
+  ),
+};
+
+export default undoable(programsSlice.reducer, undoConfig);

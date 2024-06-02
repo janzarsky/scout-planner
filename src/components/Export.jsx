@@ -10,7 +10,9 @@ export default function Export() {
   const users = useSelector((state) => state.users.users);
   const settings = useSelector((state) => state.settings.settings);
   const people = useSelector((state) => state.people.people);
-  const { programs, deletedPrograms } = useSelector((state) => state.programs);
+  const { programs, deletedPrograms } = useSelector(
+    (state) => state.programs.present,
+  );
 
   const data = JSON.stringify({
     programs: [...programs, ...deletedPrograms],

@@ -8,6 +8,7 @@ import { addRule, deleteRule } from "./rulesSlice";
 import { updateSettings } from "./settingsSlice";
 import { updateTitle } from "./timetableSlice";
 import { addUser, deleteUser, setPublicLevel, updateUser } from "./usersSlice";
+import { ActionCreators } from "redux-undo";
 
 export function getCommandHandler(store) {
   return {
@@ -162,6 +163,10 @@ export function getCommandHandler(store) {
             () => store.dispatch(updateTitle(payload)),
             (e) => store.dispatch(addError(e.message)),
           );
+        },
+        // undo
+        [ActionCreators.undo().type]: () => {
+          store.dispatch(ActionCreators.undo());
         },
       };
 
