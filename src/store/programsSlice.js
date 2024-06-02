@@ -62,12 +62,10 @@ export const { addProgram, updateProgram, deleteProgram } =
 
 const undoConfig = {
   limit: 100,
+  debug: true,
+  ignoreInitialState: true,
   filter: combineFilters(
-    excludeAction([
-      getPrograms.pending.type,
-      getPrograms.fulfilled.type,
-      getPrograms.rejected.type,
-    ]),
+    excludeAction([getPrograms.pending.type, getPrograms.rejected.type]),
     (action) => action.type.startsWith("programs/"),
   ),
 };

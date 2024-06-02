@@ -8,10 +8,17 @@ import { RangesSettingsToggle } from "./RangesSettings";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { level } from "../helpers/Level";
 import { GoogleLogin } from "./GoogleLogin";
+import { Button } from "react-bootstrap";
+import { useCommandHandler } from "./CommandContext";
+import { ActionCreators } from "redux-undo";
+import { firestoreClientFactory } from "../FirestoreClient";
 
 export function NavBar({ rulesSatisfied }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
   const title = useSelector((state) => state.timetable.timetable.title);
+  const { dispatchCommand } = useCommandHandler();
+  const { table } = useSelector((state) => state.auth);
+  const client = firestoreClientFactory.getClient(table);
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
@@ -91,6 +98,13 @@ export function NavBar({ rulesSatisfied }) {
               }
             />
           </Routes>
+          <Button
+            onClick={() => {
+              dispatchCommand(client, ActionCreators.undo());
+            }}
+          >
+            Undo
+          </Button>
           <GoogleLogin />
           <Nav.Link as={NavLink} to="about" variant="light">
             <i className="fa fa-question" />
