@@ -8,6 +8,7 @@ const rtkQuery = { ...config, ...localConfig }.rtkQuery;
 export const rangesApi = createApi({
   baseQuery: fakeBaseQuery(),
   reducerPath: "rangesApi",
+  tagTypes: ["ranges"],
   endpoints: (builder) => ({
     getRanges: builder.query({
       queryFn: async (table) => {
@@ -17,8 +18,18 @@ export const rangesApi = createApi({
         const data = await client.getRanges();
         return { data };
       },
+      providesTags: ["ranges"],
+    }),
+    addRange: builder.mutation({
+      queryFn: async ({ table, data }) => {
+        if (!rtkQuery) return {};
+        const client = firestoreClientFactory.getClient(table);
+        await client.addRange(data);
+        return {};
+      },
+      invalidatesTags: ["ranges"],
     }),
   }),
 });
 
-export const { useGetRangesQuery } = rangesApi;
+export const { useGetRangesQuery, useAddRangeMutation } = rangesApi;
