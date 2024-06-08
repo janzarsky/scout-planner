@@ -8,7 +8,11 @@ import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
-import { useAddRangeMutation, useGetRangesQuery } from "../store/rangesApi";
+import {
+  useAddRangeMutation,
+  useGetRangesQuery,
+  useUpdateRangeMutation,
+} from "../store/rangesApi";
 
 export default function Ranges() {
   const [newName, setNewName] = useState("Nová linka");
@@ -24,6 +28,7 @@ export default function Ranges() {
   const ranges = rtkQuery ? newRanges : oldRanges;
 
   const [addRangeRtk] = useAddRangeMutation();
+  const [updateRangeRtk] = useUpdateRangeMutation();
 
   const { dispatchCommand } = useCommandHandler();
 
@@ -31,7 +36,13 @@ export default function Ranges() {
     event.preventDefault();
 
     if (editKey) {
-      dispatchCommand(client, updateRange({ _id: editKey, name: editedName }));
+      if (rtkQuery)
+        updateRangeRtk({ table, data: { _id: editKey, name: editedName } });
+      else
+        dispatchCommand(
+          client,
+          updateRange({ _id: editKey, name: editedName }),
+        );
       setEditKey(undefined);
     } else {
       if (rtkQuery) addRangeRtk({ table, data: { name: newName } });

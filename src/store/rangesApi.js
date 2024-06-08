@@ -29,7 +29,20 @@ export const rangesApi = createApi({
       },
       invalidatesTags: ["ranges"],
     }),
+    updateRange: builder.mutation({
+      queryFn: async ({ table, data }) => {
+        if (!rtkQuery) return {};
+        const client = firestoreClientFactory.getClient(table);
+        await client.updateRange(data);
+        return {};
+      },
+      invalidatesTags: ["ranges"],
+    }),
   }),
 });
 
-export const { useGetRangesQuery, useAddRangeMutation } = rangesApi;
+export const {
+  useGetRangesQuery,
+  useAddRangeMutation,
+  useUpdateRangeMutation,
+} = rangesApi;
