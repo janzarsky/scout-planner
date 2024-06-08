@@ -36,27 +36,28 @@ export default function Ranges() {
       <Table bordered hover responsive>
         <RangesHeader />
         <tbody>
-          {[...ranges].sort(byName).map((range) =>
-            range._id === editKey ? (
-              <EditedRange
-                key={range._id}
-                name={editedName}
-                setName={setEditedName}
-              />
-            ) : (
-              <Range
-                key={range._id}
-                name={range.name}
-                deleteRange={() =>
-                  dispatchCommand(client, deleteRange(range._id))
-                }
-                editRange={() => {
-                  setEditKey(range._id);
-                  setEditedName(range.name);
-                }}
-              />
-            ),
-          )}
+          {ranges !== undefined &&
+            [...ranges].sort(byName).map((range) =>
+              range._id === editKey ? (
+                <EditedRange
+                  key={range._id}
+                  name={editedName}
+                  setName={setEditedName}
+                />
+              ) : (
+                <Range
+                  key={range._id}
+                  name={range.name}
+                  deleteRange={() =>
+                    dispatchCommand(client, deleteRange(range._id))
+                  }
+                  editRange={() => {
+                    setEditKey(range._id);
+                    setEditedName(range.name);
+                  }}
+                />
+              ),
+            )}
           <EditedRange name={newName} setName={setNewName} isNew={true} />
         </tbody>
       </Table>
