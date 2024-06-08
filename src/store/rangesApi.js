@@ -11,7 +11,7 @@ export const rangesApi = createApi({
   tagTypes: ["ranges"],
   endpoints: (builder) => ({
     getRanges: builder.query({
-      queryFn: async (table) => {
+      async queryFn(table) {
         if (!rtkQuery) return {};
 
         const client = firestoreClientFactory.getClient(table);
@@ -21,8 +21,9 @@ export const rangesApi = createApi({
       providesTags: ["ranges"],
     }),
     addRange: builder.mutation({
-      queryFn: async ({ table, data }) => {
+      async queryFn({ table, data }) {
         if (!rtkQuery) return {};
+
         const client = firestoreClientFactory.getClient(table);
         await client.addRange(data);
         return {};
@@ -30,8 +31,9 @@ export const rangesApi = createApi({
       invalidatesTags: ["ranges"],
     }),
     updateRange: builder.mutation({
-      queryFn: async ({ table, data }) => {
+      async queryFn({ table, data }) {
         if (!rtkQuery) return {};
+
         const client = firestoreClientFactory.getClient(table);
         await client.updateRange(data);
         return {};
@@ -39,8 +41,9 @@ export const rangesApi = createApi({
       invalidatesTags: ["ranges"],
     }),
     deleteRange: builder.mutation({
-      queryFn: async ({ table, id }) => {
+      async queryFn({ table, id }) {
         if (!rtkQuery) return {};
+
         const client = firestoreClientFactory.getClient(table);
         await client.deleteRange(id);
         return {};
