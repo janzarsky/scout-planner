@@ -25,7 +25,7 @@ export default function Ranges() {
 
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
   const { ranges: oldRanges } = useSelector((state) => state.ranges);
-  const { data: newRanges } = useGetRangesQuery(table);
+  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
   const ranges = rtkQuery ? newRanges : oldRanges;
 
   const [addRangeRtk] = useAddRangeMutation();

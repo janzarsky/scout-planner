@@ -1,9 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
-import config from "../config.json";
-import localConfig from "../config.local.json";
-
-const rtkQuery = { ...config, ...localConfig }.rtkQuery;
 
 export const rangesApi = createApi({
   baseQuery: fakeBaseQuery(),
@@ -11,7 +7,7 @@ export const rangesApi = createApi({
   tagTypes: ["ranges"],
   endpoints: (builder) => ({
     getRanges: builder.query({
-      async queryFn(table) {
+      async queryFn(table, rtkQuery) {
         if (!rtkQuery) return {};
 
         const client = firestoreClientFactory.getClient(table);
@@ -22,8 +18,6 @@ export const rangesApi = createApi({
     }),
     addRange: builder.mutation({
       async queryFn({ table, data }) {
-        if (!rtkQuery) return {};
-
         const client = firestoreClientFactory.getClient(table);
         await client.addRange(data);
         return { data: null };
@@ -32,8 +26,6 @@ export const rangesApi = createApi({
     }),
     updateRange: builder.mutation({
       async queryFn({ table, data }) {
-        if (!rtkQuery) return {};
-
         const client = firestoreClientFactory.getClient(table);
         await client.updateRange(data);
         return { data: null };
@@ -42,8 +34,6 @@ export const rangesApi = createApi({
     }),
     deleteRange: builder.mutation({
       async queryFn({ table, id }) {
-        if (!rtkQuery) return {};
-
         const client = firestoreClientFactory.getClient(table);
         await client.deleteRange(id);
         return { data: null };
