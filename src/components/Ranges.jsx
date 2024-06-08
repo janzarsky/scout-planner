@@ -8,26 +8,47 @@ import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
+import {
+  useAddRangeMutation,
+  useDeleteRangeMutation,
+  useGetRangesQuery,
+  useUpdateRangeMutation,
+} from "../store/rangesApi";
 
 export default function Ranges() {
   const [newName, setNewName] = useState("Nová linka");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
-  const { ranges } = useSelector((state) => state.ranges);
-  const { dispatchCommand } = useCommandHandler();
-
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
+
+  const rtkQuery = useSelector((state) => state.config.rtkQuery);
+  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
+  const ranges = rtkQuery ? newRanges : oldRanges;
+
+  const [addRangeRtk] = useAddRangeMutation();
+  const [updateRangeRtk] = useUpdateRangeMutation();
+  const [deleteRangeRtk] = useDeleteRangeMutation();
+
+  const { dispatchCommand } = useCommandHandler();
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editKey) {
-      dispatchCommand(client, updateRange({ _id: editKey, name: editedName }));
+      if (rtkQuery)
+        updateRangeRtk({ table, data: { _id: editKey, name: editedName } });
+      else
+        dispatchCommand(
+          client,
+          updateRange({ _id: editKey, name: editedName }),
+        );
       setEditKey(undefined);
     } else {
-      dispatchCommand(client, addRange({ name: newName }));
+      if (rtkQuery) addRangeRtk({ table, data: { name: newName } });
+      else dispatchCommand(client, addRange({ name: newName }));
     }
   }
 
@@ -36,27 +57,30 @@ export default function Ranges() {
       <Table bordered hover responsive>
         <RangesHeader />
         <tbody>
-          {[...ranges].sort(byName).map((range) =>
-            range._id === editKey ? (
-              <EditedRange
-                key={range._id}
-                name={editedName}
-                setName={setEditedName}
-              />
-            ) : (
-              <Range
-                key={range._id}
-                name={range.name}
-                deleteRange={() =>
-                  dispatchCommand(client, deleteRange(range._id))
-                }
-                editRange={() => {
-                  setEditKey(range._id);
-                  setEditedName(range.name);
-                }}
-              />
-            ),
-          )}
+          {ranges !== undefined &&
+            [...ranges].sort(byName).map((range) =>
+              range._id === editKey ? (
+                <EditedRange
+                  key={range._id}
+                  name={editedName}
+                  setName={setEditedName}
+                />
+              ) : (
+                <Range
+                  key={range._id}
+                  name={range.name}
+                  deleteRange={() =>
+                    rtkQuery
+                      ? deleteRangeRtk({ table, id: range._id })
+                      : dispatchCommand(client, deleteRange(range._id))
+                  }
+                  editRange={() => {
+                    setEditKey(range._id);
+                    setEditedName(range.name);
+                  }}
+                />
+              ),
+            )}
           <EditedRange name={newName} setName={setNewName} isNew={true} />
         </tbody>
       </Table>

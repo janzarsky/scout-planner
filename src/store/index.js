@@ -12,6 +12,7 @@ import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
 import errorsReducer from "./errorsSlice";
 import configReducer from "./configSlice";
+import { rangesApi } from "./rangesApi";
 
 export function getStore() {
   return configureStore({
@@ -29,6 +30,9 @@ export function getStore() {
       auth: authReducer,
       errors: errorsReducer,
       config: configReducer,
+      [rangesApi.reducerPath]: rangesApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(rangesApi.middleware),
   });
 }
