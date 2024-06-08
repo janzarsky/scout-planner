@@ -8,17 +8,22 @@ import { byName } from "../helpers/Sorting";
 import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
+import { useGetRangesQuery } from "../store/rangesApi";
 
 export default function Ranges() {
   const [newName, setNewName] = useState("Nová linka");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
-  const { ranges } = useSelector((state) => state.ranges);
-  const { dispatchCommand } = useCommandHandler();
-
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
+
+  const rtkQuery = useSelector((state) => state.config.rtkQuery);
+  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { data: newRanges } = useGetRangesQuery(table);
+  const ranges = rtkQuery ? newRanges : oldRanges;
+
+  const { dispatchCommand } = useCommandHandler();
 
   function handleSubmit(event) {
     event.preventDefault();
