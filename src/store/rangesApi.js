@@ -38,6 +38,15 @@ export const rangesApi = createApi({
       },
       invalidatesTags: ["ranges"],
     }),
+    deleteRange: builder.mutation({
+      queryFn: async ({ table, id }) => {
+        if (!rtkQuery) return {};
+        const client = firestoreClientFactory.getClient(table);
+        await client.deleteRange(id);
+        return {};
+      },
+      invalidatesTags: ["ranges"],
+    }),
   }),
 });
 
@@ -45,4 +54,5 @@ export const {
   useGetRangesQuery,
   useAddRangeMutation,
   useUpdateRangeMutation,
+  useDeleteRangeMutation,
 } = rangesApi;

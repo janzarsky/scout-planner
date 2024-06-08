@@ -10,6 +10,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
 import {
   useAddRangeMutation,
+  useDeleteRangeMutation,
   useGetRangesQuery,
   useUpdateRangeMutation,
 } from "../store/rangesApi";
@@ -29,6 +30,7 @@ export default function Ranges() {
 
   const [addRangeRtk] = useAddRangeMutation();
   const [updateRangeRtk] = useUpdateRangeMutation();
+  const [deleteRangeRtk] = useDeleteRangeMutation();
 
   const { dispatchCommand } = useCommandHandler();
 
@@ -68,7 +70,9 @@ export default function Ranges() {
                   key={range._id}
                   name={range.name}
                   deleteRange={() =>
-                    dispatchCommand(client, deleteRange(range._id))
+                    rtkQuery
+                      ? deleteRangeRtk({ table, id: range._id })
+                      : dispatchCommand(client, deleteRange(range._id))
                   }
                   editRange={() => {
                     setEditKey(range._id);
