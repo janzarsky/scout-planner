@@ -26,7 +26,7 @@ export const rangesApi = createApi({
 
         const client = firestoreClientFactory.getClient(table);
         await client.addRange(data);
-        return {};
+        return { data: null };
       },
       invalidatesTags: ["ranges"],
     }),
@@ -36,7 +36,7 @@ export const rangesApi = createApi({
 
         const client = firestoreClientFactory.getClient(table);
         await client.updateRange(data);
-        return {};
+        return { data: null };
       },
       invalidatesTags: ["ranges"],
     }),
@@ -46,7 +46,7 @@ export const rangesApi = createApi({
 
         const client = firestoreClientFactory.getClient(table);
         await client.deleteRange(id);
-        return {};
+        return { data: null };
       },
       invalidatesTags: ["ranges"],
     }),
