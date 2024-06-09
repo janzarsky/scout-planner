@@ -270,7 +270,7 @@ describe("Ranges settings", () => {
     store.dispatch(overrideConfig({ rtkQuery: false }));
   });
 
-  it.only("displays all ranges", () => {
+  it("displays all ranges", () => {
     store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
     store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
     cy.viewport(500, 200);
@@ -280,7 +280,7 @@ describe("Ranges settings", () => {
     cy.contains("Range 2").should("have.class", "btn-light");
   });
 
-  it.only("highlights active range", () => {
+  it("highlights active range", () => {
     store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
     store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
     store.dispatch(setActiveRange("range2"));
