@@ -32,6 +32,7 @@ import cs from "date-fns/locale/cs";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useGetRangesQuery } from "../store/rangesApi";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -604,7 +605,11 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
 }
 
 function ProgramRanges({ programRanges, updateRange, disabled = false }) {
-  const { ranges: allRanges } = useSelector((state) => state.ranges);
+  const rtkQuery = useSelector((state) => state.config.rtkQuery);
+  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { table } = useSelector((state) => state.auth);
+  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
+  const allRanges = rtkQuery ? newRanges : oldRanges;
 
   return [...allRanges].sort(byName).map((range) => (
     <Form.Group as={Row} key={range._id} className="mb-1">

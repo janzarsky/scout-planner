@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import { setActiveRange, toggleRangesEnabled } from "../store/viewSlice";
+import { useGetRangesQuery } from "../store/rangesApi";
 
 export function RangesSettingsToggle() {
   const dispatch = useDispatch();
@@ -21,7 +22,11 @@ export function RangesSettingsToggle() {
 export function RangesSettings() {
   const dispatch = useDispatch();
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
-  const ranges = useSelector((state) => state.ranges.ranges);
+  const rtkQuery = useSelector((state) => state.config.rtkQuery);
+  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { table } = useSelector((state) => state.auth);
+  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
+  const ranges = rtkQuery ? newRanges : oldRanges;
 
   if (!rangesEnabled) return null;
 

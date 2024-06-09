@@ -14,6 +14,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
 import { useCommandHandler } from "./CommandContext";
+import { useGetRangesQuery } from "../store/rangesApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -38,15 +39,19 @@ export default function Settings() {
 }
 
 function DeleteAll() {
+  const table = useSelector((state) => state.auth.table);
+  const rtkQuery = useSelector((state) => state.config.rtkQuery);
+
   const { groups } = useSelector((state) => state.groups);
-  const { ranges } = useSelector((state) => state.ranges);
+  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
+  const ranges = rtkQuery ? newRanges : oldRanges;
   const { packages } = useSelector((state) => state.packages);
   const { rules } = useSelector((state) => state.rules);
   const { users } = useSelector((state) => state.users);
   const { people } = useSelector((state) => state.people);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
-  const table = useSelector((state) => state.auth.table);
   const client = firestoreClientFactory.getClient(table);
 
   async function deleteAll() {
