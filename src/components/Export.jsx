@@ -2,13 +2,14 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import { useSelector } from "react-redux";
 import { useGetRangesQuery } from "../store/rangesApi";
+import { useGetRangesSlice } from "../store/rangesSlice";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
 
   const groups = useSelector((state) => state.groups.groups);
-  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
   const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
   const ranges = rtkQuery ? newRanges : oldRanges;
   const packages = useSelector((state) => state.packages.packages);
