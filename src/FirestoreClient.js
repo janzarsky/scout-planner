@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   getFirestore,
+  onSnapshot,
   query,
   setDoc,
   updateDoc,
@@ -29,6 +30,8 @@ class FirestoreClient {
       this[`add${nameSingular}`] = (data) => this.post(path, data);
       this[`update${nameSingular}`] = (data) => this.put(path, data);
       this[`delete${nameSingular}`] = (id) => this.remove(path, id);
+      this[`stream${namePlural}`] = (callback) =>
+        this.streamAll(path, callback);
     });
 
     this.db = getFirestore();
@@ -178,6 +181,18 @@ class FirestoreClient {
     } catch (e) {
       throw new Error(e.message);
     }
+  }
+
+  streamAll(coll, callback) {
+    const q = query(collection(this.db, `timetables/${this.table}/${coll}`));
+    return onSnapshot(q, (querySnapshot) =>
+      callback(
+        querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          _id: doc.id,
+        })),
+      ),
+    );
   }
 }
 
