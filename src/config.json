@@ -5,5 +5,5 @@
   "projectId": "scout-planner-343913",
   "datepicker": true,
   "timetableTitle": true,
-  "rtkQuery": false
+  "rtkQuery": true
 }
