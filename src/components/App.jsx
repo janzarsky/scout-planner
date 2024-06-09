@@ -35,6 +35,7 @@ import { PrintWrapper } from "./PrintOptions";
 import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
 import { getTimetable } from "../store/timetableSlice";
+import { useGetRangesQuery } from "../store/rangesApi";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -44,8 +45,15 @@ export default function App() {
 
   const { user, initializing } = useAuth();
 
+  const { table, userLevel, permissionsLoaded } = useSelector(
+    (state) => state.auth,
+  );
+  const rtkQuery = useSelector((state) => state.config.rtkQuery);
+
   const groupsLoaded = useSelector((state) => state.groups.loaded);
-  const rangesLoaded = useSelector((state) => state.ranges.loaded);
+  const oldRangesLoaded = useSelector((state) => state.ranges.loaded);
+  const { isSuccess: newRangesLoaded } = useGetRangesQuery(table);
+  const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
   const packagesLoaded = useSelector((state) => state.packages.loaded);
   const { rules, loaded: rulesLoaded } = useSelector((state) => state.rules);
   const { programs, loaded: programsLoaded } = useSelector(
@@ -54,9 +62,6 @@ export default function App() {
   const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
   const settingsLoaded = useSelector((state) => state.settings.loaded);
   const timetableLoaded = useSelector((state) => state.timetable.loaded);
-  const { table, userLevel, permissionsLoaded } = useSelector(
-    (state) => state.auth,
-  );
 
   const dispatch = useDispatch();
 
@@ -81,7 +86,7 @@ export default function App() {
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
-        dispatch(getRanges(client));
+        if (!rtkQuery) dispatch(getRanges(client));
         dispatch(getGroups(client));
         dispatch(getPackages(client));
         dispatch(getRules(client));
