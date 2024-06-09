@@ -86,7 +86,6 @@ export default function App() {
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
-        if (!rtkQuery) dispatch(getRanges(client));
         dispatch(getGroups(client));
         dispatch(getPackages(client));
         dispatch(getRules(client));
