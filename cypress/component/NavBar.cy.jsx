@@ -19,6 +19,7 @@ import { PackageFilter } from "../../src/components/PackageFilter";
 import { GoogleLogin } from "../../src/components/GoogleLogin";
 import { NavBar } from "../../src/components/NavBar";
 import { overrideConfig } from "../../src/store/configSlice";
+import { firestoreClientFactory } from "../../src/FirestoreClient";
 
 describe("Navigation Bar", () => {
   let store;
@@ -270,7 +271,7 @@ describe("Ranges settings", () => {
     store.dispatch(overrideConfig({ rtkQuery: false }));
   });
 
-  it.only("displays all ranges", () => {
+  it("displays all ranges", () => {
     store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
     store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
     cy.viewport(500, 200);
@@ -280,9 +281,56 @@ describe("Ranges settings", () => {
     cy.contains("Range 2").should("have.class", "btn-light");
   });
 
-  it.only("highlights active range", () => {
+  it("highlights active range", () => {
     store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
     store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
+    store.dispatch(setActiveRange("range2"));
+    cy.viewport(500, 200);
+    mountRangesSettings();
+
+    cy.contains("Range 1").should("have.class", "btn-light");
+    cy.contains("Range 2").should("have.class", "btn-dark");
+  });
+});
+
+describe("Ranges settings (RTK query)", () => {
+  let store;
+
+  function mountRangesSettings() {
+    cy.mount(<RangesSettings />, { reduxStore: store, router: true });
+  }
+
+  beforeEach(() => {
+    store = getStore();
+    store.dispatch(toggleRangesEnabled());
+    store.dispatch(overrideConfig({ rtkQuery: true }));
+  });
+
+  function stubClient(ranges) {
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getRanges: cy.stub().resolves(ranges).as("getRanges"),
+      })
+      .log(false);
+  }
+
+  it("displays all ranges", () => {
+    stubClient([
+      { _id: "range1", name: "Range 1" },
+      { _id: "range2", name: "Range 2" },
+    ]);
+    cy.viewport(500, 200);
+    mountRangesSettings();
+
+    cy.contains("Range 1").should("have.class", "btn-light");
+    cy.contains("Range 2").should("have.class", "btn-light");
+  });
+
+  it("highlights active range", () => {
+    stubClient([
+      { _id: "range1", name: "Range 1" },
+      { _id: "range2", name: "Range 2" },
+    ]);
     store.dispatch(setActiveRange("range2"));
     cy.viewport(500, 200);
     mountRangesSettings();

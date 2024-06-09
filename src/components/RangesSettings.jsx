@@ -28,7 +28,7 @@ export function RangesSettings() {
   const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
   const ranges = rtkQuery ? newRanges : oldRanges;
 
-  if (!rangesEnabled) return null;
+  if (!rangesEnabled || ranges === undefined) return null;
 
   return ranges.map((range) => (
     <Button
