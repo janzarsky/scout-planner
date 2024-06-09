@@ -15,6 +15,7 @@ import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
 import { useCommandHandler } from "./CommandContext";
 import { useGetRangesQuery } from "../store/rangesApi";
+import { useGetRangesSlice } from "../store/rangesSlice";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -43,7 +44,7 @@ function DeleteAll() {
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
 
   const { groups } = useSelector((state) => state.groups);
-  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
   const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
   const ranges = rtkQuery ? newRanges : oldRanges;
   const { packages } = useSelector((state) => state.packages);

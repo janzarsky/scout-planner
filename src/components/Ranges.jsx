@@ -5,7 +5,12 @@ import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
-import { addRange, updateRange, deleteRange } from "../store/rangesSlice";
+import {
+  addRange,
+  updateRange,
+  deleteRange,
+  useGetRangesSlice,
+} from "../store/rangesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
 import {
@@ -24,7 +29,7 @@ export default function Ranges() {
   const client = firestoreClientFactory.getClient(table);
 
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
-  const { ranges: oldRanges } = useSelector((state) => state.ranges);
+  const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
   const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
   const ranges = rtkQuery ? newRanges : oldRanges;
 
