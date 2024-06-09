@@ -18,6 +18,7 @@ import { addRange } from "../../src/store/rangesSlice";
 import { PackageFilter } from "../../src/components/PackageFilter";
 import { GoogleLogin } from "../../src/components/GoogleLogin";
 import { NavBar } from "../../src/components/NavBar";
+import { overrideConfig } from "../../src/store/configSlice";
 
 describe("Navigation Bar", () => {
   let store;
@@ -266,6 +267,7 @@ describe("Ranges settings", () => {
   beforeEach(() => {
     store = getStore();
     store.dispatch(toggleRangesEnabled());
+    store.dispatch(overrideConfig({ rtkQuery: false }));
   });
 
   it.only("displays all ranges", () => {
