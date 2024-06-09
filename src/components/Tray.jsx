@@ -8,10 +8,15 @@ import { useState } from "react";
 import { Block } from "./Blocks";
 import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
+import { useGetPackagesSlice } from "../store/packagesSlice";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
-  const { packages } = useSelector((state) => state.packages);
+  const { table } = useSelector((state) => state.auth);
+  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
@@ -29,7 +34,10 @@ export function Tray({ settings, onDroppableDrop }) {
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
-  const sortedPrograms = sortTrayPrograms(trayPrograms, packages);
+  const sortedPrograms = sortTrayPrograms(
+    trayPrograms,
+    packagesLoaded ? packages : [],
+  );
 
   const programRects = getProgramRects(
     sortedPrograms,
