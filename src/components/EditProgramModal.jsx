@@ -34,6 +34,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
+import { useGetPackagesSlice } from "../store/packagesSlice";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -384,7 +385,11 @@ function ProgramDuration({
 }
 
 function ProgramPackage({ pkg, setPkg, disabled = false }) {
-  const { packages } = useSelector((state) => state.packages);
+  const { table } = useSelector((state) => state.auth);
+  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
 
   return (
     <Form.Group as={Row} className="mb-3">
@@ -398,11 +403,12 @@ function ProgramPackage({ pkg, setPkg, disabled = false }) {
           disabled={disabled}
         >
           <option>žádný</option>
-          {[...packages].sort(byName).map((p) => (
-            <option key={p._id} value={p._id}>
-              {p.name}
-            </option>
-          ))}
+          {packagesLoaded &&
+            [...packages].sort(byName).map((p) => (
+              <option key={p._id} value={p._id}>
+                {p.name}
+              </option>
+            ))}
         </Form.Select>
       </Col>
     </Form.Group>
