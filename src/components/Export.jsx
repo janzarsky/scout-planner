@@ -4,12 +4,13 @@ import { useSelector } from "react-redux";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
+import { useGetGroupsSlice } from "../store/groupsSlice";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
 
-  const groups = useSelector((state) => state.groups.groups);
+  const { data: groups } = useGetGroupsSlice(table, false);
   const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
   const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
   const ranges = rtkQuery ? newRanges : oldRanges;

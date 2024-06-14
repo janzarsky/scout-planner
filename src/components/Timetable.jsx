@@ -13,6 +13,7 @@ import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
 import { useCommandHandler } from "./CommandContext";
+import { useGetGroupsSlice } from "../store/groupsSlice";
 
 export default function Timetable({
   violations,
@@ -45,7 +46,7 @@ export default function Timetable({
     [client, dispatchCommand],
   );
 
-  const { groups } = useSelector((state) => state.groups);
+  const { data: groups } = useGetGroupsSlice(table, false);
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings,
   );

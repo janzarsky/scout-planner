@@ -35,6 +35,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
+import { useGetGroupsSlice } from "../store/groupsSlice";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -421,7 +422,8 @@ function ProgramGroups({
   removeGroup,
   disabled = false,
 }) {
-  const { groups: allGroups } = useSelector((state) => state.groups);
+  const { table } = useSelector((state) => state.auth);
+  const { data: allGroups } = useGetGroupsSlice(table, false);
 
   return (
     <Form.Group as={Row} className="mb-2">
