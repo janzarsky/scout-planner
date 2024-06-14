@@ -17,7 +17,6 @@ import Stats from "./Stats";
 import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { useGetRangesSlice } from "../store/rangesSlice";
-import { getGroups } from "../store/groupsSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
@@ -36,6 +35,7 @@ import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
 import { getTimetable } from "../store/timetableSlice";
 import { useGetRangesQuery } from "../store/rangesApi";
+import { useGetGroupsSlice } from "../store/groupsSlice";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -50,7 +50,7 @@ export default function App() {
   );
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
 
-  const groupsLoaded = useSelector((state) => state.groups.loaded);
+  const { isSuccess: groupsLoaded } = useGetGroupsSlice(table, false);
   const { isSuccess: oldRangesLoaded } = useGetRangesSlice(table, rtkQuery);
   const { isSuccess: newRangesLoaded } = useGetRangesQuery(table, rtkQuery);
   const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
@@ -86,7 +86,6 @@ export default function App() {
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
-        dispatch(getGroups(client));
         dispatch(getRules(client));
         dispatch(getPeople(client));
         dispatch(getSettings(client));
