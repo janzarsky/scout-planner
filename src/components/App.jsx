@@ -26,7 +26,6 @@ import { PackageFilter } from "./PackageFilter";
 import { ViewSettings } from "./ViewSettings";
 import { RangesSettings } from "./RangesSettings";
 import { getSettings } from "../store/settingsSlice";
-import { getPeople } from "../store/peopleSlice";
 import { useAuth } from "./AuthProvider";
 import { Route, Routes } from "react-router-dom";
 import { PeopleFilter } from "./PeopleFilter";
@@ -36,6 +35,7 @@ import { NavBar } from "./NavBar";
 import { getTimetable } from "../store/timetableSlice";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import { useGetPeopleSlice } from "../store/peopleSlice";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -59,7 +59,10 @@ export default function App() {
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs,
   );
-  const { people, loaded: peopleLoaded } = useSelector((state) => state.people);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
+    table,
+    false,
+  );
   const settingsLoaded = useSelector((state) => state.settings.loaded);
   const timetableLoaded = useSelector((state) => state.timetable.loaded);
 
@@ -87,7 +90,6 @@ export default function App() {
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
         dispatch(getRules(client));
-        dispatch(getPeople(client));
         dispatch(getSettings(client));
         dispatch(getTimetable(client));
       }
