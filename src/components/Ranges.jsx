@@ -29,9 +29,16 @@ export default function Ranges() {
   const client = firestoreClientFactory.getClient(table);
 
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
-  const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
-  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
+  const { data: oldRanges, isSuccess: oldRangesLoaded } = useGetRangesSlice(
+    table,
+    rtkQuery,
+  );
+  const { data: newRanges, isSuccess: newRangesLoaded } = useGetRangesQuery(
+    table,
+    rtkQuery,
+  );
   const ranges = rtkQuery ? newRanges : oldRanges;
+  const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
 
   const [addRangeRtk] = useAddRangeMutation();
   const [updateRangeRtk] = useUpdateRangeMutation();
@@ -62,7 +69,7 @@ export default function Ranges() {
       <Table bordered hover responsive>
         <RangesHeader />
         <tbody>
-          {ranges !== undefined &&
+          {rangesLoaded &&
             [...ranges].sort(byName).map((range) =>
               range._id === editKey ? (
                 <EditedRange

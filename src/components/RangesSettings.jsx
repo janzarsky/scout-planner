@@ -25,11 +25,18 @@ export function RangesSettings() {
   const { rangesEnabled, activeRange } = useSelector((state) => state.view);
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
   const { table } = useSelector((state) => state.auth);
-  const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
-  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
+  const { data: oldRanges, isSuccess: oldRangesLoaded } = useGetRangesSlice(
+    table,
+    rtkQuery,
+  );
+  const { data: newRanges, isSuccess: newRangesLoaded } = useGetRangesQuery(
+    table,
+    rtkQuery,
+  );
   const ranges = rtkQuery ? newRanges : oldRanges;
+  const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
 
-  if (!rangesEnabled || ranges === undefined) return null;
+  if (!rangesEnabled || !rangesLoaded) return null;
 
   return ranges.map((range) => (
     <Button
