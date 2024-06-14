@@ -9,6 +9,7 @@ import {
   addPackage,
   deletePackage,
   updatePackage,
+  useGetPackagesSlice,
 } from "../store/packagesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
@@ -20,10 +21,11 @@ export default function Packages() {
   const [editedColor, setEditedColor] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
-  const { packages } = useSelector((state) => state.packages);
+  const { table } = useSelector((state) => state.auth);
+
+  const { data: packages } = useGetPackagesSlice(table, false);
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = useMemo(
     () => firestoreClientFactory.getClient(table),
     [table],

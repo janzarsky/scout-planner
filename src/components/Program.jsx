@@ -9,12 +9,14 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
+import { useGetPackagesSlice } from "../store/packagesSlice";
 
 export default function Program({ program, rect, violations }) {
-  const { packages } = useSelector((state) => state.packages);
+  const { table, userLevel } = useSelector((state) => state.auth);
+
+  const { data: packages } = useGetPackagesSlice(table, false);
   const { programs } = useSelector((state) => state.programs);
 
-  const { table, userLevel } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
   const ref = useRef(null);
