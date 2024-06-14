@@ -1,7 +1,7 @@
 /// <reference types="cypress"/>
 
 import React from "react";
-import { testing as authTesting } from "../../src/store/authSlice";
+import { testing as authTesting, setTable } from "../../src/store/authSlice";
 import { getStore } from "../../src/store";
 import { level } from "../../src/helpers/Level";
 import {
@@ -11,10 +11,8 @@ import {
   toggleRangesEnabled,
   toggleViewSettingsEnabled,
 } from "../../src/store/viewSlice";
-import { addPackage } from "../../src/store/packagesSlice";
 import { ViewSettings } from "../../src/components/ViewSettings";
 import { RangesSettings } from "../../src/components/RangesSettings";
-import { addRange } from "../../src/store/rangesSlice";
 import { PackageFilter } from "../../src/components/PackageFilter";
 import { GoogleLogin } from "../../src/components/GoogleLogin";
 import { NavBar } from "../../src/components/NavBar";
@@ -188,15 +186,23 @@ describe("Filters", () => {
   beforeEach(() => {
     store = getStore();
     store.dispatch(toggleHighlighting());
+
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getPackages: cy
+          .stub()
+          .resolves([
+            { _id: "package1", name: "Package 1", color: "#c5e1a5" },
+            { _id: "package2", name: "Package 2", color: "#c5cae9" },
+          ])
+          .as("getPackages"),
+      })
+      .log(false);
+
+    store.dispatch(setTable("table1"));
   });
 
   it("displays all packages", () => {
-    store.dispatch(
-      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" }),
-    );
-    store.dispatch(
-      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" }),
-    );
     cy.viewport(500, 200);
     mountFilters();
 
@@ -213,12 +219,6 @@ describe("Filters", () => {
   });
 
   it("highlights selected package", () => {
-    store.dispatch(
-      addPackage({ _id: "package1", name: "Package 1", color: "#c5e1a5" }),
-    );
-    store.dispatch(
-      addPackage({ _id: "package2", name: "Package 2", color: "#c5cae9" }),
-    );
     store.dispatch(toggleHighlightedPackage("package2"));
     cy.viewport(500, 200);
     mountFilters();
@@ -269,11 +269,23 @@ describe("Ranges settings", () => {
     store = getStore();
     store.dispatch(toggleRangesEnabled());
     store.dispatch(overrideConfig({ rtkQuery: false }));
+
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getRanges: cy
+          .stub()
+          .resolves([
+            { _id: "range1", name: "Range 1" },
+            { _id: "range2", name: "Range 2" },
+          ])
+          .as("getPackages"),
+      })
+      .log(false);
+
+    store.dispatch(setTable("table1"));
   });
 
   it("displays all ranges", () => {
-    store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
-    store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
     cy.viewport(500, 200);
     mountRangesSettings();
 
@@ -282,8 +294,6 @@ describe("Ranges settings", () => {
   });
 
   it("highlights active range", () => {
-    store.dispatch(addRange({ _id: "range1", name: "Range 1" }));
-    store.dispatch(addRange({ _id: "range2", name: "Range 2" }));
     store.dispatch(setActiveRange("range2"));
     cy.viewport(500, 200);
     mountRangesSettings();
