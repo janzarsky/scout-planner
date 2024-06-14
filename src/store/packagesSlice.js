@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
 export const getPackages = createAsyncThunk(
   "packages/getPackages",
@@ -45,6 +46,8 @@ export const packagesSlice = createSlice({
     });
   },
 });
+
+export const useGetPackagesSlice = createSliceHook("packages", getPackages);
 
 export const { addPackage, updatePackage, deletePackage } =
   packagesSlice.actions;

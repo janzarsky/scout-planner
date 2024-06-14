@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { firestoreClientFactory } from "../FirestoreClient";
+import { createSliceHook } from "./sliceHelper";
 
 export const getRanges = createAsyncThunk(
   "ranges/getRanges",
@@ -49,29 +47,7 @@ export const rangesSlice = createSlice({
   },
 });
 
-export function useGetRangesSlice(table, rtkQuery) {
-  const dispatch = useDispatch();
-  const {
-    loading: status,
-    ranges: data,
-    error,
-    loaded,
-  } = useSelector((state) => state.ranges);
-
-  useEffect(() => {
-    if (!rtkQuery && status === "idle" && !loaded && table !== undefined) {
-      const client = firestoreClientFactory.getClient(table);
-      dispatch(getRanges(client));
-    }
-  }, [status, table, dispatch]);
-
-  const isUninitialized = status === "idle" && !loaded;
-  const isLoading = status === "pending" || status === undefined;
-  const isError = status === "idle" && error !== null;
-  const isSuccess = status === "idle" && loaded;
-
-  return { data, isUninitialized, isLoading, isError, isSuccess };
-}
+export const useGetRangesSlice = createSliceHook("ranges", getRanges);
 
 export const { addRange, updateRange, deleteRange } = rangesSlice.actions;
 

@@ -18,7 +18,7 @@ import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { getGroups } from "../store/groupsSlice";
-import { getPackages } from "../store/packagesSlice";
+import { useGetPackagesSlice } from "../store/packagesSlice";
 import { getRules } from "../store/rulesSlice";
 import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
@@ -54,7 +54,7 @@ export default function App() {
   const { isSuccess: oldRangesLoaded } = useGetRangesSlice(table, rtkQuery);
   const { isSuccess: newRangesLoaded } = useGetRangesQuery(table, rtkQuery);
   const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
-  const packagesLoaded = useSelector((state) => state.packages.loaded);
+  const { isSuccess: packagesLoaded } = useGetPackagesSlice(table, false);
   const { rules, loaded: rulesLoaded } = useSelector((state) => state.rules);
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs,
@@ -87,7 +87,6 @@ export default function App() {
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
         dispatch(getGroups(client));
-        dispatch(getPackages(client));
         dispatch(getRules(client));
         dispatch(getPeople(client));
         dispatch(getSettings(client));

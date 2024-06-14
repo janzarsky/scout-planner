@@ -3,6 +3,7 @@ import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
+import { useGetPackagesSlice } from "../store/packagesSlice";
 
 export default function Stats() {
   return (
@@ -14,8 +15,9 @@ export default function Stats() {
 }
 
 function PackageStats() {
+  const { table } = useSelector((state) => state.auth);
   const { groups } = useSelector((state) => state.groups);
-  const { packages } = useSelector((state) => state.packages);
+  const { data: packages } = useGetPackagesSlice(table, false);
   const { programs } = useSelector((state) => state.programs);
 
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(programs);
@@ -55,9 +57,10 @@ function PackageStats() {
 }
 
 function PeopleStats() {
+  const { table } = useSelector((state) => state.auth);
   const { people } = useSelector((state) => state.people);
   const { groups } = useSelector((state) => state.groups);
-  const { packages } = useSelector((state) => state.packages);
+  const { data: packages } = useGetPackagesSlice(table, false);
   const { programs } = useSelector((state) => state.programs);
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(

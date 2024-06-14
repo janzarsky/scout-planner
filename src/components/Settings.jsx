@@ -16,6 +16,7 @@ import { TimetableTitle } from "./TimetableTitle";
 import { useCommandHandler } from "./CommandContext";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
+import { useGetPackagesSlice } from "../store/packagesSlice";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -47,7 +48,7 @@ function DeleteAll() {
   const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
   const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
   const ranges = rtkQuery ? newRanges : oldRanges;
-  const { packages } = useSelector((state) => state.packages);
+  const { data: packages } = useGetPackagesSlice(table, false);
   const { rules } = useSelector((state) => state.rules);
   const { users } = useSelector((state) => state.users);
   const { people } = useSelector((state) => state.people);
