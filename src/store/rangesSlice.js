@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createSliceHook } from "./sliceHelper";
 
-export const getRanges = createAsyncThunk(
+const getRanges = createAsyncThunk(
   "ranges/getRanges",
   async (client) => await client.getRanges(),
 );
 
-export const rangesSlice = createSlice({
+const rangesSlice = createSlice({
   name: "ranges",
   initialState: { ranges: [], loading: "idle", error: null, loaded: false },
   reducers: {
