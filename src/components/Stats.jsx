@@ -17,7 +17,10 @@ export default function Stats() {
 function PackageStats() {
   const { table } = useSelector((state) => state.auth);
   const { groups } = useSelector((state) => state.groups);
-  const { data: packages } = useGetPackagesSlice(table, false);
+  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
   const { programs } = useSelector((state) => state.programs);
 
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(programs);
@@ -33,24 +36,25 @@ function PackageStats() {
         </tr>
       </thead>
       <tbody>
-        {[...packages]
-          .sort(byName)
-          .filter((pkg) => pkg.name[0] !== "(")
-          .map((pkg) => (
-            <tr key={pkg._id}>
-              <td>{pkg.name}</td>
-              {[...groups].sort(byOrder).map((group) => (
-                <td key={group._id}>
-                  {durationPerPackageAndGroup[pkg._id] &&
-                  durationPerPackageAndGroup[pkg._id][group._id]
-                    ? formatDuration(
-                        durationPerPackageAndGroup[pkg._id][group._id],
-                      )
-                    : ""}
-                </td>
-              ))}
-            </tr>
-          ))}
+        {packagesLoaded &&
+          [...packages]
+            .sort(byName)
+            .filter((pkg) => pkg.name[0] !== "(")
+            .map((pkg) => (
+              <tr key={pkg._id}>
+                <td>{pkg.name}</td>
+                {[...groups].sort(byOrder).map((group) => (
+                  <td key={group._id}>
+                    {durationPerPackageAndGroup[pkg._id] &&
+                    durationPerPackageAndGroup[pkg._id][group._id]
+                      ? formatDuration(
+                          durationPerPackageAndGroup[pkg._id][group._id],
+                        )
+                      : ""}
+                  </td>
+                ))}
+              </tr>
+            ))}
       </tbody>
     </Table>
   );

@@ -23,7 +23,10 @@ export default function Packages() {
 
   const { table } = useSelector((state) => state.auth);
 
-  const { data: packages } = useGetPackagesSlice(table, false);
+  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
   const client = useMemo(
@@ -80,30 +83,31 @@ export default function Packages() {
       <Table bordered hover responsive>
         <PackagesHeader />
         <tbody>
-          {[...packages]
-            .sort(byName)
-            .map((pkg, index) =>
-              pkg._id === editKey ? (
-                <EditedPackage
-                  key={pkg._id}
-                  name={editedName}
-                  color={editedColor}
-                  cnt={index + 1}
-                  setName={setEditedName}
-                  setColor={setEditedColor}
-                />
-              ) : (
-                <Package
-                  key={pkg._id}
-                  id={pkg._id}
-                  name={pkg.name}
-                  color={pkg.color}
-                  cnt={index + 1}
-                  deletePkg={deletePackageCallback}
-                  editPkg={editPackageCallback}
-                />
-              ),
-            )}
+          {packagesLoaded &&
+            [...packages]
+              .sort(byName)
+              .map((pkg, index) =>
+                pkg._id === editKey ? (
+                  <EditedPackage
+                    key={pkg._id}
+                    name={editedName}
+                    color={editedColor}
+                    cnt={index + 1}
+                    setName={setEditedName}
+                    setColor={setEditedColor}
+                  />
+                ) : (
+                  <Package
+                    key={pkg._id}
+                    id={pkg._id}
+                    name={pkg.name}
+                    color={pkg.color}
+                    cnt={index + 1}
+                    deletePkg={deletePackageCallback}
+                    editPkg={editPackageCallback}
+                  />
+                ),
+              )}
           <NewPackage
             name={newName}
             color={newColor}

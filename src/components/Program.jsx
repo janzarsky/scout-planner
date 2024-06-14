@@ -14,7 +14,10 @@ import { useGetPackagesSlice } from "../store/packagesSlice";
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
-  const { data: packages } = useGetPackagesSlice(table, false);
+  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
   const { programs } = useSelector((state) => state.programs);
 
   const client = firestoreClientFactory.getClient(table);
@@ -82,7 +85,9 @@ export default function Program({ program, rect, violations }) {
       <ProgramBody
         program={program}
         violations={violations}
-        pkg={packages.find((p) => p._id === program.pkg)}
+        pkg={
+          packagesLoaded ? packages.find((p) => p._id === program.pkg) : null
+        }
         narrow={narrow}
       />
       <ProgramEdit programId={program._id} narrow={narrow} />
