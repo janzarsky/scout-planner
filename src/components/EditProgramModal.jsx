@@ -614,31 +614,40 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
 function ProgramRanges({ programRanges, updateRange, disabled = false }) {
   const rtkQuery = useSelector((state) => state.config.rtkQuery);
   const { table } = useSelector((state) => state.auth);
-  const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
-  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
+  const { data: oldRanges, isSuccess: oldRangesLoaded } = useGetRangesSlice(
+    table,
+    rtkQuery,
+  );
+  const { data: newRanges, isSuccess: newRangesLoaded } = useGetRangesQuery(
+    table,
+    rtkQuery,
+  );
   const allRanges = rtkQuery ? newRanges : oldRanges;
+  const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
 
-  return [...allRanges].sort(byName).map((range) => (
-    <Form.Group as={Row} key={range._id} className="mb-1">
-      <Form.Label column sm="2">
-        {range.name}
-      </Form.Label>
-      <Col>
-        <Form.Range
-          min="0"
-          max="3"
-          value={
-            programRanges && programRanges[range._id]
-              ? programRanges[range._id]
-              : 0
-          }
-          onChange={(e) => updateRange(range._id, e.target.value)}
-          disabled={disabled}
-          className="mt-2"
-        />
-      </Col>
-    </Form.Group>
-  ));
+  return rangesLoaded
+    ? [...allRanges].sort(byName).map((range) => (
+        <Form.Group as={Row} key={range._id} className="mb-1">
+          <Form.Label column sm="2">
+            {range.name}
+          </Form.Label>
+          <Col>
+            <Form.Range
+              min="0"
+              max="3"
+              value={
+                programRanges && programRanges[range._id]
+                  ? programRanges[range._id]
+                  : 0
+              }
+              onChange={(e) => updateRange(range._id, e.target.value)}
+              disabled={disabled}
+              className="mt-2"
+            />
+          </Col>
+        </Form.Group>
+      ))
+    : null;
 }
 
 function ProgramNotes({ notes, setNotes, disabled = false }) {

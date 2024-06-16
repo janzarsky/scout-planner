@@ -5,7 +5,7 @@ import { firestoreClientFactory } from "../../src/FirestoreClient";
 import Program from "../../src/components/Program";
 import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
-import { testing } from "../../src/store/authSlice";
+import { setTable, testing } from "../../src/store/authSlice";
 import { addPackage } from "../../src/store/packagesSlice";
 import { addPerson } from "../../src/store/peopleSlice";
 import {
@@ -61,15 +61,30 @@ describe("Program", () => {
   beforeEach(() => {
     cy.viewport(400, 150);
 
-    cy.stub(firestoreClientFactory, "getClient").log(false);
-
     store = getStore();
+
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getPackages: cy
+          .stub()
+          .resolves([
+            {
+              _id: "testpackageid",
+              name: "Test package",
+              color: "#eeeeee",
+            },
+          ])
+          .as("getPackages"),
+      })
+      .log(false);
 
     // make time shown by default
     store.dispatch(toggleViewTime());
 
     store.dispatch(addPerson(alice));
     store.dispatch(addPerson(bob));
+
+    store.dispatch(setTable("table1"));
   });
 
   it("basic", () => {
@@ -86,16 +101,8 @@ describe("Program", () => {
   });
 
   it("with package", () => {
-    const pkg = {
-      _id: "testpackageid",
-      name: "Test package",
-      color: "#eeeeee",
-    };
-    store.dispatch(addPackage(pkg));
-
     const progWithPackage = Cypress._.cloneDeep(prog);
-    progWithPackage.pkg = pkg._id;
-
+    progWithPackage.pkg = "testpackageid";
     mountProgram(progWithPackage);
 
     cy.contains("Test package");
@@ -133,15 +140,8 @@ describe("Program", () => {
 
   describe("View settings", () => {
     it("no package", () => {
-      const pkg = {
-        _id: "testpackageid",
-        name: "Test package",
-        color: "#eeeeee",
-      };
-      store.dispatch(addPackage(pkg));
-
       const progWithPackage = Cypress._.cloneDeep(prog);
-      progWithPackage.pkg = pkg._id;
+      progWithPackage.pkg = "testpackageid";
 
       store.dispatch(toggleViewPkg());
 

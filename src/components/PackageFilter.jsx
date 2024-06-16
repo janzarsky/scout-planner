@@ -28,12 +28,15 @@ export function PackageFilterToggle() {
 export function PackageFilter() {
   const dispatch = useDispatch();
   const { table } = useSelector((state) => state.auth);
-  const { data: packages } = useGetPackagesSlice(table, false);
+  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
   const { highlightedPackages, highlightingEnabled } = useSelector(
     (state) => state.view,
   );
 
-  if (!highlightingEnabled) return null;
+  if (!highlightingEnabled || !packagesLoaded) return null;
 
   return [...packages].sort(byName).map((pkg) => (
     <Button
