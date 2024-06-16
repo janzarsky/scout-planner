@@ -30,7 +30,10 @@ export default function Rules({ violations }) {
 
   const { rules } = useSelector((state) => state.rules);
   const { programs } = useSelector((state) => state.programs);
-  const { data: groups } = useGetGroupsSlice(table, false);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);
@@ -66,7 +69,7 @@ export default function Rules({ violations }) {
         .sort((a, b) => ruleSort(a, b, programs))
         .map((rule) => ({
           ...rule,
-          formatted: formatRule(rule, programs, groups),
+          formatted: formatRule(rule, programs, groupsLoaded ? groups : []),
         })),
     [rules, programs, groups],
   );
@@ -173,14 +176,20 @@ function NewRule({
   setDate,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: groups } = useGetGroupsSlice(table, false);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const programs = useSelector((state) => state.programs.programs);
 
   const formattedPrograms = useMemo(
     () =>
       [...programs]
         .sort(programSort)
-        .map((prog) => ({ _id: prog._id, text: formatProgram(prog, groups) })),
+        .map((prog) => ({
+          _id: prog._id,
+          text: formatProgram(prog, groupsLoaded ? groups : []),
+        })),
     [programs, groups],
   );
 

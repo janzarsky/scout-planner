@@ -24,7 +24,10 @@ export default function Groups() {
 
   const { table } = useSelector((state) => state.auth);
 
-  const { data: groups } = useGetGroupsSlice(table, false);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);
@@ -50,31 +53,32 @@ export default function Groups() {
       <Table bordered hover responsive>
         <GroupsHeader />
         <tbody>
-          {[...groups].sort(byOrder).map((group) =>
-            group._id === editKey ? (
-              <EditedGroup
-                key={group._id}
-                name={editedName}
-                order={editedOrder}
-                setName={setEditedName}
-                setOrder={setEditedOrder}
-              />
-            ) : (
-              <Group
-                key={group._id}
-                name={group.name}
-                order={group.order}
-                deleteGroup={() =>
-                  dispatchCommand(client, deleteGroup(group._id))
-                }
-                editGroup={() => {
-                  setEditKey(group._id);
-                  setEditedName(group.name);
-                  setEditedOrder(group.order);
-                }}
-              />
-            ),
-          )}
+          {groupsLoaded &&
+            [...groups].sort(byOrder).map((group) =>
+              group._id === editKey ? (
+                <EditedGroup
+                  key={group._id}
+                  name={editedName}
+                  order={editedOrder}
+                  setName={setEditedName}
+                  setOrder={setEditedOrder}
+                />
+              ) : (
+                <Group
+                  key={group._id}
+                  name={group.name}
+                  order={group.order}
+                  deleteGroup={() =>
+                    dispatchCommand(client, deleteGroup(group._id))
+                  }
+                  editGroup={() => {
+                    setEditKey(group._id);
+                    setEditedName(group.name);
+                    setEditedOrder(group.order);
+                  }}
+                />
+              ),
+            )}
           <EditedGroup
             name={newName}
             order={newOrder}

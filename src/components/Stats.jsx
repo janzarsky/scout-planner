@@ -17,7 +17,10 @@ export default function Stats() {
 
 function PackageStats() {
   const { table } = useSelector((state) => state.auth);
-  const { data: groups } = useGetGroupsSlice(table, false);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
     table,
     false,
@@ -31,9 +34,10 @@ function PackageStats() {
       <thead>
         <tr>
           <th>Balíček</th>
-          {[...groups].sort(byOrder).map((group) => (
-            <th key={group._id}>{group.name}</th>
-          ))}
+          {groupsLoaded &&
+            [...groups]
+              .sort(byOrder)
+              .map((group) => <th key={group._id}>{group.name}</th>)}
         </tr>
       </thead>
       <tbody>
@@ -44,16 +48,19 @@ function PackageStats() {
             .map((pkg) => (
               <tr key={pkg._id}>
                 <td>{pkg.name}</td>
-                {[...groups].sort(byOrder).map((group) => (
-                  <td key={group._id}>
-                    {durationPerPackageAndGroup[pkg._id] &&
-                    durationPerPackageAndGroup[pkg._id][group._id]
-                      ? formatDuration(
-                          durationPerPackageAndGroup[pkg._id][group._id],
-                        )
-                      : ""}
-                  </td>
-                ))}
+                {groupsLoaded &&
+                  [...groups]
+                    .sort(byOrder)
+                    .map((group) => (
+                      <td key={group._id}>
+                        {durationPerPackageAndGroup[pkg._id] &&
+                        durationPerPackageAndGroup[pkg._id][group._id]
+                          ? formatDuration(
+                              durationPerPackageAndGroup[pkg._id][group._id],
+                            )
+                          : ""}
+                      </td>
+                    ))}
               </tr>
             ))}
       </tbody>

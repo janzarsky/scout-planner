@@ -46,7 +46,10 @@ export default function Timetable({
     [client, dispatchCommand],
   );
 
-  const { data: groups } = useGetGroupsSlice(table, false);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const { settings: timetableSettings } = useSelector(
     (state) => state.settings,
   );
@@ -54,7 +57,7 @@ export default function Timetable({
     () =>
       getTimetableSettings(
         programs,
-        groups,
+        groupsLoaded ? groups : [],
         timetableSettings.timeStep,
         timeProvider ? timeProvider() : Date.now(),
       ),

@@ -423,7 +423,10 @@ function ProgramGroups({
   disabled = false,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: allGroups } = useGetGroupsSlice(table, false);
+  const { data: allGroups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
 
   return (
     <Form.Group as={Row} className="mb-2">
@@ -432,24 +435,25 @@ function ProgramGroups({
       </Form.Label>
       <Col>
         <Row>
-          {[...allGroups].sort(byOrder).map((group) => (
-            <Col key={group._id}>
-              <Form.Check
-                type="checkbox"
-                label={group.name}
-                id={group._id}
-                checked={programGroups.includes(group._id)}
-                disabled={disabled}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    addGroup(group._id);
-                  } else {
-                    removeGroup(group._id);
-                  }
-                }}
-              />
-            </Col>
-          ))}
+          {groupsLoaded &&
+            [...allGroups].sort(byOrder).map((group) => (
+              <Col key={group._id}>
+                <Form.Check
+                  type="checkbox"
+                  label={group.name}
+                  id={group._id}
+                  checked={programGroups.includes(group._id)}
+                  disabled={disabled}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      addGroup(group._id);
+                    } else {
+                      removeGroup(group._id);
+                    }
+                  }}
+                />
+              </Col>
+            ))}
         </Row>
       </Col>
     </Form.Group>
