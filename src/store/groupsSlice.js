@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
-export const getGroups = createAsyncThunk(
+const getGroups = createAsyncThunk(
   "groups/getGroups",
   async (client) => await client.getGroups(),
 );
 
-export const groupsSlice = createSlice({
+const groupsSlice = createSlice({
   name: "groups",
   initialState: { groups: [], loading: "idle", error: null, loaded: false },
   reducers: {
@@ -45,6 +46,8 @@ export const groupsSlice = createSlice({
     });
   },
 });
+
+export const useGetGroupsSlice = createSliceHook("groups", getGroups);
 
 export const { addGroup, updateGroup, deleteGroup } = groupsSlice.actions;
 

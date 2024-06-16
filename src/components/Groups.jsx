@@ -5,7 +5,12 @@ import Button from "react-bootstrap/Button";
 import { byOrder } from "../helpers/Sorting";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { addGroup, deleteGroup, updateGroup } from "../store/groupsSlice";
+import {
+  addGroup,
+  deleteGroup,
+  updateGroup,
+  useGetGroupsSlice,
+} from "../store/groupsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useCommandHandler } from "./CommandContext";
@@ -17,10 +22,14 @@ export default function Groups() {
   const [editedOrder, setEditedOrder] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
-  const { groups } = useSelector((state) => state.groups);
+  const { table } = useSelector((state) => state.auth);
+
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
   function handleSubmit(event) {
@@ -44,31 +53,32 @@ export default function Groups() {
       <Table bordered hover responsive>
         <GroupsHeader />
         <tbody>
-          {[...groups].sort(byOrder).map((group) =>
-            group._id === editKey ? (
-              <EditedGroup
-                key={group._id}
-                name={editedName}
-                order={editedOrder}
-                setName={setEditedName}
-                setOrder={setEditedOrder}
-              />
-            ) : (
-              <Group
-                key={group._id}
-                name={group.name}
-                order={group.order}
-                deleteGroup={() =>
-                  dispatchCommand(client, deleteGroup(group._id))
-                }
-                editGroup={() => {
-                  setEditKey(group._id);
-                  setEditedName(group.name);
-                  setEditedOrder(group.order);
-                }}
-              />
-            ),
-          )}
+          {groupsLoaded &&
+            [...groups].sort(byOrder).map((group) =>
+              group._id === editKey ? (
+                <EditedGroup
+                  key={group._id}
+                  name={editedName}
+                  order={editedOrder}
+                  setName={setEditedName}
+                  setOrder={setEditedOrder}
+                />
+              ) : (
+                <Group
+                  key={group._id}
+                  name={group.name}
+                  order={group.order}
+                  deleteGroup={() =>
+                    dispatchCommand(client, deleteGroup(group._id))
+                  }
+                  editGroup={() => {
+                    setEditKey(group._id);
+                    setEditedName(group.name);
+                    setEditedOrder(group.order);
+                  }}
+                />
+              ),
+            )}
           <EditedGroup
             name={newName}
             order={newOrder}

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
 import { useGetPackagesSlice } from "../store/packagesSlice";
+import { useGetGroupsSlice } from "../store/groupsSlice";
 
 export default function Stats() {
   return (
@@ -16,7 +17,10 @@ export default function Stats() {
 
 function PackageStats() {
   const { table } = useSelector((state) => state.auth);
-  const { groups } = useSelector((state) => state.groups);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
     table,
     false,
@@ -30,9 +34,10 @@ function PackageStats() {
       <thead>
         <tr>
           <th>Balíček</th>
-          {[...groups].sort(byOrder).map((group) => (
-            <th key={group._id}>{group.name}</th>
-          ))}
+          {groupsLoaded &&
+            [...groups]
+              .sort(byOrder)
+              .map((group) => <th key={group._id}>{group.name}</th>)}
         </tr>
       </thead>
       <tbody>
@@ -43,16 +48,19 @@ function PackageStats() {
             .map((pkg) => (
               <tr key={pkg._id}>
                 <td>{pkg.name}</td>
-                {[...groups].sort(byOrder).map((group) => (
-                  <td key={group._id}>
-                    {durationPerPackageAndGroup[pkg._id] &&
-                    durationPerPackageAndGroup[pkg._id][group._id]
-                      ? formatDuration(
-                          durationPerPackageAndGroup[pkg._id][group._id],
-                        )
-                      : ""}
-                  </td>
-                ))}
+                {groupsLoaded &&
+                  [...groups]
+                    .sort(byOrder)
+                    .map((group) => (
+                      <td key={group._id}>
+                        {durationPerPackageAndGroup[pkg._id] &&
+                        durationPerPackageAndGroup[pkg._id][group._id]
+                          ? formatDuration(
+                              durationPerPackageAndGroup[pkg._id][group._id],
+                            )
+                          : ""}
+                      </td>
+                    ))}
               </tr>
             ))}
       </tbody>
@@ -63,7 +71,7 @@ function PackageStats() {
 function PeopleStats() {
   const { table } = useSelector((state) => state.auth);
   const { people } = useSelector((state) => state.people);
-  const { groups } = useSelector((state) => state.groups);
+  const { data: groups } = useGetGroupsSlice(table, false);
   const { data: packages } = useGetPackagesSlice(table, false);
   const { programs } = useSelector((state) => state.programs);
 

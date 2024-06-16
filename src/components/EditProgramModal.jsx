@@ -35,6 +35,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
+import { useGetGroupsSlice } from "../store/groupsSlice";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -421,7 +422,11 @@ function ProgramGroups({
   removeGroup,
   disabled = false,
 }) {
-  const { groups: allGroups } = useSelector((state) => state.groups);
+  const { table } = useSelector((state) => state.auth);
+  const { data: allGroups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
 
   return (
     <Form.Group as={Row} className="mb-2">
@@ -430,24 +435,25 @@ function ProgramGroups({
       </Form.Label>
       <Col>
         <Row>
-          {[...allGroups].sort(byOrder).map((group) => (
-            <Col key={group._id}>
-              <Form.Check
-                type="checkbox"
-                label={group.name}
-                id={group._id}
-                checked={programGroups.includes(group._id)}
-                disabled={disabled}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    addGroup(group._id);
-                  } else {
-                    removeGroup(group._id);
-                  }
-                }}
-              />
-            </Col>
-          ))}
+          {groupsLoaded &&
+            [...allGroups].sort(byOrder).map((group) => (
+              <Col key={group._id}>
+                <Form.Check
+                  type="checkbox"
+                  label={group.name}
+                  id={group._id}
+                  checked={programGroups.includes(group._id)}
+                  disabled={disabled}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      addGroup(group._id);
+                    } else {
+                      removeGroup(group._id);
+                    }
+                  }}
+                />
+              </Col>
+            ))}
         </Row>
       </Col>
     </Form.Group>

@@ -17,6 +17,7 @@ import { addRule, deleteRule } from "../store/rulesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { useCommandHandler } from "./CommandContext";
+import { useGetGroupsSlice } from "../store/groupsSlice";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -25,12 +26,16 @@ export default function Rules({ violations }) {
   const [date, setDate] = useState(formatDate(Date.now()));
   const [secondProgram, setSecondProgram] = useState("Žádný program");
 
+  const { table, userLevel } = useSelector((state) => state.auth);
+
   const { rules } = useSelector((state) => state.rules);
   const { programs } = useSelector((state) => state.programs);
-  const groups = useSelector((state) => state.groups.groups);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
-  const { table, userLevel } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
   function handleSubmit(event) {
@@ -64,7 +69,7 @@ export default function Rules({ violations }) {
         .sort((a, b) => ruleSort(a, b, programs))
         .map((rule) => ({
           ...rule,
-          formatted: formatRule(rule, programs, groups),
+          formatted: formatRule(rule, programs, groupsLoaded ? groups : []),
         })),
     [rules, programs, groups],
   );
@@ -170,14 +175,21 @@ function NewRule({
   date,
   setDate,
 }) {
-  const { groups } = useSelector((state) => state.groups);
+  const { table } = useSelector((state) => state.auth);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
+    table,
+    false,
+  );
   const programs = useSelector((state) => state.programs.programs);
 
   const formattedPrograms = useMemo(
     () =>
       [...programs]
         .sort(programSort)
-        .map((prog) => ({ _id: prog._id, text: formatProgram(prog, groups) })),
+        .map((prog) => ({
+          _id: prog._id,
+          text: formatProgram(prog, groupsLoaded ? groups : []),
+        })),
     [programs, groups],
   );
 

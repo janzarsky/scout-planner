@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createSliceHook } from "./sliceHelper";
 
-export const getPackages = createAsyncThunk(
+const getPackages = createAsyncThunk(
   "packages/getPackages",
   async (client) => await client.getPackages(),
 );
 
-export const packagesSlice = createSlice({
+const packagesSlice = createSlice({
   name: "packages",
   initialState: { packages: [], loading: "idle", error: null, loaded: false },
   reducers: {
