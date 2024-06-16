@@ -5,9 +5,9 @@ import Timetable from "../../src/components/Timetable";
 import { getStore } from "../../src/store";
 import { addProgram } from "../../src/store/programsSlice";
 import { parseDuration } from "../../src/helpers/DateUtils";
-import { addGroup } from "../../src/store/groupsSlice";
 import { addPerson } from "../../src/store/peopleSlice";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
+import { setTable } from "../../src/store/authSlice";
 
 describe("Timetable", () => {
   const alice = {
@@ -37,12 +37,33 @@ describe("Timetable", () => {
   }
 
   beforeEach(() => {
-    cy.stub(firestoreClientFactory, "getClient").log(false);
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getGroups: cy
+          .stub()
+          .resolves([
+            {
+              _id: "group1",
+              name: "G1",
+              order: 0,
+            },
+            {
+              _id: "group2",
+              name: "G2",
+              order: 1,
+            },
+          ])
+          .as("getGroups"),
+        getPackages: cy.stub().resolves([]).as("getPackages"),
+      })
+      .log(false);
 
     store = getStore();
 
     store.dispatch(addPerson(alice));
     store.dispatch(addPerson(bob));
+
+    store.dispatch(setTable("table1"));
   });
 
   it("empty", () => {
@@ -79,19 +100,6 @@ describe("Timetable", () => {
   });
 
   it("with programs and groups", () => {
-    const group1 = {
-      _id: "group1",
-      name: "G1",
-      order: 0,
-    };
-    store.dispatch(addGroup(group1));
-    const group2 = {
-      _id: "group2",
-      name: "G2",
-      order: 1,
-    };
-    store.dispatch(addGroup(group2));
-
     const prog = {
       _id: "testprogramid",
       title: "Test program",
