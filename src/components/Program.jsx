@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
 import { useGetPackagesSlice } from "../store/packagesSlice";
+import { useGetPeopleSlice } from "../store/peopleSlice";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -223,9 +224,16 @@ function lookUpPeople(programPeople, allPeople) {
 
 function ProgramPeople({ programPeople, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
-  const people = useSelector((state) => state.people.people);
+  const { table } = useSelector((state) => state.auth);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
+    table,
+    false,
+  );
 
-  const lookedUpPeople = lookUpPeople(programPeople, people);
+  const lookedUpPeople = lookUpPeople(
+    programPeople,
+    peopleLoaded ? people : [],
+  );
 
   return (
     <div className="program-people">

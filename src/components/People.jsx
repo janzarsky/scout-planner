@@ -5,12 +5,21 @@ import Form from "react-bootstrap/esm/Form";
 import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { addPerson, deletePerson, updatePerson } from "../store/peopleSlice";
+import {
+  addPerson,
+  deletePerson,
+  updatePerson,
+  useGetPeopleSlice,
+} from "../store/peopleSlice";
 import { formatDateTime, parseDateTime } from "../helpers/DateUtils";
 import { useCommandHandler } from "./CommandContext";
 
 export default function People() {
-  const { people } = useSelector((state) => state.people);
+  const { table } = useSelector((state) => state.auth);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
+    table,
+    false,
+  );
 
   const [newName, setNewName] = useState("Nový organizátor");
   const [editedName, setEditedName] = useState();
@@ -19,7 +28,6 @@ export default function People() {
 
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
   function handleSubmit(event) {
@@ -53,35 +61,36 @@ export default function People() {
           </tr>
         </thead>
         <tbody>
-          {[...people]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((person) =>
-              person._id === editKey ? (
-                <EditedPerson
-                  key="edited"
-                  name={editedName}
-                  setName={setEditedName}
-                  absence={absence}
-                  setAbsence={setAbsence}
-                />
-              ) : (
-                <Person
-                  key={person._id}
-                  name={person.name}
-                  absence={person.absence}
-                  editPerson={() => {
-                    setEditKey(person._id);
-                    setEditedName(person.name);
-                    setAbsence(
-                      formatAbsence(person.absence ? person.absence : []),
-                    );
-                  }}
-                  deletePerson={() =>
-                    dispatchCommand(client, deletePerson(person._id))
-                  }
-                />
-              ),
-            )}
+          {peopleLoaded &&
+            [...people]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((person) =>
+                person._id === editKey ? (
+                  <EditedPerson
+                    key="edited"
+                    name={editedName}
+                    setName={setEditedName}
+                    absence={absence}
+                    setAbsence={setAbsence}
+                  />
+                ) : (
+                  <Person
+                    key={person._id}
+                    name={person.name}
+                    absence={person.absence}
+                    editPerson={() => {
+                      setEditKey(person._id);
+                      setEditedName(person.name);
+                      setAbsence(
+                        formatAbsence(person.absence ? person.absence : []),
+                      );
+                    }}
+                    deletePerson={() =>
+                      dispatchCommand(client, deletePerson(person._id))
+                    }
+                  />
+                ),
+              )}
           <EditedPerson name={newName} setName={setNewName} isNew={true} />
         </tbody>
       </Table>

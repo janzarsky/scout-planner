@@ -5,6 +5,7 @@ import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import { useGetPeopleSlice } from "../store/peopleSlice";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
@@ -18,7 +19,7 @@ export default function Export() {
   const rules = useSelector((state) => state.rules.rules);
   const users = useSelector((state) => state.users.users);
   const settings = useSelector((state) => state.settings.settings);
-  const people = useSelector((state) => state.people.people);
+  const { data: people } = useGetPeopleSlice(table, false);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const data = JSON.stringify({

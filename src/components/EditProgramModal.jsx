@@ -21,7 +21,7 @@ import {
   deleteProgram,
   updateProgram,
 } from "../store/programsSlice";
-import { addPerson } from "../store/peopleSlice";
+import { addPerson, useGetPeopleSlice } from "../store/peopleSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -515,10 +515,13 @@ function ProgramPeople({
   begin,
   duration,
 }) {
-  const { people: objectPeople } = useSelector((state) => state.people);
+  const table = useSelector((state) => state.auth.table);
+  const { data: objectPeople, isSuccess: peopleLoaded } = useGetPeopleSlice(
+    table,
+    false,
+  );
 
   const { dispatchCommand } = useCommandHandler();
-  const table = useSelector((state) => state.auth.table);
   const client = firestoreClientFactory.getClient(table);
 
   return (
@@ -528,27 +531,28 @@ function ProgramPeople({
         <InfoIcon text="Organizátoři označení červeně v průběhu programu chybí." />
       </Form.Label>
       <Col>
-        {[...objectPeople]
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map((person) => (
-            <PersonCheck
-              key={person._id}
-              name={person.name}
-              id={person._id}
-              available={isPersonAvailable(
-                person._id,
-                objectPeople,
-                begin,
-                duration,
-              )}
-              attendance={programPeople.find(
-                (att) => att.person === person._id,
-              )}
-              disabled={disabled}
-              setAttendance={setAttendance}
-              removeAttendance={removeAttendance}
-            />
-          ))}
+        {peopleLoaded &&
+          [...objectPeople]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((person) => (
+              <PersonCheck
+                key={person._id}
+                name={person.name}
+                id={person._id}
+                available={isPersonAvailable(
+                  person._id,
+                  objectPeople,
+                  begin,
+                  duration,
+                )}
+                attendance={programPeople.find(
+                  (att) => att.person === person._id,
+                )}
+                disabled={disabled}
+                setAttendance={setAttendance}
+                removeAttendance={removeAttendance}
+              />
+            ))}
         {!disabled && (
           <Button
             variant="outline-secondary"
