@@ -6,8 +6,6 @@ import Program from "../../src/components/Program";
 import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
 import { setTable, testing } from "../../src/store/authSlice";
-import { addPackage } from "../../src/store/packagesSlice";
-import { addPerson } from "../../src/store/peopleSlice";
 import {
   toggleActivePerson,
   toggleHighlightedPackage,
@@ -20,20 +18,11 @@ import {
 } from "../../src/store/viewSlice";
 
 describe("Program", () => {
-  const alice = {
-    _id: "testuseralice",
-    name: "Alice",
-  };
-  const bob = {
-    _id: "testuserbob",
-    name: "Bob",
-  };
-
   const prog = {
     _id: "testprogramid",
     title: "Test program",
     url: "https://some.program.url",
-    people: [{ person: alice._id }, { person: bob._id }, "Cecil"],
+    people: [{ person: "person1" }, { person: "person2" }, "Cecil"],
     notes: "Test program notes",
     locked: false,
     duration: 16200000,
@@ -69,20 +58,35 @@ describe("Program", () => {
           .stub()
           .resolves([
             {
-              _id: "testpackageid",
-              name: "Test package",
+              _id: "pkg1",
+              name: "Package 1",
               color: "#eeeeee",
+            },
+            {
+              _id: "pkg2",
+              name: "Package 2",
+              color: "#dddddd",
             },
           ])
           .as("getPackages"),
+        getPeople: cy
+          .stub()
+          .resolves([
+            {
+              _id: "person1",
+              name: "Person 1",
+            },
+            {
+              _id: "person2",
+              name: "Person 2",
+            },
+          ])
+          .as("getPeople"),
       })
       .log(false);
 
     // make time shown by default
     store.dispatch(toggleViewTime());
-
-    store.dispatch(addPerson(alice));
-    store.dispatch(addPerson(bob));
 
     store.dispatch(setTable("table1"));
   });
@@ -92,7 +96,7 @@ describe("Program", () => {
 
     cy.contains("Test program");
     cy.contains("8:00\u201312:30");
-    cy.contains("Alice, Bob");
+    cy.contains("Person 1, Person 2");
     cy.get(".program-url a").should(
       "have.attr",
       "href",
@@ -102,10 +106,10 @@ describe("Program", () => {
 
   it("with package", () => {
     const progWithPackage = Cypress._.cloneDeep(prog);
-    progWithPackage.pkg = "testpackageid";
+    progWithPackage.pkg = "pkg1";
     mountProgram(progWithPackage);
 
-    cy.contains("Test package");
+    cy.contains("Package 1");
     cy.get(".program").should(
       "have.css",
       "background-color",
@@ -117,7 +121,7 @@ describe("Program", () => {
     const violations = [
       { msg: "First violation" },
       { msg: "Second violation" },
-      { people: [alice._id] },
+      { people: ["person1"] },
     ];
     mountProgram(prog, violations);
 
@@ -126,7 +130,7 @@ describe("Program", () => {
       .should("have.css", "background-image")
       .should("match", /repeating-linear-gradient\(.*\)/);
     cy.get(".program-people")
-      .contains("Alice")
+      .contains("Person 1")
       .should("have.css", "color", "rgb(183, 28, 28)");
   });
 
@@ -141,13 +145,13 @@ describe("Program", () => {
   describe("View settings", () => {
     it("no package", () => {
       const progWithPackage = Cypress._.cloneDeep(prog);
-      progWithPackage.pkg = "testpackageid";
+      progWithPackage.pkg = "pkg1";
 
       store.dispatch(toggleViewPkg());
 
       mountProgram(progWithPackage);
 
-      cy.contains("Test package").should("not.exist");
+      cy.contains("Package 1").should("not.exist");
       cy.get(".program").should(
         "have.css",
         "background-color",
@@ -166,21 +170,21 @@ describe("Program", () => {
       store.dispatch(toggleViewPeople());
       mountProgram(prog);
 
-      cy.contains("Alice, Bob").should("not.exist");
+      cy.contains("Person 1, Person 2").should("not.exist");
     });
 
     it("no violations", () => {
       store.dispatch(toggleViewViolations());
-      mountProgram(prog, ["First violation", "Second violation - Alice"]);
+      mountProgram(prog, ["First violation", "Second violation - Person 1"]);
 
-      cy.contains("First violation, Second violation - Alice").should(
+      cy.contains("First violation, Second violation - Person 1").should(
         "not.exist",
       );
       cy.get(".program")
         .should("have.css", "background-image")
         .should("not.match", /repeating-linear-gradient\(.*\)/);
       cy.get(".program-people")
-        .contains("Alice")
+        .contains("Person 1")
         .should("not.have.css", "color", "rgb(183, 28, 28)");
     });
   });
@@ -212,14 +216,6 @@ describe("Program", () => {
   });
 
   describe("Package highlighting", () => {
-    const pkg1 = { _id: "pkg1", name: "Package 1" };
-    const pkg2 = { _id: "pkg2", name: "Package 2" };
-
-    beforeEach(() => {
-      store.dispatch(addPackage(pkg1));
-      store.dispatch(addPackage(pkg2));
-    });
-
     it("is normal when highlighting disabled", () => {
       mountProgram(prog);
       cy.get(".program").should("not.have.class", "faded");
@@ -228,7 +224,7 @@ describe("Program", () => {
 
     it("is faded when having no package", () => {
       store.dispatch(toggleHighlighting());
-      store.dispatch(toggleHighlightedPackage(pkg1._id));
+      store.dispatch(toggleHighlightedPackage("pkg1"));
       mountProgram({ ...prog, pkg: null });
 
       cy.get(".program").should("have.class", "faded");
@@ -236,37 +232,29 @@ describe("Program", () => {
 
     it("is faded when having package that is not highlighted", () => {
       store.dispatch(toggleHighlighting());
-      store.dispatch(toggleHighlightedPackage(pkg1._id));
-      mountProgram({ ...prog, pkg: pkg2._id });
+      store.dispatch(toggleHighlightedPackage("pkg1"));
+      mountProgram({ ...prog, pkg: "pkg2" });
 
       cy.get(".program").should("have.class", "faded");
     });
 
     it("is highlighted when having package that is highlighted", () => {
       store.dispatch(toggleHighlighting());
-      store.dispatch(toggleHighlightedPackage(pkg1._id));
-      mountProgram({ ...prog, pkg: pkg1._id });
+      store.dispatch(toggleHighlightedPackage("pkg1"));
+      mountProgram({ ...prog, pkg: "pkg1" });
 
       cy.get(".program").should("have.class", "highlighted");
     });
 
     it("is faded when having package that is highlighted but the highlighting is turned off", () => {
-      store.dispatch(toggleHighlightedPackage(pkg1._id));
-      mountProgram({ ...prog, pkg: pkg1._id });
+      store.dispatch(toggleHighlightedPackage("pkg1"));
+      mountProgram({ ...prog, pkg: "pkg1" });
 
       cy.get(".program").should("not.have.class", "highlighted");
     });
   });
 
   describe("People highlighting", () => {
-    const person1 = { _id: "person1", name: "Person 1" };
-    const person2 = { _id: "person2", name: "Person 2" };
-
-    beforeEach(() => {
-      store.dispatch(addPerson(person1));
-      store.dispatch(addPerson(person2));
-    });
-
     it("is normal when highlighting disabled", () => {
       mountProgram(prog);
       cy.get(".program").should("not.have.class", "faded");
@@ -282,18 +270,18 @@ describe("Program", () => {
 
     it("is faded when having person that is not highlighted", () => {
       store.dispatch(togglePeopleEnabled());
-      store.dispatch(toggleActivePerson(person1._id));
-      mountProgram({ ...prog, people: [{ person: person2._id }] });
+      store.dispatch(toggleActivePerson("person1"));
+      mountProgram({ ...prog, people: [{ person: "person2" }] });
 
       cy.get(".program").should("have.class", "faded");
     });
 
     it("is highlighted when having person that is highlighted", () => {
       store.dispatch(togglePeopleEnabled());
-      store.dispatch(toggleActivePerson(person1._id));
+      store.dispatch(toggleActivePerson("person1"));
       mountProgram({
         ...prog,
-        people: [{ person: person1._id }, { person: person2._id }],
+        people: [{ person: "person1" }, { person: "person2" }],
       });
 
       cy.get(".program").should("have.class", "highlighted");
@@ -301,27 +289,18 @@ describe("Program", () => {
   });
 
   describe("People and package highlighting", () => {
-    const person1 = { _id: "person1", name: "Person 1" };
-    const person2 = { _id: "person2", name: "Person 2" };
-    const pkg1 = { _id: "pkg1", name: "Package 1" };
-    const pkg2 = { _id: "pkg2", name: "Package 2" };
-
     beforeEach(() => {
-      store.dispatch(addPackage(pkg1));
-      store.dispatch(addPackage(pkg2));
-      store.dispatch(addPerson(person1));
-      store.dispatch(addPerson(person2));
       store.dispatch(togglePeopleEnabled());
       store.dispatch(toggleHighlighting());
-      store.dispatch(toggleHighlightedPackage(pkg1._id));
-      store.dispatch(toggleActivePerson(person1._id));
+      store.dispatch(toggleHighlightedPackage("pkg1"));
+      store.dispatch(toggleActivePerson("person1"));
     });
 
     it("is faded when not having people and package", () => {
       mountProgram({
         ...prog,
-        people: [{ person: person2._id }],
-        pkg: pkg2._id,
+        people: [{ person: "person2" }],
+        pkg: "pkg2",
       });
       cy.get(".program").should("have.class", "faded");
     });
@@ -329,8 +308,8 @@ describe("Program", () => {
     it("is highlighted when having package but not people", () => {
       mountProgram({
         ...prog,
-        people: [{ person: person2._id }],
-        pkg: pkg1._id,
+        people: [{ person: "person2" }],
+        pkg: "pkg1",
       });
       cy.get(".program").should("have.class", "highlighted");
     });
@@ -338,8 +317,8 @@ describe("Program", () => {
     it("is highlighted when having people but not package", () => {
       mountProgram({
         ...prog,
-        people: [{ person: person1._id }],
-        pkg: pkg2._id,
+        people: [{ person: "person1" }],
+        pkg: "pkg2",
       });
       cy.get(".program").should("have.class", "highlighted");
     });
@@ -347,8 +326,8 @@ describe("Program", () => {
     it("is highlighted when having both people and package", () => {
       mountProgram({
         ...prog,
-        people: [{ person: person1._id }],
-        pkg: pkg1._id,
+        people: [{ person: "person1" }],
+        pkg: "pkg1",
       });
       cy.get(".program").should("have.class", "highlighted");
     });

@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
-export const getPeople = createAsyncThunk(
+const getPeople = createAsyncThunk(
   "people/getPeople",
   async (client) => await client.getPeople(),
 );
 
-export const peopleSlice = createSlice({
+const peopleSlice = createSlice({
   name: "people",
   initialState: {
     people: [],
@@ -50,6 +51,8 @@ export const peopleSlice = createSlice({
     });
   },
 });
+
+export const useGetPeopleSlice = createSliceHook("people", getPeople);
 
 export const { addPerson, updatePerson, deletePerson } = peopleSlice.actions;
 

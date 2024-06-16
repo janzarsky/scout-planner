@@ -5,6 +5,7 @@ import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import { useGetPeopleSlice } from "../store/peopleSlice";
 
 export default function Stats() {
   return (
@@ -70,7 +71,10 @@ function PackageStats() {
 
 function PeopleStats() {
   const { table } = useSelector((state) => state.auth);
-  const { people } = useSelector((state) => state.people);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
+    table,
+    false,
+  );
   const { data: groups } = useGetGroupsSlice(table, false);
   const { data: packages } = useGetPackagesSlice(table, false);
   const { programs } = useSelector((state) => state.programs);
@@ -91,23 +95,24 @@ function PeopleStats() {
         </tr>
       </thead>
       <tbody>
-        {[...people]
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map((person) => (
-            <tr key={person._id}>
-              <td>{person.name}</td>
-              {[...groups].sort(byOrder).map((group) => (
-                <td key={group._id}>
-                  {durationPerPersonAndGroup[person._id] &&
-                  durationPerPersonAndGroup[person._id][group._id]
-                    ? formatDuration(
-                        durationPerPersonAndGroup[person._id][group._id],
-                      )
-                    : ""}
-                </td>
-              ))}
-            </tr>
-          ))}
+        {peopleLoaded &&
+          [...people]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((person) => (
+              <tr key={person._id}>
+                <td>{person.name}</td>
+                {[...groups].sort(byOrder).map((group) => (
+                  <td key={group._id}>
+                    {durationPerPersonAndGroup[person._id] &&
+                    durationPerPersonAndGroup[person._id][group._id]
+                      ? formatDuration(
+                          durationPerPersonAndGroup[person._id][group._id],
+                        )
+                      : ""}
+                  </td>
+                ))}
+              </tr>
+            ))}
       </tbody>
     </Table>
   );

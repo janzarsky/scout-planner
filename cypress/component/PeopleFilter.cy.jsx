@@ -9,7 +9,8 @@ import {
   toggleActivePerson,
   togglePeopleEnabled,
 } from "../../src/store/viewSlice";
-import { addPerson } from "../../src/store/peopleSlice";
+import { firestoreClientFactory } from "../../src/FirestoreClient";
+import { setTable } from "../../src/store/authSlice";
 
 describe("People filter toggle", () => {
   let store;
@@ -49,13 +50,21 @@ describe("People filter toggle", () => {
 describe("People filter", () => {
   let store;
 
-  const person1 = { _id: "person1", name: "Person 1" };
-  const person2 = { _id: "person2", name: "Person 2" };
-
   beforeEach(() => {
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getPeople: cy
+          .stub()
+          .resolves([
+            { _id: "person1", name: "Person 1" },
+            { _id: "person2", name: "Person 2" },
+          ])
+          .as("getPeople"),
+      })
+      .log(false);
+
     store = getStore();
-    store.dispatch(addPerson(person1));
-    store.dispatch(addPerson(person2));
+    store.dispatch(setTable("table1"));
   });
 
   function mountFilter() {
@@ -77,19 +86,19 @@ describe("People filter", () => {
 
   it("toggles people", () => {
     store.dispatch(togglePeopleEnabled());
-    cy.stub(store, "dispatch").as("dispatch");
     mountFilter();
+    cy.spy(store, "dispatch").as("dispatch");
 
     cy.contains("Person 1").click();
     cy.get("@dispatch").should(
-      "have.been.calledOnceWith",
-      toggleActivePerson(person1._id),
+      "have.been.calledWith",
+      toggleActivePerson("person1"),
     );
   });
 
   it("reflects active people", () => {
     store.dispatch(togglePeopleEnabled());
-    store.dispatch(toggleActivePerson(person1._id));
+    store.dispatch(toggleActivePerson("person1"));
     mountFilter();
 
     cy.contains("Person 1").should("have.class", "btn-dark");

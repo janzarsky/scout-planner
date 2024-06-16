@@ -18,6 +18,7 @@ import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import { useGetPeopleSlice } from "../store/peopleSlice";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -52,7 +53,7 @@ function DeleteAll() {
   const { data: packages } = useGetPackagesSlice(table, false);
   const { rules } = useSelector((state) => state.rules);
   const { users } = useSelector((state) => state.users);
-  const { people } = useSelector((state) => state.people);
+  const { data: people } = useGetPeopleSlice(table, false);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const client = firestoreClientFactory.getClient(table);
