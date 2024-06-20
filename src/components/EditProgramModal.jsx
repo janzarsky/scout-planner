@@ -36,6 +36,7 @@ import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import { useGetSettingsSlice } from "../store/settingsSlice";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -309,7 +310,13 @@ function ProgramDuration({
   setLocked,
   disabled = false,
 }) {
-  const timeStep = useSelector((state) => state.settings.settings.timeStep);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
+    table,
+    false,
+  );
+  // FIXME: centralize default time step
+  const timeStep = settingsLoaded ? settings.timeStep : 15 * 60 * 1000;
   const defaultDurations = {
     [15 * 60 * 1000]: [
       ["0:15", "15 min"],
