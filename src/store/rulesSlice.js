@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createSliceHook } from "./sliceHelper";
 
-export const getRules = createAsyncThunk(
+const getRules = createAsyncThunk(
   "rules/getRules",
   async (client) => await client.getRules(),
 );
 
-export const rulesSlice = createSlice({
+const rulesSlice = createSlice({
   name: "rules",
   initialState: { rules: [], loading: "idle", error: null, loaded: false },
   reducers: {
