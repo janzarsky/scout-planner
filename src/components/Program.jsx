@@ -11,11 +11,16 @@ import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
+import { useGetSettingsSlice } from "../store/settingsSlice";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
   const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
     table,
     false,
   );
@@ -65,7 +70,8 @@ export default function Program({ program, rect, violations }) {
 
   drag(drop(ref));
 
-  const timeStep = useSelector((state) => state.settings.settings.timeStep);
+  // FIXME: centralize default time step
+  const timeStep = settingsLoaded ? settings.timeStep : 15 * 60 * 1000;
   const narrow = program.duration <= 2 * timeStep;
 
   return (
