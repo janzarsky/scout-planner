@@ -9,7 +9,7 @@ import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useSelector } from "react-redux";
-import { updateSettings } from "../store/settingsSlice";
+import { updateSettings, useGetSettingsSlice } from "../store/settingsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
@@ -86,13 +86,19 @@ function DeleteAll() {
 }
 
 function TimeStep() {
-  const { settings } = useSelector((state) => state.settings);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
-  const [step, setStep] = useState(settings.timeStep);
+  // FIXME: centralize the default time step
+  const [step, setStep] = useState(
+    settingsLoaded ? settings.timeStep : 15 * 60 * 1000,
+  );
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
@@ -121,7 +127,10 @@ function TimeStep() {
             </Form.Select>
           ) : (
             <Form.Label className="pt-2">
-              {formatDurationInMinutes(settings.timeStep)}
+              {formatDurationInMinutes(
+                // FIXME: centralize the default time step
+                settingsLoaded ? settings.timeStep : 15 * 60 * 1000,
+              )}
             </Form.Label>
           )}
         </Col>
@@ -142,13 +151,17 @@ function TimeStep() {
 }
 
 function Width() {
-  const { settings } = useSelector((state) => state.settings);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
-  const [width, setWidth] = useState(settings.width);
+  // FIXME: centralize the default width
+  const [width, setWidth] = useState(settingsLoaded ? settings.width : 100);
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
@@ -186,7 +199,8 @@ function Width() {
             <Form.Label className="pt-2">
               {
                 { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
-                  settings.width
+                  // FIXME: centralize the default width
+                  settingsLoaded ? settings.width : 100
                 ]
               }
             </Form.Label>
