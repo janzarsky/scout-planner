@@ -25,7 +25,7 @@ import { getPermissions } from "../store/authSlice";
 import { PackageFilter } from "./PackageFilter";
 import { ViewSettings } from "./ViewSettings";
 import { RangesSettings } from "./RangesSettings";
-import { getSettings } from "../store/settingsSlice";
+import { useGetSettingsSlice } from "../store/settingsSlice";
 import { useAuth } from "./AuthProvider";
 import { Route, Routes } from "react-router-dom";
 import { PeopleFilter } from "./PeopleFilter";
@@ -66,7 +66,7 @@ export default function App() {
     table,
     false,
   );
-  const settingsLoaded = useSelector((state) => state.settings.loaded);
+  const { isSuccess: settingsLoaded } = useGetSettingsSlice(table, false);
   const timetableLoaded = useSelector((state) => state.timetable.loaded);
 
   const dispatch = useDispatch();
@@ -92,7 +92,6 @@ export default function App() {
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
-        dispatch(getSettings(client));
         dispatch(getTimetable(client));
       }
 
