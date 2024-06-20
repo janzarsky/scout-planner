@@ -13,7 +13,7 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { useSelector } from "react-redux";
-import { addRule, deleteRule } from "../store/rulesSlice";
+import { addRule, deleteRule, useGetRulesSlice } from "../store/rulesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { useCommandHandler } from "./CommandContext";
@@ -28,7 +28,10 @@ export default function Rules({ violations }) {
 
   const { table, userLevel } = useSelector((state) => state.auth);
 
-  const { rules } = useSelector((state) => state.rules);
+  const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(
+    table,
+    false,
+  );
   const { programs } = useSelector((state) => state.programs);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
     table,
@@ -65,7 +68,7 @@ export default function Rules({ violations }) {
 
   const rulesData = useMemo(
     () =>
-      [...rules]
+      [...(rulesLoaded ? rules : [])]
         .sort((a, b) => ruleSort(a, b, programs))
         .map((rule) => ({
           ...rule,
@@ -184,12 +187,10 @@ function NewRule({
 
   const formattedPrograms = useMemo(
     () =>
-      [...programs]
-        .sort(programSort)
-        .map((prog) => ({
-          _id: prog._id,
-          text: formatProgram(prog, groupsLoaded ? groups : []),
-        })),
+      [...programs].sort(programSort).map((prog) => ({
+        _id: prog._id,
+        text: formatProgram(prog, groupsLoaded ? groups : []),
+      })),
     [programs, groups],
   );
 
