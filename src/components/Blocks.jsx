@@ -4,6 +4,7 @@ import { BlockDroppables, getBlockDroppablesData } from "./Droppables";
 import Program from "./Program";
 import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { useMemo } from "react";
+import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
 
 export function Blocks({ settings, violations, onDrop }) {
   const { programs } = useSelector((state) => state.programs);
@@ -29,7 +30,12 @@ export function Blocks({ settings, violations, onDrop }) {
 }
 
 export function Block({ rect, children }) {
-  const width = useSelector((state) => state.settings.settings.width);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
+    table,
+    false,
+  );
+  const width = settingsLoaded ? settings.width : DEFAULT_WIDTH;
 
   return (
     <div

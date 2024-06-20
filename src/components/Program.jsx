@@ -11,11 +11,16 @@ import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
+import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
   const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
+    table,
+    false,
+  );
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
     table,
     false,
   );
@@ -65,7 +70,7 @@ export default function Program({ program, rect, violations }) {
 
   drag(drop(ref));
 
-  const timeStep = useSelector((state) => state.settings.settings.timeStep);
+  const timeStep = settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP;
   const narrow = program.duration <= 2 * timeStep;
 
   return (

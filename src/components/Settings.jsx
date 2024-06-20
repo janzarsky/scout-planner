@@ -9,7 +9,12 @@ import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useSelector } from "react-redux";
-import { updateSettings } from "../store/settingsSlice";
+import {
+  DEFAULT_TIME_STEP,
+  DEFAULT_WIDTH,
+  updateSettings,
+  useGetSettingsSlice,
+} from "../store/settingsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
@@ -86,13 +91,18 @@ function DeleteAll() {
 }
 
 function TimeStep() {
-  const { settings } = useSelector((state) => state.settings);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
-  const [step, setStep] = useState(settings.timeStep);
+  const [step, setStep] = useState(
+    settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP,
+  );
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
@@ -121,7 +131,9 @@ function TimeStep() {
             </Form.Select>
           ) : (
             <Form.Label className="pt-2">
-              {formatDurationInMinutes(settings.timeStep)}
+              {formatDurationInMinutes(
+                settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP,
+              )}
             </Form.Label>
           )}
         </Col>
@@ -142,13 +154,18 @@ function TimeStep() {
 }
 
 function Width() {
-  const { settings } = useSelector((state) => state.settings);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
-  const [width, setWidth] = useState(settings.width);
+  const [width, setWidth] = useState(
+    settingsLoaded ? settings.width : DEFAULT_WIDTH,
+  );
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
@@ -186,7 +203,7 @@ function Width() {
             <Form.Label className="pt-2">
               {
                 { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
-                  settings.width
+                  settingsLoaded ? settings.width : DEFAULT_WIDTH
                 ]
               }
             </Form.Label>

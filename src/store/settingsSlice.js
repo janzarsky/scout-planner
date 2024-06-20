@@ -1,19 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
-export const getSettings = createAsyncThunk(
-  "settings/getSettings",
-  async (client) => {
-    const timetable = await client.getTimetable();
+export const DEFAULT_TIME_STEP = 15 * 60 * 1000;
+export const DEFAULT_WIDTH = 100;
 
-    return {
-      timeStep: 15 * 60 * 1000,
-      width: 100,
-      ...(timetable && timetable.settings ? timetable.settings : {}),
-    };
-  },
-);
+const getSettings = createAsyncThunk("settings/getSettings", async (client) => {
+  const timetable = await client.getTimetable();
 
-export const settingsSlice = createSlice({
+  return {
+    timeStep: DEFAULT_TIME_STEP,
+    width: DEFAULT_WIDTH,
+    ...(timetable && timetable.settings ? timetable.settings : {}),
+  };
+});
+
+const settingsSlice = createSlice({
   name: "settings",
   initialState: {
     settings: { timeStep: 15 * 60 * 1000, width: 100 },
@@ -49,6 +50,8 @@ export const settingsSlice = createSlice({
     });
   },
 });
+
+export const useGetSettingsSlice = createSliceHook("settings", getSettings);
 
 export const { updateSettings } = settingsSlice.actions;
 

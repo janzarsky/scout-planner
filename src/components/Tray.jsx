@@ -9,6 +9,7 @@ import { Block } from "./Blocks";
 import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
 import { useGetPackagesSlice } from "../store/packagesSlice";
+import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
@@ -30,7 +31,9 @@ export function Tray({ settings, onDroppableDrop }) {
     [programs],
   );
 
-  const width = useSelector((state) => state.settings.settings.width);
+  const { data: timetableSettings, isSuccess: settingsLoaded } =
+    useGetSettingsSlice(table, false);
+  const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   const trayPrograms = programs.filter((p) => typeof p.begin !== "number");

@@ -14,6 +14,11 @@ import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
 import { useCommandHandler } from "./CommandContext";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import {
+  DEFAULT_TIME_STEP,
+  DEFAULT_WIDTH,
+  useGetSettingsSlice,
+} from "../store/settingsSlice";
 
 export default function Timetable({
   violations,
@@ -50,15 +55,17 @@ export default function Timetable({
     table,
     false,
   );
-  const { settings: timetableSettings } = useSelector(
-    (state) => state.settings,
-  );
+  const { data: timetableSettings, isSuccess: settingsLoaded } =
+    useGetSettingsSlice(table, false);
+  const timeStep = settingsLoaded
+    ? timetableSettings.timeStep
+    : DEFAULT_TIME_STEP;
   const settings = useMemo(
     () =>
       getTimetableSettings(
         programs,
         groupsLoaded ? groups : [],
-        timetableSettings.timeStep,
+        timeStep,
         timeProvider ? timeProvider() : Date.now(),
       ),
     [programs, groups, timetableSettings, timeProvider],
@@ -69,15 +76,14 @@ export default function Timetable({
   useEffect(() => {
     const interval = setInterval(
       () => setTime(timeProvider ? timeProvider() : Date.now()),
-      (1000 * timetableSettings.timeStep) / 2,
+      (1000 * timeStep) / 2,
     );
 
     return () => clearInterval(interval);
   }, []);
 
   const timeIndicatorRect = getTimeIndicatorRect(settings, time);
-
-  const width = useSelector((state) => state.settings.settings.width);
+  const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
 
   return (
     <DndProvider backend={HTML5Backend}>

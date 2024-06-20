@@ -36,6 +36,7 @@ import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -309,7 +310,12 @@ function ProgramDuration({
   setLocked,
   disabled = false,
 }) {
-  const timeStep = useSelector((state) => state.settings.settings.timeStep);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
+    table,
+    false,
+  );
+  const timeStep = settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP;
   const defaultDurations = {
     [15 * 60 * 1000]: [
       ["0:15", "15 min"],
