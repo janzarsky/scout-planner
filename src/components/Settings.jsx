@@ -9,7 +9,12 @@ import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useSelector } from "react-redux";
-import { updateSettings, useGetSettingsSlice } from "../store/settingsSlice";
+import {
+  DEFAULT_TIME_STEP,
+  DEFAULT_WIDTH,
+  updateSettings,
+  useGetSettingsSlice,
+} from "../store/settingsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
@@ -95,9 +100,8 @@ function TimeStep() {
 
   const client = firestoreClientFactory.getClient(table);
 
-  // FIXME: centralize the default time step
   const [step, setStep] = useState(
-    settingsLoaded ? settings.timeStep : 15 * 60 * 1000,
+    settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP,
   );
   const [editing, setEditing] = useState(false);
 
@@ -128,8 +132,7 @@ function TimeStep() {
           ) : (
             <Form.Label className="pt-2">
               {formatDurationInMinutes(
-                // FIXME: centralize the default time step
-                settingsLoaded ? settings.timeStep : 15 * 60 * 1000,
+                settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP,
               )}
             </Form.Label>
           )}
@@ -160,8 +163,9 @@ function Width() {
 
   const client = firestoreClientFactory.getClient(table);
 
-  // FIXME: centralize the default width
-  const [width, setWidth] = useState(settingsLoaded ? settings.width : 100);
+  const [width, setWidth] = useState(
+    settingsLoaded ? settings.width : DEFAULT_WIDTH,
+  );
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
@@ -199,8 +203,7 @@ function Width() {
             <Form.Label className="pt-2">
               {
                 { 25: "Nejužší", 50: "Užší", 100: "Normální", 150: "Širší" }[
-                  // FIXME: centralize the default width
-                  settingsLoaded ? settings.width : 100
+                  settingsLoaded ? settings.width : DEFAULT_WIDTH
                 ]
               }
             </Form.Label>

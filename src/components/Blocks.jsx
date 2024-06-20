@@ -4,7 +4,7 @@ import { BlockDroppables, getBlockDroppablesData } from "./Droppables";
 import Program from "./Program";
 import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { useMemo } from "react";
-import { useGetSettingsSlice } from "../store/settingsSlice";
+import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
 
 export function Blocks({ settings, violations, onDrop }) {
   const { programs } = useSelector((state) => state.programs);
@@ -35,8 +35,7 @@ export function Block({ rect, children }) {
     table,
     false,
   );
-  // FIXME: centralize the default width
-  const width = settingsLoaded ? settings.width : 100;
+  const width = settingsLoaded ? settings.width : DEFAULT_WIDTH;
 
   return (
     <div

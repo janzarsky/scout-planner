@@ -11,7 +11,7 @@ import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
-import { useGetSettingsSlice } from "../store/settingsSlice";
+import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -70,8 +70,7 @@ export default function Program({ program, rect, violations }) {
 
   drag(drop(ref));
 
-  // FIXME: centralize default time step
-  const timeStep = settingsLoaded ? settings.timeStep : 15 * 60 * 1000;
+  const timeStep = settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP;
   const narrow = program.duration <= 2 * timeStep;
 
   return (

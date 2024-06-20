@@ -9,7 +9,7 @@ import { Block } from "./Blocks";
 import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
 import { useGetPackagesSlice } from "../store/packagesSlice";
-import { useGetSettingsSlice } from "../store/settingsSlice";
+import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
@@ -33,8 +33,7 @@ export function Tray({ settings, onDroppableDrop }) {
 
   const { data: timetableSettings, isSuccess: settingsLoaded } =
     useGetSettingsSlice(table, false);
-  // FIXME: centralize the default width
-  const width = settingsLoaded ? timetableSettings.width : 100;
+  const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
   const userLevel = useSelector((state) => state.auth.userLevel);
 
   const trayPrograms = programs.filter((p) => typeof p.begin !== "number");

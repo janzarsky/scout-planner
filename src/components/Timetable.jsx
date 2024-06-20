@@ -14,7 +14,11 @@ import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
 import { useCommandHandler } from "./CommandContext";
 import { useGetGroupsSlice } from "../store/groupsSlice";
-import { useGetSettingsSlice } from "../store/settingsSlice";
+import {
+  DEFAULT_TIME_STEP,
+  DEFAULT_WIDTH,
+  useGetSettingsSlice,
+} from "../store/settingsSlice";
 
 export default function Timetable({
   violations,
@@ -53,8 +57,9 @@ export default function Timetable({
   );
   const { data: timetableSettings, isSuccess: settingsLoaded } =
     useGetSettingsSlice(table, false);
-  // FIXME: centralize default time step
-  const timeStep = settingsLoaded ? timetableSettings.timeStep : 15 * 60 * 1000;
+  const timeStep = settingsLoaded
+    ? timetableSettings.timeStep
+    : DEFAULT_TIME_STEP;
   const settings = useMemo(
     () =>
       getTimetableSettings(
@@ -78,9 +83,7 @@ export default function Timetable({
   }, []);
 
   const timeIndicatorRect = getTimeIndicatorRect(settings, time);
-
-  // FIXME: centralize the default width
-  const width = settingsLoaded ? timetableSettings.width : 100;
+  const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
 
   return (
     <DndProvider backend={HTML5Backend}>

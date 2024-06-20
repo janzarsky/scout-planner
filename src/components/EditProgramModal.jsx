@@ -36,7 +36,7 @@ import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
-import { useGetSettingsSlice } from "../store/settingsSlice";
+import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -315,8 +315,7 @@ function ProgramDuration({
     table,
     false,
   );
-  // FIXME: centralize default time step
-  const timeStep = settingsLoaded ? settings.timeStep : 15 * 60 * 1000;
+  const timeStep = settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP;
   const defaultDurations = {
     [15 * 60 * 1000]: [
       ["0:15", "15 min"],
