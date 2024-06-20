@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
 export const getSettings = createAsyncThunk(
   "settings/getSettings",
@@ -49,6 +50,8 @@ export const settingsSlice = createSlice({
     });
   },
 });
+
+export const useGetSettingsSlice = createSliceHook("settings", getSettings);
 
 export const { updateSettings } = settingsSlice.actions;
 
