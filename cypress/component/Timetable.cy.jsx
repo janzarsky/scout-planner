@@ -55,6 +55,7 @@ describe("Timetable", () => {
           ])
           .as("getGroups"),
         getPackages: cy.stub().resolves([]).as("getPackages"),
+        getTimetable: cy.stub().resolves({}).as("getTimetable"),
       })
       .log(false);
 
