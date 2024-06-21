@@ -8,10 +8,15 @@ import { RangesSettingsToggle } from "./RangesSettings";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { level } from "../helpers/Level";
 import { GoogleLogin } from "./GoogleLogin";
+import { useGetTimetableSlice } from "../store/timetableSlice";
 
 export function NavBar({ rulesSatisfied }) {
-  const userLevel = useSelector((state) => state.auth.userLevel);
-  const title = useSelector((state) => state.timetable.timetable.title);
+  const { userLevel, table } = useSelector((state) => state.auth);
+  const { data: timetable, isSuccess: timetableLoaded } = useGetTimetableSlice(
+    table,
+    false,
+  );
+  const title = timetableLoaded ? timetable.title : null;
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
