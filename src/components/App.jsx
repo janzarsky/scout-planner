@@ -74,13 +74,12 @@ export default function App() {
 
   const dispatch = useDispatch();
 
-  const pageTitle = timetableLoaded ? timetable.title : null;
-
   useEffect(() => {
-    document.title = pageTitle
-      ? `${pageTitle} – Skautský plánovač`
-      : "Skautský plánovač";
-  }, [pageTitle]);
+    document.title =
+      timetableLoaded && timetable.title
+        ? `${timetable.title} – Skautský plánovač`
+        : "Skautský plánovač";
+  }, [timetable]);
 
   useEffect(() => {
     if (!permissionsLoaded && !initializing) {
