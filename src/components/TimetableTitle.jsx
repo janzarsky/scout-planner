@@ -1,16 +1,16 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { updateTitle } from "../store/timetableSlice";
+import { updateTitle, useGetTimetableSlice } from "../store/timetableSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useCommandHandler } from "./CommandContext";
 
 export function TimetableTitle() {
-  const { timetable } = useSelector((state) => state.timetable);
+  const { table } = useSelector((state) => state.auth);
+  const { data: timetable } = useGetTimetableSlice(table, false);
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
   const [title, setTitle] = useState(timetable.title ? timetable.title : "");
@@ -41,7 +41,7 @@ export function TimetableTitle() {
             />
           ) : (
             <Form.Label className="pt-2">
-              {title ? title : "(bez názvu)"}
+              {timetable.title ? timetable.title : "(bez názvu)"}
             </Form.Label>
           )}
         </Col>

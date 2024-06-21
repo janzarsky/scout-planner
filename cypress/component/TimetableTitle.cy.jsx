@@ -3,8 +3,8 @@
 import React from "react";
 import { TimetableTitle } from "../../src/components/TimetableTitle";
 import { getStore } from "../../src/store";
-import { updateTitle } from "../../src/store/timetableSlice";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
+import { setTable } from "../../src/store/authSlice";
 
 describe("Timetable title", () => {
   let store;
@@ -13,19 +13,30 @@ describe("Timetable title", () => {
     cy.mount(<TimetableTitle />, { reduxStore: store, command: true });
   }
 
-  beforeEach(() => {
-    store = getStore();
-
+  function stubClient(title, secondTitle) {
     cy.stub(firestoreClientFactory, "getClient")
       .returns({
         updateTimetable: cy
           .spy(async (timetable) => timetable)
           .as("updateTimetable"),
+        getTimetable: cy
+          .stub()
+          .onFirstCall()
+          .resolves({ title })
+          .onSecondCall()
+          .resolves({ title: secondTitle })
+          .as("getTimetable"),
       })
       .log(false);
+  }
+
+  beforeEach(() => {
+    store = getStore();
+    store.dispatch(setTable("table1"));
   });
 
   it("shows empty title", () => {
+    stubClient(null);
     mountTimetableTitle();
 
     cy.contains("Název harmonogramu");
@@ -33,13 +44,14 @@ describe("Timetable title", () => {
   });
 
   it("shows existing title", () => {
-    store.dispatch(updateTitle("Test timetable"));
+    stubClient("Test timetable");
     mountTimetableTitle();
 
     cy.contains("Test timetable");
   });
 
   it("sets new title", () => {
+    stubClient(null, "New title");
     mountTimetableTitle();
     cy.get("button").click();
     cy.get("input").type("New title");
@@ -52,7 +64,7 @@ describe("Timetable title", () => {
   });
 
   it("updates existing title", () => {
-    store.dispatch(updateTitle("Test timetable"));
+    stubClient("Test timetable", "New title");
     mountTimetableTitle();
     cy.get("button").click();
     cy.get("input").clear();
@@ -66,7 +78,7 @@ describe("Timetable title", () => {
   });
 
   it("clears existing title", () => {
-    store.dispatch(updateTitle("Test timetable"));
+    stubClient("Test timetable", null);
     mountTimetableTitle();
     cy.get("button").click();
     cy.get("input").clear();

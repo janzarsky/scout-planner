@@ -32,7 +32,7 @@ import { PeopleFilter } from "./PeopleFilter";
 import { PrintWrapper } from "./PrintOptions";
 import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
-import { getTimetable } from "../store/timetableSlice";
+import { useGetTimetableSlice } from "../store/timetableSlice";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
@@ -67,17 +67,19 @@ export default function App() {
     false,
   );
   const { isSuccess: settingsLoaded } = useGetSettingsSlice(table, false);
-  const timetableLoaded = useSelector((state) => state.timetable.loaded);
+  const { data: timetable, isSuccess: timetableLoaded } = useGetTimetableSlice(
+    table,
+    false,
+  );
 
   const dispatch = useDispatch();
 
-  const pageTitle = useSelector((state) => state.timetable.timetable.title);
-
   useEffect(() => {
-    document.title = pageTitle
-      ? `${pageTitle} – Skautský plánovač`
-      : "Skautský plánovač";
-  }, [pageTitle]);
+    document.title =
+      timetableLoaded && timetable.title
+        ? `${timetable.title} – Skautský plánovač`
+        : "Skautský plánovač";
+  }, [timetable]);
 
   useEffect(() => {
     if (!permissionsLoaded && !initializing) {
@@ -92,7 +94,6 @@ export default function App() {
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
-        dispatch(getTimetable(client));
       }
 
       if (userLevel >= level.ADMIN) dispatch(getUsers(client));

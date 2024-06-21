@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
-export const getTimetable = createAsyncThunk(
+const getTimetable = createAsyncThunk(
   "timetable/getTimetable",
   async (client) => ({
     title: null,
@@ -8,7 +9,7 @@ export const getTimetable = createAsyncThunk(
   }),
 );
 
-export const timetableSlice = createSlice({
+const timetableSlice = createSlice({
   name: "timetable",
   initialState: {
     timetable: { title: null },
@@ -44,6 +45,8 @@ export const timetableSlice = createSlice({
     });
   },
 });
+
+export const useGetTimetableSlice = createSliceHook("timetable", getTimetable);
 
 export const { updateTitle } = timetableSlice.actions;
 
