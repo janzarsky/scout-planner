@@ -32,7 +32,7 @@ import { PeopleFilter } from "./PeopleFilter";
 import { PrintWrapper } from "./PrintOptions";
 import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
-import { getTimetable } from "../store/timetableSlice";
+import { useGetTimetableSlice } from "../store/timetableSlice";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
@@ -67,11 +67,14 @@ export default function App() {
     false,
   );
   const { isSuccess: settingsLoaded } = useGetSettingsSlice(table, false);
-  const timetableLoaded = useSelector((state) => state.timetable.loaded);
+  const { data: timetable, isSuccess: timetableLoaded } = useGetTimetableSlice(
+    table,
+    false,
+  );
 
   const dispatch = useDispatch();
 
-  const pageTitle = useSelector((state) => state.timetable.timetable.title);
+  const pageTitle = timetableLoaded ? timetable.title : null;
 
   useEffect(() => {
     document.title = pageTitle
@@ -92,7 +95,6 @@ export default function App() {
 
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
-        dispatch(getTimetable(client));
       }
 
       if (userLevel >= level.ADMIN) dispatch(getUsers(client));
