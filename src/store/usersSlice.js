@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
 export const getUsers = createAsyncThunk(
   "users/getUsers",
@@ -50,6 +51,8 @@ export const usersSlice = createSlice({
     });
   },
 });
+
+export const useGetUsersSlice = createSliceHook("users", getUsers);
 
 export const { addUser, updateUser, deleteUser } = usersSlice.actions;
 
