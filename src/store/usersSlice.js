@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createSliceHook } from "./sliceHelper";
 
-export const getUsers = createAsyncThunk(
+const getUsers = createAsyncThunk(
   "users/getUsers",
   async (client) => await client.getUsers(),
 );
 
-export const usersSlice = createSlice({
+const usersSlice = createSlice({
   name: "users",
   initialState: {
     users: [],
