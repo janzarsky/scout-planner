@@ -8,6 +8,7 @@ import { addRule, deleteRule } from "./rulesSlice";
 import { updateSettings } from "./settingsSlice";
 import { updateTitle } from "./timetableSlice";
 import { addUser, deleteUser, setPublicLevel, updateUser } from "./usersSlice";
+import { setPublicLevel as setPublicLevelV2 } from "./publicLevelSlice";
 
 export function getCommandHandler(store) {
   return {
@@ -147,6 +148,12 @@ export function getCommandHandler(store) {
         [setPublicLevel().type]: (payload) => {
           client.setPublicLevel(payload).then(
             (level) => store.dispatch(setPublicLevel(level)),
+            (e) => store.dispatch(addError(e.message)),
+          );
+        },
+        [setPublicLevelV2().type]: (payload) => {
+          client.setPublicLevel(payload).then(
+            (level) => store.dispatch(setPublicLevelV2(level)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
