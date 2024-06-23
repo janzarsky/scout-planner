@@ -6,7 +6,12 @@ import Button from "react-bootstrap/Button";
 import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useSelector } from "react-redux";
-import { addUser, deleteUser, updateUser } from "../store/usersSlice";
+import {
+  addUser,
+  deleteUser,
+  updateUser,
+  useGetUsersSlice,
+} from "../store/usersSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
 import {
@@ -24,7 +29,10 @@ export default function Users({ userEmail }) {
   const { table } = useSelector((state) => state.auth);
   const { data: publicLevel, isSuccess: publicLevelLoaded } =
     useGetPublicLevelSlice(table, false);
-  const { users } = useSelector((state) => state.users);
+  const { data: users, isSuccess: usersLoaded } = useGetUsersSlice(
+    table,
+    false,
+  );
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);
@@ -55,6 +63,7 @@ export default function Users({ userEmail }) {
   // allow editing of public user only in case the current user has ADMIN rights
   const publicUserEditable =
     userEmail &&
+    usersLoaded &&
     users.some((user) => user.email === userEmail && user.level >= level.ADMIN);
 
   // allow editing of current user only in case they are other users with ADMIN rights
@@ -62,6 +71,7 @@ export default function Users({ userEmail }) {
   const hasPublicAccess = publicLevel >= level.ADMIN;
   const currentUserEditable =
     userEmail &&
+    usersLoaded &&
     (hasPublicAccess ||
       users.some(
         (user) => user.email !== userEmail && user.level >= level.ADMIN,
@@ -95,38 +105,39 @@ export default function Users({ userEmail }) {
               }}
             />
           )}
-          {[...users]
-            .sort((a, b) => a.email.localeCompare(b.email))
-            .filter((user) => user.email !== "public")
-            .map((user) =>
-              user._id === editKey ? (
-                <EditedUser
-                  key={user._id}
-                  email={editedEmail}
-                  level={editedLevel}
-                  setEmail={setEditedEmail}
-                  setLevel={setEditedLevel}
-                />
-              ) : (
-                <User
-                  key={user._id}
-                  email={user.email}
-                  level={user.level}
-                  editable={user.email !== userEmail || currentUserEditable}
-                  currentUserWarning={
-                    user.email === userEmail && currentUserWarning
-                  }
-                  deleteUser={() =>
-                    dispatchCommand(client, deleteUser(user._id))
-                  }
-                  editUser={() => {
-                    setEditKey(user._id);
-                    setEditedEmail(user.email);
-                    setEditedLevel(user.level);
-                  }}
-                />
-              ),
-            )}
+          {usersLoaded &&
+            [...users]
+              .sort((a, b) => a.email.localeCompare(b.email))
+              .filter((user) => user.email !== "public")
+              .map((user) =>
+                user._id === editKey ? (
+                  <EditedUser
+                    key={user._id}
+                    email={editedEmail}
+                    level={editedLevel}
+                    setEmail={setEditedEmail}
+                    setLevel={setEditedLevel}
+                  />
+                ) : (
+                  <User
+                    key={user._id}
+                    email={user.email}
+                    level={user.level}
+                    editable={user.email !== userEmail || currentUserEditable}
+                    currentUserWarning={
+                      user.email === userEmail && currentUserWarning
+                    }
+                    deleteUser={() =>
+                      dispatchCommand(client, deleteUser(user._id))
+                    }
+                    editUser={() => {
+                      setEditKey(user._id);
+                      setEditedEmail(user.email);
+                      setEditedLevel(user.level);
+                    }}
+                  />
+                ),
+              )}
           <NewUser
             email={newEmail}
             level={newLevel}
