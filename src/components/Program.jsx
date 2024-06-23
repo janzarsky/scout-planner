@@ -4,7 +4,11 @@ import { useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
-import { addProgram, updateProgram } from "../store/programsSlice";
+import {
+  addProgram,
+  updateProgram,
+  useGetProgramsSlice,
+} from "../store/programsSlice";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
@@ -20,7 +24,8 @@ export default function Program({ program, rect, violations }) {
     useGetPackagesSlice(table);
   const { data: settings, isSuccess: settingsLoaded } =
     useGetSettingsSlice(table);
-  const { programs } = useSelector((state) => state.programs);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
 
   const client = firestoreClientFactory.getClient(table);
 
@@ -40,7 +45,9 @@ export default function Program({ program, rect, violations }) {
     () => ({
       accept: "program",
       drop: (item) => {
-        var otherProg = programs.find((program) => program._id === item.id);
+        var otherProg = programsLoaded
+          ? programs.find((program) => program._id === item.id)
+          : null;
 
         if (otherProg) {
           const newProg = {

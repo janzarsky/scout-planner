@@ -83,6 +83,7 @@ describe("Program", () => {
           ])
           .as("getPeople"),
         getTimetable: cy.stub().resolves({}).as("getTimetable"),
+        getPrograms: cy.stub().resolves([]).as("getPrograms"),
       })
       .log(false);
 
