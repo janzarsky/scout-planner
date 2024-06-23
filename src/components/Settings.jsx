@@ -25,6 +25,7 @@ import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
 import { useGetUsersSlice } from "../store/usersSlice";
+import { useGetProgramsSlice } from "../store/programsSlice";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -57,7 +58,7 @@ function DeleteAll() {
   const { data: rules } = useGetRulesSlice(table);
   const { data: users } = useGetUsersSlice(table);
   const { data: people } = useGetPeopleSlice(table);
-  const { programs } = useSelector((state) => state.programs);
+  const { data: programs } = useGetProgramsSlice(table);
 
   const client = firestoreClientFactory.getClient(table);
 
