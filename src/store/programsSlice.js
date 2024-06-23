@@ -9,7 +9,6 @@ export const programsSlice = createSlice({
   name: "programs",
   initialState: {
     programs: [],
-    deletedPrograms: [],
     loading: "idle",
     error: null,
     loaded: false,
@@ -25,9 +24,6 @@ export const programsSlice = createSlice({
       ];
     },
     deleteProgram(state, action) {
-      state.deletedPrograms.push(
-        state.programs.find((p) => p._id === action.payload),
-      );
       state.programs = state.programs.filter((p) => p._id !== action.payload);
     },
   },
@@ -40,8 +36,8 @@ export const programsSlice = createSlice({
 
     builder.addCase(getPrograms.fulfilled, (state, action) => {
       if (state.loading === "pending") {
+        // data fix: previously, deleted programs were stored, now we pretend they do not exist
         state.programs = [...action.payload].filter((p) => !p.deleted);
-        state.deletedPrograms = [...action.payload].filter((p) => p.deleted);
         state.loading = "idle";
         state.loaded = true;
       }
