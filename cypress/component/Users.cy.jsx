@@ -6,14 +6,20 @@ import Users from "../../src/components/Users";
 import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
 import { setTable, testing } from "../../src/store/authSlice";
-import { addUser } from "../../src/store/usersSlice";
 
 describe("Users", () => {
   let store;
 
-  function stubClient(publicLevel) {
+  function stubClient(publicLevel, users, secondUsers) {
     cy.stub(firestoreClientFactory, "getClient")
       .returns({
+        getUsers: cy
+          .stub()
+          .onFirstCall()
+          .resolves(users)
+          .onSecondCall()
+          .resolves(secondUsers)
+          .as("getUsers"),
         addUser: cy
           .spy(async (user) => ({ ...user, _id: "newuser" }))
           .as("addUser"),
@@ -32,7 +38,7 @@ describe("Users", () => {
   describe("public user", () => {
     it("displays warning when not logged in and there is no public access", () => {
       store.dispatch(testing.setUserLevel(level.EDIT));
-      stubClient(level.EDIT);
+      stubClient(level.EDIT, []);
       cy.mount(<Users />, { reduxStore: store, command: true });
 
       cy.contains("Kdokoliv");
@@ -42,7 +48,7 @@ describe("Users", () => {
 
     it("displays warning when not logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.ADMIN);
+      stubClient(level.ADMIN, []);
       cy.mount(<Users />, { reduxStore: store, command: true });
 
       cy.contains("Kdokoliv");
@@ -52,7 +58,7 @@ describe("Users", () => {
 
     it("displays instructions when logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.ADMIN);
+      stubClient(level.ADMIN, []);
       cy.mount(<Users userEmail="test@email.com" />, {
         reduxStore: store,
         command: true,
@@ -66,10 +72,9 @@ describe("Users", () => {
 
     it("allows editing when logged in and there is user access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.ADMIN);
-      store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN }),
-      );
+      stubClient(level.ADMIN, [
+        { _id: "user1", email: "test@email.com", level: level.ADMIN },
+      ]);
       cy.mount(<Users userEmail="test@email.com" />, {
         reduxStore: store,
         command: true,
@@ -86,10 +91,9 @@ describe("Users", () => {
 
     it("updates public user", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.ADMIN);
-      store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN }),
-      );
+      stubClient(level.ADMIN, [
+        { _id: "user1", email: "test@email.com", level: level.ADMIN },
+      ]);
       cy.mount(<Users userEmail="test@email.com" />, {
         reduxStore: store,
         command: true,
@@ -106,10 +110,9 @@ describe("Users", () => {
   describe("current user", () => {
     it("allows editing when there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.ADMIN);
-      store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.NONE }),
-      );
+      stubClient(level.ADMIN, [
+        { _id: "user1", email: "test@email.com", level: level.NONE },
+      ]);
       cy.mount(<Users userEmail="test@email.com" />, {
         reduxStore: store,
         command: true,
@@ -126,10 +129,9 @@ describe("Users", () => {
 
     it("displays warning when there is no public access and no other admins", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.NONE);
-      store.dispatch(
-        addUser({ _id: "user1", email: "test@email.com", level: level.ADMIN }),
-      );
+      stubClient(level.NONE, [
+        { _id: "user1", email: "test@email.com", level: level.ADMIN },
+      ]);
       cy.mount(<Users userEmail="test@email.com" />, {
         reduxStore: store,
         command: true,
@@ -149,21 +151,18 @@ describe("Users", () => {
         "and there are other admins",
       () => {
         store.dispatch(testing.setUserLevel(level.ADMIN));
-        stubClient(level.NONE);
-        store.dispatch(
-          addUser({
+        stubClient(level.NONE, [
+          {
             _id: "user1",
             email: "test@email.com",
             level: level.ADMIN,
-          }),
-        );
-        store.dispatch(
-          addUser({
+          },
+          {
             _id: "user2",
             email: "another@user.com",
             level: level.ADMIN,
-          }),
-        );
+          },
+        ]);
         cy.mount(<Users userEmail="test@email.com" />, {
           reduxStore: store,
           command: true,
@@ -182,14 +181,13 @@ describe("Users", () => {
 
     it("updates current user", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.ADMIN);
-      store.dispatch(
-        addUser({
+      stubClient(level.ADMIN, [
+        {
           _id: "test@email.com",
           email: "test@email.com",
           level: level.ADMIN,
-        }),
-      );
+        },
+      ]);
       cy.mount(<Users userEmail="test@email.com" />, {
         reduxStore: store,
         command: true,
@@ -209,7 +207,17 @@ describe("Users", () => {
 
   it("adds new user", () => {
     store.dispatch(testing.setUserLevel(level.ADMIN));
-    stubClient(level.ADMIN);
+    stubClient(
+      level.ADMIN,
+      [],
+      [
+        {
+          _id: "another@email.com",
+          email: "another@email.com",
+          level: level.VIEW,
+        },
+      ],
+    );
     cy.mount(<Users />, { reduxStore: store, command: true });
 
     cy.get("input").clear();
