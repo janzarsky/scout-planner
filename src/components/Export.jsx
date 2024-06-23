@@ -8,6 +8,7 @@ import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
 import { useGetSettingsSlice } from "../store/settingsSlice";
+import { useGetUsersSlice } from "../store/usersSlice";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
@@ -19,7 +20,7 @@ export default function Export() {
   const ranges = rtkQuery ? newRanges : oldRanges;
   const { data: packages } = useGetPackagesSlice(table, false);
   const { data: rules } = useGetRulesSlice(table, false);
-  const users = useSelector((state) => state.users.users);
+  const { data: users } = useGetUsersSlice(table, false);
   const { data: settings } = useGetSettingsSlice(table, false);
   const { data: people } = useGetPeopleSlice(table, false);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
