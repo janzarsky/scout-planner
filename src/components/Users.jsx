@@ -28,11 +28,8 @@ export default function Users({ userEmail }) {
 
   const { table } = useSelector((state) => state.auth);
   const { data: publicLevel, isSuccess: publicLevelLoaded } =
-    useGetPublicLevelSlice(table, false);
-  const { data: users, isSuccess: usersLoaded } = useGetUsersSlice(
-    table,
-    false,
-  );
+    useGetPublicLevelSlice(table);
+  const { data: users, isSuccess: usersLoaded } = useGetUsersSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);

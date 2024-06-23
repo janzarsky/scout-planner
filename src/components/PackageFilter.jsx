@@ -28,10 +28,8 @@ export function PackageFilterToggle() {
 export function PackageFilter() {
   const dispatch = useDispatch();
   const { table } = useSelector((state) => state.auth);
-  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
-    table,
-    false,
-  );
+  const { data: packages, isSuccess: packagesLoaded } =
+    useGetPackagesSlice(table);
   const { highlightedPackages, highlightingEnabled } = useSelector(
     (state) => state.view,
   );

@@ -18,14 +18,9 @@ export default function Stats() {
 
 function PackageStats() {
   const { table } = useSelector((state) => state.auth);
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
-    table,
-    false,
-  );
-  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
-    table,
-    false,
-  );
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
+  const { data: packages, isSuccess: packagesLoaded } =
+    useGetPackagesSlice(table);
   const { programs } = useSelector((state) => state.programs);
 
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(programs);
@@ -71,12 +66,9 @@ function PackageStats() {
 
 function PeopleStats() {
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
-    table,
-    false,
-  );
-  const { data: groups } = useGetGroupsSlice(table, false);
-  const { data: packages } = useGetPackagesSlice(table, false);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
+  const { data: groups } = useGetGroupsSlice(table);
+  const { data: packages } = useGetPackagesSlice(table);
   const { programs } = useSelector((state) => state.programs);
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(

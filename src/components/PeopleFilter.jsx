@@ -23,10 +23,7 @@ export function PeopleFilterToggle() {
 export function PeopleFilter() {
   const dispatch = useDispatch();
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
-    table,
-    false,
-  );
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
   const { activePeople, peopleEnabled } = useSelector((state) => state.view);
 
   if (!peopleEnabled || !peopleLoaded) return null;

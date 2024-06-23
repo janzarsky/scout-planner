@@ -31,10 +31,8 @@ export function Blocks({ settings, violations, onDrop }) {
 
 export function Block({ rect, children }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
-    table,
-    false,
-  );
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsSlice(table);
   const width = settingsLoaded ? settings.width : DEFAULT_WIDTH;
 
   return (

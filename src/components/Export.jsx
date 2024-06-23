@@ -12,13 +12,13 @@ import { useGetUsersSlice } from "../store/usersSlice";
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
 
-  const { data: groups } = useGetGroupsSlice(table, false);
+  const { data: groups } = useGetGroupsSlice(table);
   const { data: ranges } = useGetRangesQuery(table);
-  const { data: packages } = useGetPackagesSlice(table, false);
-  const { data: rules } = useGetRulesSlice(table, false);
-  const { data: users } = useGetUsersSlice(table, false);
-  const { data: settings } = useGetSettingsSlice(table, false);
-  const { data: people } = useGetPeopleSlice(table, false);
+  const { data: packages } = useGetPackagesSlice(table);
+  const { data: rules } = useGetRulesSlice(table);
+  const { data: users } = useGetUsersSlice(table);
+  const { data: settings } = useGetSettingsSlice(table);
+  const { data: people } = useGetPeopleSlice(table);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const data = JSON.stringify({

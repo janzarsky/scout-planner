@@ -14,10 +14,8 @@ import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
 export function Tray({ settings, onDroppableDrop }) {
   const { programs } = useSelector((state) => state.programs);
   const { table } = useSelector((state) => state.auth);
-  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
-    table,
-    false,
-  );
+  const { data: packages, isSuccess: packagesLoaded } =
+    useGetPackagesSlice(table);
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
@@ -32,7 +30,7 @@ export function Tray({ settings, onDroppableDrop }) {
   );
 
   const { data: timetableSettings, isSuccess: settingsLoaded } =
-    useGetSettingsSlice(table, false);
+    useGetSettingsSlice(table);
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
   const userLevel = useSelector((state) => state.auth.userLevel);
 
