@@ -3,7 +3,6 @@ import { addGroup, deleteGroup, updateGroup } from "./groupsSlice";
 import { addPackage, deletePackage, updatePackage } from "./packagesSlice";
 import { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
-import { addRange, deleteRange, updateRange } from "./rangesSlice";
 import { addRule, deleteRule } from "./rulesSlice";
 import { updateSettings } from "./settingsSlice";
 import { updateTitle } from "./timetableSlice";
@@ -89,25 +88,6 @@ export function getCommandHandler(store) {
         [deletePackage().type]: (id) => {
           client.deletePackage(id).then(
             () => store.dispatch(deletePackage(id)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        // ranges
-        [addRange().type]: (payload) => {
-          client.addRange(payload).then(
-            (resp) => store.dispatch(addRange(resp)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [updateRange().type]: (payload) => {
-          client.updateRange(payload).then(
-            (resp) => store.dispatch(updateRange(resp)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [deleteRange().type]: (id) => {
-          client.deleteRange(id).then(
-            () => store.dispatch(deleteRange(id)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
