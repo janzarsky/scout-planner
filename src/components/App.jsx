@@ -18,7 +18,7 @@ import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
-import { getPrograms } from "../store/programsSlice";
+import { getPrograms, useGetProgramsSlice } from "../store/programsSlice";
 import { getPermissions } from "../store/authSlice";
 import { PackageFilter } from "./PackageFilter";
 import { ViewSettings } from "./ViewSettings";
@@ -51,9 +51,8 @@ export default function App() {
   const { isSuccess: rangesLoaded } = useGetRangesQuery(table);
   const { isSuccess: packagesLoaded } = useGetPackagesSlice(table);
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);
-  const { programs, loaded: programsLoaded } = useSelector(
-    (state) => state.programs,
-  );
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
   const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
   const { isSuccess: settingsLoaded } = useGetSettingsSlice(table);
   const { data: timetable, isSuccess: timetableLoaded } =
