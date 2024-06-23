@@ -6,14 +6,6 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 import {
-  addRange,
-  updateRange,
-  deleteRange,
-  useGetRangesSlice,
-} from "../store/rangesSlice";
-import { firestoreClientFactory } from "../FirestoreClient";
-import { useCommandHandler } from "./CommandContext";
-import {
   useAddRangeMutation,
   useDeleteRangeMutation,
   useGetRangesQuery,
@@ -26,41 +18,21 @@ export default function Ranges() {
   const [editKey, setEditKey] = useState(undefined);
 
   const { table } = useSelector((state) => state.auth);
-  const client = firestoreClientFactory.getClient(table);
 
-  const rtkQuery = useSelector((state) => state.config.rtkQuery);
-  const { data: oldRanges, isSuccess: oldRangesLoaded } = useGetRangesSlice(
-    table,
-    rtkQuery,
-  );
-  const { data: newRanges, isSuccess: newRangesLoaded } = useGetRangesQuery(
-    table,
-    rtkQuery,
-  );
-  const ranges = rtkQuery ? newRanges : oldRanges;
-  const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
+  const { data: ranges, isSuccess: rangesLoaded } = useGetRangesQuery(table);
 
   const [addRangeRtk] = useAddRangeMutation();
   const [updateRangeRtk] = useUpdateRangeMutation();
   const [deleteRangeRtk] = useDeleteRangeMutation();
 
-  const { dispatchCommand } = useCommandHandler();
-
   function handleSubmit(event) {
     event.preventDefault();
 
     if (editKey) {
-      if (rtkQuery)
-        updateRangeRtk({ table, data: { _id: editKey, name: editedName } });
-      else
-        dispatchCommand(
-          client,
-          updateRange({ _id: editKey, name: editedName }),
-        );
+      updateRangeRtk({ table, data: { _id: editKey, name: editedName } });
       setEditKey(undefined);
     } else {
-      if (rtkQuery) addRangeRtk({ table, data: { name: newName } });
-      else dispatchCommand(client, addRange({ name: newName }));
+      addRangeRtk({ table, data: { name: newName } });
     }
   }
 
@@ -81,11 +53,7 @@ export default function Ranges() {
                 <Range
                   key={range._id}
                   name={range.name}
-                  deleteRange={() =>
-                    rtkQuery
-                      ? deleteRangeRtk({ table, id: range._id })
-                      : dispatchCommand(client, deleteRange(range._id))
-                  }
+                  deleteRange={() => deleteRangeRtk({ table, id: range._id })}
                   editRange={() => {
                     setEditKey(range._id);
                     setEditedName(range.name);

@@ -4,14 +4,12 @@ import React from "react";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import Ranges from "../../src/components/Ranges";
 import { getStore } from "../../src/store";
-import { overrideConfig } from "../../src/store/configSlice";
 
 describe("Ranges", () => {
   let store;
 
   beforeEach(() => {
     store = getStore();
-    store.dispatch(overrideConfig({ rtkQuery: true }));
   });
 
   function stubClient(ranges, rangesSecond) {
