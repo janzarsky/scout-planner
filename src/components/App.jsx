@@ -32,8 +32,8 @@ import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
 import { useGetTimetableSlice } from "../store/timetableSlice";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
+import { useGetGroupsQuery } from "../store/groupsApi";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -47,7 +47,7 @@ export default function App() {
     (state) => state.auth,
   );
 
-  const { isSuccess: groupsLoaded } = useGetGroupsSlice(table);
+  const { isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { isSuccess: rangesLoaded } = useGetRangesQuery(table);
   const { isSuccess: packagesLoaded } = useGetPackagesSlice(table);
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);

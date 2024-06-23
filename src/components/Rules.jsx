@@ -17,8 +17,8 @@ import { addRule, deleteRule, useGetRulesSlice } from "../store/rulesSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { useCommandHandler } from "./CommandContext";
-import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetProgramsSlice } from "../store/programsSlice";
+import { useGetGroupsQuery } from "../store/groupsApi";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -32,7 +32,7 @@ export default function Rules({ violations }) {
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsSlice(table);
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);
@@ -179,7 +179,7 @@ function NewRule({
   setDate,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsSlice(table);
 

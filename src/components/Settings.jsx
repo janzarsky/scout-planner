@@ -21,11 +21,11 @@ import { TimetableTitle } from "./TimetableTitle";
 import { useCommandHandler } from "./CommandContext";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetPackagesSlice } from "../store/packagesSlice";
-import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
 import { useGetUsersSlice } from "../store/usersSlice";
 import { useGetProgramsSlice } from "../store/programsSlice";
+import { useGetGroupsQuery } from "../store/groupsApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -52,7 +52,7 @@ export default function Settings() {
 function DeleteAll() {
   const table = useSelector((state) => state.auth.table);
 
-  const { data: groups } = useGetGroupsSlice(table);
+  const { data: groups } = useGetGroupsQuery(table);
   const { data: ranges } = useGetRangesQuery(table);
   const { data: packages } = useGetPackagesSlice(table);
   const { data: rules } = useGetRulesSlice(table);
