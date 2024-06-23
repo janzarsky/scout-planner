@@ -119,11 +119,7 @@ export default function Timetable({
         )}
       </div>
       {!printView && (
-        <Tray
-          settings={settings}
-          programs={programs}
-          onDroppableDrop={onDroppableDrop}
-        />
+        <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
       )}
     </DndProvider>
   );
