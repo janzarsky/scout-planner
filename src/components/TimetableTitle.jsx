@@ -8,7 +8,7 @@ import { useCommandHandler } from "./CommandContext";
 
 export function TimetableTitle() {
   const { table } = useSelector((state) => state.auth);
-  const { data: timetable } = useGetTimetableSlice(table, false);
+  const { data: timetable } = useGetTimetableSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);

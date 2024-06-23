@@ -16,14 +16,10 @@ import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
-  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
-    table,
-    false,
-  );
-  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
-    table,
-    false,
-  );
+  const { data: packages, isSuccess: packagesLoaded } =
+    useGetPackagesSlice(table);
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsSlice(table);
   const { programs } = useSelector((state) => state.programs);
 
   const client = firestoreClientFactory.getClient(table);
@@ -230,10 +226,7 @@ function lookUpPeople(programPeople, allPeople) {
 function ProgramPeople({ programPeople, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
-    table,
-    false,
-  );
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
 
   const lookedUpPeople = lookUpPeople(
     programPeople,

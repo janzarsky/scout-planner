@@ -28,15 +28,9 @@ export default function Rules({ violations }) {
 
   const { table, userLevel } = useSelector((state) => state.auth);
 
-  const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(
-    table,
-    false,
-  );
+  const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);
   const { programs } = useSelector((state) => state.programs);
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
-    table,
-    false,
-  );
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);
@@ -179,10 +173,7 @@ function NewRule({
   setDate,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
-    table,
-    false,
-  );
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
   const programs = useSelector((state) => state.programs.programs);
 
   const formattedPrograms = useMemo(

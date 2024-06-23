@@ -51,12 +51,12 @@ export default function Settings() {
 function DeleteAll() {
   const table = useSelector((state) => state.auth.table);
 
-  const { data: groups } = useGetGroupsSlice(table, false);
+  const { data: groups } = useGetGroupsSlice(table);
   const { data: ranges } = useGetRangesQuery(table);
-  const { data: packages } = useGetPackagesSlice(table, false);
-  const { data: rules } = useGetRulesSlice(table, false);
-  const { data: users } = useGetUsersSlice(table, false);
-  const { data: people } = useGetPeopleSlice(table, false);
+  const { data: packages } = useGetPackagesSlice(table);
+  const { data: rules } = useGetRulesSlice(table);
+  const { data: users } = useGetUsersSlice(table);
+  const { data: people } = useGetPeopleSlice(table);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
   const client = firestoreClientFactory.getClient(table);
@@ -89,10 +89,8 @@ function DeleteAll() {
 
 function TimeStep() {
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
-    table,
-    false,
-  );
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);
@@ -152,10 +150,8 @@ function TimeStep() {
 
 function Width() {
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
-    table,
-    false,
-  );
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);

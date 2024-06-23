@@ -51,12 +51,9 @@ export default function Timetable({
     [client, dispatchCommand],
   );
 
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
-    table,
-    false,
-  );
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
   const { data: timetableSettings, isSuccess: settingsLoaded } =
-    useGetSettingsSlice(table, false);
+    useGetSettingsSlice(table);
   const timeStep = settingsLoaded
     ? timetableSettings.timeStep
     : DEFAULT_TIME_STEP;

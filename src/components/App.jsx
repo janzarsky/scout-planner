@@ -47,25 +47,17 @@ export default function App() {
     (state) => state.auth,
   );
 
-  const { isSuccess: groupsLoaded } = useGetGroupsSlice(table, false);
+  const { isSuccess: groupsLoaded } = useGetGroupsSlice(table);
   const { isSuccess: rangesLoaded } = useGetRangesQuery(table);
-  const { isSuccess: packagesLoaded } = useGetPackagesSlice(table, false);
-  const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(
-    table,
-    false,
-  );
+  const { isSuccess: packagesLoaded } = useGetPackagesSlice(table);
+  const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);
   const { programs, loaded: programsLoaded } = useSelector(
     (state) => state.programs,
   );
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
-    table,
-    false,
-  );
-  const { isSuccess: settingsLoaded } = useGetSettingsSlice(table, false);
-  const { data: timetable, isSuccess: timetableLoaded } = useGetTimetableSlice(
-    table,
-    false,
-  );
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
+  const { isSuccess: settingsLoaded } = useGetSettingsSlice(table);
+  const { data: timetable, isSuccess: timetableLoaded } =
+    useGetTimetableSlice(table);
 
   const dispatch = useDispatch();
 

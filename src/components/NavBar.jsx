@@ -12,10 +12,8 @@ import { useGetTimetableSlice } from "../store/timetableSlice";
 
 export function NavBar({ rulesSatisfied }) {
   const { userLevel, table } = useSelector((state) => state.auth);
-  const { data: timetable, isSuccess: timetableLoaded } = useGetTimetableSlice(
-    table,
-    false,
-  );
+  const { data: timetable, isSuccess: timetableLoaded } =
+    useGetTimetableSlice(table);
   const title = timetableLoaded ? timetable.title : null;
 
   return (

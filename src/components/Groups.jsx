@@ -24,10 +24,7 @@ export default function Groups() {
 
   const { table } = useSelector((state) => state.auth);
 
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(
-    table,
-    false,
-  );
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);

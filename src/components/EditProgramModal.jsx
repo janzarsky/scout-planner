@@ -310,10 +310,8 @@ function ProgramDuration({
   disabled = false,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsSlice(
-    table,
-    false,
-  );
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsSlice(table);
   const timeStep = settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP;
   const defaultDurations = {
     [15 * 60 * 1000]: [
@@ -392,10 +390,8 @@ function ProgramDuration({
 
 function ProgramPackage({ pkg, setPkg, disabled = false }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
-    table,
-    false,
-  );
+  const { data: packages, isSuccess: packagesLoaded } =
+    useGetPackagesSlice(table);
 
   return (
     <Form.Group as={Row} className="mb-3">
@@ -428,10 +424,7 @@ function ProgramGroups({
   disabled = false,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: allGroups, isSuccess: groupsLoaded } = useGetGroupsSlice(
-    table,
-    false,
-  );
+  const { data: allGroups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
 
   return (
     <Form.Group as={Row} className="mb-2">
@@ -521,10 +514,8 @@ function ProgramPeople({
   duration,
 }) {
   const table = useSelector((state) => state.auth.table);
-  const { data: objectPeople, isSuccess: peopleLoaded } = useGetPeopleSlice(
-    table,
-    false,
-  );
+  const { data: objectPeople, isSuccess: peopleLoaded } =
+    useGetPeopleSlice(table);
 
   const { dispatchCommand } = useCommandHandler();
   const client = firestoreClientFactory.getClient(table);

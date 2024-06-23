@@ -16,10 +16,7 @@ import { useCommandHandler } from "./CommandContext";
 
 export default function People() {
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(
-    table,
-    false,
-  );
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
 
   const [newName, setNewName] = useState("Nový organizátor");
   const [editedName, setEditedName] = useState();

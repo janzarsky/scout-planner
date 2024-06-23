@@ -23,10 +23,8 @@ export default function Packages() {
 
   const { table } = useSelector((state) => state.auth);
 
-  const { data: packages, isSuccess: packagesLoaded } = useGetPackagesSlice(
-    table,
-    false,
-  );
+  const { data: packages, isSuccess: packagesLoaded } =
+    useGetPackagesSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
   const client = useMemo(
