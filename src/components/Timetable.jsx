@@ -13,12 +13,12 @@ import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
 import { useCommandHandler } from "./CommandContext";
-import { useGetGroupsSlice } from "../store/groupsSlice";
 import {
   DEFAULT_TIME_STEP,
   DEFAULT_WIDTH,
   useGetSettingsSlice,
 } from "../store/settingsSlice";
+import { useGetGroupsQuery } from "../store/groupsApi";
 
 export default function Timetable({
   violations,
@@ -52,7 +52,7 @@ export default function Timetable({
     [client, dispatchCommand],
   );
 
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: timetableSettings, isSuccess: settingsLoaded } =
     useGetSettingsSlice(table);
   const timeStep = settingsLoaded

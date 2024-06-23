@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import groupsReducer from "./groupsSlice";
 import packagesReducer from "./packagesSlice";
 import rulesReducer from "./rulesSlice";
 import settingsReducer from "./settingsSlice";
@@ -13,11 +12,11 @@ import authReducer from "./authSlice";
 import errorsReducer from "./errorsSlice";
 import configReducer from "./configSlice";
 import { rangesApi } from "./rangesApi";
+import { groupsApi } from "./groupsApi";
 
 export function getStore() {
   return configureStore({
     reducer: {
-      groups: groupsReducer,
       packages: packagesReducer,
       rules: rulesReducer,
       settings: settingsReducer,
@@ -31,8 +30,11 @@ export function getStore() {
       errors: errorsReducer,
       config: configReducer,
       [rangesApi.reducerPath]: rangesApi.reducer,
+      [groupsApi.reducerPath]: groupsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(rangesApi.middleware),
+      getDefaultMiddleware()
+        .concat(rangesApi.middleware)
+        .concat(groupsApi.middleware),
   });
 }

@@ -5,15 +5,13 @@ import Button from "react-bootstrap/Button";
 import { byOrder } from "../helpers/Sorting";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  addGroup,
-  deleteGroup,
-  updateGroup,
-  useGetGroupsSlice,
-} from "../store/groupsSlice";
-import { firestoreClientFactory } from "../FirestoreClient";
 import { parseIntOrZero } from "../helpers/Parsing";
-import { useCommandHandler } from "./CommandContext";
+import {
+  useAddGroupMutation,
+  useDeleteGroupMutation,
+  useGetGroupsQuery,
+  useUpdateGroupMutation,
+} from "../store/groupsApi";
 
 export default function Groups() {
   const [newName, setNewName] = useState("Nová skupina");
@@ -24,10 +22,10 @@ export default function Groups() {
 
   const { table } = useSelector((state) => state.auth);
 
-  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
+  const [updateGroup] = useUpdateGroupMutation();
+  const [addGroup] = useAddGroupMutation();
+  const [deleteGroup] = useDeleteGroupMutation();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -38,10 +36,10 @@ export default function Groups() {
         name: editedName,
         order: editedOrder,
       };
-      dispatchCommand(client, updateGroup(updatedGroup));
+      updateGroup({ table, data: updatedGroup });
       setEditKey(undefined);
     } else {
-      dispatchCommand(client, addGroup({ name: newName, order: newOrder }));
+      addGroup({ table, data: { name: newName, order: newOrder } });
     }
   }
 
@@ -65,9 +63,7 @@ export default function Groups() {
                   key={group._id}
                   name={group.name}
                   order={group.order}
-                  deleteGroup={() =>
-                    dispatchCommand(client, deleteGroup(group._id))
-                  }
+                  deleteGroup={() => deleteGroup({ table, id: group._id })}
                   editGroup={() => {
                     setEditKey(group._id);
                     setEditedName(group.name);

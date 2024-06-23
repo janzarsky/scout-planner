@@ -35,8 +35,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetPackagesSlice } from "../store/packagesSlice";
-import { useGetGroupsSlice } from "../store/groupsSlice";
 import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
+import { useGetGroupsQuery } from "../store/groupsApi";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -428,7 +428,7 @@ function ProgramGroups({
   disabled = false,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: allGroups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
+  const { data: allGroups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
 
   return (
     <Form.Group as={Row} className="mb-2">
