@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useDrop } from "react-dnd";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useGetProgramsSlice } from "../store/programsSlice";
 
 export function Droppables({ settings, onDrop }) {
   const data = useMemo(() => getDroppablesData(settings), [settings]);
@@ -72,13 +73,16 @@ export function getBlockDroppablesData(
 }
 
 function Droppable({ onDrop, x, y, begin, group }) {
-  const { programs } = useSelector((state) => state.programs);
+  const { table } = useSelector((state) => state.auth);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
   const navigate = useNavigate();
 
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => onDrop(item, begin, group, programs),
+      drop: (item) =>
+        onDrop(item, begin, group, programsLoaded ? programs : []),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),

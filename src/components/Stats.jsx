@@ -6,6 +6,7 @@ import { byName, byOrder } from "../helpers/Sorting";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
+import { useGetProgramsSlice } from "../store/programsSlice";
 
 export default function Stats() {
   return (
@@ -21,9 +22,12 @@ function PackageStats() {
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesSlice(table);
-  const { programs } = useSelector((state) => state.programs);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
 
-  const durationPerPackageAndGroup = getDurationPerPackageAndGroup(programs);
+  const durationPerPackageAndGroup = getDurationPerPackageAndGroup(
+    programsLoaded ? programs : [],
+  );
 
   return (
     <Table bordered hover responsive>
@@ -67,13 +71,15 @@ function PackageStats() {
 function PeopleStats() {
   const { table } = useSelector((state) => state.auth);
   const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
-  const { data: groups } = useGetGroupsSlice(table);
-  const { data: packages } = useGetPackagesSlice(table);
-  const { programs } = useSelector((state) => state.programs);
+  const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
+  const { data: packages, isSuccess: packagesLoaded } =
+    useGetPackagesSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
-    programs,
-    packages,
+    programsLoaded ? programs : [],
+    packagesLoaded ? packages : [],
   );
 
   return (
@@ -81,9 +87,10 @@ function PeopleStats() {
       <thead>
         <tr>
           <th>Lidi</th>
-          {[...groups].sort(byOrder).map((group) => (
-            <th key={group._id}>{group.name}</th>
-          ))}
+          {groupsLoaded &&
+            [...groups]
+              .sort(byOrder)
+              .map((group) => <th key={group._id}>{group.name}</th>)}
         </tr>
       </thead>
       <tbody>

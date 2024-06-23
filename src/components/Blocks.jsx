@@ -5,12 +5,15 @@ import Program from "./Program";
 import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { useMemo } from "react";
 import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
+import { useGetProgramsSlice } from "../store/programsSlice";
 
 export function Blocks({ settings, violations, onDrop }) {
-  const { programs } = useSelector((state) => state.programs);
+  const { table } = useSelector((state) => state.auth);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
 
   const data = useMemo(
-    () => getBlocksData(programs, settings, violations),
+    () => getBlocksData(programsLoaded ? programs : [], settings, violations),
     [programs, settings, violations],
   );
 

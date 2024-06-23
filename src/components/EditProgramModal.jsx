@@ -20,6 +20,7 @@ import {
   addProgram,
   deleteProgram,
   updateProgram,
+  useGetProgramsSlice,
 } from "../store/programsSlice";
 import { addPerson, useGetPeopleSlice } from "../store/peopleSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
@@ -44,10 +45,14 @@ export function EditProgramModal() {
   const { id: programId } = useParams();
   const navigate = useNavigate();
 
-  const program = useSelector((state) => {
-    const program = state.programs.programs.find((p) => p._id === programId);
-    return program ? program : {};
-  });
+  const { table, userLevel } = useSelector((state) => state.auth);
+  // FIXME: load only specific program
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
+  const maybeProgram = programsLoaded
+    ? programs.find((p) => p._id === programId)
+    : null;
+  const program = maybeProgram ? maybeProgram : {};
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
@@ -67,7 +72,6 @@ export function EditProgramModal() {
 
   const { dispatchCommand } = useCommandHandler();
 
-  const { table, userLevel } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
   const handleClose = () => navigate(`/${table}`);

@@ -3,22 +3,11 @@
 import React from "react";
 import Timetable from "../../src/components/Timetable";
 import { getStore } from "../../src/store";
-import { addProgram } from "../../src/store/programsSlice";
 import { parseDuration } from "../../src/helpers/DateUtils";
-import { addPerson } from "../../src/store/peopleSlice";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import { setTable } from "../../src/store/authSlice";
 
 describe("Timetable", () => {
-  const alice = {
-    _id: "testuseralice",
-    name: "Alice",
-  };
-  const bob = {
-    _id: "testuserbob",
-    name: "Bob",
-  };
-
   const now = Date.parse("Sun Mar 05 11:00:00 2023 UTC");
 
   let store;
@@ -36,7 +25,7 @@ describe("Timetable", () => {
     );
   }
 
-  beforeEach(() => {
+  function stubClient(programs) {
     cy.stub(firestoreClientFactory, "getClient")
       .returns({
         getGroups: cy
@@ -56,18 +45,18 @@ describe("Timetable", () => {
           .as("getGroups"),
         getPackages: cy.stub().resolves([]).as("getPackages"),
         getTimetable: cy.stub().resolves({}).as("getTimetable"),
+        getPrograms: cy.stub().resolves(programs).as("getPrograms"),
       })
       .log(false);
+  }
 
+  beforeEach(() => {
     store = getStore();
-
-    store.dispatch(addPerson(alice));
-    store.dispatch(addPerson(bob));
-
     store.dispatch(setTable("table1"));
   });
 
   it("empty", () => {
+    stubClient([]);
     mountTimetable();
 
     cy.contains("Ne");
@@ -77,20 +66,21 @@ describe("Timetable", () => {
   });
 
   it("with program", () => {
-    const prog = {
-      _id: "testprogramid",
-      title: "Test program",
-      duration: parseDuration("2:00"),
-      begin: now - parseDuration("3:00"),
-      groups: [],
-      people: [],
-    };
-    store.dispatch(addProgram(prog));
+    stubClient([
+      {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: [],
+        people: [],
+      },
+    ]);
     mountTimetable();
 
     cy.get(".block")
       .first()
-      .should("have.css", "grid-area", "2 / 3 / span 1 / span 8")
+      .should("have.css", "grid-area", "2 / 3 / span 2 / span 8")
       .within(() => {
         cy.get(".program-wrapper").should(
           "have.css",
@@ -101,16 +91,16 @@ describe("Timetable", () => {
   });
 
   it("with programs and groups", () => {
-    const prog = {
-      _id: "testprogramid",
-      title: "Test program",
-      duration: 16200000,
-      begin: now - parseDuration("3:00"),
-      groups: ["group2"],
-      people: [],
-    };
-    store.dispatch(addProgram(prog));
-
+    stubClient([
+      {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: 16200000,
+        begin: now - parseDuration("3:00"),
+        groups: ["group2"],
+        people: [],
+      },
+    ]);
     mountTimetable();
 
     cy.contains("G1");
@@ -129,11 +119,13 @@ describe("Timetable", () => {
   });
 
   it("tray is shown when not printing", () => {
+    stubClient([]);
     mountTimetable(false);
     cy.get(".tray");
   });
 
   it("tray is hidden when printing", () => {
+    stubClient([]);
     mountTimetable(true);
     cy.get(".tray").should("not.exist");
   });

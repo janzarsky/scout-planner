@@ -4,7 +4,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { level } from "../helpers/Level";
-import { updateProgram } from "../store/programsSlice";
+import { updateProgram, useGetProgramsSlice } from "../store/programsSlice";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -26,9 +26,10 @@ export default function Timetable({
   printView = false,
 }) {
   const { dispatchCommand } = useCommandHandler();
-  const { programs } = useSelector((state) => state.programs);
 
   const { table, userLevel } = useSelector((state) => state.auth);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
   const client = useMemo(
     () => firestoreClientFactory.getClient(table),
     [table],
@@ -60,7 +61,7 @@ export default function Timetable({
   const settings = useMemo(
     () =>
       getTimetableSettings(
-        programs,
+        programsLoaded ? programs : [],
         groupsLoaded ? groups : [],
         timeStep,
         timeProvider ? timeProvider() : Date.now(),
@@ -119,11 +120,7 @@ export default function Timetable({
         )}
       </div>
       {!printView && (
-        <Tray
-          settings={settings}
-          programs={programs}
-          onDroppableDrop={onDroppableDrop}
-        />
+        <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
       )}
     </DndProvider>
   );

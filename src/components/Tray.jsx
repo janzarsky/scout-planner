@@ -10,17 +10,20 @@ import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
+import { useGetProgramsSlice } from "../store/programsSlice";
 
 export function Tray({ settings, onDroppableDrop }) {
-  const { programs } = useSelector((state) => state.programs);
   const { table } = useSelector((state) => state.auth);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesSlice(table);
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => onDroppableDrop(item, null, null, programs),
+      drop: (item) =>
+        onDroppableDrop(item, null, null, programsLoaded ? programs : []),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
@@ -34,7 +37,9 @@ export function Tray({ settings, onDroppableDrop }) {
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
   const userLevel = useSelector((state) => state.auth.userLevel);
 
-  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
+  const trayPrograms = programsLoaded
+    ? programs.filter((p) => typeof p.begin !== "number")
+    : [];
   const sortedPrograms = sortTrayPrograms(
     trayPrograms,
     packagesLoaded ? packages : [],
