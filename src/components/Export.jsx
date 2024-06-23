@@ -8,6 +8,7 @@ import { useGetPeopleSlice } from "../store/peopleSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
 import { useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetUsersSlice } from "../store/usersSlice";
+import { useGetProgramsSlice } from "../store/programsSlice";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
@@ -19,7 +20,7 @@ export default function Export() {
   const { data: users } = useGetUsersSlice(table);
   const { data: settings } = useGetSettingsSlice(table);
   const { data: people } = useGetPeopleSlice(table);
-  const { programs } = useSelector((state) => state.programs);
+  const { data: programs } = useGetProgramsSlice(table);
 
   const data = JSON.stringify({
     programs,
