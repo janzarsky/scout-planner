@@ -57,7 +57,7 @@ function DeleteAll() {
   const { data: rules } = useGetRulesSlice(table);
   const { data: users } = useGetUsersSlice(table);
   const { data: people } = useGetPeopleSlice(table);
-  const { programs, deletedPrograms } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs);
 
   const client = firestoreClientFactory.getClient(table);
 
@@ -66,7 +66,6 @@ function DeleteAll() {
 
     await Promise.all([
       ...programs.map((it) => client.deleteProgram(it._id)),
-      ...deletedPrograms.map((it) => client.deleteProgram(it._id)),
       ...packages.map((it) => client.deletePackage(it._id)),
       ...groups.map((it) => client.deleteGroup(it._id)),
       ...rules.map((it) => client.deleteRule(it._id)),
