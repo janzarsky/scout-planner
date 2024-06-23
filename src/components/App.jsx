@@ -19,7 +19,6 @@ import Container from "react-bootstrap/esm/Container";
 import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
-import { getUsers } from "../store/usersSlice";
 import { getPrograms } from "../store/programsSlice";
 import { getPermissions } from "../store/authSlice";
 import { PackageFilter } from "./PackageFilter";
@@ -95,8 +94,6 @@ export default function App() {
       if (userLevel >= level.NONE) {
         dispatch(getPrograms(client));
       }
-
-      if (userLevel >= level.ADMIN) dispatch(getUsers(client));
     }
   }, [table, userLevel, permissionsLoaded, dispatch]);
 
