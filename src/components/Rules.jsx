@@ -18,6 +18,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { useCommandHandler } from "./CommandContext";
 import { useGetGroupsSlice } from "../store/groupsSlice";
+import { useGetProgramsSlice } from "../store/programsSlice";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -29,7 +30,8 @@ export default function Rules({ violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);
-  const { programs } = useSelector((state) => state.programs);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
@@ -63,10 +65,14 @@ export default function Rules({ violations }) {
   const rulesData = useMemo(
     () =>
       [...(rulesLoaded ? rules : [])]
-        .sort((a, b) => ruleSort(a, b, programs))
+        .sort((a, b) => ruleSort(a, b, programsLoaded ? programs : []))
         .map((rule) => ({
           ...rule,
-          formatted: formatRule(rule, programs, groupsLoaded ? groups : []),
+          formatted: formatRule(
+            rule,
+            programsLoaded ? programs : [],
+            groupsLoaded ? groups : [],
+          ),
         })),
     [rules, programs, groups],
   );
@@ -174,14 +180,17 @@ function NewRule({
 }) {
   const { table } = useSelector((state) => state.auth);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsSlice(table);
-  const programs = useSelector((state) => state.programs.programs);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsSlice(table);
 
   const formattedPrograms = useMemo(
     () =>
-      [...programs].sort(programSort).map((prog) => ({
-        _id: prog._id,
-        text: formatProgram(prog, groupsLoaded ? groups : []),
-      })),
+      programsLoaded
+        ? [...programs].sort(programSort).map((prog) => ({
+            _id: prog._id,
+            text: formatProgram(prog, groupsLoaded ? groups : []),
+          }))
+        : [],
     [programs, groups],
   );
 
