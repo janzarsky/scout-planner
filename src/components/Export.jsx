@@ -19,10 +19,10 @@ export default function Export() {
   const { data: users } = useGetUsersSlice(table);
   const { data: settings } = useGetSettingsSlice(table);
   const { data: people } = useGetPeopleSlice(table);
-  const { programs, deletedPrograms } = useSelector((state) => state.programs);
+  const { programs } = useSelector((state) => state.programs);
 
   const data = JSON.stringify({
-    programs: [...programs, ...deletedPrograms],
+    programs,
     pkgs: packages,
     groups,
     rules,
