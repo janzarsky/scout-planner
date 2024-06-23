@@ -6,14 +6,13 @@ import Button from "react-bootstrap/Button";
 import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useSelector } from "react-redux";
-import {
-  addUser,
-  deleteUser,
-  setPublicLevel,
-  updateUser,
-} from "../store/usersSlice";
+import { addUser, deleteUser, updateUser } from "../store/usersSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
+import {
+  setPublicLevel,
+  useGetPublicLevelSlice,
+} from "../store/publicLevelSlice";
 
 export default function Users({ userEmail }) {
   const [newEmail, setNewEmail] = useState("E-mailová adresa");
@@ -22,13 +21,15 @@ export default function Users({ userEmail }) {
   const [editedLevel, setEditedLevel] = useState();
   const [editKey, setEditKey] = useState(undefined);
 
-  const { users, publicLevel } = useSelector((state) => state.users);
+  const { table } = useSelector((state) => state.auth);
+  const { data: publicLevel, isSuccess: publicLevelLoaded } =
+    useGetPublicLevelSlice(table, false);
+  const { users } = useSelector((state) => state.users);
   const { dispatchCommand } = useCommandHandler();
 
-  const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
-  const defaultPublicLevel = publicLevel;
+  const defaultPublicLevel = publicLevelLoaded ? publicLevel : level.NONE;
   const [publicLevelState, setPublicLevelState] = useState(defaultPublicLevel);
 
   function handleSubmit(event) {
