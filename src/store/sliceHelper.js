@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 
 export function createSliceHook(slice, action) {
-  return (table, rtkQuery) => {
+  return (table) => {
     const dispatch = useDispatch();
     const {
       loading: status,
@@ -13,7 +13,7 @@ export function createSliceHook(slice, action) {
     } = useSelector((state) => state[slice]);
 
     useEffect(() => {
-      if (!rtkQuery && status === "idle" && !loaded && table !== undefined) {
+      if (status === "idle" && !loaded && table !== undefined) {
         const client = firestoreClientFactory.getClient(table);
         dispatch(action(client));
       }

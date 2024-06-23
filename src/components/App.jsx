@@ -16,7 +16,6 @@ import Users from "./Users";
 import Stats from "./Stats";
 import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
-import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
 import { getPrograms } from "../store/programsSlice";
@@ -47,12 +46,9 @@ export default function App() {
   const { table, userLevel, permissionsLoaded } = useSelector(
     (state) => state.auth,
   );
-  const rtkQuery = useSelector((state) => state.config.rtkQuery);
 
   const { isSuccess: groupsLoaded } = useGetGroupsSlice(table, false);
-  const { isSuccess: oldRangesLoaded } = useGetRangesSlice(table, rtkQuery);
-  const { isSuccess: newRangesLoaded } = useGetRangesQuery(table, rtkQuery);
-  const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
+  const { isSuccess: rangesLoaded } = useGetRangesQuery(table);
   const { isSuccess: packagesLoaded } = useGetPackagesSlice(table, false);
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(
     table,

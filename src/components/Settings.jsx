@@ -20,7 +20,6 @@ import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
 import { useCommandHandler } from "./CommandContext";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
@@ -51,12 +50,9 @@ export default function Settings() {
 
 function DeleteAll() {
   const table = useSelector((state) => state.auth.table);
-  const rtkQuery = useSelector((state) => state.config.rtkQuery);
 
   const { data: groups } = useGetGroupsSlice(table, false);
-  const { data: oldRanges } = useGetRangesSlice(table, rtkQuery);
-  const { data: newRanges } = useGetRangesQuery(table, rtkQuery);
-  const ranges = rtkQuery ? newRanges : oldRanges;
+  const { data: ranges } = useGetRangesQuery(table);
   const { data: packages } = useGetPackagesSlice(table, false);
   const { data: rules } = useGetRulesSlice(table, false);
   const { data: users } = useGetUsersSlice(table, false);

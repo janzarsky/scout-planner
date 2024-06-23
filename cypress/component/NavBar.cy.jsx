@@ -16,7 +16,6 @@ import { RangesSettings } from "../../src/components/RangesSettings";
 import { PackageFilter } from "../../src/components/PackageFilter";
 import { GoogleLogin } from "../../src/components/GoogleLogin";
 import { NavBar } from "../../src/components/NavBar";
-import { overrideConfig } from "../../src/store/configSlice";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 
 describe("Navigation Bar", () => {
@@ -268,52 +267,6 @@ describe("Ranges settings", () => {
   beforeEach(() => {
     store = getStore();
     store.dispatch(toggleRangesEnabled());
-    store.dispatch(overrideConfig({ rtkQuery: false }));
-
-    cy.stub(firestoreClientFactory, "getClient")
-      .returns({
-        getRanges: cy
-          .stub()
-          .resolves([
-            { _id: "range1", name: "Range 1" },
-            { _id: "range2", name: "Range 2" },
-          ])
-          .as("getPackages"),
-      })
-      .log(false);
-
-    store.dispatch(setTable("table1"));
-  });
-
-  it("displays all ranges", () => {
-    cy.viewport(500, 200);
-    mountRangesSettings();
-
-    cy.contains("Range 1").should("have.class", "btn-light");
-    cy.contains("Range 2").should("have.class", "btn-light");
-  });
-
-  it("highlights active range", () => {
-    store.dispatch(setActiveRange("range2"));
-    cy.viewport(500, 200);
-    mountRangesSettings();
-
-    cy.contains("Range 1").should("have.class", "btn-light");
-    cy.contains("Range 2").should("have.class", "btn-dark");
-  });
-});
-
-describe("Ranges settings (RTK query)", () => {
-  let store;
-
-  function mountRangesSettings() {
-    cy.mount(<RangesSettings />, { reduxStore: store, router: true });
-  }
-
-  beforeEach(() => {
-    store = getStore();
-    store.dispatch(toggleRangesEnabled());
-    store.dispatch(overrideConfig({ rtkQuery: true }));
   });
 
   function stubClient(ranges) {

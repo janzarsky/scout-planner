@@ -33,7 +33,6 @@ import cs from "date-fns/locale/cs";
 import "react-datepicker/dist/react-datepicker.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetRangesSlice } from "../store/rangesSlice";
 import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
 import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
@@ -628,18 +627,8 @@ function ProgramUrl({ url, setUrl, disabled = false }) {
 }
 
 function ProgramRanges({ programRanges, updateRange, disabled = false }) {
-  const rtkQuery = useSelector((state) => state.config.rtkQuery);
   const { table } = useSelector((state) => state.auth);
-  const { data: oldRanges, isSuccess: oldRangesLoaded } = useGetRangesSlice(
-    table,
-    rtkQuery,
-  );
-  const { data: newRanges, isSuccess: newRangesLoaded } = useGetRangesQuery(
-    table,
-    rtkQuery,
-  );
-  const allRanges = rtkQuery ? newRanges : oldRanges;
-  const rangesLoaded = rtkQuery ? newRangesLoaded : oldRangesLoaded;
+  const { data: allRanges, isSuccess: rangesLoaded } = useGetRangesQuery(table);
 
   return rangesLoaded
     ? [...allRanges].sort(byName).map((range) => (

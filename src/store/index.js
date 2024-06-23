@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import rangesReducer from "./rangesSlice";
 import groupsReducer from "./groupsSlice";
 import packagesReducer from "./packagesSlice";
 import rulesReducer from "./rulesSlice";
@@ -18,7 +17,6 @@ import { rangesApi } from "./rangesApi";
 export function getStore() {
   return configureStore({
     reducer: {
-      ranges: rangesReducer,
       groups: groupsReducer,
       packages: packagesReducer,
       rules: rulesReducer,

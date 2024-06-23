@@ -11,9 +11,7 @@ export const rangesApi = createApi({
   tagTypes: ["ranges"],
   endpoints: (builder) => ({
     getRanges: builder.query({
-      async queryFn(table, rtkQuery) {
-        if (!rtkQuery) return {};
-
+      async queryFn(table) {
         const client = firestoreClientFactory.getClient(table);
         const data = await client.getRanges();
         return { data };
