@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSliceHook } from "./sliceHelper";
 
 export const getPrograms = createAsyncThunk(
   "programs/getPrograms",
@@ -51,6 +52,8 @@ export const programsSlice = createSlice({
     });
   },
 });
+
+export const useGetProgramsSlice = createSliceHook("programs", getPrograms);
 
 export const { addProgram, updateProgram, deleteProgram } =
   programsSlice.actions;
