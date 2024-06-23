@@ -25,6 +25,7 @@ import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetGroupsSlice } from "../store/groupsSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
+import { useGetUsersSlice } from "../store/usersSlice";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -58,7 +59,7 @@ function DeleteAll() {
   const ranges = rtkQuery ? newRanges : oldRanges;
   const { data: packages } = useGetPackagesSlice(table, false);
   const { data: rules } = useGetRulesSlice(table, false);
-  const { users } = useSelector((state) => state.users);
+  const { data: users } = useGetUsersSlice(table, false);
   const { data: people } = useGetPeopleSlice(table, false);
   const { programs, deletedPrograms } = useSelector((state) => state.programs);
 
