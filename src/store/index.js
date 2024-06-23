@@ -13,6 +13,7 @@ import authReducer from "./authSlice";
 import errorsReducer from "./errorsSlice";
 import configReducer from "./configSlice";
 import { rangesApi } from "./rangesApi";
+import { groupsApi } from "./groupsApi";
 
 export function getStore() {
   return configureStore({
@@ -31,8 +32,11 @@ export function getStore() {
       errors: errorsReducer,
       config: configReducer,
       [rangesApi.reducerPath]: rangesApi.reducer,
+      [groupsApi.reducerPath]: groupsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(rangesApi.middleware),
+      getDefaultMiddleware()
+        .concat(rangesApi.middleware)
+        .concat(groupsApi.middleware),
   });
 }
