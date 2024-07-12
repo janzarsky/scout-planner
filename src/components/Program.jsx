@@ -13,9 +13,9 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
-import { useGetPeopleSlice } from "../store/peopleSlice";
 import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetPackagesQuery } from "../store/packagesApi";
+import { useGetPeopleQuery } from "../store/peopleApi";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -233,7 +233,7 @@ function lookUpPeople(programPeople, allPeople) {
 function ProgramPeople({ programPeople, violations }) {
   const viewViolations = useSelector((state) => state.view.viewViolations);
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);
 
   const lookedUpPeople = lookUpPeople(
     programPeople,

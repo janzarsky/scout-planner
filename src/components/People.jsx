@@ -4,28 +4,25 @@ import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
-import { firestoreClientFactory } from "../FirestoreClient";
-import {
-  addPerson,
-  deletePerson,
-  updatePerson,
-  useGetPeopleSlice,
-} from "../store/peopleSlice";
 import { formatDateTime, parseDateTime } from "../helpers/DateUtils";
-import { useCommandHandler } from "./CommandContext";
+import {
+  useAddPersonMutation,
+  useDeletePersonMutation,
+  useGetPeopleQuery,
+  useUpdatePersonMutation,
+} from "../store/peopleApi";
 
 export default function People() {
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);
+  const [updatePerson] = useUpdatePersonMutation();
+  const [addPerson] = useAddPersonMutation();
+  const [deletePerson] = useDeletePersonMutation();
 
   const [newName, setNewName] = useState("Nový organizátor");
   const [editedName, setEditedName] = useState();
   const [editKey, setEditKey] = useState(undefined);
   const [absence, setAbsence] = useState();
-
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -36,10 +33,10 @@ export default function People() {
         name: editedName,
         absence: parseAbsence(absence),
       };
-      dispatchCommand(client, updatePerson(updatedPerson));
+      updatePerson({ table, data: updatedPerson });
       setEditKey(undefined);
     } else {
-      dispatchCommand(client, addPerson({ name: newName }));
+      addPerson({ table, data: { name: newName } });
     }
   }
 
@@ -82,9 +79,7 @@ export default function People() {
                         formatAbsence(person.absence ? person.absence : []),
                       );
                     }}
-                    deletePerson={() =>
-                      dispatchCommand(client, deletePerson(person._id))
-                    }
+                    deletePerson={() => deletePerson({ table, id: person._id })}
                   />
                 ),
               )}
