@@ -3,10 +3,10 @@ import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
-import { useGetPeopleSlice } from "../store/peopleSlice";
 import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
+import { useGetPeopleQuery } from "../store/peopleApi";
 
 export default function Stats() {
   return (
@@ -70,7 +70,7 @@ function PackageStats() {
 
 function PeopleStats() {
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);

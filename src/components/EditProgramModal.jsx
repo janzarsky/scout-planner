@@ -22,7 +22,6 @@ import {
   updateProgram,
   useGetProgramsSlice,
 } from "../store/programsSlice";
-import { addPerson, useGetPeopleSlice } from "../store/peopleSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -37,6 +36,7 @@ import { useGetRangesQuery } from "../store/rangesApi";
 import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
+import { useAddPersonMutation, useGetPeopleQuery } from "../store/peopleApi";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -519,10 +519,8 @@ function ProgramPeople({
 }) {
   const table = useSelector((state) => state.auth.table);
   const { data: objectPeople, isSuccess: peopleLoaded } =
-    useGetPeopleSlice(table);
-
-  const { dispatchCommand } = useCommandHandler();
-  const client = firestoreClientFactory.getClient(table);
+    useGetPeopleQuery(table);
+  const [addPerson] = useAddPersonMutation();
 
   return (
     <Form.Group as={Row} className="mb-3">
@@ -559,7 +557,7 @@ function ProgramPeople({
             onClick={() => {
               const name = window.prompt("Jméno");
               if (name) {
-                dispatchCommand(client, addPerson({ name }));
+                addPerson({ table, data: { name } });
               }
             }}
           >

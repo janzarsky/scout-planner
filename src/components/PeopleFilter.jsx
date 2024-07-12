@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleActivePerson, togglePeopleEnabled } from "../store/viewSlice";
 import { byName } from "../helpers/Sorting";
 import { Button } from "react-bootstrap";
-import { useGetPeopleSlice } from "../store/peopleSlice";
+import { useGetPeopleQuery } from "../store/peopleApi";
 
 export function PeopleFilterToggle() {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ export function PeopleFilterToggle() {
 export function PeopleFilter() {
   const dispatch = useDispatch();
   const { table } = useSelector((state) => state.auth);
-  const { data: people, isSuccess: peopleLoaded } = useGetPeopleSlice(table);
+  const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);
   const { activePeople, peopleEnabled } = useSelector((state) => state.view);
 
   if (!peopleEnabled || !peopleLoaded) return null;

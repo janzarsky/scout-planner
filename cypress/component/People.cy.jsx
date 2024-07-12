@@ -34,7 +34,7 @@ describe("People", () => {
   });
 
   it("empty", () => {
-    stubClient([]);
+    stubClient([], []);
     cy.mount(<People />, { reduxStore: store, command: true });
     cy.contains("Organizátor");
     cy.get("[data-test='people-new-name']");
@@ -69,15 +69,6 @@ describe("People", () => {
     cy.get("[data-test='people-new-add']").click();
 
     cy.get("@addPerson").should("be.calledOnceWith", { name: "Person 1" });
-
-    cy.wrap(store)
-      .invoke("getState")
-      .its("people.people")
-      .should("deep.include", {
-        _id: "newperson",
-        name: "Person 1",
-      });
-
     cy.contains("Person 1");
   });
 
@@ -88,9 +79,6 @@ describe("People", () => {
     cy.contains("Smazat").click();
 
     cy.get("@deletePerson").should("be.calledOnceWith", "person1");
-
-    cy.wrap(store).invoke("getState").its("people.people").should("be.empty");
-
     cy.contains("Person 1").should("not.exist");
   });
 
@@ -107,16 +95,6 @@ describe("People", () => {
     cy.get("[data-test='people-edit-save']").click();
 
     cy.get("@updatePerson").should("be.calledOnceWith");
-
-    cy.wrap(store)
-      .invoke("getState")
-      .its("people.people")
-      .should("deep.include", {
-        _id: "person1",
-        name: "Person 2",
-        absence: [],
-      });
-
     cy.contains("Person 2");
     cy.contains("Upravit");
   });
