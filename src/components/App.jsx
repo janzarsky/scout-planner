@@ -16,7 +16,6 @@ import Users from "./Users";
 import Stats from "./Stats";
 import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
-import { useGetRulesSlice } from "../store/rulesSlice";
 import { getPrograms, useGetProgramsSlice } from "../store/programsSlice";
 import { getPermissions } from "../store/authSlice";
 import { PackageFilter } from "./PackageFilter";
@@ -34,6 +33,7 @@ import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
+import { useGetRulesQuery } from "../store/rulesApi";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -50,7 +50,7 @@ export default function App() {
   const { isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { isSuccess: rangesLoaded } = useGetRangesQuery(table);
   const { isSuccess: packagesLoaded } = useGetPackagesQuery(table);
-  const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);
+  const { data: rules, isSuccess: rulesLoaded } = useGetRulesQuery(table);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsSlice(table);
   const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);

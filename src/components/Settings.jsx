@@ -20,12 +20,12 @@ import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
 import { useCommandHandler } from "./CommandContext";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetRulesSlice } from "../store/rulesSlice";
 import { useGetUsersSlice } from "../store/usersSlice";
 import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
+import { useGetRulesQuery } from "../store/rulesApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -55,7 +55,7 @@ function DeleteAll() {
   const { data: groups } = useGetGroupsQuery(table);
   const { data: ranges } = useGetRangesQuery(table);
   const { data: packages } = useGetPackagesQuery(table);
-  const { data: rules } = useGetRulesSlice(table);
+  const { data: rules } = useGetRulesQuery(table);
   const { data: users } = useGetUsersSlice(table);
   const { data: people } = useGetPeopleQuery(table);
   const { data: programs } = useGetProgramsSlice(table);
