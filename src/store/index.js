@@ -5,7 +5,6 @@ import timetableReducer from "./timetableSlice";
 import usersReducer from "./usersSlice";
 import publicLevelReducer from "./publicLevelSlice";
 import programsReducer from "./programsSlice";
-import peopleReducer from "./peopleSlice";
 import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
 import errorsReducer from "./errorsSlice";
@@ -24,7 +23,6 @@ export function getStore() {
       users: usersReducer,
       publicLevel: publicLevelReducer,
       programs: programsReducer,
-      people: peopleReducer,
       view: viewReducer,
       auth: authReducer,
       errors: errorsReducer,
