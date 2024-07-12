@@ -13,12 +13,6 @@ const rulesSlice = createSlice({
     addRule(state, action) {
       state.rules.push(action.payload);
     },
-    updateRule(state, action) {
-      state.rules = [
-        ...state.rules.filter((r) => r._id !== action.payload._id),
-        action.payload,
-      ];
-    },
     deleteRule(state, action) {
       state.rules = state.rules.filter((r) => r._id !== action.payload);
     },
@@ -49,6 +43,6 @@ const rulesSlice = createSlice({
 
 export const useGetRulesSlice = createSliceHook("rules", getRules);
 
-export const { addRule, updateRule, deleteRule } = rulesSlice.actions;
+export const { addRule, deleteRule } = rulesSlice.actions;
 
 export default rulesSlice.reducer;
