@@ -1,6 +1,5 @@
 import { addError } from "./errorsSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
-import { addRule, deleteRule } from "./rulesSlice";
 import { updateSettings } from "./settingsSlice";
 import { updateTitle } from "./timetableSlice";
 import { addUser, deleteUser, updateUser } from "./usersSlice";
@@ -27,20 +26,6 @@ export function getCommandHandler(store) {
         [deleteProgram().type]: (payload) => {
           client.updateProgram({ ...payload, deleted: true }).then(
             () => store.dispatch(deleteProgram(payload._id)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        // rules
-        [addRule().type]: (payload) => {
-          client.addRule(payload).then(
-            (resp) => store.dispatch(addRule(resp)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        // (update rule is not used anywhere)
-        [deleteRule().type]: (id) => {
-          client.deleteRule(id).then(
-            () => store.dispatch(deleteRule(id)),
             (e) => store.dispatch(addError(e.message)),
           );
         },

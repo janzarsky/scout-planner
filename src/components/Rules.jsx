@@ -13,12 +13,14 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { useSelector } from "react-redux";
-import { addRule, deleteRule, useGetRulesSlice } from "../store/rulesSlice";
-import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
-import { useCommandHandler } from "./CommandContext";
 import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
+import {
+  useAddRuleMutation,
+  useDeleteRuleMutation,
+  useGetRulesQuery,
+} from "../store/rulesApi";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -29,13 +31,12 @@ export default function Rules({ violations }) {
 
   const { table, userLevel } = useSelector((state) => state.auth);
 
-  const { data: rules, isSuccess: rulesLoaded } = useGetRulesSlice(table);
+  const { data: rules, isSuccess: rulesLoaded } = useGetRulesQuery(table);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsSlice(table);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
+  const [addRule] = useAddRuleMutation();
+  const [deleteRule] = useDeleteRuleMutation();
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -59,7 +60,7 @@ export default function Rules({ violations }) {
       condition: condition,
       value: value,
     };
-    dispatchCommand(client, addRule(newRule));
+    addRule({ table, data: newRule });
   }
 
   const rulesData = useMemo(
@@ -89,7 +90,7 @@ export default function Rules({ violations }) {
               rule={rule}
               formattedRule={rule.formatted}
               violation={violations.get(rule._id)}
-              deleteRule={() => dispatchCommand(client, deleteRule(rule._id))}
+              deleteRule={() => deleteRule({ table, id: rule._id })}
             />
           ))}
           {userLevel >= level.EDIT && (
