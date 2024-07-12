@@ -3,7 +3,6 @@ import rulesReducer from "./rulesSlice";
 import settingsReducer from "./settingsSlice";
 import timetableReducer from "./timetableSlice";
 import usersReducer from "./usersSlice";
-import publicLevelReducer from "./publicLevelSlice";
 import programsReducer from "./programsSlice";
 import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
@@ -13,6 +12,7 @@ import { rangesApi } from "./rangesApi";
 import { groupsApi } from "./groupsApi";
 import { packagesApi } from "./packagesApi";
 import { peopleApi } from "./peopleApi";
+import { publicLevelApi } from "./publicLevelApi";
 
 export function getStore() {
   return configureStore({
@@ -21,7 +21,6 @@ export function getStore() {
       settings: settingsReducer,
       timetable: timetableReducer,
       users: usersReducer,
-      publicLevel: publicLevelReducer,
       programs: programsReducer,
       view: viewReducer,
       auth: authReducer,
@@ -31,12 +30,14 @@ export function getStore() {
       [groupsApi.reducerPath]: groupsApi.reducer,
       [packagesApi.reducerPath]: packagesApi.reducer,
       [peopleApi.reducerPath]: peopleApi.reducer,
+      [publicLevelApi.reducerPath]: publicLevelApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
         .concat(rangesApi.middleware)
         .concat(groupsApi.middleware)
         .concat(packagesApi.middleware)
-        .concat(peopleApi.middleware),
+        .concat(peopleApi.middleware)
+        .concat(publicLevelApi.middleware),
   });
 }

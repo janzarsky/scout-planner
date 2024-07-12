@@ -4,7 +4,6 @@ import { addRule, deleteRule } from "./rulesSlice";
 import { updateSettings } from "./settingsSlice";
 import { updateTitle } from "./timetableSlice";
 import { addUser, deleteUser, updateUser } from "./usersSlice";
-import { setPublicLevel } from "./publicLevelSlice";
 
 export function getCommandHandler(store) {
   return {
@@ -62,12 +61,6 @@ export function getCommandHandler(store) {
         [deleteUser().type]: (id) => {
           client.deleteUser(id).then(
             () => store.dispatch(deleteUser(id)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [setPublicLevel().type]: (payload) => {
-          client.setPublicLevel(payload).then(
-            (level) => store.dispatch(setPublicLevel(level)),
             (e) => store.dispatch(addError(e.message)),
           );
         },

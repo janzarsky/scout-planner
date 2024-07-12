@@ -15,9 +15,9 @@ import {
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useCommandHandler } from "./CommandContext";
 import {
-  setPublicLevel,
-  useGetPublicLevelSlice,
-} from "../store/publicLevelSlice";
+  useGetPublicLevelQuery,
+  useSetPublicLevelMutation,
+} from "../store/publicLevelApi";
 
 export default function Users({ userEmail }) {
   const [newEmail, setNewEmail] = useState("E-mailová adresa");
@@ -28,7 +28,8 @@ export default function Users({ userEmail }) {
 
   const { table } = useSelector((state) => state.auth);
   const { data: publicLevel, isSuccess: publicLevelLoaded } =
-    useGetPublicLevelSlice(table);
+    useGetPublicLevelQuery(table);
+  const [setPublicLevel] = useSetPublicLevelMutation();
   const { data: users, isSuccess: usersLoaded } = useGetUsersSlice(table);
   const { dispatchCommand } = useCommandHandler();
 
@@ -41,7 +42,7 @@ export default function Users({ userEmail }) {
     event.preventDefault();
 
     if (editKey && editKey === "public_user") {
-      dispatchCommand(client, setPublicLevel(publicLevelState));
+      setPublicLevel({ table, data: publicLevelState });
       setEditKey(undefined);
     } else if (editKey) {
       const updatedUser = {
@@ -93,7 +94,7 @@ export default function Users({ userEmail }) {
           ) : (
             <PublicUser
               key="public_user"
-              level={defaultPublicLevel}
+              level={publicLevelLoaded ? publicLevel : level.NONE}
               userEmail={userEmail}
               editable={publicUserEditable}
               editUser={(level) => {
