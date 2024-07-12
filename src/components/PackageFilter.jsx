@@ -7,7 +7,7 @@ import {
   toggleHighlightedPackage,
   toggleHighlighting,
 } from "../store/viewSlice";
-import { useGetPackagesSlice } from "../store/packagesSlice";
+import { useGetPackagesQuery } from "../store/packagesApi";
 
 export function PackageFilterToggle() {
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ export function PackageFilter() {
   const dispatch = useDispatch();
   const { table } = useSelector((state) => state.auth);
   const { data: packages, isSuccess: packagesLoaded } =
-    useGetPackagesSlice(table);
+    useGetPackagesQuery(table);
   const { highlightedPackages, highlightingEnabled } = useSelector(
     (state) => state.view,
   );

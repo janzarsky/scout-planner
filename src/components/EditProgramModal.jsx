@@ -34,9 +34,9 @@ import cs from "date-fns/locale/cs";
 import "react-datepicker/dist/react-datepicker.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetPackagesSlice } from "../store/packagesSlice";
 import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
+import { useGetPackagesQuery } from "../store/packagesApi";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -395,7 +395,7 @@ function ProgramDuration({
 function ProgramPackage({ pkg, setPkg, disabled = false }) {
   const { table } = useSelector((state) => state.auth);
   const { data: packages, isSuccess: packagesLoaded } =
-    useGetPackagesSlice(table);
+    useGetPackagesQuery(table);
 
   return (
     <Form.Group as={Row} className="mb-3">

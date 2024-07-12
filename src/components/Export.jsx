@@ -2,20 +2,20 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import { useSelector } from "react-redux";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
 import { useGetRulesSlice } from "../store/rulesSlice";
 import { useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetUsersSlice } from "../store/usersSlice";
 import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
+import { useGetPackagesQuery } from "../store/packagesApi";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
 
   const { data: groups } = useGetGroupsQuery(table);
   const { data: ranges } = useGetRangesQuery(table);
-  const { data: packages } = useGetPackagesSlice(table);
+  const { data: packages } = useGetPackagesQuery(table);
   const { data: rules } = useGetRulesSlice(table);
   const { data: users } = useGetUsersSlice(table);
   const { data: settings } = useGetSettingsSlice(table);

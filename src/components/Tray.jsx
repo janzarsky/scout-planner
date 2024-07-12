@@ -8,16 +8,16 @@ import { useState } from "react";
 import { Block } from "./Blocks";
 import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
-import { useGetPackagesSlice } from "../store/packagesSlice";
 import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetProgramsSlice } from "../store/programsSlice";
+import { useGetPackagesQuery } from "../store/packagesApi";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { table } = useSelector((state) => state.auth);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsSlice(table);
   const { data: packages, isSuccess: packagesLoaded } =
-    useGetPackagesSlice(table);
+    useGetPackagesQuery(table);
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
