@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import rulesReducer from "./rulesSlice";
 import settingsReducer from "./settingsSlice";
 import timetableReducer from "./timetableSlice";
 import usersReducer from "./usersSlice";
@@ -18,7 +17,6 @@ import { rulesApi } from "./rulesApi";
 export function getStore() {
   return configureStore({
     reducer: {
-      rules: rulesReducer,
       settings: settingsReducer,
       timetable: timetableReducer,
       users: usersReducer,
