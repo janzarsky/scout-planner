@@ -94,7 +94,7 @@ export default function Users({ userEmail }) {
           ) : (
             <PublicUser
               key="public_user"
-              level={defaultPublicLevel}
+              level={publicLevelLoaded ? publicLevel : level.NONE}
               userEmail={userEmail}
               editable={publicUserEditable}
               editUser={(level) => {
