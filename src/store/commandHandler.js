@@ -2,7 +2,6 @@ import { addError } from "./errorsSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 import { updateSettings } from "./settingsSlice";
 import { updateTitle } from "./timetableSlice";
-import { addUser, deleteUser, updateUser } from "./usersSlice";
 
 export function getCommandHandler(store) {
   return {
@@ -26,26 +25,6 @@ export function getCommandHandler(store) {
         [deleteProgram().type]: (payload) => {
           client.updateProgram({ ...payload, deleted: true }).then(
             () => store.dispatch(deleteProgram(payload._id)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        // users
-        [addUser().type]: (payload) => {
-          // note that update here is on purpose (users are indexed by email)
-          client.updateUser(payload).then(
-            (resp) => store.dispatch(addUser(resp)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [updateUser().type]: (payload) => {
-          client.updateUser(payload).then(
-            (resp) => store.dispatch(updateUser(resp)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [deleteUser().type]: (id) => {
-          client.deleteUser(id).then(
-            () => store.dispatch(deleteUser(id)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
