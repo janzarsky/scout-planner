@@ -181,13 +181,23 @@ describe("Users", () => {
 
     it("updates current user", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
-      stubClient(level.ADMIN, [
-        {
-          _id: "test@email.com",
-          email: "test@email.com",
-          level: level.ADMIN,
-        },
-      ]);
+      stubClient(
+        level.ADMIN,
+        [
+          {
+            _id: "test@email.com",
+            email: "test@email.com",
+            level: level.ADMIN,
+          },
+        ],
+        [
+          {
+            _id: "test@email.com",
+            email: "test@email.com",
+            level: level.VIEW,
+          },
+        ],
+      );
       cy.mount(<Users userEmail="test@email.com" />, {
         reduxStore: store,
         command: true,

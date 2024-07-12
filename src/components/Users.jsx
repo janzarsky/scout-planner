@@ -7,17 +7,15 @@ import { level } from "../helpers/Level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useSelector } from "react-redux";
 import {
-  addUser,
-  deleteUser,
-  updateUser,
-  useGetUsersSlice,
-} from "../store/usersSlice";
-import { firestoreClientFactory } from "../FirestoreClient";
-import { useCommandHandler } from "./CommandContext";
-import {
   useGetPublicLevelQuery,
   useSetPublicLevelMutation,
 } from "../store/publicLevelApi";
+import {
+  useAddUserMutation,
+  useDeleteUserMutation,
+  useGetUsersQuery,
+  useUpdateUserMutation,
+} from "../store/usersApi";
 
 export default function Users({ userEmail }) {
   const [newEmail, setNewEmail] = useState("E-mailová adresa");
@@ -30,10 +28,10 @@ export default function Users({ userEmail }) {
   const { data: publicLevel, isSuccess: publicLevelLoaded } =
     useGetPublicLevelQuery(table);
   const [setPublicLevel] = useSetPublicLevelMutation();
-  const { data: users, isSuccess: usersLoaded } = useGetUsersSlice(table);
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
+  const { data: users, isSuccess: usersLoaded } = useGetUsersQuery(table);
+  const [addUser] = useAddUserMutation();
+  const [updateUser] = useUpdateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
   const defaultPublicLevel = publicLevelLoaded ? publicLevel : level.NONE;
   const [publicLevelState, setPublicLevelState] = useState(defaultPublicLevel);
@@ -50,11 +48,11 @@ export default function Users({ userEmail }) {
         email: editedEmail,
         level: editedLevel,
       };
-      dispatchCommand(client, updateUser(updatedUser));
+      updateUser({ table, data: updatedUser });
       setEditKey(undefined);
     } else {
       const newUser = { _id: newEmail, email: newEmail, level: newLevel };
-      dispatchCommand(client, addUser(newUser));
+      addUser({ table, data: newUser });
     }
   }
 
@@ -125,9 +123,7 @@ export default function Users({ userEmail }) {
                     currentUserWarning={
                       user.email === userEmail && currentUserWarning
                     }
-                    deleteUser={() =>
-                      dispatchCommand(client, deleteUser(user._id))
-                    }
+                    deleteUser={() => deleteUser({ table, id: user._id })}
                     editUser={() => {
                       setEditKey(user._id);
                       setEditedEmail(user.email);
