@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import packagesReducer from "./packagesSlice";
 import rulesReducer from "./rulesSlice";
 import settingsReducer from "./settingsSlice";
 import timetableReducer from "./timetableSlice";
@@ -13,11 +12,11 @@ import errorsReducer from "./errorsSlice";
 import configReducer from "./configSlice";
 import { rangesApi } from "./rangesApi";
 import { groupsApi } from "./groupsApi";
+import { packagesApi } from "./packagesApi";
 
 export function getStore() {
   return configureStore({
     reducer: {
-      packages: packagesReducer,
       rules: rulesReducer,
       settings: settingsReducer,
       timetable: timetableReducer,
@@ -31,10 +30,12 @@ export function getStore() {
       config: configReducer,
       [rangesApi.reducerPath]: rangesApi.reducer,
       [groupsApi.reducerPath]: groupsApi.reducer,
+      [packagesApi.reducerPath]: packagesApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
         .concat(rangesApi.middleware)
-        .concat(groupsApi.middleware),
+        .concat(groupsApi.middleware)
+        .concat(packagesApi.middleware),
   });
 }

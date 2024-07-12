@@ -1,5 +1,4 @@
 import { addError } from "./errorsSlice";
-import { addPackage, deletePackage, updatePackage } from "./packagesSlice";
 import { addPerson, deletePerson, updatePerson } from "./peopleSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 import { addRule, deleteRule } from "./rulesSlice";
@@ -49,25 +48,6 @@ export function getCommandHandler(store) {
         [deletePerson().type]: (id) => {
           client.deletePerson(id).then(
             () => store.dispatch(deletePerson(id)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        // packages
-        [addPackage().type]: (payload) => {
-          client.addPackage(payload).then(
-            (resp) => store.dispatch(addPackage(resp)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [updatePackage().type]: (payload) => {
-          client.updatePackage(payload).then(
-            (resp) => store.dispatch(updatePackage(resp)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [deletePackage().type]: (id) => {
-          client.deletePackage(id).then(
-            () => store.dispatch(deletePackage(id)),
             (e) => store.dispatch(addError(e.message)),
           );
         },

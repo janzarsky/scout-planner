@@ -1,18 +1,16 @@
 import React from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { byName } from "../helpers/Sorting";
 import { useSelector } from "react-redux";
 import {
-  addPackage,
-  deletePackage,
-  updatePackage,
-  useGetPackagesSlice,
-} from "../store/packagesSlice";
-import { firestoreClientFactory } from "../FirestoreClient";
-import { useCommandHandler } from "./CommandContext";
+  useAddPackageMutation,
+  useDeletePackageMutation,
+  useGetPackagesQuery,
+  useUpdatePackageMutation,
+} from "../store/packagesApi";
 
 export default function Packages() {
   const [newName, setNewName] = useState("Nový balíček");
@@ -24,13 +22,10 @@ export default function Packages() {
   const { table } = useSelector((state) => state.auth);
 
   const { data: packages, isSuccess: packagesLoaded } =
-    useGetPackagesSlice(table);
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = useMemo(
-    () => firestoreClientFactory.getClient(table),
-    [table],
-  );
+    useGetPackagesQuery(table);
+  const [updatePackage] = useUpdatePackageMutation();
+  const [addPackage] = useAddPackageMutation();
+  const [deletePackage] = useDeletePackageMutation();
 
   const handleSubmit = useCallback(
     (event) => {
@@ -42,29 +37,21 @@ export default function Packages() {
           name: editedName,
           color: editedColor,
         };
-        dispatchCommand(client, updatePackage(updatedPackage));
+        updatePackage({ table, data: updatedPackage });
         setEditKey(undefined);
       } else {
-        dispatchCommand(client, addPackage({ name: newName, color: newColor }));
+        addPackage({ table, data: { name: newName, color: newColor } });
       }
     },
-    [
-      client,
-      dispatchCommand,
-      editKey,
-      editedColor,
-      editedName,
-      newColor,
-      newName,
-    ],
+    [editKey, editedColor, editedName, newColor, newName],
   );
 
   const deletePackageCallback = useCallback(
     (id) => {
-      dispatchCommand(client, deletePackage(id));
+      deletePackage({ table, id });
       setEditKey(undefined);
     },
-    [client, dispatchCommand, setEditKey],
+    [setEditKey],
   );
 
   const editPackageCallback = useCallback(

@@ -13,15 +13,15 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
-import { useGetPackagesSlice } from "../store/packagesSlice";
 import { useGetPeopleSlice } from "../store/peopleSlice";
 import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
+import { useGetPackagesQuery } from "../store/packagesApi";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
   const { data: packages, isSuccess: packagesLoaded } =
-    useGetPackagesSlice(table);
+    useGetPackagesQuery(table);
   const { data: settings, isSuccess: settingsLoaded } =
     useGetSettingsSlice(table);
   const { data: programs, isSuccess: programsLoaded } =
