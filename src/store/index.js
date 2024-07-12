@@ -13,6 +13,7 @@ import { rangesApi } from "./rangesApi";
 import { groupsApi } from "./groupsApi";
 import { packagesApi } from "./packagesApi";
 import { peopleApi } from "./peopleApi";
+import { publicLevelApi } from "./publicLevelApi";
 
 export function getStore() {
   return configureStore({
@@ -31,12 +32,14 @@ export function getStore() {
       [groupsApi.reducerPath]: groupsApi.reducer,
       [packagesApi.reducerPath]: packagesApi.reducer,
       [peopleApi.reducerPath]: peopleApi.reducer,
+      [publicLevelApi.reducerPath]: publicLevelApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
         .concat(rangesApi.middleware)
         .concat(groupsApi.middleware)
         .concat(packagesApi.middleware)
-        .concat(peopleApi.middleware),
+        .concat(peopleApi.middleware)
+        .concat(publicLevelApi.middleware),
   });
 }
