@@ -1,17 +1,16 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { updateTitle, useGetTimetableSlice } from "../store/timetableSlice";
-import { firestoreClientFactory } from "../FirestoreClient";
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { useCommandHandler } from "./CommandContext";
+import {
+  useGetTimetableQuery,
+  useUpdateTitleMutation,
+} from "../store/timetableApi";
 
 export function TimetableTitle() {
   const { table } = useSelector((state) => state.auth);
-  const { data: timetable } = useGetTimetableSlice(table);
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
+  const { data: timetable } = useGetTimetableQuery(table);
+  const [updateTitle] = useUpdateTitleMutation();
 
   const [title, setTitle] = useState(timetable.title ? timetable.title : "");
   const [editing, setEditing] = useState(false);
@@ -20,7 +19,7 @@ export function TimetableTitle() {
     event.preventDefault();
 
     if (editing) {
-      dispatchCommand(client, updateTitle(title ? title : null));
+      updateTitle({ table, data: title ? title : null });
       setEditing(false);
     } else {
       setEditing(true);

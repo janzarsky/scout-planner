@@ -28,12 +28,12 @@ import { PeopleFilter } from "./PeopleFilter";
 import { PrintWrapper } from "./PrintOptions";
 import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
-import { useGetTimetableSlice } from "../store/timetableSlice";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
 import { useGetRulesQuery } from "../store/rulesApi";
+import { useGetTimetableQuery } from "../store/timetableApi";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -56,7 +56,7 @@ export default function App() {
   const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);
   const { isSuccess: settingsLoaded } = useGetSettingsSlice(table);
   const { data: timetable, isSuccess: timetableLoaded } =
-    useGetTimetableSlice(table);
+    useGetTimetableQuery(table);
 
   const dispatch = useDispatch();
 
