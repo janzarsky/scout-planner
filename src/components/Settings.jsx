@@ -9,16 +9,9 @@ import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
 import { useSelector } from "react-redux";
-import {
-  DEFAULT_TIME_STEP,
-  DEFAULT_WIDTH,
-  updateSettings,
-  useGetSettingsSlice,
-} from "../store/settingsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
-import { useCommandHandler } from "./CommandContext";
 import { useGetRangesQuery } from "../store/rangesApi";
 import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
@@ -26,6 +19,12 @@ import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
 import { useGetRulesQuery } from "../store/rulesApi";
 import { useGetUsersQuery } from "../store/usersApi";
+import {
+  DEFAULT_TIME_STEP,
+  DEFAULT_WIDTH,
+  useGetSettingsQuery,
+  useUpdateSettingsMutation,
+} from "../store/settingsApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -90,10 +89,8 @@ function DeleteAll() {
 function TimeStep() {
   const { table } = useSelector((state) => state.auth);
   const { data: settings, isSuccess: settingsLoaded } =
-    useGetSettingsSlice(table);
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
+    useGetSettingsQuery(table);
+  const [updateSettings] = useUpdateSettingsMutation();
 
   const [step, setStep] = useState(
     settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP,
@@ -104,7 +101,7 @@ function TimeStep() {
     event.preventDefault();
 
     if (editing) {
-      dispatchCommand(client, updateSettings({ ...settings, timeStep: step }));
+      updateSettings({ table, data: { ...settings, timeStep: step } });
       setEditing(false);
     } else {
       setEditing(true);
@@ -151,10 +148,8 @@ function TimeStep() {
 function Width() {
   const { table } = useSelector((state) => state.auth);
   const { data: settings, isSuccess: settingsLoaded } =
-    useGetSettingsSlice(table);
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
+    useGetSettingsQuery(table);
+  const [updateSettings] = useUpdateSettingsMutation();
 
   const [width, setWidth] = useState(
     settingsLoaded ? settings.width : DEFAULT_WIDTH,
@@ -165,10 +160,7 @@ function Width() {
     event.preventDefault();
 
     if (editing) {
-      dispatchCommand(
-        client,
-        updateSettings({ ...settings, width: parseInt(width) }),
-      );
+      updateSettings({ table, data: { ...settings, width: parseInt(width) } });
       setEditing(false);
     } else {
       setEditing(true);

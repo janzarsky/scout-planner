@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import settingsReducer from "./settingsSlice";
 import programsReducer from "./programsSlice";
 import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
@@ -13,11 +12,11 @@ import { publicLevelApi } from "./publicLevelApi";
 import { rulesApi } from "./rulesApi";
 import { usersApi } from "./usersApi";
 import { timetableApi } from "./timetableApi";
+import { settingsApi } from "./settingsApi";
 
 export function getStore() {
   return configureStore({
     reducer: {
-      settings: settingsReducer,
       programs: programsReducer,
       view: viewReducer,
       auth: authReducer,
@@ -31,6 +30,7 @@ export function getStore() {
       [rulesApi.reducerPath]: rulesApi.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
       [timetableApi.reducerPath]: timetableApi.reducer,
+      [settingsApi.reducerPath]: settingsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
@@ -41,6 +41,7 @@ export function getStore() {
         .concat(publicLevelApi.middleware)
         .concat(rulesApi.middleware)
         .concat(usersApi.middleware)
-        .concat(timetableApi.middleware),
+        .concat(timetableApi.middleware)
+        .concat(settingsApi.middleware),
   });
 }

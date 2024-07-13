@@ -8,9 +8,9 @@ import { useState } from "react";
 import { Block } from "./Blocks";
 import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
-import { DEFAULT_WIDTH, useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetPackagesQuery } from "../store/packagesApi";
+import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { table } = useSelector((state) => state.auth);
@@ -33,7 +33,7 @@ export function Tray({ settings, onDroppableDrop }) {
   );
 
   const { data: timetableSettings, isSuccess: settingsLoaded } =
-    useGetSettingsSlice(table);
+    useGetSettingsQuery(table);
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
   const userLevel = useSelector((state) => state.auth.userLevel);
 
