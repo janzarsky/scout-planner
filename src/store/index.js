@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import settingsReducer from "./settingsSlice";
 import programsReducer from "./programsSlice";
 import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
@@ -18,7 +17,6 @@ import { settingsApi } from "./settingsApi";
 export function getStore() {
   return configureStore({
     reducer: {
-      settings: settingsReducer,
       programs: programsReducer,
       view: viewReducer,
       auth: authReducer,

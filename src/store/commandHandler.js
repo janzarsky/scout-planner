@@ -1,6 +1,5 @@
 import { addError } from "./errorsSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
-import { updateSettings } from "./settingsSlice";
 
 export function getCommandHandler(store) {
   return {
@@ -24,13 +23,6 @@ export function getCommandHandler(store) {
         [deleteProgram().type]: (payload) => {
           client.updateProgram({ ...payload, deleted: true }).then(
             () => store.dispatch(deleteProgram(payload._id)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        // settings
-        [updateSettings().type]: (payload) => {
-          client.updateTimetable({ settings: payload }).then(
-            () => store.dispatch(updateSettings(payload)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
