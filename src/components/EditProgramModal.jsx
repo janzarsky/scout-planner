@@ -33,10 +33,10 @@ import cs from "date-fns/locale/cs";
 import "react-datepicker/dist/react-datepicker.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useAddPersonMutation, useGetPeopleQuery } from "../store/peopleApi";
+import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -315,7 +315,7 @@ function ProgramDuration({
 }) {
   const { table } = useSelector((state) => state.auth);
   const { data: settings, isSuccess: settingsLoaded } =
-    useGetSettingsSlice(table);
+    useGetSettingsQuery(table);
   const timeStep = settingsLoaded ? settings.timeStep : DEFAULT_TIME_STEP;
   const defaultDurations = {
     [15 * 60 * 1000]: [

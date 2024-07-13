@@ -13,9 +13,9 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
 import { useCommandHandler } from "./CommandContext";
-import { DEFAULT_TIME_STEP, useGetSettingsSlice } from "../store/settingsSlice";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
+import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -23,7 +23,7 @@ export default function Program({ program, rect, violations }) {
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);
   const { data: settings, isSuccess: settingsLoaded } =
-    useGetSettingsSlice(table);
+    useGetSettingsQuery(table);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsSlice(table);
 

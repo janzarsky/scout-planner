@@ -21,7 +21,6 @@ import { getPermissions } from "../store/authSlice";
 import { PackageFilter } from "./PackageFilter";
 import { ViewSettings } from "./ViewSettings";
 import { RangesSettings } from "./RangesSettings";
-import { useGetSettingsSlice } from "../store/settingsSlice";
 import { useAuth } from "./AuthProvider";
 import { Route, Routes } from "react-router-dom";
 import { PeopleFilter } from "./PeopleFilter";
@@ -34,6 +33,7 @@ import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
 import { useGetRulesQuery } from "../store/rulesApi";
 import { useGetTimetableQuery } from "../store/timetableApi";
+import { useGetSettingsQuery } from "../store/settingsApi";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -54,7 +54,7 @@ export default function App() {
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsSlice(table);
   const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);
-  const { isSuccess: settingsLoaded } = useGetSettingsSlice(table);
+  const { isSuccess: settingsLoaded } = useGetSettingsQuery(table);
   const { data: timetable, isSuccess: timetableLoaded } =
     useGetTimetableQuery(table);
 
