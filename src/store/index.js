@@ -1,6 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import settingsReducer from "./settingsSlice";
-import timetableReducer from "./timetableSlice";
 import programsReducer from "./programsSlice";
 import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
@@ -19,7 +18,6 @@ export function getStore() {
   return configureStore({
     reducer: {
       settings: settingsReducer,
-      timetable: timetableReducer,
       programs: programsReducer,
       view: viewReducer,
       auth: authReducer,

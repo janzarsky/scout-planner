@@ -1,7 +1,6 @@
 import { addError } from "./errorsSlice";
 import { addProgram, deleteProgram, updateProgram } from "./programsSlice";
 import { updateSettings } from "./settingsSlice";
-import { updateTitle } from "./timetableSlice";
 
 export function getCommandHandler(store) {
   return {
@@ -32,12 +31,6 @@ export function getCommandHandler(store) {
         [updateSettings().type]: (payload) => {
           client.updateTimetable({ settings: payload }).then(
             () => store.dispatch(updateSettings(payload)),
-            (e) => store.dispatch(addError(e.message)),
-          );
-        },
-        [updateTitle().type]: (payload) => {
-          client.updateTimetable({ title: payload }).then(
-            () => store.dispatch(updateTitle(payload)),
             (e) => store.dispatch(addError(e.message)),
           );
         },
