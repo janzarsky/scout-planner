@@ -4,7 +4,7 @@ import { firestoreClientFactory } from "../FirestoreClient";
 export const programsApi = createApi({
   baseQuery: fakeBaseQuery(),
   reducerPath: "programsApi",
-  tagTypes: ["programs"],
+  tagTypes: ["program"],
   endpoints: (builder) => ({
     getProgram: builder.query({
       async queryFn({ table, id }) {
@@ -16,7 +16,13 @@ export const programsApi = createApi({
 
         return { data: data };
       },
-      providesTags: ["programs"],
+      providesTags: (program) =>
+        program
+          ? [
+              { type: "program", id: program._id },
+              { type: "program", id: "LIST" },
+            ]
+          : ["program"],
     }),
     getPrograms: builder.query({
       async queryFn(table) {
@@ -25,7 +31,13 @@ export const programsApi = createApi({
         // data fix
         return { data: data.filter((p) => !p.deleted) };
       },
-      providesTags: ["programs"],
+      providesTags: (programs) =>
+        programs
+          ? [
+              ...programs.map(({ _id }) => ({ type: "program", id: _id })),
+              { type: "program", id: "LIST" },
+            ]
+          : ["program"],
     }),
     addProgram: builder.mutation({
       async queryFn({ table, data }) {
@@ -33,23 +45,29 @@ export const programsApi = createApi({
         await client.addProgram(data);
         return { data: null };
       },
-      invalidatesTags: ["programs"],
+      invalidatesTags: [{ type: "program", id: "LIST" }],
     }),
     updateProgram: builder.mutation({
       async queryFn({ table, data }) {
         const client = firestoreClientFactory.getClient(table);
         await client.updateProgram(data);
-        return { data: null };
+        return { data };
       },
-      invalidatesTags: ["programs"],
+      invalidatesTags: (program) => [
+        ...(program ? [{ type: "program", id: program._id }] : []),
+        { type: "program", id: "LIST" },
+      ],
     }),
     deleteProgram: builder.mutation({
       async queryFn({ table, id }) {
         const client = firestoreClientFactory.getClient(table);
         await client.deleteProgram(id);
-        return { data: null };
+        return { data: id };
       },
-      invalidatesTags: ["programs"],
+      invalidatesTags: (id) => [
+        { type: "program", id },
+        { type: "program", id: "LIST" },
+      ],
     }),
   }),
 });
