@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createSliceHook } from "./sliceHelper";
+import { useDispatch, useSelector } from "react-redux";
+import { firestoreClientFactory } from "../FirestoreClient";
+import { useEffect } from "react";
 
 export const getPrograms = createAsyncThunk(
   "programs/getPrograms",
@@ -53,7 +55,29 @@ export const programsSlice = createSlice({
   },
 });
 
-export const useGetProgramsSlice = createSliceHook("programs", getPrograms);
+export function useGetProgramsSlice(table) {
+  const dispatch = useDispatch();
+  const {
+    loading: status,
+    programs: data,
+    error,
+    loaded,
+  } = useSelector((state) => state.programs);
+
+  useEffect(() => {
+    if (status === "idle" && !loaded && table !== undefined) {
+      const client = firestoreClientFactory.getClient(table);
+      dispatch(getPrograms(client));
+    }
+  }, [status, table, dispatch]);
+
+  const isUninitialized = status === "idle" && !loaded;
+  const isLoading = status === "pending" || status === undefined;
+  const isError = status === "idle" && error !== null;
+  const isSuccess = status === "idle" && loaded;
+
+  return { data, isUninitialized, isLoading, isError, isSuccess };
+}
 
 export const { addProgram, updateProgram, deleteProgram } =
   programsSlice.actions;
