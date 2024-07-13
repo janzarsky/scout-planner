@@ -9,10 +9,13 @@ import {
 
 export function TimetableTitle() {
   const { table } = useSelector((state) => state.auth);
-  const { data: timetable } = useGetTimetableQuery(table);
+  const { data: timetable, isSuccess: timetableLoaded } =
+    useGetTimetableQuery(table);
   const [updateTitle] = useUpdateTitleMutation();
 
-  const [title, setTitle] = useState(timetable.title ? timetable.title : "");
+  const [title, setTitle] = useState(
+    timetableLoaded && timetable.title ? timetable.title : "",
+  );
   const [editing, setEditing] = useState(false);
 
   function handleSubmit(event) {
@@ -40,7 +43,9 @@ export function TimetableTitle() {
             />
           ) : (
             <Form.Label className="pt-2">
-              {timetable.title ? timetable.title : "(bez názvu)"}
+              {timetableLoaded && timetable.title
+                ? timetable.title
+                : "(bez názvu)"}
             </Form.Label>
           )}
         </Col>
