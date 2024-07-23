@@ -13,6 +13,7 @@ import { rulesApi } from "./rulesApi";
 import { usersApi } from "./usersApi";
 import { timetableApi } from "./timetableApi";
 import { settingsApi } from "./settingsApi";
+import { programsApi } from "./programsApi";
 
 export function getStore() {
   return configureStore({
@@ -31,6 +32,7 @@ export function getStore() {
       [usersApi.reducerPath]: usersApi.reducer,
       [timetableApi.reducerPath]: timetableApi.reducer,
       [settingsApi.reducerPath]: settingsApi.reducer,
+      [programsApi.reducerPath]: programsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
@@ -42,6 +44,7 @@ export function getStore() {
         .concat(rulesApi.middleware)
         .concat(usersApi.middleware)
         .concat(timetableApi.middleware)
-        .concat(settingsApi.middleware),
+        .concat(settingsApi.middleware)
+        .concat(programsApi.middleware),
   });
 }
