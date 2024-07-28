@@ -19,6 +19,7 @@ import {
   DEFAULT_WIDTH,
   useGetSettingsQuery,
 } from "../store/settingsApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Timetable({
   violations,
@@ -28,8 +29,12 @@ export default function Timetable({
   const { dispatchCommand } = useCommandHandler();
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
   const client = useMemo(
     () => firestoreClientFactory.getClient(table),
     [table],
