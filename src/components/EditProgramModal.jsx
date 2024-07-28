@@ -37,7 +37,12 @@ import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useAddPersonMutation, useGetPeopleQuery } from "../store/peopleApi";
 import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
-import { useGetProgramsQuery } from "../store/programsApi";
+import {
+  useAddProgramMutation,
+  useDeleteProgramMutation,
+  useGetProgramsQuery,
+  useUpdateProgramMutation,
+} from "../store/programsApi";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -58,6 +63,10 @@ export function EditProgramModal() {
     ? programs.find((p) => p._id === programId)
     : null;
   const program = maybeProgram ? maybeProgram : {};
+
+  const [addProgramMutation] = useAddProgramMutation();
+  const [deleteProgramMutation] = useDeleteProgramMutation();
+  const [updateProgramMutation] = useUpdateProgramMutation();
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
@@ -91,7 +100,8 @@ export function EditProgramModal() {
 
     handleClose();
 
-    dispatchCommand(client, deleteProgram(program));
+    if (rtkQueryPrograms) deleteProgramMutation({ table, id: program._id });
+    else dispatchCommand(client, deleteProgram(program));
   }
 
   function handleClone(event) {
@@ -102,7 +112,8 @@ export function EditProgramModal() {
     const newProgram = { ...program };
     delete newProgram._id;
 
-    dispatchCommand(client, addProgram(newProgram));
+    if (rtkQueryPrograms) addProgramMutation({ table, data: newProgram });
+    else dispatchCommand(client, addProgram(newProgram));
   }
 
   function handleSubmit(event) {
@@ -128,7 +139,9 @@ export function EditProgramModal() {
       blockOrder: blockOrder,
     };
 
-    dispatchCommand(client, updateProgram(updatedProgram));
+    if (rtkQueryPrograms)
+      updateProgramMutation({ table, data: updatedProgram });
+    else dispatchCommand(client, updateProgram(updatedProgram));
   }
 
   return (
@@ -724,6 +737,11 @@ export function AddProgramModal() {
 
   const { dispatchCommand } = useCommandHandler();
 
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const [addProgramMutation] = useAddProgramMutation();
+
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
 
@@ -751,7 +769,9 @@ export function AddProgramModal() {
       locked: locked,
       blockOrder: blockOrder,
     };
-    dispatchCommand(client, addProgram(newProgram));
+
+    if (rtkQueryPrograms) addProgramMutation({ table, data: newProgram });
+    else dispatchCommand(client, addProgram(newProgram));
   }
 
   return (
