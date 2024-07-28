@@ -21,6 +21,7 @@ import {
   useDeleteRuleMutation,
   useGetRulesQuery,
 } from "../store/rulesApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Rules({ violations }) {
   const [firstProgram, setFirstProgram] = useState("Žádný program");
@@ -32,8 +33,12 @@ export default function Rules({ violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesQuery(table);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const [addRule] = useAddRuleMutation();
   const [deleteRule] = useDeleteRuleMutation();
@@ -181,8 +186,12 @@ function NewRule({
 }) {
   const { table } = useSelector((state) => state.auth);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
 
   const formattedPrograms = useMemo(
     () =>
