@@ -16,7 +16,11 @@ import { useCommandHandler } from "./CommandContext";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
 import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
-import { useGetProgramsQuery } from "../store/programsApi";
+import {
+  useAddProgramMutation,
+  useGetProgramsQuery,
+  useUpdateProgramMutation,
+} from "../store/programsApi";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -31,6 +35,9 @@ export default function Program({ program, rect, violations }) {
   const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
     ? useGetProgramsQuery(table)
     : useGetProgramsSlice(table);
+
+  const [addProgramMutation] = useAddProgramMutation();
+  const [updateProgramMutation] = useUpdateProgramMutation();
 
   const client = firestoreClientFactory.getClient(table);
 
@@ -65,8 +72,13 @@ export default function Program({ program, rect, violations }) {
             groups: [...program.groups],
             begin: program.begin,
           };
-          dispatchCommand(client, updateProgram(newProg));
-          dispatchCommand(client, updateProgram(newOtherProg));
+          if (rtkQueryPrograms) {
+            updateProgramMutation({ table, data: newProg });
+            updateProgramMutation({ table, data: newOtherProg });
+          } else {
+            dispatchCommand(client, updateProgram(newProg));
+            dispatchCommand(client, updateProgram(newOtherProg));
+          }
         }
       },
       collect: (monitor) => ({
@@ -112,7 +124,11 @@ export default function Program({ program, rect, violations }) {
       {program.url && <ProgramUrl url={program.url} narrow={narrow} />}
       {userLevel >= level.EDIT && (
         <ProgramClone
-          clone={() => dispatchCommand(client, addProgram(program))}
+          clone={() =>
+            rtkQueryPrograms
+              ? addProgramMutation({ table, data: program })
+              : dispatchCommand(client, addProgram(program))
+          }
           narrow={narrow}
         />
       )}
