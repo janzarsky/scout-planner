@@ -6,11 +6,16 @@ import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { useMemo } from "react";
 import { useGetProgramsSlice } from "../store/programsSlice";
 import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export function Blocks({ settings, violations, onDrop }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
 
   const data = useMemo(
     () => getBlocksData(programsLoaded ? programs : [], settings, violations),

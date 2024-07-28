@@ -9,6 +9,7 @@ import { useGetPeopleQuery } from "../store/peopleApi";
 import { useGetRulesQuery } from "../store/rulesApi";
 import { useGetUsersQuery } from "../store/usersApi";
 import { useGetSettingsQuery } from "../store/settingsApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
@@ -20,7 +21,12 @@ export default function Export() {
   const { data: users } = useGetUsersQuery(table);
   const { data: settings } = useGetSettingsQuery(table);
   const { data: people } = useGetPeopleQuery(table);
-  const { data: programs } = useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
 
   const data = JSON.stringify({
     programs,

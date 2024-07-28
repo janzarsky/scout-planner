@@ -37,6 +37,7 @@ import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useAddPersonMutation, useGetPeopleQuery } from "../store/peopleApi";
 import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 registerLocale("cs", cs);
 setDefaultLocale("cs");
@@ -47,8 +48,12 @@ export function EditProgramModal() {
 
   const { table, userLevel } = useSelector((state) => state.auth);
   // FIXME: load only specific program
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
   const maybeProgram = programsLoaded
     ? programs.find((p) => p._id === programId)
     : null;

@@ -16,6 +16,7 @@ import { useCommandHandler } from "./CommandContext";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
 import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -24,8 +25,12 @@ export default function Program({ program, rect, violations }) {
     useGetPackagesQuery(table);
   const { data: settings, isSuccess: settingsLoaded } =
     useGetSettingsQuery(table);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
 
   const client = firestoreClientFactory.getClient(table);
 
