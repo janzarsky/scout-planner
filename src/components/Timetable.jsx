@@ -19,7 +19,10 @@ import {
   DEFAULT_WIDTH,
   useGetSettingsQuery,
 } from "../store/settingsApi";
-import { useGetProgramsQuery } from "../store/programsApi";
+import {
+  useGetProgramsQuery,
+  useUpdateProgramMutation,
+} from "../store/programsApi";
 
 export default function Timetable({
   violations,
@@ -39,6 +42,7 @@ export default function Timetable({
     () => firestoreClientFactory.getClient(table),
     [table],
   );
+  const [updateProgramMutation] = useUpdateProgramMutation();
 
   const onDroppableDrop = useCallback(
     (item, begin, groupId, currentPrograms) => {
@@ -51,7 +55,9 @@ export default function Timetable({
             ? prog.groups
             : [groupId];
 
-        dispatchCommand(client, updateProgram({ ...prog, begin, groups }));
+        if (rtkQueryPrograms)
+          updateProgramMutation({ table, data: { ...prog, begin, groups } });
+        else dispatchCommand(client, updateProgram({ ...prog, begin, groups }));
       }
     },
     [client, dispatchCommand],
