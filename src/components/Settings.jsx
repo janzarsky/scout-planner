@@ -25,6 +25,7 @@ import {
   useGetSettingsQuery,
   useUpdateSettingsMutation,
 } from "../store/settingsApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
@@ -57,7 +58,12 @@ function DeleteAll() {
   const { data: rules } = useGetRulesQuery(table);
   const { data: users } = useGetUsersQuery(table);
   const { data: people } = useGetPeopleQuery(table);
-  const { data: programs } = useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
 
   const client = firestoreClientFactory.getClient(table);
 
