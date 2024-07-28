@@ -7,6 +7,7 @@ import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Stats() {
   return (
@@ -22,8 +23,12 @@ function PackageStats() {
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
 
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(
     programsLoaded ? programs : [],
@@ -74,8 +79,12 @@ function PeopleStats() {
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsSlice(table);
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
+  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramsQuery(table)
+    : useGetProgramsSlice(table);
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
     programsLoaded ? programs : [],
