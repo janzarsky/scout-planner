@@ -136,6 +136,11 @@ class FirestoreClient {
     }
   }
 
+  async streamTimetable(callback) {
+    const q = query(doc(this.db, `timetables/${this.table}`));
+    return onSnapshot(q, (table) => callback(table.data()));
+  }
+
   async get(coll, id) {
     try {
       const snapshot = await getDoc(
