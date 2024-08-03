@@ -79,6 +79,32 @@ export function useGetProgramsSlice(table) {
   return { data, isUninitialized, isLoading, isError, isSuccess };
 }
 
+export function useGetProgramSlice({ table, id }) {
+  const dispatch = useDispatch();
+  const {
+    loading: status,
+    programs,
+    error,
+    loaded,
+  } = useSelector((state) => state.programs);
+
+  useEffect(() => {
+    if (status === "idle" && !loaded && table !== undefined) {
+      const client = firestoreClientFactory.getClient(table);
+      dispatch(getPrograms(client));
+    }
+  }, [status, table, dispatch]);
+
+  const data = programs ? programs.find((p) => p._id === id) : null;
+
+  const isUninitialized = status === "idle" && !loaded;
+  const isLoading = status === "pending" || status === undefined;
+  const isError = status === "idle" && (error !== null || !data);
+  const isSuccess = status === "idle" && loaded && !!data;
+
+  return { data, isUninitialized, isLoading, isError, isSuccess };
+}
+
 export const { addProgram, updateProgram, deleteProgram } =
   programsSlice.actions;
 
