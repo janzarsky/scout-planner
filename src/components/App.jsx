@@ -90,7 +90,7 @@ export default function App() {
   }, [table, userLevel, permissionsLoaded, dispatch, rtkQueryPrograms]);
 
   useEffect(() => {
-    if (dataLoaded) {
+    if (rulesLoaded && programsLoaded && peopleLoaded) {
       const problems = checkRules(rules, programs, people);
 
       setViolations(problems.violations);
@@ -102,7 +102,15 @@ export default function App() {
         ) && problems.other.length === 0,
       );
     }
-  }, [dataLoaded, programs, people, rules, dispatch]);
+  }, [
+    rulesLoaded,
+    programsLoaded,
+    peopleLoaded,
+    programs,
+    people,
+    rules,
+    dispatch,
+  ]);
 
   useEffect(() => {
     if (
@@ -175,6 +183,8 @@ export default function App() {
           element={
             <TimetableWrapper
               dataLoaded={dataLoaded}
+              userLevel={userLevel}
+              permissionsLoaded={permissionsLoaded}
               violationsPerProgram={violationsPerProgram}
             />
           }
@@ -184,6 +194,8 @@ export default function App() {
           element={
             <TimetableWrapper
               dataLoaded={dataLoaded}
+              userLevel={userLevel}
+              permissionsLoaded={permissionsLoaded}
               violationsPerProgram={violationsPerProgram}
             />
           }
@@ -193,6 +205,8 @@ export default function App() {
           element={
             <TimetableWrapper
               dataLoaded={dataLoaded}
+              userLevel={userLevel}
+              permissionsLoaded={permissionsLoaded}
               violationsPerProgram={violationsPerProgram}
             />
           }
@@ -236,16 +250,18 @@ export default function App() {
 export function TimetableWrapper({
   violationsPerProgram,
   dataLoaded,
+  userLevel,
+  permissionsLoaded,
   printView = false,
 }) {
-  const userLevel = useSelector((state) => state.auth.userLevel);
+  console.log("user level", userLevel, "data loaded", dataLoaded);
 
   return (
     <>
-      {userLevel >= level.VIEW && dataLoaded && (
+      {userLevel >= level.VIEW && dataLoaded && permissionsLoaded && (
         <Timetable violations={violationsPerProgram} printView={printView} />
       )}
-      {!dataLoaded && (
+      {(!dataLoaded || !permissionsLoaded) && (
         <Container fluid>
           <Alert variant="primary">
             <i className="fa fa-spinner fa-pulse" />
@@ -253,7 +269,7 @@ export function TimetableWrapper({
           </Alert>
         </Container>
       )}
-      {userLevel === level.NONE && dataLoaded && (
+      {userLevel === level.NONE && dataLoaded && permissionsLoaded && (
         <Container fluid>
           <Alert variant="danger">
             <i className="fa fa-exclamation-triangle" />
