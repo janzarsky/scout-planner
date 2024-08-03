@@ -48,22 +48,30 @@ registerLocale("cs", cs);
 setDefaultLocale("cs");
 
 export function EditProgramModal() {
-  const { id: programId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const { table, userLevel } = useSelector((state) => state.auth);
+  const { table } = useSelector((state) => state.auth);
   const rtkQueryPrograms = useSelector(
     (state) => state.config.rtkQueryPrograms,
   );
-  const { data: maybeProgram, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramQuery({ table, id: programId })
-    : useGetProgramSlice({ table, id: programId });
+  const { data: program, isSuccess: programLoaded } = rtkQueryPrograms
+    ? useGetProgramQuery({ table, id })
+    : useGetProgramSlice({ table, id });
 
-  const [addProgramMutation] = useAddProgramMutation();
-  const [deleteProgramMutation] = useDeleteProgramMutation();
-  const [updateProgramMutation] = useUpdateProgramMutation();
+  return (
+    <Modal show={true} onHide={() => navigate(`/${table}`)}>
+      {programLoaded && <EditProgramForm program={program} />}
+    </Modal>
+  );
+}
 
-  const program = programsLoaded ? maybeProgram : {};
+function EditProgramForm({ program }) {
+  const { table, userLevel } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const rtkQueryPrograms = useSelector(
+    (state) => state.config.rtkQueryPrograms,
+  );
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
@@ -81,16 +89,15 @@ export function EditProgramModal() {
     program.blockOrder ? program.blockOrder : 0, // data fix
   );
 
+  const [addProgramMutation] = useAddProgramMutation();
+  const [deleteProgramMutation] = useDeleteProgramMutation();
+  const [updateProgramMutation] = useUpdateProgramMutation();
+
   const { dispatchCommand } = useCommandHandler();
 
   const client = firestoreClientFactory.getClient(table);
 
   const handleClose = () => navigate(`/${table}`);
-
-  if (program._id === undefined) {
-    handleClose();
-    return null;
-  }
 
   function handleDelete(event) {
     event.preventDefault();
@@ -142,116 +149,112 @@ export function EditProgramModal() {
   }
 
   return (
-    <Modal show={true} onHide={handleClose}>
-      <Form onSubmit={handleSubmit}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {userLevel >= level.EDIT ? "Upravit program" : "Program"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <ProgramTitle
-            title={title}
-            setTitle={setTitle}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramBeginning
-            time={time}
-            setTime={setTime}
-            date={date}
-            setDate={setDate}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramDuration
-            duration={duration}
-            setDuration={setDuration}
-            locked={locked}
-            setLocked={setLocked}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramPackage
-            pkg={pkg}
-            setPkg={setPkg}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramGroups
-            programGroups={groups}
-            addGroup={(group) => setGroups([...groups, group])}
-            removeGroup={(group) =>
-              setGroups(groups.filter((g) => g !== group))
-            }
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramPeople
-            programPeople={attendance}
-            setAttendance={(id, att) =>
-              setAttendance([
-                ...attendance.filter((att) => att.person !== id),
-                { person: id, ...att },
-              ])
-            }
-            removeAttendance={(id) =>
-              setAttendance(attendance.filter((att) => att.person !== id))
-            }
-            disabled={userLevel < level.EDIT}
-            begin={parseDate(date) + parseTime(time)}
-            duration={parseDuration(duration)}
-          />
-          <ProgramPlace
-            place={place}
-            setPlace={setPlace}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramUrl
-            url={url}
-            setUrl={setUrl}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramRanges
-            programRanges={ranges}
-            updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramNotes
-            notes={notes}
-            setNotes={setNotes}
-            disabled={userLevel < level.EDIT}
-          />
-          <ProgramBlockOrder
-            blockOrder={blockOrder}
-            setBlockOrder={setBlockOrder}
-            disabled={userLevel < level.EDIT}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          {userLevel >= level.EDIT && (
-            <Button variant="link text-danger" onClick={handleDelete}>
-              <i className="fa fa-trash" />
-              &nbsp; Smazat
-            </Button>
-          )}
-          {userLevel >= level.EDIT && (
-            <Button
-              variant="link"
-              onClick={handleClone}
-              style={{ marginRight: "auto" }}
-            >
-              <i className="fa fa-clone" />
-              &nbsp; Klonovat
-            </Button>
-          )}
-          <Button variant="link" onClick={handleClose}>
-            {userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
+    <Form onSubmit={handleSubmit}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {userLevel >= level.EDIT ? "Upravit program" : "Program"}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <ProgramTitle
+          title={title}
+          setTitle={setTitle}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramBeginning
+          time={time}
+          setTime={setTime}
+          date={date}
+          setDate={setDate}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramDuration
+          duration={duration}
+          setDuration={setDuration}
+          locked={locked}
+          setLocked={setLocked}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramPackage
+          pkg={pkg}
+          setPkg={setPkg}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramGroups
+          programGroups={groups}
+          addGroup={(group) => setGroups([...groups, group])}
+          removeGroup={(group) => setGroups(groups.filter((g) => g !== group))}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramPeople
+          programPeople={attendance}
+          setAttendance={(id, att) =>
+            setAttendance([
+              ...attendance.filter((att) => att.person !== id),
+              { person: id, ...att },
+            ])
+          }
+          removeAttendance={(id) =>
+            setAttendance(attendance.filter((att) => att.person !== id))
+          }
+          disabled={userLevel < level.EDIT}
+          begin={parseDate(date) + parseTime(time)}
+          duration={parseDuration(duration)}
+        />
+        <ProgramPlace
+          place={place}
+          setPlace={setPlace}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramUrl
+          url={url}
+          setUrl={setUrl}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramRanges
+          programRanges={ranges}
+          updateRange={(id, val) => setRanges({ ...ranges, [id]: val })}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramNotes
+          notes={notes}
+          setNotes={setNotes}
+          disabled={userLevel < level.EDIT}
+        />
+        <ProgramBlockOrder
+          blockOrder={blockOrder}
+          setBlockOrder={setBlockOrder}
+          disabled={userLevel < level.EDIT}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        {userLevel >= level.EDIT && (
+          <Button variant="link text-danger" onClick={handleDelete}>
+            <i className="fa fa-trash" />
+            &nbsp; Smazat
           </Button>
-          {userLevel >= level.EDIT && (
-            <Button variant="primary" type="submit">
-              <i className="fa fa-save" />
-              &nbsp; Uložit
-            </Button>
-          )}
-        </Modal.Footer>
-      </Form>
-    </Modal>
+        )}
+        {userLevel >= level.EDIT && (
+          <Button
+            variant="link"
+            onClick={handleClone}
+            style={{ marginRight: "auto" }}
+          >
+            <i className="fa fa-clone" />
+            &nbsp; Klonovat
+          </Button>
+        )}
+        <Button variant="link" onClick={handleClose}>
+          {userLevel >= level.EDIT ? "Zrušit" : "Zavřít"}
+        </Button>
+        {userLevel >= level.EDIT && (
+          <Button variant="primary" type="submit">
+            <i className="fa fa-save" />
+            &nbsp; Uložit
+          </Button>
+        )}
+      </Modal.Footer>
+    </Form>
   );
 }
 
