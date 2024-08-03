@@ -20,7 +20,7 @@ import {
   addProgram,
   deleteProgram,
   updateProgram,
-  useGetProgramsSlice,
+  useGetProgramSlice,
 } from "../store/programsSlice";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { parseIntOrZero } from "../helpers/Parsing";
@@ -40,7 +40,7 @@ import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
 import {
   useAddProgramMutation,
   useDeleteProgramMutation,
-  useGetProgramsQuery,
+  useGetProgramQuery,
   useUpdateProgramMutation,
 } from "../store/programsApi";
 
@@ -52,21 +52,18 @@ export function EditProgramModal() {
   const navigate = useNavigate();
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  // FIXME: load only specific program
   const rtkQueryPrograms = useSelector(
     (state) => state.config.rtkQueryPrograms,
   );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
-  const maybeProgram = programsLoaded
-    ? programs.find((p) => p._id === programId)
-    : null;
-  const program = maybeProgram ? maybeProgram : {};
+  const { data: maybeProgram, isSuccess: programsLoaded } = rtkQueryPrograms
+    ? useGetProgramQuery({ table, id: programId })
+    : useGetProgramSlice({ table, id: programId });
 
   const [addProgramMutation] = useAddProgramMutation();
   const [deleteProgramMutation] = useDeleteProgramMutation();
   const [updateProgramMutation] = useUpdateProgramMutation();
+
+  const program = programsLoaded ? maybeProgram : {};
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
