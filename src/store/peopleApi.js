@@ -1,5 +1,9 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
+import config from "../config.json";
+import localConfig from "../config.local.json";
+
+const streamingUpdates = { ...config, ...localConfig }.streamingUpdates;
 
 export const peopleApi = createApi({
   baseQuery: fakeBaseQuery(),
@@ -11,6 +15,22 @@ export const peopleApi = createApi({
         const client = firestoreClientFactory.getClient(table);
         const data = await client.getPeople();
         return { data };
+      },
+      async onCacheEntryAdded(
+        table,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) {
+        if (streamingUpdates) {
+          await cacheDataLoaded;
+
+          const client = firestoreClientFactory.getClient(table);
+          const unsubscribe = client.streamPeople((people) =>
+            updateCachedData(() => people),
+          );
+
+          await cacheEntryRemoved;
+          unsubscribe();
+        }
       },
       providesTags: ["people"],
     }),

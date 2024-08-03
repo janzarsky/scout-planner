@@ -1,5 +1,13 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
+import config from "../config.json";
+import localConfig from "../config.local.json";
+
+const streamingUpdates = { ...config, ...localConfig }.streamingUpdates;
+
+function addDefaults(data) {
+  return { title: null, ...data };
+}
 
 export const timetableApi = createApi({
   baseQuery: fakeBaseQuery(),
@@ -9,11 +17,23 @@ export const timetableApi = createApi({
     getTimetable: builder.query({
       async queryFn(table) {
         const client = firestoreClientFactory.getClient(table);
-        const data = {
-          title: null,
-          ...(await client.getTimetable()),
-        };
-        return { data };
+        return { data: addDefaults(await client.getTimetable()) };
+      },
+      async onCacheEntryAdded(
+        table,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) {
+        if (streamingUpdates) {
+          await cacheDataLoaded;
+
+          const client = firestoreClientFactory.getClient(table);
+          const unsubscribe = client.streamTimetable((timetable) =>
+            updateCachedData(() => addDefaults(timetable)),
+          );
+
+          await cacheEntryRemoved;
+          unsubscribe();
+        }
       },
       providesTags: ["timetable"],
     }),
