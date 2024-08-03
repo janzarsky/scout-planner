@@ -1,9 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
-import config from "../config.json";
-import localConfig from "../config.local.json";
-
-const streamingUpdates = { ...config, ...localConfig }.streamingUpdates;
+import { streamingUpdates } from "../helpers/StreamingUpdates";
 
 export const DEFAULT_TIME_STEP = 15 * 60 * 1000;
 export const DEFAULT_WIDTH = 100;
