@@ -1,9 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
-import config from "../config.json";
-import localConfig from "../config.local.json";
-
-const streamingUpdates = { ...config, ...localConfig }.streamingUpdates;
+import { streamingUpdatesEnabled } from "../helpers/StreamingUpdates";
 
 export const rangesApi = createApi({
   baseQuery: fakeBaseQuery(),
@@ -20,7 +17,7 @@ export const rangesApi = createApi({
         table,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
       ) {
-        if (streamingUpdates) {
+        if (streamingUpdatesEnabled(table)) {
           await cacheDataLoaded;
 
           const client = firestoreClientFactory.getClient(table);
