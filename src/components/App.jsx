@@ -254,8 +254,6 @@ export function TimetableWrapper({
   permissionsLoaded,
   printView = false,
 }) {
-  console.log("user level", userLevel, "data loaded", dataLoaded);
-
   return (
     <>
       {userLevel >= level.VIEW && dataLoaded && permissionsLoaded && (
