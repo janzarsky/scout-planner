@@ -7,5 +7,5 @@
   "timetableTitle": true,
   "streamingUpdates": false,
   "rtkQueryPrograms": true,
-  "streamingUpdatesEnabledPrefixes": ["asdf"]
+  "streamingUpdatesEnabledPrefixes": ["asdf", "vm24_"]
 }
