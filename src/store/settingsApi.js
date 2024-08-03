@@ -4,6 +4,14 @@ import { firestoreClientFactory } from "../FirestoreClient";
 export const DEFAULT_TIME_STEP = 15 * 60 * 1000;
 export const DEFAULT_WIDTH = 100;
 
+function addDefaults(data) {
+  return {
+    timeStep: DEFAULT_TIME_STEP,
+    width: DEFAULT_WIDTH,
+    ...(data && data.settings ? data.settings : {}),
+  };
+}
+
 export const settingsApi = createApi({
   baseQuery: fakeBaseQuery(),
   reducerPath: "settingsApi",
@@ -14,11 +22,7 @@ export const settingsApi = createApi({
         const client = firestoreClientFactory.getClient(table);
         const data = await client.getTimetable();
         return {
-          data: {
-            timeStep: DEFAULT_TIME_STEP,
-            width: DEFAULT_WIDTH,
-            ...(data && data.settings ? data.settings : {}),
-          },
+          data: addDefaults(data),
         };
       },
       providesTags: ["settings"],
