@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import App from "./components/App";
 import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { getStore } from "./store";
 import { setTable } from "./store/authSlice";
 import { AuthProvider } from "./components/AuthProvider";
@@ -13,19 +13,20 @@ import Homepage from "./components/Homepage";
 
 function AppWrapper() {
   const dispatch = useDispatch();
-  let { table } = useParams();
+  const { table } = useParams();
+  const { table: storeTable } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(setTable(table));
   }, []);
 
-  return (
+  return storeTable ? (
     <AuthProvider>
       <CommandProvider>
         <App />
       </CommandProvider>
     </AuthProvider>
-  );
+  ) : null;
 }
 
 const root = createRoot(document.getElementById("root"));
