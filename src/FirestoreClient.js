@@ -104,6 +104,17 @@ class FirestoreClient {
     }
   }
 
+  async streamPublicLevel(callback) {
+    const q = query(doc(this.db, `timetables/${this.table}`));
+    return onSnapshot(q, (table) =>
+      callback(
+        table.exists() && typeof table.data().publicLevel === "number"
+          ? table.data().publicLevel
+          : level.ADMIN,
+      ),
+    );
+  }
+
   async getTimetable() {
     try {
       const snapshot = await getDoc(doc(this.db, `timetables/${this.table}`));
