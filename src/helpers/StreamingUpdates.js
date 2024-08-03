@@ -1,4 +1,13 @@
 import config from "../config.json";
 import localConfig from "../config.local.json";
 
-export const streamingUpdates = { ...config, ...localConfig }.streamingUpdates;
+const streamingUpdates = { ...config, ...localConfig }.streamingUpdates;
+const enabledPrefixes = { ...config, ...localConfig }
+  .streamingUpdatesEnabledPrefixes;
+
+export function streamingUpdatesEnabled(table) {
+  const matchesAnyPrefix =
+    enabledPrefixes.find((prefix) => table.startsWith(prefix)) !== undefined;
+
+  return matchesAnyPrefix ? true : streamingUpdates;
+}

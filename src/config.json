@@ -6,5 +6,6 @@
   "datepicker": true,
   "timetableTitle": true,
   "streamingUpdates": false,
-  "rtkQueryPrograms": false
+  "rtkQueryPrograms": false,
+  "streamingUpdatesEnabledPrefixes": ["asdf"]
 }

@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { streamingUpdates } from "../helpers/StreamingUpdates";
+import { streamingUpdatesEnabled } from "../helpers/StreamingUpdates";
 
 function addDefaults(data) {
   return { title: null, ...data };
@@ -20,7 +20,7 @@ export const timetableApi = createApi({
         table,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
       ) {
-        if (streamingUpdates) {
+        if (streamingUpdatesEnabled(table)) {
           await cacheDataLoaded;
 
           const client = firestoreClientFactory.getClient(table);
