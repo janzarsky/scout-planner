@@ -6,6 +6,8 @@ const enabledPrefixes = { ...config, ...localConfig }
   .streamingUpdatesEnabledPrefixes;
 
 export function streamingUpdatesEnabled(table) {
+  if (!table || !enabledPrefixes) return streamingUpdates;
+
   const matchesAnyPrefix =
     enabledPrefixes.find((prefix) => table.startsWith(prefix)) !== undefined;
 
