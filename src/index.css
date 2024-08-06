@@ -381,6 +381,9 @@ p {
   .control-panel {
     display: none;
   }
+  .timetable {
+    overflow: hidden;
+  }
 }
 
 @media screen {
