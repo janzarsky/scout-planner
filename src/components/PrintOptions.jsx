@@ -49,15 +49,20 @@ export function PrintCss({ preset = "default" }) {
   );
 }
 
-export function PrintWrapper({ dataLoaded, violationsPerProgram }) {
+export function PrintWrapper({
+  dataLoaded,
+  permissionsLoaded,
+  violationsPerProgram,
+  userLevel,
+}) {
   const componentRef = useRef();
   const handlePrint = useReactToPrint({ content: () => componentRef.current });
 
   const [preset, setPreset] = useState(null);
 
   useEffect(() => {
-    if (preset) handlePrint(preset);
-  }, [preset]);
+    if (preset && dataLoaded && permissionsLoaded) handlePrint(preset);
+  }, [preset, dataLoaded, permissionsLoaded]);
 
   return (
     <>
@@ -65,7 +70,9 @@ export function PrintWrapper({ dataLoaded, violationsPerProgram }) {
         <PrintCss preset={preset ? preset : "default"} />
         <TimetableWrapper
           dataLoaded={dataLoaded}
+          permissionsLoaded={permissionsLoaded}
           violationsPerProgram={violationsPerProgram}
+          userLevel={userLevel}
           printView={true}
         />
       </div>
