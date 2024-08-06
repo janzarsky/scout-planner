@@ -11,6 +11,8 @@ export function PrintOptions({ printCallback }) {
     a3: { text: "A3" },
     a3landscape: { text: "A3 (na šířku)" },
     a2: { text: "A2" },
+    a1: { text: "A1" },
+    a0: { text: "A0" },
   };
 
   return (
@@ -38,6 +40,8 @@ export function PrintCss({ preset = "default" }) {
     a3: { pageSize: "a3", fontSize: "9pt", margin: "10mm" },
     a3landscape: { pageSize: "a3 landscape", fontSize: "9pt", margin: "10mm" },
     a2: { pageSize: "420mm 594mm", fontSize: "11pt", margin: "10mm" },
+    a1: { pageSize: "594mm 841mm", fontSize: "12pt", margin: "10mm" },
+    a0: { pageSize: "841mm 1189mm", fontSize: "12pt", margin: "10mm" },
     default: { pageSize: "800mm 1108mm", fontSize: "12pt", margin: "10mm" },
   };
 
