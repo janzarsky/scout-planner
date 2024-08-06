@@ -237,7 +237,9 @@ export default function App() {
           element={
             <PrintWrapper
               dataLoaded={dataLoaded}
+              permissionsLoaded={permissionsLoaded}
               violationsPerProgram={violationsPerProgram}
+              userLevel={userLevel}
             />
           }
         />
