@@ -5,7 +5,7 @@
   "projectId": "scout-planner-343913",
   "datepicker": true,
   "timetableTitle": true,
-  "streamingUpdates": false,
+  "streamingUpdates": true,
   "rtkQueryPrograms": true,
   "streamingUpdatesEnabledPrefixes": ["asdf", "vm24_"]
 }
