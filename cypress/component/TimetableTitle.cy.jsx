@@ -26,6 +26,10 @@ describe("Timetable title", () => {
           .onSecondCall()
           .resolves({ title: secondTitle })
           .as("getTimetable"),
+        streamTimetable: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamTimetable"),
       })
       .log(false);
   }

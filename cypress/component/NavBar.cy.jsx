@@ -195,6 +195,10 @@ describe("Filters", () => {
             { _id: "package2", name: "Package 2", color: "#c5cae9" },
           ])
           .as("getPackages"),
+        streamPackages: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPackages"),
       })
       .log(false);
 
@@ -273,6 +277,10 @@ describe("Ranges settings", () => {
     cy.stub(firestoreClientFactory, "getClient")
       .returns({
         getRanges: cy.stub().resolves(ranges).as("getRanges"),
+        streamRanges: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamRanges"),
       })
       .log(false);
   }

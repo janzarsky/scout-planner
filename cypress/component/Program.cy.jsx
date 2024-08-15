@@ -71,6 +71,10 @@ describe("Program", () => {
             },
           ])
           .as("getPackages"),
+        streamPackages: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPackages"),
         getPeople: cy
           .stub()
           .resolves([
@@ -84,8 +88,20 @@ describe("Program", () => {
             },
           ])
           .as("getPeople"),
+        streamPeople: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPeople"),
         getTimetable: cy.stub().resolves({}).as("getTimetable"),
+        streamTimetable: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamTimetable"),
         getPrograms: cy.stub().resolves([]).as("getPrograms"),
+        streamPrograms: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPrograms"),
       })
       .log(false);
 
