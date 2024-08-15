@@ -44,9 +44,25 @@ describe("Timetable", () => {
             },
           ])
           .as("getGroups"),
+        streamGroups: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamGroups"),
         getPackages: cy.stub().resolves([]).as("getPackages"),
+        streamPackages: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPackages"),
         getTimetable: cy.stub().resolves({}).as("getTimetable"),
+        streamTimetable: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamTimetable"),
         getPrograms: cy.stub().resolves(programs).as("getPrograms"),
+        streamPrograms: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPrograms"),
       })
       .log(false);
   }

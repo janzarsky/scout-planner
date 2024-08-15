@@ -60,6 +60,10 @@ describe("People filter", () => {
             { _id: "person2", name: "Person 2" },
           ])
           .as("getPeople"),
+        streamPeople: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPeople"),
       })
       .log(false);
 

@@ -24,8 +24,16 @@ describe("Users", () => {
           .spy(async (user) => ({ ...user, _id: "newuser" }))
           .as("addUser"),
         updateUser: cy.spy(async (user) => user).as("updateUser"),
+        streamUsers: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamUsers"),
         getPublicLevel: cy.stub().resolves(publicLevel).as("getPublicLevel"),
         setPublicLevel: cy.spy(async (level) => level).as("setPublicLevel"),
+        streamPublicLevel: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPublicLevel"),
       })
       .log(false);
   }

@@ -24,6 +24,10 @@ describe("People", () => {
           .as("addPerson"),
         deletePerson: cy.spy(async () => {}).as("deletePerson"),
         updatePerson: cy.spy(async (person) => person).as("updatePerson"),
+        streamPeople: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPeople"),
       })
       .log(false);
   }

@@ -25,6 +25,10 @@ describe("Ranges", () => {
         deleteRange: cy.stub().resolves().as("deleteRange"),
         addRange: cy.stub().resolves().as("addRange"),
         updateRange: cy.stub().resolves().as("updateRange"),
+        streamRanges: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamRanges"),
       })
       .log(false);
   }
