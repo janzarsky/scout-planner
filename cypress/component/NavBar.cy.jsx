@@ -32,6 +32,16 @@ describe("Navigation Bar", () => {
 
   beforeEach(() => {
     store = getStore();
+
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getTimetable: cy.stub().resolves({}).as("getTimetable"),
+        streamTimetable: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamTimetable"),
+      })
+      .log(false);
   });
 
   it("displays no links when having no access", () => {
