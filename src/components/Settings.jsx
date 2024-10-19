@@ -28,14 +28,28 @@ import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
+  const timetableTitle = useSelector((state) => state.config.timetableTitle);
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsQuery(table);
+  const timetableLayoutVersion = settings.timetableLayoutVersion;
+
+  if (!settingsLoaded) {
+    return null;
+  }
 
   return (
     <>
       <Container fluid>
         <h2 className="mt-3">Nastavení</h2>
         {userLevel >= level.EDIT && <TimetableTitle />}
-        {userLevel >= level.EDIT && <TimeStep />}
-        {userLevel >= level.EDIT && <Width />}
+        {timetableLayoutVersion === "v1" && (
+          <>
+            {userLevel >= level.EDIT && <TimeStep />}
+            {userLevel >= level.EDIT && <Width />}
+          </>
+        )}
+        {userLevel >= level.EDIT && <TimetableLayoutVersion />}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
@@ -190,6 +204,76 @@ function Width() {
                   settingsLoaded ? settings.width : DEFAULT_WIDTH
                 ]
               }
+            </Form.Label>
+          )}
+        </Col>
+        <Col>
+          {editing ? (
+            <Button type="submit">
+              <i className="fa fa-check"></i> Uložit
+            </Button>
+          ) : (
+            <Button type="submit">
+              <i className="fa fa-pencil"></i> Upravit
+            </Button>
+          )}
+        </Col>
+      </Row>
+    </Form>
+  );
+}
+
+const timetableLayoutVersions = [
+  { key: "v1", label: "Verze 1 (původní)" },
+  { key: "v2", label: "Verze 2 (experimentální)" },
+]
+
+function TimetableLayoutVersion() {
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsQuery(table);
+  const [updateSettings] = useUpdateSettingsMutation();
+
+  const [version, setVersion] = useState(
+    settingsLoaded ? settings.timetableLayoutVersion : "v1",
+  );
+  const [editing, setEditing] = useState(false);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if (editing) {
+      updateSettings({
+        table,
+        data: { ...settings, timetableLayoutVersion: version },
+      });
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Row className="mb-3">
+        <Form.Label column sm="2">
+          Verze rozložení harmonogramu
+        </Form.Label>
+        <Col sm="3">
+          {editing ? (
+            <Form.Select
+              value={version}
+              onChange={(e) => setVersion(e.target.value)}
+            >
+              {timetableLayoutVersions.map((it) => (
+                <option key={it.key} value={it.key}>
+                  {it.label}
+                </option>
+              ))}
+            </Form.Select>
+          ) : (
+            <Form.Label className="pt-2">
+              {settingsLoaded && timetableLayoutVersions.find((it) => it.key === version)?.label}
             </Form.Label>
           )}
         </Col>
