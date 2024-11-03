@@ -28,7 +28,6 @@ import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
-  const timetableTitle = useSelector((state) => state.config.timetableTitle);
   const { table } = useSelector((state) => state.auth);
   const { data: settings, isSuccess: settingsLoaded } =
     useGetSettingsQuery(table);
