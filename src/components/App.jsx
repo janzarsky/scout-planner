@@ -16,7 +16,6 @@ import Users from "./Users";
 import Stats from "./Stats";
 import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
-import { getPrograms, useGetProgramsSlice } from "../store/programsSlice";
 import { getPermissions } from "../store/authSlice";
 import { PackageFilter } from "./PackageFilter";
 import { ViewSettings } from "./ViewSettings";
@@ -52,12 +51,8 @@ export default function App() {
   const { isSuccess: rangesLoaded } = useGetRangesQuery(table);
   const { isSuccess: packagesLoaded } = useGetPackagesQuery(table);
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
   const { data: people, isSuccess: peopleLoaded } = useGetPeopleQuery(table);
   const { isSuccess: settingsLoaded } = useGetSettingsQuery(table);
   const { data: timetable, isSuccess: timetableLoaded } =
@@ -78,16 +73,6 @@ export default function App() {
       dispatch(getPermissions(client));
     }
   }, [table, permissionsLoaded, initializing, dispatch]);
-
-  useEffect(() => {
-    if (permissionsLoaded) {
-      const client = firestoreClientFactory.getClient(table);
-
-      if (userLevel >= level.NONE && !rtkQueryPrograms) {
-        dispatch(getPrograms(client));
-      }
-    }
-  }, [table, userLevel, permissionsLoaded, dispatch, rtkQueryPrograms]);
 
   useEffect(() => {
     if (rulesLoaded && programsLoaded && peopleLoaded) {
