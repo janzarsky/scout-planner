@@ -4,7 +4,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useSelector } from "react-redux";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { level } from "../helpers/Level";
-import { updateProgram, useGetProgramsSlice } from "../store/programsSlice";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -32,12 +31,8 @@ export default function Timetable({
   const { dispatchCommand } = useCommandHandler();
 
   const { table, userLevel } = useSelector((state) => state.auth);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
   const client = useMemo(
     () => firestoreClientFactory.getClient(table),
     [table],
@@ -55,9 +50,7 @@ export default function Timetable({
             ? prog.groups
             : [groupId];
 
-        if (rtkQueryPrograms)
-          updateProgramMutation({ table, data: { ...prog, begin, groups } });
-        else dispatchCommand(client, updateProgram({ ...prog, begin, groups }));
+        updateProgramMutation({ table, data: { ...prog, begin, groups } });
       }
     },
     [client, dispatchCommand],
