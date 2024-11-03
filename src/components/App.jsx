@@ -243,11 +243,10 @@ export function TimetableWrapper({
   printView = false,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } =
-    useGetSettingsQuery(table);
-  const timetableLayoutVersion = settings?.timetableLayoutVersion;
+  const { data: timetableData, isSuccess: settingsLoaded } =
+    useGetTimetableQuery(table);
   const TimetableComponent =
-    timetableLayoutVersion === "v1" ? Timetable : TimetableV2;
+    timetableData?.layoutVersion === "v1" ? Timetable : TimetableV2;
 
   if (!settingsLoaded || !permissionsLoaded || !dataLoaded) {
     return (

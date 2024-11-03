@@ -25,15 +25,18 @@ import {
   useUpdateSettingsMutation,
 } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
+import {
+  useGetTimetableQuery,
+  useUpdateLayoutVersionMutation,
+} from "../store/timetableApi";
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } =
-    useGetSettingsQuery(table);
-  const timetableLayoutVersion = settings.timetableLayoutVersion;
+  const { data: timetableData, isSuccess: layoutVersionLoaded } = useGetTimetableQuery(table);
+  const layoutVersion = layoutVersionLoaded ? timetableData.layoutVersion : null;
 
-  if (!settingsLoaded) {
+  if (!layoutVersionLoaded) {
     return null;
   }
 
@@ -42,7 +45,7 @@ export default function Settings() {
       <Container fluid>
         <h2 className="mt-3">Nastavení</h2>
         {userLevel >= level.EDIT && <TimetableTitle />}
-        {timetableLayoutVersion === "v1" && (
+        {layoutVersion === "v1" && (
           <>
             {userLevel >= level.EDIT && <TimeStep />}
             {userLevel >= level.EDIT && <Width />}
@@ -229,12 +232,11 @@ const timetableLayoutVersions = [
 
 function TimetableLayoutVersion() {
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } =
-    useGetSettingsQuery(table);
-  const [updateSettings] = useUpdateSettingsMutation();
+  const { data, isSuccess: queryLoaded } = useGetTimetableQuery(table);
+  const [updateVersion] = useUpdateLayoutVersionMutation();
 
   const [version, setVersion] = useState(
-    settingsLoaded ? settings.timetableLayoutVersion : "v1",
+    queryLoaded ? data.layoutVersion : "v1",
   );
   const [editing, setEditing] = useState(false);
 
@@ -242,9 +244,9 @@ function TimetableLayoutVersion() {
     event.preventDefault();
 
     if (editing) {
-      updateSettings({
+      updateVersion({
         table,
-        data: { ...settings, timetableLayoutVersion: version },
+        data: version,
       });
       setEditing(false);
     } else {
@@ -272,7 +274,7 @@ function TimetableLayoutVersion() {
             </Form.Select>
           ) : (
             <Form.Label className="pt-2">
-              {settingsLoaded &&
+              {queryLoaded &&
                 timetableLayoutVersions.find((it) => it.key === version)?.label}
             </Form.Label>
           )}

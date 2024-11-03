@@ -3,13 +3,11 @@ import { firestoreClientFactory } from "../FirestoreClient";
 
 export const DEFAULT_TIME_STEP = 15 * 60 * 1000;
 export const DEFAULT_WIDTH = 100;
-export const DEFAULT_TIMETABLE_LAYOUT_VERSION = "v1";
 
 function addDefaults(data) {
   return {
     timeStep: DEFAULT_TIME_STEP,
     width: DEFAULT_WIDTH,
-    timetableLayoutVersion: DEFAULT_TIMETABLE_LAYOUT_VERSION,
     ...(data && data.settings ? data.settings : {}),
   };
 }
