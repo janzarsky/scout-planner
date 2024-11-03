@@ -4,6 +4,7 @@ import globals from "globals";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +21,7 @@ export default [
     "plugin:react/recommended",
     "plugin:cypress/recommended",
   ),
+  ...tseslint.configs.recommended,
   {
     plugins: {
       react,
@@ -38,7 +40,7 @@ export default [
     rules: {},
   },
   {
-    files: ["src/**/*.js", "src/**/*.jsx", "src/**/*.tsx"],
+    files: ["src/**/*.js", "src/**/*.jsx", "src/**/*.tsx", "src/**/*.ts"],
 
     rules: {
       "react/prop-types": "off",
