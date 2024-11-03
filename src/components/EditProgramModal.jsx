@@ -16,16 +16,8 @@ import {
 } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { byName, byOrder } from "../helpers/Sorting";
-import {
-  addProgram,
-  deleteProgram,
-  updateProgram,
-  useGetProgramSlice,
-} from "../store/programsSlice";
-import { firestoreClientFactory } from "../FirestoreClient";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useCommandHandler } from "./CommandContext";
 import DatePicker from "react-datepicker";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import cs from "date-fns/locale/cs";
@@ -52,12 +44,10 @@ export function EditProgramModal() {
   const navigate = useNavigate();
 
   const { table } = useSelector((state) => state.auth);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: program, isSuccess: programLoaded } = rtkQueryPrograms
-    ? useGetProgramQuery({ table, id })
-    : useGetProgramSlice({ table, id });
+  const { data: program, isSuccess: programLoaded } = useGetProgramQuery({
+    table,
+    id,
+  });
 
   return (
     <Modal show={true} onHide={() => navigate(`/${table}`)}>
@@ -69,9 +59,6 @@ export function EditProgramModal() {
 function EditProgramForm({ program }) {
   const { table, userLevel } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
 
   const [title, setTitle] = useState(program.title);
   const [date, setDate] = useState(formatDateWithTray(program.begin));
@@ -93,10 +80,6 @@ function EditProgramForm({ program }) {
   const [deleteProgramMutation] = useDeleteProgramMutation();
   const [updateProgramMutation] = useUpdateProgramMutation();
 
-  const { dispatchCommand } = useCommandHandler();
-
-  const client = firestoreClientFactory.getClient(table);
-
   const handleClose = () => navigate(`/${table}`);
 
   function handleDelete(event) {
@@ -104,8 +87,7 @@ function EditProgramForm({ program }) {
 
     handleClose();
 
-    if (rtkQueryPrograms) deleteProgramMutation({ table, id: program._id });
-    else dispatchCommand(client, deleteProgram(program));
+    deleteProgramMutation({ table, id: program._id });
   }
 
   function handleClone(event) {
@@ -116,8 +98,7 @@ function EditProgramForm({ program }) {
     const newProgram = { ...program };
     delete newProgram._id;
 
-    if (rtkQueryPrograms) addProgramMutation({ table, data: newProgram });
-    else dispatchCommand(client, addProgram(newProgram));
+    addProgramMutation({ table, data: newProgram });
   }
 
   function handleSubmit(event) {
@@ -143,9 +124,7 @@ function EditProgramForm({ program }) {
       blockOrder: blockOrder,
     };
 
-    if (rtkQueryPrograms)
-      updateProgramMutation({ table, data: updatedProgram });
-    else dispatchCommand(client, updateProgram(updatedProgram));
+    updateProgramMutation({ table, data: updatedProgram });
   }
 
   return (
@@ -735,15 +714,9 @@ export function AddProgramModal() {
   const [ranges, setRanges] = useState({});
   const [blockOrder, setBlockOrder] = useState(0);
 
-  const { dispatchCommand } = useCommandHandler();
-
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
   const [addProgramMutation] = useAddProgramMutation();
 
   const { table } = useSelector((state) => state.auth);
-  const client = firestoreClientFactory.getClient(table);
 
   const handleClose = () => navigate(`/${table}`);
 
@@ -770,8 +743,7 @@ export function AddProgramModal() {
       blockOrder: blockOrder,
     };
 
-    if (rtkQueryPrograms) addProgramMutation({ table, data: newProgram });
-    else dispatchCommand(client, addProgram(newProgram));
+    addProgramMutation({ table, data: newProgram });
   }
 
   return (
