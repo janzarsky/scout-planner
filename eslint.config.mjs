@@ -38,7 +38,7 @@ export default [
     rules: {},
   },
   {
-    files: ["src/**/*.js", "src/**/*.jsx"],
+    files: ["src/**/*.js", "src/**/*.jsx", "src/**/*.tsx"],
 
     rules: {
       "react/prop-types": "off",
