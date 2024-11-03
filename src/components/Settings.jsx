@@ -225,7 +225,7 @@ function Width() {
 const timetableLayoutVersions = [
   { key: "v1", label: "Verze 1 (původní)" },
   { key: "v2", label: "Verze 2 (experimentální)" },
-]
+];
 
 function TimetableLayoutVersion() {
   const { table } = useSelector((state) => state.auth);
@@ -272,7 +272,8 @@ function TimetableLayoutVersion() {
             </Form.Select>
           ) : (
             <Form.Label className="pt-2">
-              {settingsLoaded && timetableLayoutVersions.find((it) => it.key === version)?.label}
+              {settingsLoaded &&
+                timetableLayoutVersions.find((it) => it.key === version)?.label}
             </Form.Label>
           )}
         </Col>

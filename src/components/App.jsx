@@ -243,9 +243,11 @@ export function TimetableWrapper({
   printView = false,
 }) {
   const { table } = useSelector((state) => state.auth);
-  const { data: settings, isSuccess: settingsLoaded } = useGetSettingsQuery(table);
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsQuery(table);
   const timetableLayoutVersion = settings?.timetableLayoutVersion;
-  const TimetableComponent = timetableLayoutVersion === "v1" ? Timetable : TimetableV2;
+  const TimetableComponent =
+    timetableLayoutVersion === "v1" ? Timetable : TimetableV2;
 
   if (!settingsLoaded || !permissionsLoaded || !dataLoaded) {
     return (
@@ -261,7 +263,10 @@ export function TimetableWrapper({
   return (
     <>
       {userLevel >= level.VIEW && (
-        <TimetableComponent violations={violationsPerProgram} printView={printView} />
+        <TimetableComponent
+          violations={violationsPerProgram}
+          printView={printView}
+        />
       )}
       {userLevel === level.NONE && (
         <Container fluid>
