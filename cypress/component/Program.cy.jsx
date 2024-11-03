@@ -16,7 +16,6 @@ import {
   toggleViewTime,
   toggleViewViolations,
 } from "../../src/store/viewSlice";
-import { overrideConfig } from "../../src/store/configSlice";
 
 describe("Program", () => {
   const prog = {
@@ -52,7 +51,6 @@ describe("Program", () => {
     cy.viewport(400, 150);
 
     store = getStore();
-    store.dispatch(overrideConfig({ rtkQueryPrograms: true }));
 
     cy.stub(firestoreClientFactory, "getClient")
       .returns({

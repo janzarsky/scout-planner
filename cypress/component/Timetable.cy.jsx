@@ -6,7 +6,6 @@ import { getStore } from "../../src/store";
 import { parseDuration } from "../../src/helpers/DateUtils";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import { setTable } from "../../src/store/authSlice";
-import { overrideConfig } from "../../src/store/configSlice";
 
 describe("Timetable", () => {
   const now = Date.parse("Sun Mar 05 11:00:00 2023 UTC");
@@ -70,7 +69,6 @@ describe("Timetable", () => {
   beforeEach(() => {
     store = getStore();
     store.dispatch(setTable("table1"));
-    store.dispatch(overrideConfig({ rtkQueryPrograms: true }));
   });
 
   it("empty", () => {
