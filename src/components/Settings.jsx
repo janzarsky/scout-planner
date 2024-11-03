@@ -13,7 +13,6 @@ import { firestoreClientFactory } from "../FirestoreClient";
 import Row from "react-bootstrap/esm/Row";
 import { TimetableTitle } from "./TimetableTitle";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
@@ -58,12 +57,7 @@ function DeleteAll() {
   const { data: rules } = useGetRulesQuery(table);
   const { data: users } = useGetUsersQuery(table);
   const { data: people } = useGetPeopleQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs } = useGetProgramsQuery(table);
 
   const client = firestoreClientFactory.getClient(table);
 

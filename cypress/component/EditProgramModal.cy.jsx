@@ -11,7 +11,6 @@ describe("PersonCheck", () => {
 
   beforeEach(() => {
     store = getStore();
-    store.dispatch(overrideConfig({ rtkQueryPrograms: true }));
   });
 
   describe("as button", () => {
@@ -79,7 +78,6 @@ describe("Program beginning", () => {
   beforeEach(() => {
     store = getStore();
     store.dispatch(overrideConfig({ datepicker: true }));
-    store.dispatch(overrideConfig({ rtkQueryPrograms: true }));
   });
 
   function mountBeginning(disabled = false, tray = false) {

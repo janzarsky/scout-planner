@@ -3,7 +3,6 @@ import Table from "react-bootstrap/Table";
 import { useSelector } from "react-redux";
 import { formatDuration } from "../helpers/DateUtils";
 import { byName, byOrder } from "../helpers/Sorting";
-import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
@@ -23,12 +22,8 @@ function PackageStats() {
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
 
   const durationPerPackageAndGroup = getDurationPerPackageAndGroup(
     programsLoaded ? programs : [],
@@ -79,12 +74,8 @@ function PeopleStats() {
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
 
   const durationPerPersonAndGroup = getDurationPerPersonAndGroup(
     programsLoaded ? programs : [],
