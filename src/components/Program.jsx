@@ -1,18 +1,11 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useSelector } from "react-redux";
-import { firestoreClientFactory } from "../FirestoreClient";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
-import {
-  addProgram,
-  updateProgram,
-  useGetProgramsSlice,
-} from "../store/programsSlice";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { arraysIntersect } from "../helpers/Sorting";
-import { useCommandHandler } from "./CommandContext";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
 import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
@@ -29,21 +22,13 @@ export default function Program({ program, rect, violations }) {
     useGetPackagesQuery(table);
   const { data: settings, isSuccess: settingsLoaded } =
     useGetSettingsQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
 
   const [addProgramMutation] = useAddProgramMutation();
   const [updateProgramMutation] = useUpdateProgramMutation();
 
-  const client = firestoreClientFactory.getClient(table);
-
   const ref = useRef(null);
-
-  const { dispatchCommand } = useCommandHandler();
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "program",
@@ -72,13 +57,8 @@ export default function Program({ program, rect, violations }) {
             groups: [...program.groups],
             begin: program.begin,
           };
-          if (rtkQueryPrograms) {
-            updateProgramMutation({ table, data: newProg });
-            updateProgramMutation({ table, data: newOtherProg });
-          } else {
-            dispatchCommand(client, updateProgram(newProg));
-            dispatchCommand(client, updateProgram(newOtherProg));
-          }
+          updateProgramMutation({ table, data: newProg });
+          updateProgramMutation({ table, data: newOtherProg });
         }
       },
       collect: (monitor) => ({
@@ -124,11 +104,7 @@ export default function Program({ program, rect, violations }) {
       {program.url && <ProgramUrl url={program.url} narrow={narrow} />}
       {userLevel >= level.EDIT && (
         <ProgramClone
-          clone={() =>
-            rtkQueryPrograms
-              ? addProgramMutation({ table, data: program })
-              : dispatchCommand(client, addProgram(program))
-          }
+          clone={() => addProgramMutation({ table, data: program })}
           narrow={narrow}
         />
       )}
