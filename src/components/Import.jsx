@@ -42,10 +42,10 @@ export default function Import() {
 
 async function importData(data, client) {
   // data fixes
-  if (data.ranges === undefined) data.ranges = [];
-  if (data.users === undefined) data.users = [];
-  if (data.people === undefined) data.people = [];
-  if (data.settings === undefined) data.settings = {};
+  data.ranges ??= [];
+  data.users ??= [];
+  data.people ??= [];
+  data.timetable ??= { settings: data.settings ?? {} };
 
   return await Promise.all([
     // add all packages
@@ -84,7 +84,7 @@ async function importData(data, client) {
         ),
       ),
     ]).then((people) => new Map(people)),
-    client.updateTimetable({ settings: data.settings }),
+    client.updateTimetable(data.timetable),
   ])
     // replace package, group, and range IDs in programs
     .then(([pkgs, groups, ranges, people]) =>

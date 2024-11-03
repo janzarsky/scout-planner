@@ -9,6 +9,7 @@ import { useGetRulesQuery } from "../store/rulesApi";
 import { useGetUsersQuery } from "../store/usersApi";
 import { useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
+import { useGetTimetableQuery } from "../store/timetableApi";
 
 export default function Export() {
   const table = useSelector((state) => state.auth.table);
@@ -21,6 +22,7 @@ export default function Export() {
   const { data: settings } = useGetSettingsQuery(table);
   const { data: people } = useGetPeopleQuery(table);
   const { data: programs } = useGetProgramsQuery(table);
+  const { data: timetable } = useGetTimetableQuery(table);
 
   const data = JSON.stringify({
     programs,
@@ -29,8 +31,9 @@ export default function Export() {
     rules,
     ranges,
     users,
-    settings,
+    settings, // Settings are part of timetable, kept for compatibility
     people,
+    timetable,
   });
 
   return (
