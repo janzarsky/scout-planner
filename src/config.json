@@ -6,6 +6,5 @@
   "datepicker": true,
   "timetableTitle": true,
   "streamingUpdates": true,
-  "rtkQueryPrograms": true,
   "streamingUpdatesEnabledPrefixes": ["asdf", "vm24_"]
 }
