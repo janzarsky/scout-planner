@@ -129,8 +129,6 @@ function EditedPerson({
   setAbsence = null,
   isNew = false,
 }) {
-  const datepicker = useSelector((state) => state.config.datepicker);
-
   return (
     <tr>
       <td>
@@ -141,16 +139,9 @@ function EditedPerson({
         />
       </td>
       <td>
-        {absence !== null &&
-          (datepicker ? (
-            <AbsenceSelector absence={absence} setAbsence={setAbsence} />
-          ) : (
-            <Form.Control
-              value={absence}
-              onChange={(e) => setAbsence(e.target.value)}
-              placeholder="HH:MM DD.MM.YYYY - HH:MM DD.MM.YYYY, HH:MM..."
-            />
-          ))}
+        {absence !== null && (
+          <AbsenceSelector absence={absence} setAbsence={setAbsence} />
+        )}
       </td>
       <td>
         <Button
