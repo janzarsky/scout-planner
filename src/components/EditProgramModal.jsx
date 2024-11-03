@@ -262,7 +262,6 @@ export function ProgramBeginning({
   setDate,
   disabled = false,
 }) {
-  const datepicker = useSelector((state) => state.config.datepicker);
   // FIXME: find better approach
   const tray = date === "(odkladiště)";
 
@@ -281,23 +280,13 @@ export function ProgramBeginning({
         />
       </Col>
       <Col>
-        {datepicker ? (
-          <DatePicker
-            className="form-control"
-            dateFormat="d.M.yyyy"
-            selected={tray ? null : new Date(parseDate(date))}
-            onChange={(val) => setDate(formatDateWithTray(val.getTime()))}
-            disabled={disabled}
-          />
-        ) : (
-          <Form.Control
-            type="text"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            placeholder="DD.MM.YYYY"
-            disabled={disabled}
-          />
-        )}
+        <DatePicker
+          className="form-control"
+          dateFormat="d.M.yyyy"
+          selected={tray ? null : new Date(parseDate(date))}
+          onChange={(val) => setDate(formatDateWithTray(val.getTime()))}
+          disabled={disabled}
+        />
       </Col>
     </Form.Group>
   );

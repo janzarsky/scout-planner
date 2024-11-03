@@ -4,7 +4,6 @@ import React from "react";
 import { PersonCheck } from "../../src/components/EditProgramModal";
 import { ProgramBeginning } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
-import { overrideConfig } from "../../src/store/configSlice";
 
 describe("PersonCheck", () => {
   let store;
@@ -77,7 +76,6 @@ describe("Program beginning", () => {
 
   beforeEach(() => {
     store = getStore();
-    store.dispatch(overrideConfig({ datepicker: true }));
   });
 
   function mountBeginning(disabled = false, tray = false) {
