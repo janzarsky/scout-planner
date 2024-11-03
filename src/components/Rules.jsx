@@ -14,7 +14,6 @@ import {
 import { level } from "../helpers/Level";
 import { useSelector } from "react-redux";
 import Row from "react-bootstrap/esm/Row";
-import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import {
   useAddRuleMutation,
@@ -33,12 +32,8 @@ export default function Rules({ violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
 
   const { data: rules, isSuccess: rulesLoaded } = useGetRulesQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const [addRule] = useAddRuleMutation();
   const [deleteRule] = useDeleteRuleMutation();
@@ -186,12 +181,8 @@ function NewRule({
 }) {
   const { table } = useSelector((state) => state.auth);
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs, isSuccess: programsLoaded } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
 
   const formattedPrograms = useMemo(
     () =>
