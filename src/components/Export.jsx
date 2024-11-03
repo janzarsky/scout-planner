@@ -2,7 +2,6 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import { useSelector } from "react-redux";
 import { useGetRangesQuery } from "../store/rangesApi";
-import { useGetProgramsSlice } from "../store/programsSlice";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
@@ -21,12 +20,7 @@ export default function Export() {
   const { data: users } = useGetUsersQuery(table);
   const { data: settings } = useGetSettingsQuery(table);
   const { data: people } = useGetPeopleQuery(table);
-  const rtkQueryPrograms = useSelector(
-    (state) => state.config.rtkQueryPrograms,
-  );
-  const { data: programs } = rtkQueryPrograms
-    ? useGetProgramsQuery(table)
-    : useGetProgramsSlice(table);
+  const { data: programs } = useGetProgramsQuery(table);
 
   const data = JSON.stringify({
     programs,
