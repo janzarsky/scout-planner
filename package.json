@@ -25,7 +25,8 @@
     "start": "vite",
     "build": "vite build",
     "test": "vitest --globals",
-    "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.jsx src/**/*.ts src/**/*.tsx cypress/**/*.js cypress/**/*.jsx"
+    "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.jsx src/**/*.ts src/**/*.tsx cypress/**/*.js cypress/**/*.jsx",
+    "format": "prettier --check ."
   },
   "browserslist": {
     "production": [
