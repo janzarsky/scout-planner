@@ -29,12 +29,20 @@ import {
   useGetTimetableQuery,
   useUpdateLayoutVersionMutation,
 } from "../store/timetableApi";
+import configLocal from "../config.local.json";
+import config from "../config.json";
+
+const timetableLayoutVersionSwitchingEnabled =
+  { ...config, ...configLocal }.timetableLayoutVersionSwitchingEnabled ?? false;
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { table } = useSelector((state) => state.auth);
-  const { data: timetableData, isSuccess: layoutVersionLoaded } = useGetTimetableQuery(table);
-  const layoutVersion = layoutVersionLoaded ? timetableData.layoutVersion : null;
+  const { data: timetableData, isSuccess: layoutVersionLoaded } =
+    useGetTimetableQuery(table);
+  const layoutVersion = layoutVersionLoaded
+    ? timetableData.layoutVersion
+    : null;
 
   if (!layoutVersionLoaded) {
     return null;
@@ -51,7 +59,9 @@ export default function Settings() {
             {userLevel >= level.EDIT && <Width />}
           </>
         )}
-        {userLevel >= level.EDIT && <TimetableLayoutVersion />}
+        {userLevel >= level.EDIT && timetableLayoutVersionSwitchingEnabled && (
+          <TimetableLayoutVersion />
+        )}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
