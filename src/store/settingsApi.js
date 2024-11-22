@@ -1,6 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { streamingUpdatesEnabled } from "../helpers/StreamingUpdates";
 
 export const DEFAULT_TIME_STEP = 15 * 60 * 1000;
 export const DEFAULT_WIDTH = 100;
@@ -30,17 +29,15 @@ export const settingsApi = createApi({
         table,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
       ) {
-        if (streamingUpdatesEnabled(table)) {
-          await cacheDataLoaded;
+        await cacheDataLoaded;
 
-          const client = firestoreClientFactory.getClient(table);
-          const unsubscribe = client.streamTimetable((timetable) =>
-            updateCachedData(() => addDefaults(timetable)),
-          );
+        const client = firestoreClientFactory.getClient(table);
+        const unsubscribe = client.streamTimetable((timetable) =>
+          updateCachedData(() => addDefaults(timetable)),
+        );
 
-          await cacheEntryRemoved;
-          unsubscribe();
-        }
+        await cacheEntryRemoved;
+        unsubscribe();
       },
       providesTags: ["settings"],
     }),

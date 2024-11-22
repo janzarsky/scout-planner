@@ -1,6 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { streamingUpdatesEnabled } from "../helpers/StreamingUpdates";
 
 export const groupsApi = createApi({
   baseQuery: fakeBaseQuery(),
@@ -17,17 +16,15 @@ export const groupsApi = createApi({
         table,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
       ) {
-        if (streamingUpdatesEnabled(table)) {
-          await cacheDataLoaded;
+        await cacheDataLoaded;
 
-          const client = firestoreClientFactory.getClient(table);
-          const unsubscribe = client.streamGroups((groups) =>
-            updateCachedData(() => groups),
-          );
+        const client = firestoreClientFactory.getClient(table);
+        const unsubscribe = client.streamGroups((groups) =>
+          updateCachedData(() => groups),
+        );
 
-          await cacheEntryRemoved;
-          unsubscribe();
-        }
+        await cacheEntryRemoved;
+        unsubscribe();
       },
       providesTags: ["groups"],
     }),

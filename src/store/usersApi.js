@@ -1,6 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { streamingUpdatesEnabled } from "../helpers/StreamingUpdates";
 
 export const usersApi = createApi({
   baseQuery: fakeBaseQuery(),
@@ -17,17 +16,15 @@ export const usersApi = createApi({
         table,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
       ) {
-        if (streamingUpdatesEnabled(table)) {
-          await cacheDataLoaded;
+        await cacheDataLoaded;
 
-          const client = firestoreClientFactory.getClient(table);
-          const unsubscribe = client.streamUsers((users) =>
-            updateCachedData(() => users),
-          );
+        const client = firestoreClientFactory.getClient(table);
+        const unsubscribe = client.streamUsers((users) =>
+          updateCachedData(() => users),
+        );
 
-          await cacheEntryRemoved;
-          unsubscribe();
-        }
+        await cacheEntryRemoved;
+        unsubscribe();
       },
       providesTags: ["users"],
     }),
