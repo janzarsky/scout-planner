@@ -391,3 +391,432 @@ p {
     display: none;
   }
 }
+
+.App:has(.schedulePage) {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.schedulePage {
+  display: flex;
+  background: white;
+  color: black;
+  height: 100%;
+  max-height: 100vh;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.schedulePage__tray {
+  border-left: 3px solid #ccc;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
+  height: 100%;
+}
+
+.schedulePage_trayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+
+.schedulePage_trayHeaderTitle {
+  margin: 0;
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+.schedulePage__traySegment {
+  padding: .2em .4em;
+  margin: 0 0 1px 1px;
+  background: var(--segment-color, white);
+  border-radius: .5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedulePage__traySegment--dark {
+  color: white;
+}
+
+.schedulePage__mainContent {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.schedulePage__tableSegment {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.schedulePage__bottomControls {
+  border-top: 1px solid gray;
+  display: flex;
+  align-items: center;
+  /*justify-content: flex-end;*/
+  padding: 0.2em;
+}
+
+.schedulePage__bottomControls label {
+  display: flex;
+  align-items: center;
+}
+
+.schedulePage__bottomControlsLeft {
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: flex-start;
+}
+
+
+.schedulePage__bottomControlsRight {
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.scheduleTable {
+  display: grid;
+  grid-template-columns: 3em min-content auto;
+  grid-template-rows: auto;
+  grid-auto-rows: max(2em, 5em / var(--groups-count));
+  padding: 0 1em 1em;
+  width: calc(100% * var(--width-scale));
+}
+
+.scheduleTable__actions {
+  grid-row: 1 / span 1;
+  grid-column: 1 / span 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 1em;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background: white;
+  margin-left: -1em;
+  padding-left: 1em;
+}
+
+.scheduleTable__dayLabel {
+  grid-row-start: calc(var(--day) * var(--groups-count) + 2);
+  grid-row-end: span var(--groups-count);
+  grid-column: 1;
+  padding: 1em 2em 1em 0;
+  margin-left: -1em;
+  white-space: nowrap;
+  align-self: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  transform-origin: center center;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: white;
+}
+
+.scheduleTable__day {
+  grid-row-start: calc(var(--day) * var(--groups-count) + 2);
+  grid-row-end: span var(--groups-count);
+  grid-column: 3;
+  /*background: red;*/
+  /*z-index: 1;*/
+  /*pointer-events: all;*/
+}
+
+.scheduleTable__dayLine {
+  grid-row: calc((var(--day) + 1) * var(--groups-count) + 1);
+  grid-column: 1 / span 3;
+  border-bottom: 1px solid #ccc;
+}
+
+.scheduleTable__groupLabel {
+  grid-row: calc(var(--group-day) * var(--groups-count) + var(--group-index) + 2);
+  grid-column: 2;
+  white-space: nowrap;
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: .5em;
+  position: sticky;
+  left: 4em;
+  z-index: 1;
+  background: linear-gradient(90deg, white, white, transparent);
+}
+
+.scheduleTable__timeLabels {
+  grid-row: 1;
+  grid-column: 3;
+  position: sticky;
+  top: 0;
+  padding: 1em 0 2em;
+  /*background-color: #fffe;*/
+  height: 4em;
+  background: linear-gradient(to top, #fff0 0, #fffa 1em, #ffff 100%);
+  z-index: 1;
+}
+
+.scheduleTable__timeLabel {
+  grid-row: 1;
+  grid-column: 3;
+  align-self: end;
+  white-space: nowrap;
+  position: absolute;
+  left: calc(var(--time) * 100%);
+  transform-origin: left center;
+  bottom: 0;
+  transform: rotate(-90deg);
+  width: fit-content;
+}
+
+.scheduleTable__timeLine {
+  grid-row-start: 2;
+  grid-row-end: span calc(var(--groups-count) * var(--days-count));
+  grid-column: 3;
+  border-left: 1px solid #00000011;
+  position: relative;
+  left: calc(var(--time) * 100%);
+  width: 0;
+}
+
+.scheduleTable__timeLine--major {
+  border-color: #00000055;
+}
+
+.scheduleTable__plannable {
+  grid-row-start: calc(var(--segment-day) * var(--groups-count) + var(--segment-group-first) + 2);
+  grid-row-end: span var(--segment-groups-count);
+  grid-column: 3;
+  width: calc(var(--segment-duration) * 100% - 1px);
+  position: relative;
+  left: calc(var(--segment-start) * 100%);
+  margin: 0 0 1px 1px;
+  overflow: hidden;
+}
+
+.scheduleTable__plannable, .scheduleTable__plannableExpansion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: .2em .3em;
+  justify-content: flex-start;
+  background: var(--segment-color, white);
+}
+
+.scheduleTable__plannable--start {
+  border-top-left-radius: 0.5em;
+  border-bottom-left-radius: 0.5em;
+}
+
+.scheduleTable__plannable--end {
+  border-top-right-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+}
+
+.scheduleTable__plannable::after, .scheduleTable__plannableExpansion::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.5s;
+  filter: brightness(0.5);
+  border: 2px solid var(--segment-color, white);
+}
+
+.scheduleTable__plannable--dragged {
+  opacity: .5;
+}
+
+.scheduleTable__plannable--hovering::after, .scheduleTable__plannableExpansion::after {
+  opacity: 1;
+}
+
+.scheduleTable__plannableTitle {
+  overflow: hidden;
+  max-height: 100%;
+  white-space: nowrap;
+  font-size: .7em;
+  flex: 0 0 auto;
+}
+
+.scheduleTable__plannableOwners {
+  overflow: hidden;
+  max-height: 100%;
+  white-space: nowrap;
+  font-size: .5em;
+  padding: .1em .5em;
+  background: #ccc7;
+  border-radius: 1em;
+  max-width: 100%;
+  margin-bottom: 2px;
+}
+
+.scheduleTable__plannableExpansion {
+  position: fixed;
+  left: var(--position-x);
+  bottom: calc(100vh - var(--position-y));
+  z-index: 1;
+  padding: .5em;
+  color: black;
+  background: white;
+  border-radius: 0.5em;
+  border-bottom-left-radius: 0;
+  box-shadow: 0 0.25em 0.5em 0 rgba(0, 0, 0, 0.6);
+}
+
+
+.scheduleTable__plannableExpansion .scheduleTable__plannableTitle {
+  font-size: 1rem;
+}
+.scheduleTable__plannableExpansion .scheduleTable__plannableOwners {
+  font-size: .7rem;
+}
+
+.scheduleTable__plannable--dark {
+  color: white;
+}
+
+.scheduleTable__plannable--notHighlighted {
+  opacity: .3;
+  filter: blur(1px);
+}
+
+.scheduleTable__plannable--violated {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0) 1.25rem,
+    rgba(66, 66, 66, 0.15) 1.25rem,
+    rgba(66, 66, 66, 0.15) 2.5rem
+    );
+}
+
+.dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog__content {
+  max-height: calc(100vh - 2em);
+  background: white;
+  border-radius: 0.5em;
+  padding: 1em;
+  overflow: auto;
+  width: 600px;
+  max-width: calc(100vw - 2em);
+}
+
+.contextMenu__wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.contextMenu {
+  position: fixed;
+  top: var(--position-y);
+  left: var(--position-x);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  min-width: 10em;
+  padding: .1em;
+  gap: .1em;
+  border-radius: .1em;
+  align-items: stretch;
+  border: 1px solid #aaa;
+}
+
+.contextMenu__item {
+  padding: 0.2em 0.5em;
+}
+
+.contextMenu__item:hover {
+  background: #eee;
+  cursor: pointer;
+}
+
+.fastInput__fullScreenWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  background: #fffe;
+  font-size: 2rem;
+  align-items: stretch;
+  flex-direction: column;
+}
+
+.fastInput__fullScreenWrapperInner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(90vw, 900px);
+  margin: 5vh auto 0;
+}
+
+.fastInput__input {
+  flex: 1;
+  font-size: 1em;
+  padding: .5em;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.fastInput__input:focus {
+  outline: none;
+  border-color: #3da9eb;
+}
+
+.fastInput__completedValue {
+  font-size: .7em;
+  margin-bottom: .5em;
+  padding-bottom: .5em;
+  border-bottom: 1px solid #ccc;
+}
+
+.fastInput__title {
+  margin: 0 0 .2em;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.fastInput__closeHint {
+  text-align: center;
+  font-size: .6em;
+  margin: 0 0 1em;
+  color: #999;
+}

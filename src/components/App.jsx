@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AddProgramModal, EditProgramModal } from "./EditProgramModal";
 import Timetable from "./Timetable";
+import TimetableV2 from "./TimetableV2";
 import Packages from "./Packages";
 import Groups from "./Groups";
 import People from "./People";
@@ -241,20 +242,32 @@ export function TimetableWrapper({
   permissionsLoaded,
   printView = false,
 }) {
+  const { table } = useSelector((state) => state.auth);
+  const { data: timetableData, isSuccess: settingsLoaded } =
+    useGetTimetableQuery(table);
+  const TimetableComponent =
+    timetableData?.layoutVersion === "v1" ? Timetable : TimetableV2;
+
+  if (!settingsLoaded || !permissionsLoaded || !dataLoaded) {
+    return (
+      <Container fluid>
+        <Alert variant="primary">
+          <i className="fa fa-spinner fa-pulse" />
+          &nbsp; Načítání&hellip;
+        </Alert>
+      </Container>
+    );
+  }
+
   return (
     <>
-      {userLevel >= level.VIEW && dataLoaded && permissionsLoaded && (
-        <Timetable violations={violationsPerProgram} printView={printView} />
+      {userLevel >= level.VIEW && (
+        <TimetableComponent
+          violations={violationsPerProgram}
+          printView={printView}
+        />
       )}
-      {(!dataLoaded || !permissionsLoaded) && (
-        <Container fluid>
-          <Alert variant="primary">
-            <i className="fa fa-spinner fa-pulse" />
-            &nbsp; Načítání&hellip;
-          </Alert>
-        </Container>
-      )}
-      {userLevel === level.NONE && dataLoaded && permissionsLoaded && (
+      {userLevel === level.NONE && (
         <Container fluid>
           <Alert variant="danger">
             <i className="fa fa-exclamation-triangle" />

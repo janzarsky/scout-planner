@@ -2,7 +2,11 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { firestoreClientFactory } from "../FirestoreClient";
 
 function addDefaults(data) {
-  return { title: null, ...data };
+  return {
+    title: null,
+    layoutVersion: "v1",
+    ...data,
+  };
 }
 
 export const timetableApi = createApi({
@@ -39,7 +43,19 @@ export const timetableApi = createApi({
       },
       invalidatesTags: ["timetable"],
     }),
+    updateLayoutVersion: builder.mutation({
+      async queryFn({ table, data }) {
+        const client = firestoreClientFactory.getClient(table);
+        await client.updateTimetable({ layoutVersion: data });
+        return { data: null };
+      },
+      invalidatesTags: ["timetable"],
+    }),
   }),
 });
 
-export const { useGetTimetableQuery, useUpdateTitleMutation } = timetableApi;
+export const {
+  useGetTimetableQuery,
+  useUpdateTitleMutation,
+  useUpdateLayoutVersionMutation,
+} = timetableApi;

@@ -25,17 +25,43 @@ import {
   useUpdateSettingsMutation,
 } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
+import {
+  useGetTimetableQuery,
+  useUpdateLayoutVersionMutation,
+} from "../store/timetableApi";
+import configLocal from "../config.local.json";
+import config from "../config.json";
+
+const timetableLayoutVersionSwitchingEnabled =
+  { ...config, ...configLocal }.timetableLayoutVersionSwitchingEnabled ?? false;
 
 export default function Settings() {
   const userLevel = useSelector((state) => state.auth.userLevel);
+  const { table } = useSelector((state) => state.auth);
+  const { data: timetableData, isSuccess: layoutVersionLoaded } =
+    useGetTimetableQuery(table);
+  const layoutVersion = layoutVersionLoaded
+    ? timetableData.layoutVersion
+    : null;
+
+  if (!layoutVersionLoaded) {
+    return null;
+  }
 
   return (
     <>
       <Container fluid>
         <h2 className="mt-3">Nastavení</h2>
         {userLevel >= level.EDIT && <TimetableTitle />}
-        {userLevel >= level.EDIT && <TimeStep />}
-        {userLevel >= level.EDIT && <Width />}
+        {layoutVersion === "v1" && (
+          <>
+            {userLevel >= level.EDIT && <TimeStep />}
+            {userLevel >= level.EDIT && <Width />}
+          </>
+        )}
+        {userLevel >= level.EDIT && timetableLayoutVersionSwitchingEnabled && (
+          <TimetableLayoutVersion />
+        )}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
@@ -190,6 +216,76 @@ function Width() {
                   settingsLoaded ? settings.width : DEFAULT_WIDTH
                 ]
               }
+            </Form.Label>
+          )}
+        </Col>
+        <Col>
+          {editing ? (
+            <Button type="submit">
+              <i className="fa fa-check"></i> Uložit
+            </Button>
+          ) : (
+            <Button type="submit">
+              <i className="fa fa-pencil"></i> Upravit
+            </Button>
+          )}
+        </Col>
+      </Row>
+    </Form>
+  );
+}
+
+const timetableLayoutVersions = [
+  { key: "v1", label: "Verze 1 (původní)" },
+  { key: "v2", label: "Verze 2 (experimentální)" },
+];
+
+function TimetableLayoutVersion() {
+  const { table } = useSelector((state) => state.auth);
+  const { data, isSuccess: queryLoaded } = useGetTimetableQuery(table);
+  const [updateVersion] = useUpdateLayoutVersionMutation();
+
+  const [version, setVersion] = useState(
+    queryLoaded ? data.layoutVersion : "v1",
+  );
+  const [editing, setEditing] = useState(false);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if (editing) {
+      updateVersion({
+        table,
+        data: version,
+      });
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Row className="mb-3">
+        <Form.Label column sm="2">
+          Verze rozložení harmonogramu
+        </Form.Label>
+        <Col sm="3">
+          {editing ? (
+            <Form.Select
+              value={version}
+              onChange={(e) => setVersion(e.target.value)}
+            >
+              {timetableLayoutVersions.map((it) => (
+                <option key={it.key} value={it.key}>
+                  {it.label}
+                </option>
+              ))}
+            </Form.Select>
+          ) : (
+            <Form.Label className="pt-2">
+              {queryLoaded &&
+                timetableLayoutVersions.find((it) => it.key === version)?.label}
             </Form.Label>
           )}
         </Col>
