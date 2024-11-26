@@ -569,7 +569,10 @@ export const ComposeSchedule = ({
         let ownerRecord = result.find((it) => it.id === ownerId);
         if (!ownerRecord) {
           const person = people.find((it) => it._id === ownerId);
-          ownerRecord = { id: ownerId, name: person!.name, count: 0 };
+          if (!person) {
+            continue;
+          }
+          ownerRecord = { id: ownerId, name: person.name, count: 0 };
           result.push(ownerRecord);
         }
         ownerRecord!.count++;
