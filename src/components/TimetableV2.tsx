@@ -68,6 +68,7 @@ export default function Timetable({
     <ComposeSchedule
       editable={userLevel >= level.EDIT && !printView}
       violations={violations}
+      printView={printView}
     />
   );
 }
@@ -465,11 +466,13 @@ function DataLabels({ dates, virtualGroupShown }: DataLabelsProps) {
 interface ComposeScheduleProps {
   editable: boolean;
   violations: Violations;
+  printView: boolean;
 }
 
 export const ComposeSchedule = ({
   editable,
   violations,
+  printView,
 }: ComposeScheduleProps) => {
   const [widthScale, setWidthScale] = useState(1);
 
@@ -1034,38 +1037,40 @@ export const ComposeSchedule = ({
             ))}
           </div>
         </div>
-        <div className="schedulePage__bottomControls">
-          <div className="schedulePage__bottomControlsLeft">
-            <label>
-              Majitel programu:{" "}
-              <select
-                value={ownerFilter ?? ""}
-                onChange={(e) => setOwnerFilter(e.target.value)}
-              >
-                <option value="">Všichni</option>
-                {availableOwners.map((it) => (
-                  <option key={it.id} value={it.id}>
-                    {it.name} ({it.count})
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+        {!printView && (
+          <div className="schedulePage__bottomControls">
+            <div className="schedulePage__bottomControlsLeft">
+              <label>
+                Majitel programu:{" "}
+                <select
+                  value={ownerFilter ?? ""}
+                  onChange={(e) => setOwnerFilter(e.target.value)}
+                >
+                  <option value="">Všichni</option>
+                  {availableOwners.map((it) => (
+                    <option key={it.id} value={it.id}>
+                      {it.name} ({it.count})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
-          <div className="schedulePage__bottomControlsRight">
-            <label>
-              🔎
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.1}
-                value={widthScale}
-                onChange={(e) => setWidthScale(parseFloat(e.target.value))}
-              />
-            </label>
+            <div className="schedulePage__bottomControlsRight">
+              <label>
+                🔎
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={widthScale}
+                  onChange={(e) => setWidthScale(parseFloat(e.target.value))}
+                />
+              </label>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {editable && (
