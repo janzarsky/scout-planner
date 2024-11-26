@@ -648,9 +648,29 @@ export const ComposeSchedule = ({
       return [];
     }
     const plannable = programs.find((it) => it._id === draggingPlannable.id)!;
-    return createSegmentsForPlannable(plannable, {
+    const draggedPlannableSegments = createSegmentsForPlannable(plannable, {
       start: draggingPlannableStart,
     });
+
+    // Show swapped program
+    const swappingPlannable = programs.filter(
+      (it) =>
+        it.begin ===
+          draggingPlannableStart.toZonedDateTime(LOCAL_TIMEZONE).toInstant()
+            .epochMilliseconds &&
+        it.groups.length === plannable.groups.length &&
+        it.groups.every((group) => plannable.groups.includes(group)),
+    );
+    const swappingPlannableSegments =
+      swappingPlannable.length == 1
+        ? createSegmentsForPlannable(swappingPlannable[0], {
+            start: Temporal.Instant.fromEpochMilliseconds(plannable.begin!)
+              .toZonedDateTimeISO(LOCAL_TIMEZONE)
+              .toPlainDateTime(),
+          })
+        : [];
+
+    return [...draggedPlannableSegments, ...swappingPlannableSegments];
   }, [
     draggingPlannable,
     draggingPlannableStart,
@@ -804,12 +824,28 @@ export const ComposeSchedule = ({
         const plannable = programs.find(
           (it) => it._id === draggingPlannable.id,
         )!;
+        const newBegin = draggingPlannableStart
+          .toZonedDateTime(LOCAL_TIMEZONE)
+          .toInstant().epochMilliseconds;
         updateProgram({
           ...plannable,
-          begin: draggingPlannableStart
-            .toZonedDateTime(LOCAL_TIMEZONE)
-            .toInstant().epochMilliseconds,
+          begin: newBegin,
         });
+
+        // Swap with the program that was at the same time
+        const swappingPlannable = programs.filter(
+          (it) =>
+            it.begin === newBegin &&
+            it.groups.length === plannable.groups.length &&
+            it.groups.every((group) => plannable.groups.includes(group)),
+        );
+        if (swappingPlannable.length == 1) {
+          updateProgram({
+            ...swappingPlannable[0],
+            begin: plannable.begin,
+          });
+        }
+
         setDraggingPlannable(null);
         setDraggingPlannableStart(null);
       }
