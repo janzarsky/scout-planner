@@ -3,14 +3,14 @@ import localConfig from "../config.local.json";
 import { useSelector } from "react-redux";
 
 const defaultConfig = {
-  "host": "https://harmonogram.zarsky.name/api",
-  "apiKey": "AIzaSyAJWL29qO2dgvaJvDpnXALUYtH_Lkdrek8",
-  "authDomain": "scout-planner-343913.firebaseapp.com",
-  "projectId": "scout-planner-343913",
-  "streamingUpdates": true,
-  "streamingUpdatesEnabledPrefixes": ["asdf", "vm24_"],
-  "timetableLayoutVersionSwitchingEnabled": false,
-}
+  host: "https://harmonogram.zarsky.name/api",
+  apiKey: "AIzaSyAJWL29qO2dgvaJvDpnXALUYtH_Lkdrek8",
+  authDomain: "scout-planner-343913.firebaseapp.com",
+  projectId: "scout-planner-343913",
+  streamingUpdates: true,
+  streamingUpdatesEnabledPrefixes: ["asdf", "vm24_"],
+  timetableLayoutVersionSwitchingEnabled: false,
+};
 
 type Config = typeof defaultConfig;
 

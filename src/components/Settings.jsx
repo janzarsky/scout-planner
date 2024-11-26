@@ -32,7 +32,9 @@ import {
 import { useConfig } from "../store/configSlice";
 
 export default function Settings() {
-  const timetableLayoutVersionSwitchingEnabled = useConfig('timetableLayoutVersionSwitchingEnabled')
+  const timetableLayoutVersionSwitchingEnabled = useConfig(
+    "timetableLayoutVersionSwitchingEnabled",
+  );
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { table } = useSelector((state) => state.auth);
   const { data: timetableData, isSuccess: layoutVersionLoaded } =
