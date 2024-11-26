@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { initializeApp } from "firebase/app";
 import {
   GoogleAuthProvider,
@@ -15,20 +15,27 @@ import {
   useEffect,
   useState,
 } from "react";
-import config from "../config.json";
+import { useConfig } from "../store/configSlice";
 
 const AuthContext = createContext(null);
 
-const app = initializeApp({
-  apiKey: config.apiKey,
-  authDomain: config.authDomain,
-  projectId: config.projectId,
-});
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
-
 export function AuthProvider({ children }) {
+  const apiKey = useConfig("apiKey");
+  const authDomain = useConfig("authDomain");
+  const projectId = useConfig("projectId");
+
+  const app = useMemo(() => {
+    return initializeApp({
+      apiKey,
+      authDomain,
+      projectId,
+    });
+  }, [apiKey, authDomain, projectId]);
+
+  const auth = useMemo(() => getAuth(app), [app]);
+  const db = useMemo(() => getFirestore(app), [app]);
+  const provider = useMemo(() => new GoogleAuthProvider(), []);
+
   const [user, setUser] = useState(null);
   const [initializing, setInitializing] = useState(true);
 
