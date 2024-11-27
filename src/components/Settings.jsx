@@ -29,13 +29,12 @@ import {
   useGetTimetableQuery,
   useUpdateLayoutVersionMutation,
 } from "../store/timetableApi";
-import configLocal from "../config.local.json";
-import config from "../config.json";
-
-const timetableLayoutVersionSwitchingEnabled =
-  { ...config, ...configLocal }.timetableLayoutVersionSwitchingEnabled ?? false;
+import { useConfig } from "../store/configSlice";
 
 export default function Settings() {
+  const timetableLayoutVersionSwitchingEnabled = useConfig(
+    "timetableLayoutVersionSwitchingEnabled",
+  );
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { table } = useSelector((state) => state.auth);
   const { data: timetableData, isSuccess: layoutVersionLoaded } =
