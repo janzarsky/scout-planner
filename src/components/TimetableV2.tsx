@@ -68,6 +68,7 @@ export default function Timetable({
     <ComposeSchedule
       editable={userLevel >= level.EDIT && !printView}
       violations={violations}
+      printView={printView}
     />
   );
 }
@@ -465,11 +466,13 @@ function DataLabels({ dates, virtualGroupShown }: DataLabelsProps) {
 interface ComposeScheduleProps {
   editable: boolean;
   violations: Violations;
+  printView: boolean;
 }
 
 export const ComposeSchedule = ({
   editable,
   violations,
+  printView,
 }: ComposeScheduleProps) => {
   const [widthScale, setWidthScale] = useState(1);
 
@@ -569,7 +572,10 @@ export const ComposeSchedule = ({
         let ownerRecord = result.find((it) => it.id === ownerId);
         if (!ownerRecord) {
           const person = people.find((it) => it._id === ownerId);
-          ownerRecord = { id: ownerId, name: person!.name, count: 0 };
+          if (!person) {
+            continue;
+          }
+          ownerRecord = { id: ownerId, name: person.name, count: 0 };
           result.push(ownerRecord);
         }
         ownerRecord!.count++;
@@ -642,9 +648,29 @@ export const ComposeSchedule = ({
       return [];
     }
     const plannable = programs.find((it) => it._id === draggingPlannable.id)!;
-    return createSegmentsForPlannable(plannable, {
+    const draggedPlannableSegments = createSegmentsForPlannable(plannable, {
       start: draggingPlannableStart,
     });
+
+    // Show swapped program
+    const swappingPlannable = programs.filter(
+      (it) =>
+        it.begin ===
+          draggingPlannableStart.toZonedDateTime(LOCAL_TIMEZONE).toInstant()
+            .epochMilliseconds &&
+        it.groups.length === plannable.groups.length &&
+        it.groups.every((group) => plannable.groups.includes(group)),
+    );
+    const swappingPlannableSegments =
+      swappingPlannable.length == 1
+        ? createSegmentsForPlannable(swappingPlannable[0], {
+            start: Temporal.Instant.fromEpochMilliseconds(plannable.begin!)
+              .toZonedDateTimeISO(LOCAL_TIMEZONE)
+              .toPlainDateTime(),
+          })
+        : [];
+
+    return [...draggedPlannableSegments, ...swappingPlannableSegments];
   }, [
     draggingPlannable,
     draggingPlannableStart,
@@ -798,12 +824,28 @@ export const ComposeSchedule = ({
         const plannable = programs.find(
           (it) => it._id === draggingPlannable.id,
         )!;
+        const newBegin = draggingPlannableStart
+          .toZonedDateTime(LOCAL_TIMEZONE)
+          .toInstant().epochMilliseconds;
         updateProgram({
           ...plannable,
-          begin: draggingPlannableStart
-            .toZonedDateTime(LOCAL_TIMEZONE)
-            .toInstant().epochMilliseconds,
+          begin: newBegin,
         });
+
+        // Swap with the program that was at the same time
+        const swappingPlannable = programs.filter(
+          (it) =>
+            it.begin === newBegin &&
+            it.groups.length === plannable.groups.length &&
+            it.groups.every((group) => plannable.groups.includes(group)),
+        );
+        if (swappingPlannable.length == 1) {
+          updateProgram({
+            ...swappingPlannable[0],
+            begin: plannable.begin,
+          });
+        }
+
         setDraggingPlannable(null);
         setDraggingPlannableStart(null);
       }
@@ -1031,38 +1073,40 @@ export const ComposeSchedule = ({
             ))}
           </div>
         </div>
-        <div className="schedulePage__bottomControls">
-          <div className="schedulePage__bottomControlsLeft">
-            <label>
-              Majitel programu:{" "}
-              <select
-                value={ownerFilter ?? ""}
-                onChange={(e) => setOwnerFilter(e.target.value)}
-              >
-                <option value="">Všichni</option>
-                {availableOwners.map((it) => (
-                  <option key={it.id} value={it.id}>
-                    {it.name} ({it.count})
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+        {!printView && (
+          <div className="schedulePage__bottomControls">
+            <div className="schedulePage__bottomControlsLeft">
+              <label>
+                Majitel programu:{" "}
+                <select
+                  value={ownerFilter ?? ""}
+                  onChange={(e) => setOwnerFilter(e.target.value)}
+                >
+                  <option value="">Všichni</option>
+                  {availableOwners.map((it) => (
+                    <option key={it.id} value={it.id}>
+                      {it.name} ({it.count})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
-          <div className="schedulePage__bottomControlsRight">
-            <label>
-              🔎
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.1}
-                value={widthScale}
-                onChange={(e) => setWidthScale(parseFloat(e.target.value))}
-              />
-            </label>
+            <div className="schedulePage__bottomControlsRight">
+              <label>
+                🔎
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={widthScale}
+                  onChange={(e) => setWidthScale(parseFloat(e.target.value))}
+                />
+              </label>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {editable && (

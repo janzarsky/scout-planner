@@ -15,6 +15,7 @@ export function NavBar({ rulesSatisfied }) {
   const { data: timetable, isSuccess: timetableLoaded } =
     useGetTimetableQuery(table);
   const title = timetableLoaded ? timetable.title : null;
+  const layoutVersion = timetableLoaded ? timetable.layoutVersion : "v1";
 
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
@@ -81,19 +82,21 @@ export function NavBar({ rulesSatisfied }) {
               )}
             </NavDropdown>
           )}
-          <Routes>
-            <Route
-              index
-              element={
-                <>
-                  {userLevel >= level.VIEW && <PackageFilterToggle />}
-                  {userLevel >= level.VIEW && <PeopleFilterToggle />}
-                  {userLevel >= level.VIEW && <ViewSettingsToggle />}
-                  {userLevel >= level.VIEW && <RangesSettingsToggle />}
-                </>
-              }
-            />
-          </Routes>
+          {layoutVersion === "v1" && (
+            <Routes>
+              <Route
+                index
+                element={
+                  <>
+                    {userLevel >= level.VIEW && <PackageFilterToggle />}
+                    {userLevel >= level.VIEW && <PeopleFilterToggle />}
+                    {userLevel >= level.VIEW && <ViewSettingsToggle />}
+                    {userLevel >= level.VIEW && <RangesSettingsToggle />}
+                  </>
+                }
+              />
+            </Routes>
+          )}
           <GoogleLogin />
           <Nav.Link as={NavLink} to="about" variant="light">
             <i className="fa fa-question" />
