@@ -6,7 +6,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getStore } from "../../src/store";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { testing } from "../../src/components/AuthProvider";
 import { testing as commandTesting } from "../../src/components/CommandContext";
 import { getCommandHandler } from "../../src/store/commandHandler";

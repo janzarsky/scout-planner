@@ -2,7 +2,7 @@ import React from "react";
 import { useDrop } from "react-dnd";
 import { useSelector } from "react-redux";
 import { getProgramRects, sortTrayPrograms } from "../helpers/TrayUtils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { level } from "../helpers/Level";
 import { useState } from "react";
 import { Block } from "./Blocks";

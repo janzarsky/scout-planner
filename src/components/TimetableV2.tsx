@@ -12,7 +12,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { isColorDark } from "../helpers/isColorDark";
 import { maxTime, minTime } from "../helpers/timeCompare";
 import { level } from "../helpers/Level";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Button from "react-bootstrap/Button";
 
 const DEFAULT_PROGRAM_COLOR = "#81d4fa";

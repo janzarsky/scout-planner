@@ -22,7 +22,7 @@ import { PackageFilter } from "./PackageFilter";
 import { ViewSettings } from "./ViewSettings";
 import { RangesSettings } from "./RangesSettings";
 import { useAuth } from "./AuthProvider";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 import { PeopleFilter } from "./PeopleFilter";
 import { PrintWrapper } from "./PrintOptions";
 import { Notifications } from "./Notifications";

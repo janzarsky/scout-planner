@@ -2,7 +2,7 @@ import React from "react";
 import { useMemo } from "react";
 import { useDrop } from "react-dnd";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useGetProgramsQuery } from "../store/programsApi";
 
 export function Droppables({ settings, onDrop }) {

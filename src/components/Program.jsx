@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { formatTime } from "../helpers/DateUtils";
 import { level } from "../helpers/Level";
 import { useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { arraysIntersect } from "../helpers/Sorting";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { useGetPeopleQuery } from "../store/peopleApi";
