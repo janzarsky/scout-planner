@@ -158,6 +158,22 @@ function groupNeighbours(_items: number[]): number[][] {
   return result;
 }
 
+function isProgramHighlighted(
+  program: Program,
+  ownerFilter: string | null,
+  packageFilter: string | null,
+): boolean {
+  if (ownerFilter === null && packageFilter === null) {
+    return true;
+  }
+  const owenerSatified =
+    ownerFilter === null ||
+    program.people.some((it) => it.person === ownerFilter);
+  const packageSatified =
+    packageFilter === null || program.pkg === packageFilter;
+  return owenerSatified && packageSatified;
+}
+
 type HoverStatus = null | {
   clientX: number;
   clientY: number;
@@ -592,6 +608,30 @@ export const ComposeSchedule = ({
     return result;
   }, [programs, people]);
 
+  // Package filtering
+  const [packageFilter, setPackageFilter] = useState<string | null>(null);
+  const programmeGroups = usePkgs();
+  const availablePackages = useMemo(() => {
+    const result = programmeGroups.map((it) => ({
+      id: it._id,
+      name: it.name,
+      color: it.color,
+      count: 0,
+    }));
+
+    for (const program of programs) {
+      if (!program.pkg) {
+        continue;
+      }
+      const packageRecord = result.find((it) => it.id === program.pkg);
+      if (packageRecord) {
+        packageRecord.count++;
+      }
+    }
+
+    return result;
+  }, [programs, programmeGroups]);
+
   const createSegmentsForPlannable = useCallback(
     function <T extends Program>(
       plannable: T,
@@ -958,7 +998,6 @@ export const ComposeSchedule = ({
     },
     [navigate],
   );
-  const programmeGroups = usePkgs();
 
   return (
     <div className="schedulePage scheme-light">
@@ -1039,13 +1078,11 @@ export const ComposeSchedule = ({
                         }
                   }
                   editable={editable && !segment.plannable.locked}
-                  isHighlighted={
-                    ownerFilter
-                      ? segment.plannable.people.find(
-                          (it) => it.person === ownerFilter,
-                        ) !== undefined
-                      : null
-                  }
+                  isHighlighted={isProgramHighlighted(
+                    segment.plannable,
+                    ownerFilter,
+                    packageFilter,
+                  )}
                   violations={violations.get(segment.plannable._id) ?? []}
                 />
               );
@@ -1087,11 +1124,29 @@ export const ComposeSchedule = ({
                 Majitel programu:{" "}
                 <select
                   value={ownerFilter ?? ""}
-                  onChange={(e) => setOwnerFilter(e.target.value)}
+                  onChange={(e) => setOwnerFilter(e.target.value || null)}
                 >
                   <option value="">Všichni</option>
                   {availableOwners.map((it) => (
                     <option key={it.id} value={it.id}>
+                      {it.name} ({it.count})
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Balíček:{" "}
+                <select
+                  value={packageFilter ?? ""}
+                  onChange={(e) => setPackageFilter(e.target.value || null)}
+                >
+                  <option value="">Všechny</option>
+                  {availablePackages.map((it) => (
+                    <option
+                      key={it.id}
+                      value={it.id}
+                      style={{ backgroundColor: it.color }}
+                    >
                       {it.name} ({it.count})
                     </option>
                   ))}
