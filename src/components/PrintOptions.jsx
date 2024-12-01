@@ -59,18 +59,18 @@ export function PrintWrapper({
   violationsPerProgram,
   userLevel,
 }) {
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({ content: () => componentRef.current });
+  const contentRef = useRef();
+  const handlePrint = useReactToPrint({ contentRef });
 
   const [preset, setPreset] = useState(null);
 
   useEffect(() => {
-    if (preset && dataLoaded && permissionsLoaded) handlePrint(preset);
+    if (preset && dataLoaded && permissionsLoaded) handlePrint();
   }, [preset, dataLoaded, permissionsLoaded]);
 
   return (
     <>
-      <div ref={componentRef} className="print-preview">
+      <div ref={contentRef} className="print-preview">
         <PrintCss preset={preset ? preset : "default"} />
         <TimetableWrapper
           dataLoaded={dataLoaded}
