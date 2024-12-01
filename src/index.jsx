@@ -34,9 +34,7 @@ const store = getStore();
 
 root.render(
   <Provider store={store}>
-    <BrowserRouter
-      future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
-    >
+    <BrowserRouter>
       <Routes>
         <Route path="/" exact element={<Homepage />} />
         <Route path="/:table/*" element={<AppWrapper />} />
