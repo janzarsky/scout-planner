@@ -26,7 +26,7 @@ interface Program {
   locked: boolean;
   ranges: { [key: string]: "0" | "1" | "2" | "3" };
   blockOrder: number;
-  people: { person: string }[];
+  people: { person: string; optional?: boolean }[];
   title: string;
   place: string;
   url: string;
@@ -232,12 +232,19 @@ function SegmentBox({
   const color = pkg?.color ?? DEFAULT_PROGRAM_COLOR;
   const isDark = color !== null && isColorDark(color);
   const people = usePeople();
-  const ownerNames = segment.plannable.people
-    .map(
-      (person) =>
-        people.find((p) => p._id === person.person)?.name ?? person.person,
-    )
+  const owners = segment.plannable.people.map((person) => ({
+    name: people.find((p) => p._id === person.person)?.name ?? person.person,
+    optional: person.optional,
+  }));
+  const nonOptionalOwners = owners.filter((owner) => !owner.optional);
+  const optionalOwners = owners.filter((owner) => owner.optional);
+  // Format to name1, name2, name3 (optionalname1, optionalname2)
+  const ownersString = nonOptionalOwners.map((owner) => owner.name).join(", ");
+  const optionalOwnersString = optionalOwners
+    .map((owner) => owner.name)
     .join(", ");
+  const ownersStr =
+    ownersString + (optionalOwnersString ? ` (${optionalOwnersString})` : "");
   return (
     <div
       className={[
@@ -318,8 +325,8 @@ function SegmentBox({
         )}
         {program.title}
       </div>
-      {ownerNames && (
-        <div className="scheduleTable__plannableOwners">{ownerNames}</div>
+      {ownersStr.length > 0 && (
+        <div className="scheduleTable__plannableOwners">{ownersStr}</div>
       )}
       {isHovering != null && !isDragged && (
         <div
@@ -341,8 +348,8 @@ function SegmentBox({
           <div className="scheduleTable__plannableOwners">
             {pkg?.name ?? "Bez balíčku"}
           </div>
-          {ownerNames && (
-            <div className="scheduleTable__plannableOwners">{ownerNames}</div>
+          {ownersStr.length > 0 && (
+            <div className="scheduleTable__plannableOwners">{ownersStr}</div>
           )}
           <div className="scheduleTable__plannableOwners">
             {startTime.toLocaleString("cs-CZ", {
