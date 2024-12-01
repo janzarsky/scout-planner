@@ -27,6 +27,7 @@ describe("Navigation Bar", () => {
       router: true,
       auth: true,
       authValue: authValue,
+      initialEntries: ["/table1"],
     });
   }
 
@@ -42,6 +43,8 @@ describe("Navigation Bar", () => {
           .as("streamTimetable"),
       })
       .log(false);
+
+    store.dispatch(setTable("table1"));
   });
 
   it("displays no links when having no access", () => {
@@ -51,7 +54,7 @@ describe("Navigation Bar", () => {
 
     cy.contains("Harmonogram")
       .should("have.class", "active")
-      .should("have.attr", "href", "/");
+      .should("have.attr", "href", "/table1");
     cy.get("[data-test=navbar-toggle]").should("not.be.visible");
   });
 
@@ -62,7 +65,7 @@ describe("Navigation Bar", () => {
 
     cy.contains("Harmonogram")
       .should("have.class", "active")
-      .should("have.attr", "href", "/");
+      .should("have.attr", "href", "/table1");
     cy.get("[data-test=auth-login-button]").should("not.be.visible");
     cy.get("[data-test=navbar-toggle]").click();
     cy.get("[data-test=auth-login-button]").should("be.visible");
@@ -75,15 +78,15 @@ describe("Navigation Bar", () => {
 
     cy.contains("Harmonogram")
       .should("have.class", "active")
-      .should("have.attr", "href", "/");
+      .should("have.attr", "href", "/table1");
     cy.contains("Pravidla")
-      .should("have.attr", "href", "/rules")
+      .should("have.attr", "href", "/table1/rules")
       .should("be.visible");
     cy.contains("Statistiky")
-      .should("have.attr", "href", "/stats")
+      .should("have.attr", "href", "/table1/stats")
       .should("be.visible");
     cy.contains("Nastavení").click();
-    cy.get("[href='/settings']")
+    cy.get("[href='/table1/settings']")
       .should("have.text", "Nastavení")
       .should("be.visible");
   });
@@ -95,13 +98,13 @@ describe("Navigation Bar", () => {
 
     cy.contains("Harmonogram")
       .should("have.class", "active")
-      .should("have.attr", "href", "/");
+      .should("have.attr", "href", "/table1");
 
     cy.contains("Pravidla")
-      .should("have.attr", "href", "/rules")
+      .should("have.attr", "href", "/table1/rules")
       .should("not.be.visible");
     cy.contains("Statistiky")
-      .should("have.attr", "href", "/stats")
+      .should("have.attr", "href", "/table1/stats")
       .should("not.be.visible");
 
     cy.get("[data-test=navbar-toggle]").click();
@@ -110,7 +113,7 @@ describe("Navigation Bar", () => {
     cy.contains("Statistiky").should("be.visible");
 
     cy.contains("Nastavení").click();
-    cy.get("[href='/settings']")
+    cy.get("[href='/table1/settings']")
       .should("have.text", "Nastavení")
       .should("be.visible");
   });
@@ -122,28 +125,28 @@ describe("Navigation Bar", () => {
 
     cy.contains("Harmonogram")
       .should("have.class", "active")
-      .should("have.attr", "href", "/");
+      .should("have.attr", "href", "/table1");
     cy.contains("Pravidla")
-      .should("have.attr", "href", "/rules")
+      .should("have.attr", "href", "/table1/rules")
       .should("be.visible");
     cy.contains("Statistiky")
-      .should("have.attr", "href", "/stats")
+      .should("have.attr", "href", "/table1/stats")
       .should("be.visible");
     cy.contains("Nastavení").click();
 
     cy.contains("Balíčky")
-      .should("have.attr", "href", "/packages")
+      .should("have.attr", "href", "/table1/packages")
       .should("be.visible");
     cy.contains("Skupiny")
-      .should("have.attr", "href", "/groups")
+      .should("have.attr", "href", "/table1/groups")
       .should("be.visible");
     cy.contains("Organizátoři")
-      .should("have.attr", "href", "/people")
+      .should("have.attr", "href", "/table1/people")
       .should("be.visible");
     cy.contains("Linky")
-      .should("have.attr", "href", "/ranges")
+      .should("have.attr", "href", "/table1/ranges")
       .should("be.visible");
-    cy.get("[href='/settings']")
+    cy.get("[href='/table1/settings']")
       .should("have.text", "Nastavení")
       .should("be.visible");
   });
@@ -155,31 +158,31 @@ describe("Navigation Bar", () => {
 
     cy.contains("Harmonogram")
       .should("have.class", "active")
-      .should("have.attr", "href", "/");
+      .should("have.attr", "href", "/table1");
     cy.contains("Pravidla")
-      .should("have.attr", "href", "/rules")
+      .should("have.attr", "href", "/table1/rules")
       .should("be.visible");
     cy.contains("Statistiky")
-      .should("have.attr", "href", "/stats")
+      .should("have.attr", "href", "/table1/stats")
       .should("be.visible");
     cy.contains("Nastavení").click();
 
     cy.contains("Balíčky")
-      .should("have.attr", "href", "/packages")
+      .should("have.attr", "href", "/table1/packages")
       .should("be.visible");
     cy.contains("Skupiny")
-      .should("have.attr", "href", "/groups")
+      .should("have.attr", "href", "/table1/groups")
       .should("be.visible");
     cy.contains("Organizátoři")
-      .should("have.attr", "href", "/people")
+      .should("have.attr", "href", "/table1/people")
       .should("be.visible");
     cy.contains("Linky")
-      .should("have.attr", "href", "/ranges")
+      .should("have.attr", "href", "/table1/ranges")
       .should("be.visible");
     cy.contains("Uživatelé")
-      .should("have.attr", "href", "/users")
+      .should("have.attr", "href", "/table1/users")
       .should("be.visible");
-    cy.get("[href='/settings']")
+    cy.get("[href='/table1/settings']")
       .should("have.text", "Nastavení")
       .should("be.visible");
   });
