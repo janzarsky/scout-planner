@@ -511,13 +511,13 @@ p {
 }
 
 .scheduleTable__dayLabel {
-  grid-row-start: calc(var(--day) * var(--groups-count) + 2);
-  grid-row-end: span var(--groups-count);
+  grid-row-start: calc(var(--day-offset) + 2);
+  grid-row-end: span var(--lines-count);
   grid-column: 1;
   padding: 1em 2em 1em 0;
   margin-left: -1em;
   white-space: nowrap;
-  align-self: center;
+  align-self: stretch;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   transform-origin: center center;
@@ -525,25 +525,24 @@ p {
   left: 0;
   z-index: 1;
   background: white;
+  text-align: center;
 }
 
 .scheduleTable__day {
-  grid-row-start: calc(var(--day) * var(--groups-count) + 2);
-  grid-row-end: span var(--groups-count);
+  grid-row-start: calc(var(--day-offset) + 2);
+  grid-row-end: span var(--lines-count);
   grid-column: 3;
-  /*background: red;*/
-  /*z-index: 1;*/
-  /*pointer-events: all;*/
 }
 
 .scheduleTable__dayLine {
-  grid-row: calc((var(--day) + 1) * var(--groups-count) + 1);
+  grid-row: calc(var(--day-offset) + 1);
   grid-column: 1 / span 3;
   border-bottom: 1px solid #ccc;
+  z-index: 1;
 }
 
 .scheduleTable__groupLabel {
-  grid-row: calc(var(--group-day) * var(--groups-count) + var(--group-index) + 2);
+  grid-row: calc(var(--day-offset) + var(--group-index) + 2) / span var(--group-concurrent);
   grid-column: 2;
   white-space: nowrap;
   align-self: stretch;
@@ -584,7 +583,7 @@ p {
 
 .scheduleTable__timeLine {
   grid-row-start: 2;
-  grid-row-end: span calc(var(--groups-count) * var(--days-count));
+  grid-row-end: span var(--lines-count);
   grid-column: 3;
   border-left: 1px solid #00000011;
   position: relative;
@@ -597,8 +596,8 @@ p {
 }
 
 .scheduleTable__plannable {
-  grid-row-start: calc(var(--segment-day) * var(--groups-count) + var(--segment-group-first) + 2);
-  grid-row-end: span var(--segment-groups-count);
+  grid-row-start: calc(var(--segment-line-start) + 2);
+  grid-row-end: span var(--segment-line-span);
   grid-column: 3;
   width: calc(var(--segment-duration) * 100% - 1px);
   position: relative;

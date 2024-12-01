@@ -55,6 +55,13 @@ interface Person {
 type Violation = { msg: string; program: string; satisied?: boolean };
 type Violations = Map<string, Violation[]>;
 
+type Lines = {
+  date: Temporal.PlainDate;
+  offset: number;
+  concurrentLines: number;
+  groups: { group: string | null; concurrentLines: number }[];
+}[];
+
 export default function Timetable({
   violations,
   printView = false,
@@ -125,6 +132,7 @@ type Segment = {
   start: Temporal.PlainTime | null;
   end: Temporal.PlainTime | null;
   atendeeGroups: number[];
+  blockOrders: number[][];
 };
 
 /**
@@ -200,6 +208,7 @@ interface SegmentBoxProps {
   editable: boolean;
   isHighlighted: boolean | null;
   violations: Violation[];
+  lines: Lines;
 }
 
 function SegmentBox({
@@ -217,6 +226,7 @@ function SegmentBox({
   editable,
   isHighlighted,
   violations,
+  lines,
 }: SegmentBoxProps) {
   const program = segment.plannable;
   const dayLength = earliestTime.until(latestTime);
@@ -242,11 +252,22 @@ function SegmentBox({
   if (dayIndex < 0) {
     return null;
   }
+  const line = lines[dayIndex];
+  const linesInDayBeforeGroup = line.groups
+    .slice(0, segment.atendeeGroups[0])
+    .reduce((acc, it) => acc + it.concurrentLines, 0);
+  const blockOrdersBefore = segment.blockOrders[0][0];
+  const linesSpan = segment.atendeeGroups.reduce((acc, groupIdx, idx) => {
+    const blocks = segment.blockOrders[idx].length;
+    return acc + blocks;
+  }, 0);
 
   const pkgs = usePkgs();
   const pkg = pkgs.find((pkg) => pkg._id === segment.plannable.pkg);
   const color = pkg?.color ?? DEFAULT_PROGRAM_COLOR;
   const isDark = color !== null && isColorDark(color);
+
+  // Format to name1, name2, name3 (optionalname1, optionalname2)
   const people = usePeople();
   const owners = segment.plannable.people.map((person) => ({
     name: people.find((p) => p._id === person.person)?.name ?? person.person,
@@ -254,13 +275,13 @@ function SegmentBox({
   }));
   const nonOptionalOwners = owners.filter((owner) => !owner.optional);
   const optionalOwners = owners.filter((owner) => owner.optional);
-  // Format to name1, name2, name3 (optionalname1, optionalname2)
   const ownersString = nonOptionalOwners.map((owner) => owner.name).join(", ");
   const optionalOwnersString = optionalOwners
     .map((owner) => owner.name)
     .join(", ");
   const ownersStr =
     ownersString + (optionalOwnersString ? ` (${optionalOwnersString})` : "");
+
   return (
     <div
       className={[
@@ -278,12 +299,12 @@ function SegmentBox({
         .join(" ")}
       style={
         {
-          "--segment-day": dayIndex,
           "--segment-start": startOffset,
           "--segment-duration": relativeDuration,
-          "--segment-group-first": segment.atendeeGroups[0],
-          "--segment-groups-count": segment.atendeeGroups.length,
           "--segment-color": color,
+          "--segment-line-start":
+            line.offset + linesInDayBeforeGroup + blockOrdersBefore,
+          "--segment-line-span": linesSpan,
         } as any
       }
       onMouseEnter={(e) =>
@@ -389,9 +410,15 @@ interface TimeLabelsProps {
   earliestTime: Temporal.PlainTime;
   timeLabels: Temporal.PlainTime[];
   dayLength: Temporal.Duration;
+  lines: Lines;
 }
 
-function TimeLabels({ earliestTime, timeLabels, dayLength }: TimeLabelsProps) {
+function TimeLabels({
+  earliestTime,
+  timeLabels,
+  dayLength,
+  lines,
+}: TimeLabelsProps) {
   return (
     <>
       <div className="scheduleTable__timeLabels">
@@ -423,7 +450,15 @@ function TimeLabels({ earliestTime, timeLabels, dayLength }: TimeLabelsProps) {
           <div
             key={label.toString()}
             className={`scheduleTable__timeLine ${isMajor ? "scheduleTable__timeLine--major" : ""}`}
-            style={{ "--time": startOffset } as any}
+            style={
+              {
+                "--time": startOffset,
+                "--lines-count": lines.reduce(
+                  (acc, it) => acc + it.concurrentLines,
+                  0,
+                ),
+              } as any
+            }
           />
         );
       })}
@@ -432,23 +467,26 @@ function TimeLabels({ earliestTime, timeLabels, dayLength }: TimeLabelsProps) {
 }
 
 interface DataLabelsProps {
-  dates: Temporal.PlainDate[];
-  virtualGroupShown: boolean;
+  lines: Lines;
 }
 
-function DataLabels({ dates, virtualGroupShown }: DataLabelsProps) {
+function DataLabels({ lines }: DataLabelsProps) {
   const groups = useGroups();
-  const addGroupOffset = virtualGroupShown ? 1 : 0;
 
   return (
     <>
-      {dates.map((date, index) => (
-        <Fragment key={date.toString()}>
+      {lines.map((line, index) => (
+        <Fragment key={line.date.toString()}>
           <div
             className="scheduleTable__dayLabel"
-            style={{ "--day": index } as any}
+            style={
+              {
+                "--day-offset": line.offset,
+                "--lines-count": line.concurrentLines,
+              } as any
+            }
           >
-            {date.toLocaleString("cs-CZ", {
+            {line.date.toLocaleString("cs-CZ", {
               day: "numeric",
               month: "narrow",
               weekday: "short",
@@ -457,29 +495,49 @@ function DataLabels({ dates, virtualGroupShown }: DataLabelsProps) {
 
           <div
             className="scheduleTable__day"
-            style={{ "--day": index } as any}
-            data-date={date.toString()}
+            style={
+              {
+                "--day-offset": line.offset,
+                "--lines-count": line.concurrentLines,
+              } as any
+            }
+            data-date={line.date.toString()}
           />
 
-          {groups.map((group, groupIndex) => (
+          {line.groups.map((group, groupIndex) => {
+            const groupOffset = line.groups
+              .slice(0, groupIndex)
+              .reduce((acc, it) => acc + it.concurrentLines, 0);
+            return (
+              <div
+                key={group.group ?? "virtual"}
+                className="scheduleTable__groupLabel"
+                style={
+                  {
+                    "--day-offset": line.offset,
+                    "--group-index": groupOffset,
+                    "--group-concurrent": group.concurrentLines,
+                  } as any
+                }
+              >
+                {group.group === null
+                  ? null
+                  : groups.find((it) => it._id === group.group)?.name}
+              </div>
+            );
+          })}
+
+          {index !== 0 && (
             <div
-              key={group._id}
-              className="scheduleTable__groupLabel"
+              className="scheduleTable__dayLine"
               style={
                 {
-                  "--group-day": index,
-                  "--group-index": groupIndex + addGroupOffset,
+                  "--day-offset": line.offset,
+                  "--lines-count": line.concurrentLines,
                 } as any
               }
-            >
-              {group.name}
-            </div>
-          ))}
-
-          <div
-            className="scheduleTable__dayLine"
-            style={{ "--day": index } as any}
-          />
+            />
+          )}
         </Fragment>
       ))}
     </>
@@ -578,11 +636,11 @@ export const ComposeSchedule = ({
   );
   const showVirtualGroup =
     !hasAtLeastOneGroup || programsWithoutGroups.length > 0;
-  const shownGroups: string[] | [null, ...string[]] = useMemo(() => {
+  const shownGroups: [null | string, ...string[]] = useMemo(() => {
     const sortedAttendeGroupIds = atendeeGroups.map((it) => it._id);
     return showVirtualGroup
       ? [null, ...sortedAttendeGroupIds]
-      : sortedAttendeGroupIds;
+      : (sortedAttendeGroupIds as [string, ...string[]]); // safe cast because showVirtualGroup is false, so there is at least one group
   }, [atendeeGroups, showVirtualGroup]);
 
   // Owner filtering
@@ -632,6 +690,59 @@ export const ComposeSchedule = ({
     return result;
   }, [programs, programmeGroups]);
 
+  const concurrentBlocksMap = useMemo(() => {
+    // Get all unique blockOrder for each date and atendee group
+    const blockOrdersByDateAndGroup = new Map<
+      string,
+      Map<string | null, number[]>
+    >();
+    for (const program of scheduledPlannables) {
+      const start = Temporal.Instant.fromEpochMilliseconds(program.begin)
+        .toZonedDateTimeISO(LOCAL_TIMEZONE)
+        .toPlainDateTime();
+      const end = start.add({ milliseconds: program.duration });
+      const days = [start.toPlainDate()];
+      if (!start.equals(end.toPlainDate())) {
+        days.push(end.toPlainDate());
+      }
+
+      for (const date of days) {
+        const groups = program.groups.length === 0 ? [null] : program.groups;
+        for (const group of groups) {
+          const d = date.toString();
+          if (!blockOrdersByDateAndGroup.has(d)) {
+            blockOrdersByDateAndGroup.set(d, new Map());
+          }
+          const dateMap = blockOrdersByDateAndGroup.get(d)!;
+          if (!dateMap.has(group)) {
+            dateMap.set(group, []);
+          }
+          const groupSet = dateMap.get(group)!;
+          if (!groupSet.includes(program.blockOrder)) {
+            groupSet.push(program.blockOrder);
+            groupSet.sort();
+          }
+        }
+      }
+    }
+
+    // Ensure that all dates and groups are present (even if there are no programs)
+    for (const date of dates) {
+      const d = date.toString();
+      if (!blockOrdersByDateAndGroup.has(d)) {
+        blockOrdersByDateAndGroup.set(d, new Map());
+      }
+      const dateMap = blockOrdersByDateAndGroup.get(d)!;
+      for (const group of shownGroups) {
+        if (!dateMap.has(group)) {
+          dateMap.set(group, [0]);
+        }
+      }
+    }
+
+    return blockOrdersByDateAndGroup;
+  }, [scheduledPlannables, dates, shownGroups]);
+
   const createSegmentsForPlannable = useCallback(
     function <T extends Program>(
       plannable: T,
@@ -649,11 +760,8 @@ export const ComposeSchedule = ({
       });
       const end = start.add(duration);
 
-      const shownInGroups =
+      const shownInGroups: Array<null | string> =
         plannable.groups.length === 0 ? [null] : plannable.groups;
-      const segmentsFromAtendeeGroups = groupNeighbours(
-        shownInGroups.map((groupId) => shownGroups.indexOf(groupId)),
-      );
 
       // Find all dates between start and end (inclusive)
       let endDate = start.toPlainDate();
@@ -663,19 +771,98 @@ export const ComposeSchedule = ({
         dates.push(endDate);
       }
 
-      return segmentsFromAtendeeGroups.flatMap((atendeeGroups) =>
-        dates.map((date, dateIndex) => {
+      return dates.flatMap((date, dateIndex) => {
+        const startOnDay = dateIndex === 0 ? start.toPlainTime() : null;
+        const endOnDay =
+          dateIndex === dates.length - 1 ? end.toPlainTime() : null;
+
+        const dateStart = (
+          startOnDay ?? Temporal.PlainTime.from("00:00")
+        ).toPlainDateTime(date);
+        const dateEnd = (
+          endOnDay ??
+          Temporal.PlainTime.from("00:00").subtract({ nanoseconds: 1 })
+        ).toPlainDateTime(date);
+
+        // Span over block order (concurrent blocks)
+        const mapForDate =
+          concurrentBlocksMap.get(date.toString()) ?? new Map();
+
+        // All block in the same time and same groups, but with different block order
+        const concurrentBlocks = scheduledPlannables.filter((it) => {
+          const start = Temporal.Instant.fromEpochMilliseconds(it.begin)
+            .toZonedDateTimeISO(LOCAL_TIMEZONE)
+            .toPlainDateTime();
+          const end = start.add({ milliseconds: it.duration });
+          return (
+            Temporal.PlainDateTime.compare(dateStart, end) < 0 &&
+            Temporal.PlainDateTime.compare(dateEnd, start) > 0 &&
+            it.groups.some((group) => shownInGroups.includes(group)) &&
+            it._id !== plannable._id &&
+            it.blockOrder !== plannable.blockOrder
+          );
+        });
+
+        const shownGroupsIndices = shownInGroups.map((groupId) =>
+          shownGroups.indexOf(groupId),
+        );
+        const mapForDayByGroupIdxToBlockOrder = new Map(
+          Array.from(mapForDate.entries()).map(
+            ([group, blockOrders]): [number, number[]] => [
+              shownGroups.indexOf(group),
+              blockOrders,
+            ],
+          ),
+        );
+        const mapForDayByGroupIdxToBlockOrderIdx = new Map(
+          Array.from(mapForDayByGroupIdxToBlockOrder.entries()).map(
+            ([groupIdx, blockOrders]): [number, number[]] => [
+              groupIdx,
+              blockOrders.map((_, idx) => idx),
+            ],
+          ),
+        );
+
+        // If we have concurrent blocks, we split it into separate segments for each group
+        if (concurrentBlocks.length > 0) {
+          return shownGroupsIndices.map((groupIdx) => {
+            let blockOrder = mapForDayByGroupIdxToBlockOrder
+              .get(groupIdx)!
+              .indexOf(plannable.blockOrder);
+
+            if (blockOrder === -1) {
+              blockOrder = 0;
+            }
+
+            return {
+              plannable,
+              date,
+              start: startOnDay,
+              end: endOnDay,
+              atendeeGroups: [groupIdx],
+              blockOrders: [[blockOrder]],
+            };
+          });
+        }
+
+        // If there are no concurrent blocks, we try to merge it into one segment
+        const segmentsFromAtendeeGroups = groupNeighbours(shownGroupsIndices);
+        return segmentsFromAtendeeGroups.map((atendeeGroups) => {
           return {
             plannable,
             date,
-            start: dateIndex === 0 ? start.toPlainTime() : null,
-            end: dateIndex === dates.length - 1 ? end.toPlainTime() : null,
+            start: startOnDay,
+            end: endOnDay,
             atendeeGroups,
+            blockOrders: atendeeGroups.map(
+              (groupIdx) =>
+                mapForDayByGroupIdxToBlockOrderIdx.get(groupIdx) ?? [0],
+            ),
           };
-        }),
-      );
+        });
+      });
     },
-    [shownGroups],
+    [shownGroups, concurrentBlocksMap, scheduledPlannables],
   );
 
   const segments = useMemo(() => {
@@ -706,7 +893,8 @@ export const ComposeSchedule = ({
           draggingPlannableStart.toZonedDateTime(LOCAL_TIMEZONE).toInstant()
             .epochMilliseconds &&
         it.groups.length === plannable.groups.length &&
-        it.groups.every((group) => plannable.groups.includes(group)),
+        it.groups.every((group) => plannable.groups.includes(group)) &&
+        it.blockOrder === plannable.blockOrder,
     );
     const swappingPlannableSegments =
       swappingPlannable.length == 1
@@ -884,7 +1072,8 @@ export const ComposeSchedule = ({
           (it) =>
             it.begin === newBegin &&
             it.groups.length === plannable.groups.length &&
-            it.groups.every((group) => plannable.groups.includes(group)),
+            it.groups.every((group) => plannable.groups.includes(group)) &&
+            it.blockOrder === plannable.blockOrder,
         );
         if (swappingPlannable.length == 1) {
           updateProgram({
@@ -999,6 +1188,30 @@ export const ComposeSchedule = ({
     [navigate],
   );
 
+  const lines: Lines = useMemo(() => {
+    const passZero = dates.map((date) => ({
+      date: date,
+      groups: shownGroups.map((group) => ({
+        group: group,
+        concurrentLines:
+          concurrentBlocksMap.get(date.toString())?.get(group)?.length ?? 1,
+      })),
+    }));
+
+    const passOne: Lines = [];
+    let offset = 0;
+    for (const line of passZero) {
+      const concurrentLines = line.groups.reduce(
+        (acc, it) => acc + it.concurrentLines,
+        0,
+      );
+      passOne.push({ ...line, offset, concurrentLines });
+      offset += concurrentLines;
+    }
+
+    return passOne;
+  }, [dates, shownGroups, concurrentBlocksMap]);
+
   return (
     <div className="schedulePage scheme-light">
       <div className="schedulePage__mainContent">
@@ -1021,18 +1234,19 @@ export const ComposeSchedule = ({
                 }
               : {})}
           >
-            <DataLabels dates={dates} virtualGroupShown={showVirtualGroup} />
+            <DataLabels lines={lines} />
 
             <TimeLabels
               earliestTime={earliestTime}
               timeLabels={timeLabels}
               dayLength={dayLength}
+              lines={lines}
             />
 
-            {[...segments].map((segment) => {
+            {[...segments].map((segment, index) => {
               return (
                 <SegmentBox
-                  key={segment.plannable._id}
+                  key={index}
                   segment={segment}
                   earliestTime={earliestTime}
                   latestTime={latestTime}
@@ -1084,6 +1298,7 @@ export const ComposeSchedule = ({
                     packageFilter,
                   )}
                   violations={violations.get(segment.plannable._id) ?? []}
+                  lines={lines}
                 />
               );
             })}
@@ -1113,6 +1328,7 @@ export const ComposeSchedule = ({
                 editable={editable}
                 isHighlighted={null}
                 violations={violations.get(segment.plannable._id) ?? []}
+                lines={lines}
               />
             ))}
           </div>
