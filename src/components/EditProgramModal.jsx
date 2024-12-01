@@ -17,7 +17,7 @@ import {
 import { level } from "../helpers/Level";
 import { byName, byOrder } from "../helpers/Sorting";
 import { parseIntOrZero } from "../helpers/Parsing";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router";
 import DatePicker from "react-datepicker";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import cs from "date-fns/locale/cs";

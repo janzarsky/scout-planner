@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import App from "./components/App";
-import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useParams } from "react-router";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { getStore } from "./store";
 import { setTable } from "./store/authSlice";
