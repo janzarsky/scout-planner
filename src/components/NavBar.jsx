@@ -20,7 +20,7 @@ export function NavBar({ rulesSatisfied }) {
   return (
     <Navbar bg="light" className="control-panel" expand="lg">
       <Container fluid className="ps-0 pe-0">
-        <Nav.Link as={NavLink} to="" end>
+        <Nav.Link as={NavLink} to={`/${table}`} end>
           {title ? title : "Harmonogram"}
         </Nav.Link>
         <Navbar.Toggle
@@ -29,7 +29,7 @@ export function NavBar({ rulesSatisfied }) {
         />
         <Navbar.Collapse id="navbar-toggle">
           {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="rules">
+            <Nav.Link as={NavLink} to={`/${table}/rules`}>
               Pravidla{" "}
               {rulesSatisfied ? (
                 <i className="fa fa-check text-success" />
@@ -39,44 +39,44 @@ export function NavBar({ rulesSatisfied }) {
             </Nav.Link>
           )}
           {userLevel >= level.VIEW && (
-            <Nav.Link as={NavLink} to="stats" end>
+            <Nav.Link as={NavLink} to={`/${table}/stats`} end>
               Statistiky
             </Nav.Link>
           )}
           {userLevel >= level.VIEW && (
             <NavDropdown title="Nastavení">
               {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="packages" end>
+                <NavDropdown.Item as={NavLink} to={`/${table}/packages`} end>
                   Balíčky
                 </NavDropdown.Item>
               )}
               {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="groups" end>
+                <NavDropdown.Item as={NavLink} to={`/${table}/groups`} end>
                   Skupiny
                 </NavDropdown.Item>
               )}
               {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="people" end>
+                <NavDropdown.Item as={NavLink} to={`/${table}/people`} end>
                   Organizátoři
                 </NavDropdown.Item>
               )}
               {userLevel >= level.EDIT && (
-                <NavDropdown.Item as={NavLink} to="ranges" end>
+                <NavDropdown.Item as={NavLink} to={`/${table}/ranges`} end>
                   Linky
                 </NavDropdown.Item>
               )}
               {userLevel >= level.ADMIN && (
-                <NavDropdown.Item as={NavLink} to="users" end>
+                <NavDropdown.Item as={NavLink} to={`/${table}/users`} end>
                   Uživatelé
                 </NavDropdown.Item>
               )}
               {userLevel >= level.VIEW && (
-                <NavDropdown.Item as={NavLink} to="settings" end>
+                <NavDropdown.Item as={NavLink} to={`/${table}/settings`} end>
                   Nastavení
                 </NavDropdown.Item>
               )}
               {userLevel >= level.VIEW && (
-                <NavDropdown.Item as={NavLink} to="print" end>
+                <NavDropdown.Item as={NavLink} to={`/${table}/print`} end>
                   Tisk
                 </NavDropdown.Item>
               )}
@@ -98,7 +98,7 @@ export function NavBar({ rulesSatisfied }) {
             </Routes>
           )}
           <GoogleLogin />
-          <Nav.Link as={NavLink} to="about" variant="light">
+          <Nav.Link as={NavLink} to={`/${table}/about`} variant="light">
             <i className="fa fa-question" />
           </Nav.Link>
         </Navbar.Collapse>
