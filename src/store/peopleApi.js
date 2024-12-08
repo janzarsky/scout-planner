@@ -31,8 +31,8 @@ export const peopleApi = createApi({
     addPerson: builder.mutation({
       async queryFn({ table, data }) {
         const client = firestoreClientFactory.getClient(table);
-        await client.addPerson(data);
-        return { data: null };
+        const res = await client.addPerson(data);
+        return { data: res._id };
       },
       invalidatesTags: ["people"],
     }),
