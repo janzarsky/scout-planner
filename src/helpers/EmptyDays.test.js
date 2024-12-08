@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { parseDate } from "./DateUtils";
-import { addEmptyDays } from "./EmptyDays";
+import { addDaysAfter, addMissingDays } from "./EmptyDays";
 
 /**
  * @param {[string]} input Input array of dates
@@ -12,7 +12,10 @@ function checkDates(input, expected) {
   const convertedExpected = expected
     ? expected.map((day) => parseDate(day))
     : convertedInput;
-  expect(addEmptyDays(convertedInput)).toEqual(convertedExpected);
+  // TODO: write some tests for individual functions as well
+  expect(addDaysAfter(addMissingDays(convertedInput))).toEqual(
+    convertedExpected,
+  );
 }
 
 test("no new days", () =>
