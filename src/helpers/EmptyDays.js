@@ -12,7 +12,7 @@ import { parseDuration } from "./DateUtils";
  *
  * @param days at least one day must be supplied
  */
-export function addEmptyDays(days) {
+export function addEmptyDays(days, addEmptyDaysAfter = true) {
   const dayLength = parseDuration("24:00");
 
   // if there are at most 3 missing days, add them
@@ -35,7 +35,7 @@ export function addEmptyDays(days) {
 
   // make sure there are always at least 3 days shown
   const minDaysLimit = 3;
-  if (extendedDays.length < minDaysLimit)
+  if (addEmptyDaysAfter && extendedDays.length < minDaysLimit)
     return extendedDays.concat(
       Array.from(
         { length: minDaysLimit - extendedDays.length },

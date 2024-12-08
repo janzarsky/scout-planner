@@ -7,7 +7,13 @@ import {
 } from "../helpers/DateUtils";
 import { addEmptyDays } from "../helpers/EmptyDays";
 
-export function getTimetableSettings(programs, groups, timeStep, now) {
+export function getTimetableSettings(
+  programs,
+  groups,
+  timeStep,
+  now,
+  addEmptyDaysAfter = true,
+) {
   const hour = parseDuration("1:00");
 
   let validPrograms = programs.filter((p) => typeof p.begin === "number");
@@ -22,7 +28,7 @@ export function getTimetableSettings(programs, groups, timeStep, now) {
     settings.days.push(getOnlyDate(prog.begin));
   }
   settings.days = [...new Set(settings.days)].sort();
-  settings.days = addEmptyDays(settings.days);
+  settings.days = addEmptyDays(settings.days, addEmptyDaysAfter);
 
   settings.dayStart = parseTime("10:00");
   for (const prog of validPrograms) {
