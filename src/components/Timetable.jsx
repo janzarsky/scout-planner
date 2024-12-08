@@ -69,6 +69,7 @@ export default function Timetable({
         groupsLoaded ? groups : [],
         timeStep,
         timeProvider ? timeProvider() : Date.now(),
+        !printView,
       ),
     [programs, groups, timetableSettings, timeProvider],
   );

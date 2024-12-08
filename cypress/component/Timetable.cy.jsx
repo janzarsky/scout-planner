@@ -145,4 +145,38 @@ describe("Timetable", () => {
     mountTimetable(true);
     cy.get(".tray").should("not.exist");
   });
+
+  it("empty days are shown when not printing", () => {
+    stubClient([
+      {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: [],
+        people: [],
+      },
+    ]);
+    mountTimetable(false);
+    cy.contains("Ne");
+    cy.contains("Po");
+    cy.contains("Út");
+  });
+
+  it("empty days are hidden when printing", () => {
+    stubClient([
+      {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: [],
+        people: [],
+      },
+    ]);
+    mountTimetable(true);
+    cy.contains("Ne");
+    cy.contains("Po").should("not.exist");
+    cy.contains("Út").should("not.exist");
+  });
 });
