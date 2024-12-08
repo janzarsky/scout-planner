@@ -36,7 +36,9 @@ describe.only("ProgramPeople", () => {
   });
 
   it("allows adding people", () => {
-    cy.mount(<ProgramPeople programPeople={[]} />, { reduxStore: store });
+    cy.mount(<ProgramPeople programPeople={[]} setAttendance={cy.stub()} />, {
+      reduxStore: store,
+    });
     cy.window().then((win) => (win.prompt = cy.stub(() => "New person")));
 
     cy.get("[data-test=add-person]").click();
@@ -44,6 +46,27 @@ describe.only("ProgramPeople", () => {
       name: "New person",
     });
     cy.contains("New person");
+  });
+
+  it("marks new person as attending", () => {
+    cy.mount(
+      <ProgramPeople
+        programPeople={[]}
+        setAttendance={cy.stub().as("setAttendance")}
+      />,
+      { reduxStore: store },
+    );
+    cy.window().then((win) => (win.prompt = cy.stub(() => "New person")));
+
+    cy.get("[data-test=add-person]").click();
+    cy.get("@addPerson").should("have.been.calledOnceWith", {
+      name: "New person",
+    });
+    cy.get("@setAttendance").should(
+      "have.been.calledOnceWith",
+      "newperson",
+      {},
+    );
   });
 });
 

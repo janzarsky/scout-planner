@@ -544,7 +544,9 @@ export function ProgramPeople({
             onClick={() => {
               const name = window.prompt("Jméno");
               if (name) {
-                addPerson({ table, data: { name } });
+                addPerson({ table, data: { name } }).then((res) =>
+                  setAttendance(res.data, {}),
+                );
               }
             }}
           >
