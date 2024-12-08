@@ -5,7 +5,7 @@ import {
   parseDuration,
   parseTime,
 } from "../helpers/DateUtils";
-import { addEmptyDays } from "../helpers/EmptyDays";
+import { addDaysAfter, addMissingDays } from "./EmptyDays";
 
 export function getTimetableSettings(
   programs,
@@ -28,7 +28,8 @@ export function getTimetableSettings(
     settings.days.push(getOnlyDate(prog.begin));
   }
   settings.days = [...new Set(settings.days)].sort();
-  settings.days = addEmptyDays(settings.days, addEmptyDaysAfter);
+  const days = addMissingDays(settings.days);
+  settings.days = addEmptyDaysAfter ? addDaysAfter(days) : days;
 
   settings.dayStart = parseTime("10:00");
   for (const prog of validPrograms) {
