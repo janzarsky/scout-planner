@@ -495,7 +495,7 @@ export function PersonCheck({
   );
 }
 
-function ProgramPeople({
+export function ProgramPeople({
   programPeople,
   setAttendance,
   removeAttendance,
@@ -540,10 +540,13 @@ function ProgramPeople({
         {!disabled && (
           <Button
             variant="outline-secondary"
+            data-test="add-person"
             onClick={() => {
               const name = window.prompt("Jméno");
               if (name) {
-                addPerson({ table, data: { name } });
+                addPerson({ table, data: { name } }).then((res) =>
+                  setAttendance(res.data, {}),
+                );
               }
             }}
           >

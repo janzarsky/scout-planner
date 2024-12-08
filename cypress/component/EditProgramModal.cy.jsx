@@ -3,7 +3,72 @@
 import React from "react";
 import { PersonCheck } from "../../src/components/EditProgramModal";
 import { ProgramBeginning } from "../../src/components/EditProgramModal";
+import { ProgramPeople } from "../../src/components/EditProgramModal";
 import { getStore } from "../../src/store";
+import { firestoreClientFactory } from "../../src/FirestoreClient";
+
+describe.only("ProgramPeople", () => {
+  let store;
+
+  beforeEach(() => {
+    store = getStore();
+
+    cy.stub(firestoreClientFactory, "getClient")
+      .returns({
+        getPeople: cy
+          .stub()
+          .onFirstCall()
+          .resolves([])
+          .onSecondCall()
+          .resolves([{ _id: "newperson", name: "New person" }])
+          .as("getPeople"),
+        addPerson: cy
+          .spy(async (person) => ({ _id: "newperson", ...person }))
+          .as("addPerson"),
+        deletePerson: cy.spy(async () => {}).as("deletePerson"),
+        updatePerson: cy.spy(async (person) => person).as("updatePerson"),
+        streamPeople: cy
+          .stub()
+          .resolves(() => {})
+          .as("streamPeople"),
+      })
+      .log(false);
+  });
+
+  it("allows adding people", () => {
+    cy.mount(<ProgramPeople programPeople={[]} setAttendance={cy.stub()} />, {
+      reduxStore: store,
+    });
+    cy.window().then((win) => (win.prompt = cy.stub(() => "New person")));
+
+    cy.get("[data-test=add-person]").click();
+    cy.get("@addPerson").should("have.been.calledOnceWith", {
+      name: "New person",
+    });
+    cy.contains("New person");
+  });
+
+  it("marks new person as attending", () => {
+    cy.mount(
+      <ProgramPeople
+        programPeople={[]}
+        setAttendance={cy.stub().as("setAttendance")}
+      />,
+      { reduxStore: store },
+    );
+    cy.window().then((win) => (win.prompt = cy.stub(() => "New person")));
+
+    cy.get("[data-test=add-person]").click();
+    cy.get("@addPerson").should("have.been.calledOnceWith", {
+      name: "New person",
+    });
+    cy.get("@setAttendance").should(
+      "have.been.calledOnceWith",
+      "newperson",
+      {},
+    );
+  });
+});
 
 describe("PersonCheck", () => {
   let store;
