@@ -174,12 +174,12 @@ function isProgramHighlighted(
   if (ownerFilter === null && packageFilter === null) {
     return true;
   }
-  const owenerSatified =
+  const ownerSatisfied =
     ownerFilter === null ||
     program.people.some((it) => it.person === ownerFilter);
   const packageSatified =
     packageFilter === null || program.pkg === packageFilter;
-  return owenerSatified && packageSatified;
+  return ownerSatisfied && packageSatified;
 }
 
 type HoverStatus = null | {
