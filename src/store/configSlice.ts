@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import localConfig from "../config.local.json";
 import { useSelector } from "react-redux";
 
 const defaultConfig = {
@@ -13,10 +12,7 @@ type Config = typeof defaultConfig;
 
 export const configSlice = createSlice({
   name: "config",
-  initialState: {
-    ...defaultConfig,
-    ...localConfig,
-  },
+  initialState: { ...defaultConfig },
   reducers: {
     overrideConfig(state, action: { payload: Partial<Config> }) {
       return { ...state, ...action.payload };
