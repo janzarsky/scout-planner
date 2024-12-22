@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Add config file
-        run: "echo '{}' > src/config.local.json"
+        run: 'echo ''{ "apiKey": "${{ secrets.GCP_API_KEY }}" }'' > src/config.local.json'
 
       - name: Build
         uses: actions/setup-node@v4
