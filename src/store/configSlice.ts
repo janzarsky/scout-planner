@@ -3,7 +3,6 @@ import localConfig from "../config.local.json";
 import { useSelector } from "react-redux";
 
 const defaultConfig = {
-  host: "https://harmonogram.zarsky.name/api",
   apiKey: import.meta.env.VITE_REACT_APP_API_KEY,
   authDomain: import.meta.env.VITE_REACT_APP_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_REACT_APP_PROJECT_ID,
