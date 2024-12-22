@@ -7,8 +7,6 @@ const defaultConfig = {
   apiKey: "AIzaSyAJWL29qO2dgvaJvDpnXALUYtH_Lkdrek8",
   authDomain: "scout-planner-343913.firebaseapp.com",
   projectId: "scout-planner-343913",
-  streamingUpdates: true,
-  streamingUpdatesEnabledPrefixes: ["asdf", "vm24_"],
   timetableLayoutVersionSwitchingEnabled: false,
 };
 
