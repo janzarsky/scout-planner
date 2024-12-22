@@ -31,8 +31,8 @@ jobs:
       - run: npm run build
         env:
           VITE_REACT_APP_API_KEY: ${{ secrets.GCP_API_KEY }}
-          VITE_REACT_APP_AUTH_DOMAIN: ${{ env.GCP_AUTH_DOMAIN }}
-          VITE_REACT_APP_PROJECT_ID: ${{ env.GCP_PROJECT_ID }}
+          VITE_REACT_APP_AUTH_DOMAIN: ${{ vars.GCP_AUTH_DOMAIN }}
+          VITE_REACT_APP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Auth
         uses: "google-github-actions/auth@v2"
