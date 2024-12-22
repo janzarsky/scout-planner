@@ -10,9 +10,5 @@ You can try it at https://harmac.cz
 ```
 FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"
 ```
-3) Create `src/config.local.json` file with the following content:
-```json
-{}
-```
 4) Install dependencies using `npm ci` command.
 5) Run the app using `npm start` command.

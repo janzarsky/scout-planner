@@ -1,22 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import localConfig from "../config.local.json";
 import { useSelector } from "react-redux";
 
 const defaultConfig = {
   apiKey: import.meta.env.VITE_REACT_APP_API_KEY,
   authDomain: import.meta.env.VITE_REACT_APP_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_REACT_APP_PROJECT_ID,
-  timetableLayoutVersionSwitchingEnabled: false,
+  timetableLayoutVersionSwitchingEnabled:
+    import.meta.env
+      .VITE_REACT_APP_TIMETABLE_LAYOUT_VERSION_SWITCHING_ENABLED === "true",
 };
 
 type Config = typeof defaultConfig;
 
 export const configSlice = createSlice({
   name: "config",
-  initialState: {
-    ...defaultConfig,
-    ...localConfig,
-  },
+  initialState: { ...defaultConfig },
   reducers: {
     overrideConfig(state, action: { payload: Partial<Config> }) {
       return { ...state, ...action.payload };
