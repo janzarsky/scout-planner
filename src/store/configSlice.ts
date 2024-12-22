@@ -4,9 +4,9 @@ import { useSelector } from "react-redux";
 
 const defaultConfig = {
   host: "https://harmonogram.zarsky.name/api",
-  apiKey: "AIzaSyAJWL29qO2dgvaJvDpnXALUYtH_Lkdrek8",
-  authDomain: "scout-planner-343913.firebaseapp.com",
-  projectId: "scout-planner-343913",
+  apiKey: import.meta.env.VITE_REACT_APP_API_KEY,
+  authDomain: import.meta.env.VITE_REACT_APP_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_REACT_APP_PROJECT_ID,
   timetableLayoutVersionSwitchingEnabled: false,
 };
 
