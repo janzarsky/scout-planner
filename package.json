@@ -46,7 +46,7 @@
     "@types/eslint__js": "^8.42.3",
     "@vitejs/plugin-react": "^4.3.4",
     "cypress": "^13.17.0",
-    "eslint": "^9.16.0",
+    "eslint": "^9.17.0",
     "eslint-plugin-cypress": "^4.1.0",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.14.0",
