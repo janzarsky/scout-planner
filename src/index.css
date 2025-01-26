@@ -604,6 +604,7 @@ p {
   left: calc(var(--segment-start) * 100%);
   margin: 0 0 1px 1px;
   overflow: hidden;
+  z-index: 1;
 }
 
 .scheduleTable__plannable, .scheduleTable__plannableExpansion {
