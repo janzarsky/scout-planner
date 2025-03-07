@@ -15,6 +15,7 @@ export const viewSlice = createSlice({
     activeRange: undefined,
     peopleEnabled: false,
     activePeople: [],
+    pinTray: false,
   },
   reducers: {
     toggleHighlighting(state) {
@@ -65,6 +66,9 @@ export const viewSlice = createSlice({
           1,
         );
     },
+    togglePinTray(state) {
+      state.pinTray = !state.pinTray;
+    },
   },
 });
 
@@ -81,6 +85,7 @@ export const {
   setActiveRange,
   togglePeopleEnabled,
   toggleActivePerson,
+  togglePinTray,
 } = viewSlice.actions;
 
 export default viewSlice.reducer;

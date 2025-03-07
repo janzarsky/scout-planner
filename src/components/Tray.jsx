@@ -1,16 +1,16 @@
 import React from "react";
 import { useDrop } from "react-dnd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getProgramRects, sortTrayPrograms } from "../helpers/TrayUtils";
 import { useNavigate } from "react-router";
 import { level } from "../helpers/Level";
-import { useState } from "react";
 import { Block } from "./Blocks";
 import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
+import { togglePinTray } from "../store/viewSlice";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { table } = useSelector((state) => state.auth);
@@ -51,7 +51,8 @@ export function Tray({ settings, onDroppableDrop }) {
     userLevel >= level.EDIT,
   );
 
-  const [pinned, setPinned] = useState(false);
+  const pinned = useSelector((state) => state.view.pinTray);
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -79,7 +80,7 @@ export function Tray({ settings, onDroppableDrop }) {
         </div>
         <button
           className={"btn" + (pinned ? " btn-dark" : "")}
-          onClick={() => setPinned(!pinned)}
+          onClick={() => dispatch(togglePinTray())}
           title="Připnout"
         >
           <i className="fa fa-thumb-tack" aria-hidden="true"></i>
