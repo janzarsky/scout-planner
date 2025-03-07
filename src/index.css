@@ -21,6 +21,12 @@ p {
   margin-top: 0;
 }
 
+.app.new-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 .control-panel {
   margin-bottom: 0.25rem;
   font-weight: 400;
