@@ -51,7 +51,7 @@ p {
 
 .main-container {
   flex: 1 1 0;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .timetable {
