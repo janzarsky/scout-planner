@@ -141,7 +141,7 @@ export default function App() {
   }, [violations, otherProblems]);
 
   return (
-    <div className="App">
+    <div className="app">
       <Notifications />
       <Routes>
         <Route path="add" element={<AddProgramModal />} />
@@ -163,74 +163,87 @@ export default function App() {
           />
         </Routes>
       </Container>
-      <Routes>
-        <Route
-          index
-          element={
-            <TimetableWrapper
-              dataLoaded={dataLoaded}
-              userLevel={userLevel}
-              permissionsLoaded={permissionsLoaded}
-              violationsPerProgram={violationsPerProgram}
-            />
-          }
-        />
-        <Route
-          path="add"
-          element={
-            <TimetableWrapper
-              dataLoaded={dataLoaded}
-              userLevel={userLevel}
-              permissionsLoaded={permissionsLoaded}
-              violationsPerProgram={violationsPerProgram}
-            />
-          }
-        />
-        <Route
-          path="edit/*"
-          element={
-            <TimetableWrapper
-              dataLoaded={dataLoaded}
-              userLevel={userLevel}
-              permissionsLoaded={permissionsLoaded}
-              violationsPerProgram={violationsPerProgram}
-            />
-          }
-        />
-        <Route
-          path="rules"
-          element={userLevel >= level.VIEW && <Rules violations={violations} />}
-        />
-        <Route
-          path="packages"
-          element={userLevel >= level.EDIT && <Packages />}
-        />
-        <Route path="groups" element={userLevel >= level.EDIT && <Groups />} />
-        <Route path="people" element={userLevel >= level.EDIT && <People />} />
-        <Route path="ranges" element={userLevel >= level.EDIT && <Ranges />} />
-        <Route path="stats" element={userLevel >= level.VIEW && <Stats />} />
-        <Route
-          path="users"
-          element={
-            userLevel >= level.ADMIN && (
-              <Users userEmail={user ? user.email : null} />
-            )
-          }
-        />
-        <Route path="settings" element={<Settings />} />
-        <Route
-          path="print"
-          element={
-            <PrintWrapper
-              dataLoaded={dataLoaded}
-              permissionsLoaded={permissionsLoaded}
-              violationsPerProgram={violationsPerProgram}
-              userLevel={userLevel}
-            />
-          }
-        />
-        <Route path="about" element={<About />} />
-      </Routes>
+      <Container fluid className="ms-0 me-0 ps-0 pe-0 main-container">
+        <Routes>
+          <Route
+            index
+            element={
+              <TimetableWrapper
+                dataLoaded={dataLoaded}
+                userLevel={userLevel}
+                permissionsLoaded={permissionsLoaded}
+                violationsPerProgram={violationsPerProgram}
+              />
+            }
+          />
+          <Route
+            path="add"
+            element={
+              <TimetableWrapper
+                dataLoaded={dataLoaded}
+                userLevel={userLevel}
+                permissionsLoaded={permissionsLoaded}
+                violationsPerProgram={violationsPerProgram}
+              />
+            }
+          />
+          <Route
+            path="edit/*"
+            element={
+              <TimetableWrapper
+                dataLoaded={dataLoaded}
+                userLevel={userLevel}
+                permissionsLoaded={permissionsLoaded}
+                violationsPerProgram={violationsPerProgram}
+              />
+            }
+          />
+          <Route
+            path="rules"
+            element={
+              userLevel >= level.VIEW && <Rules violations={violations} />
+            }
+          />
+          <Route
+            path="packages"
+            element={userLevel >= level.EDIT && <Packages />}
+          />
+          <Route
+            path="groups"
+            element={userLevel >= level.EDIT && <Groups />}
+          />
+          <Route
+            path="people"
+            element={userLevel >= level.EDIT && <People />}
+          />
+          <Route
+            path="ranges"
+            element={userLevel >= level.EDIT && <Ranges />}
+          />
+          <Route path="stats" element={userLevel >= level.VIEW && <Stats />} />
+          <Route
+            path="users"
+            element={
+              userLevel >= level.ADMIN && (
+                <Users userEmail={user ? user.email : null} />
+              )
+            }
+          />
+          <Route path="settings" element={<Settings />} />
+          <Route
+            path="print"
+            element={
+              <PrintWrapper
+                dataLoaded={dataLoaded}
+                permissionsLoaded={permissionsLoaded}
+                violationsPerProgram={violationsPerProgram}
+                userLevel={userLevel}
+              />
+            }
+          />
+          <Route path="about" element={<About />} />
+        </Routes>
+      </Container>
     </div>
   );
 }

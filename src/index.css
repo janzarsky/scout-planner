@@ -21,6 +21,12 @@ p {
   margin-top: 0;
 }
 
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 .control-panel {
   margin-bottom: 0.25rem;
   font-weight: 400;
@@ -43,9 +49,13 @@ p {
   background-color: #343a40;
 }
 
+.main-container {
+  flex: 1 1 0;
+  overflow: scroll;
+}
+
 .timetable {
   display: grid;
-  overflow: auto;
 }
 
 .timeheader,
@@ -98,13 +108,13 @@ p {
   background-color: #fff;
   padding-top: 0.125rem;
   z-index: 200;
-  overflow: auto;
 }
 .tray-wrapper.pinned {
   position: sticky;
   bottom: 0;
-  overflow: auto;
   max-height: 30vh;
+  overflow-y: auto;
+  overflow-x: visible;
 }
 .tray {
   grid-column-start: 3;
