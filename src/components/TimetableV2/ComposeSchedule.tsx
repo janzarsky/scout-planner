@@ -564,10 +564,6 @@ export const ComposeSchedule = ({
 
   const navigate = useNavigate();
 
-  const onCreateTrayItem = useCallback(() => {
-    navigate("add");
-  }, [navigate]);
-
   const onClickToCreate = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const start = getDateTimeForPosition([e.clientX, e.clientY]);
@@ -605,7 +601,7 @@ export const ComposeSchedule = ({
     [addProgram, programs],
   );
 
-  const setEditingTrayItem = useCallback(
+  const setEditingProgram = useCallback(
     (programId: string) => {
       navigate(`edit/${programId}`);
     },
@@ -702,7 +698,7 @@ export const ComposeSchedule = ({
                     setDraggingPlannableStart(null);
                   }}
                   onClick={() => {
-                    setEditingTrayItem(segment.plannable._id);
+                    setEditingProgram(segment.plannable._id);
                   }}
                   onContextMenu={
                     !editable
@@ -746,7 +742,7 @@ export const ComposeSchedule = ({
                   setDraggingPlannableStart(null);
                 }}
                 onClick={() => {
-                  setEditingTrayItem(segment.plannable._id);
+                  setEditingProgram(segment.plannable._id);
                 }}
                 editable={editable}
                 isHighlighted={null}
@@ -793,10 +789,8 @@ export const ComposeSchedule = ({
         <Tray
           onDragOver={onTrayDragOver}
           onDrop={onTrayDrop}
-          onCreateTrayItem={onCreateTrayItem}
           notScheduledPlannables={notScheduledPlannables}
           setDraggingPlannable={setDraggingPlannable}
-          setEditingTrayItem={setEditingTrayItem}
         />
       )}
 

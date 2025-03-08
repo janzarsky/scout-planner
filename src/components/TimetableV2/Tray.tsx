@@ -1,26 +1,34 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { DEFAULT_PROGRAM_COLOR, MIME_TYPE, Program } from "./types";
 import { Button } from "react-bootstrap";
 import { usePkgs } from "./hooks";
 import { isColorDark } from "../../helpers/isColorDark";
+import { useNavigate } from "react-router";
 
 interface TrayProps {
   onDragOver: React.DragEventHandler<HTMLDivElement>;
   onDrop: React.DragEventHandler<HTMLDivElement>;
-  onCreateTrayItem: () => void;
   notScheduledPlannables: Program[];
   setDraggingPlannable: (plannable: { id: string }) => void;
-  setEditingTrayItem: (id: string) => void;
 }
 
 export function Tray({
   onDragOver,
   onDrop,
-  onCreateTrayItem,
   notScheduledPlannables,
   setDraggingPlannable,
-  setEditingTrayItem,
 }: TrayProps) {
+  const navigate = useNavigate();
+  const onCreateTrayItem = useCallback(() => {
+    navigate("add");
+  }, [navigate]);
+  const setEditingTrayItem = useCallback(
+    (programId: string) => {
+      navigate(`edit/${programId}`);
+    },
+    [navigate],
+  );
+
   const programmeGroups = usePkgs();
 
   return (
