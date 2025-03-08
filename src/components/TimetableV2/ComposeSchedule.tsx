@@ -20,7 +20,11 @@ import {
   useUpdateProgram,
 } from "./hooks";
 import { Temporal } from "@js-temporal/polyfill";
-import { groupNeighbours, isProgramHighlighted } from "./utils";
+import {
+  epochMillisecondsToPlainDateTime,
+  groupNeighbours,
+  isProgramHighlighted,
+} from "./utils";
 import { maxTime, minTime } from "../../helpers/timeCompare";
 import { useNavigate } from "react-router";
 import { TimeLabels } from "./TimeLabels";
@@ -65,9 +69,7 @@ export const ComposeSchedule = ({
   const dates = useMemo(() => {
     const scheduledDateTimes = scheduledPlannables.map(
       (program): [Temporal.PlainDateTime, Temporal.Duration] => [
-        Temporal.Instant.fromEpochMilliseconds(program.begin)
-          .toZonedDateTimeISO(LOCAL_TIMEZONE)
-          .toPlainDateTime(),
+        epochMillisecondsToPlainDateTime(program.begin),
         Temporal.Duration.from({ milliseconds: program.duration }),
       ],
     );
@@ -182,9 +184,7 @@ export const ComposeSchedule = ({
       Map<string | null, number[]>
     >();
     for (const program of scheduledPlannables) {
-      const start = Temporal.Instant.fromEpochMilliseconds(program.begin)
-        .toZonedDateTimeISO(LOCAL_TIMEZONE)
-        .toPlainDateTime();
+      const start = epochMillisecondsToPlainDateTime(program.begin);
       const end = start.add({ milliseconds: program.duration });
       const days = [start.toPlainDate()];
       if (!start.equals(end.toPlainDate())) {
@@ -236,10 +236,7 @@ export const ComposeSchedule = ({
         : { start: Temporal.PlainDateTime },
     ): Segment[] {
       const start =
-        opts?.start ??
-        Temporal.Instant.fromEpochMilliseconds(plannable.begin!)
-          .toZonedDateTimeISO(LOCAL_TIMEZONE)
-          .toPlainDateTime();
+        opts?.start ?? epochMillisecondsToPlainDateTime(plannable.begin!);
       const duration = Temporal.Duration.from({
         milliseconds: plannable.duration,
       });
@@ -275,9 +272,7 @@ export const ComposeSchedule = ({
 
         // All block in the same time and same groups, but with different block order
         const concurrentBlocks = scheduledPlannables.filter((it) => {
-          const start = Temporal.Instant.fromEpochMilliseconds(it.begin)
-            .toZonedDateTimeISO(LOCAL_TIMEZONE)
-            .toPlainDateTime();
+          const start = epochMillisecondsToPlainDateTime(it.begin);
           const end = start.add({ milliseconds: it.duration });
           return (
             Temporal.PlainDateTime.compare(dateStart, end) < 0 &&
@@ -384,9 +379,7 @@ export const ComposeSchedule = ({
     const swappingPlannableSegments =
       swappingPlannable.length == 1
         ? createSegmentsForPlannable(swappingPlannable[0], {
-            start: Temporal.Instant.fromEpochMilliseconds(plannable.begin!)
-              .toZonedDateTimeISO(LOCAL_TIMEZONE)
-              .toPlainDateTime(),
+            start: epochMillisecondsToPlainDateTime(plannable.begin!),
           })
         : [];
 
@@ -648,11 +641,7 @@ export const ComposeSchedule = ({
       }
 
       for (let i = 0; i < times; i++) {
-        const originalStart = Temporal.Instant.fromEpochMilliseconds(
-          trayItem.begin!,
-        )
-          .toZonedDateTimeISO(LOCAL_TIMEZONE)
-          .toPlainDateTime();
+        const originalStart = epochMillisecondsToPlainDateTime(trayItem.begin!);
         const newStart = originalStart
           .add({ days: i + 1 })
           .toZonedDateTime(LOCAL_TIMEZONE);
