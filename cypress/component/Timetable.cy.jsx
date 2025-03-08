@@ -179,4 +179,56 @@ describe("Timetable", () => {
     cy.contains("Po").should("not.exist");
     cy.contains("Út").should("not.exist");
   });
+
+  describe("date header", () => {
+    beforeEach(() => {
+      cy.viewport(100, 500);
+    });
+
+    it("is shown on the left", () => {
+      stubClient([]);
+      mountTimetable();
+      cy.get(".dateheader").then((el) =>
+        expect(el[0].getBoundingClientRect().left).to.equal(0),
+      );
+    });
+
+    it("is shown on the left after scrolling", () => {
+      stubClient([]);
+      mountTimetable();
+      cy.get(".timetable").scrollTo(100, 0);
+      // needed to ensure that scrolling has finished
+      cy.get(".timetable").invoke("scrollLeft").should("equal", 100);
+
+      cy.get(".timeheader").then((el) =>
+        expect(el[0].getBoundingClientRect().top).to.equal(0),
+      );
+    });
+  });
+
+  describe("time header", () => {
+    beforeEach(() => {
+      cy.viewport(500, 100);
+    });
+
+    it("is shown at the top", () => {
+      stubClient([]);
+      mountTimetable();
+      cy.get(".timeheader").then((el) =>
+        expect(el[0].getBoundingClientRect().top).to.equal(0),
+      );
+    });
+
+    it("is shown at the top after scrolling", () => {
+      stubClient([]);
+      mountTimetable();
+      cy.scrollTo(0, 100);
+      // needed to ensure that scrolling has finished
+      cy.window().its("scrollY").should("equal", 100);
+
+      cy.get(".timeheader").then((el) =>
+        expect(el[0].getBoundingClientRect().top).to.equal(0),
+      );
+    });
+  });
 });

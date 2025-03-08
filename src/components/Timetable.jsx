@@ -88,45 +88,51 @@ export default function Timetable({
   const timeIndicatorRect = getTimeIndicatorRect(settings, time);
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
 
+  const timetableInside = (
+    <div
+      className="timetable main-container"
+      style={{
+        gridTemplateRows:
+          "repeat(" +
+          (settings.days.length * settings.groupCnt + 1) +
+          ", auto)",
+        gridTemplateColumns:
+          "auto auto repeat(" +
+          settings.timeSpan * settings.timeHeaders.length +
+          ", minmax(" +
+          (width * 20) / 100 +
+          "px, 1fr))",
+      }}
+    >
+      {userLevel >= level.EDIT && (
+        <Droppables settings={settings} onDrop={onDroppableDrop} />
+      )}
+      <TimeHeaders settings={settings} />
+      <DateHeaders settings={settings} />
+      <GroupHeaders settings={settings} />
+      <Blocks
+        settings={settings}
+        violations={violations}
+        onDrop={onDroppableDrop}
+      />
+      {timeIndicatorRect && (
+        <TimeIndicator
+          x={timeIndicatorRect.x}
+          y={timeIndicatorRect.y}
+          height={timeIndicatorRect.height}
+        />
+      )}
+    </div>
+  );
+
+  const trayInside = !printView && (
+    <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
+  );
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <div
-        className="timetable"
-        style={{
-          gridTemplateRows:
-            "repeat(" +
-            (settings.days.length * settings.groupCnt + 1) +
-            ", auto)",
-          gridTemplateColumns:
-            "auto auto repeat(" +
-            settings.timeSpan * settings.timeHeaders.length +
-            ", minmax(" +
-            (width * 20) / 100 +
-            "px, 1fr))",
-        }}
-      >
-        {userLevel >= level.EDIT && (
-          <Droppables settings={settings} onDrop={onDroppableDrop} />
-        )}
-        <TimeHeaders settings={settings} />
-        <DateHeaders settings={settings} />
-        <GroupHeaders settings={settings} />
-        <Blocks
-          settings={settings}
-          violations={violations}
-          onDrop={onDroppableDrop}
-        />
-        {timeIndicatorRect && (
-          <TimeIndicator
-            x={timeIndicatorRect.x}
-            y={timeIndicatorRect.y}
-            height={timeIndicatorRect.height}
-          />
-        )}
-      </div>
-      {!printView && (
-        <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
-      )}
+      {timetableInside}
+      {trayInside}
     </DndProvider>
   );
 }

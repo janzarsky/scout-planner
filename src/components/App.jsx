@@ -141,7 +141,7 @@ export default function App() {
   }, [violations, otherProblems]);
 
   return (
-    <div className="App">
+    <div className="app">
       <Notifications />
       <Routes>
         <Route path="add" element={<AddProgramModal />} />
