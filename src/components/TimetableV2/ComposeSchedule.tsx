@@ -32,6 +32,7 @@ import { DataLabels } from "./DataLabels";
 import { SegmentBox } from "./SegmentBox";
 import { Button } from "react-bootstrap";
 import { isColorDark } from "../../helpers/isColorDark";
+import { HoveringInfo } from "./HoveringInfo";
 
 interface ComposeScheduleProps {
   editable: boolean;
@@ -717,7 +718,7 @@ export const ComposeSchedule = ({
               lines={lines}
             />
 
-            {[...segments].map((segment, index) => {
+            {segments.map((segment, index) => {
               return (
                 <SegmentBox
                   key={index}
@@ -805,6 +806,16 @@ export const ComposeSchedule = ({
                 lines={lines}
               />
             ))}
+
+            {hoveringPlannable && !draggingPlannable && (
+              <HoveringInfo
+                program={
+                  programs.find((it) => it._id === hoveringPlannable.id)!
+                }
+                violations={violations.get(hoveringPlannable.id) ?? []}
+                screenLocation={hoveringPlannable}
+              />
+            )}
           </div>
         </div>
         {!printView && (

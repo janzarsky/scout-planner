@@ -32,6 +32,16 @@ export function usePkgs(): Pkg[] {
   return pkgs ?? [];
 }
 
+export function usePkg(pkgId: string | null): Pkg | undefined {
+  const pkgs = usePkgs();
+  return useMemo(() => {
+    if (!pkgId) {
+      return undefined;
+    }
+    return pkgs.find((pkg) => pkg._id === pkgId);
+  }, [pkgs, pkgId]);
+}
+
 export function usePeople(): Person[] {
   const { table } = useSelector<any, any>((state) => state.auth);
   const { data: people }: { data?: Person[] } = useGetPeopleQuery(table);

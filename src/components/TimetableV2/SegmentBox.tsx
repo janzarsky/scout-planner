@@ -7,8 +7,9 @@ import {
   Lines,
   DEFAULT_PROGRAM_COLOR,
 } from "./types";
-import { usePeople, usePkgs } from "./hooks";
+import { usePkgs } from "./hooks";
 import { isColorDark } from "../../helpers/isColorDark";
+import { useProgramPeopleString } from "./helperHooks";
 
 interface SegmentBoxProps {
   segment: Segment;
@@ -85,19 +86,7 @@ export function SegmentBox({
   const isDark = color !== null && isColorDark(color);
 
   // Format to name1, name2, name3 (optionalname1, optionalname2)
-  const people = usePeople();
-  const owners = segment.plannable.people.map((person) => ({
-    name: people.find((p) => p._id === person.person)?.name ?? person.person,
-    optional: person.optional,
-  }));
-  const nonOptionalOwners = owners.filter((owner) => !owner.optional);
-  const optionalOwners = owners.filter((owner) => owner.optional);
-  const ownersString = nonOptionalOwners.map((owner) => owner.name).join(", ");
-  const optionalOwnersString = optionalOwners
-    .map((owner) => owner.name)
-    .join(", ");
-  const ownersStr =
-    ownersString + (optionalOwnersString ? ` (${optionalOwnersString})` : "");
+  const ownersStr = useProgramPeopleString(program);
 
   const MIME_TYPE = "application/prs.plannable";
 
@@ -183,43 +172,6 @@ export function SegmentBox({
       </div>
       {ownersStr.length > 0 && (
         <div className="scheduleTable__plannableOwners">{ownersStr}</div>
-      )}
-      {isHovering != null && !isDragged && (
-        <div
-          className="scheduleTable__plannableExpansion"
-          style={
-            {
-              "--position-x": `${isHovering.clientX}px`,
-              "--position-y": `${isHovering.clientY}px`,
-            } as any
-          }
-        >
-          <div className="scheduleTable__plannableTitle">{program.title}</div>
-          {violations.length > 0 && (
-            <div className="scheduleTable__plannableOwners">
-              <i className="fa fa-exclamation-triangle me-1" />
-              {violations.map((violation) => violation.msg).join(", ")}
-            </div>
-          )}
-          <div className="scheduleTable__plannableOwners">
-            {pkg?.name ?? "Bez balíčku"}
-          </div>
-          {ownersStr.length > 0 && (
-            <div className="scheduleTable__plannableOwners">{ownersStr}</div>
-          )}
-          <div className="scheduleTable__plannableOwners">
-            {startTime.toLocaleString("cs-CZ", {
-              hour: "numeric",
-              minute: "2-digit",
-            })}{" "}
-            -{" "}
-            {endTime.toLocaleString("cs-CZ", {
-              hour: "numeric",
-              minute: "2-digit",
-            })}{" "}
-            ({duration.total({ unit: "minute" })} min)
-          </div>
-        </div>
       )}
     </div>
   );
