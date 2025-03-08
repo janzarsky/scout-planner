@@ -21,7 +21,7 @@ export function groupNeighbours(_items: number[]): number[][] {
     if (
       result.length === 0 ||
       result[result.length - 1][result[result.length - 1].length - 1] !==
-      item - 1
+        item - 1
     ) {
       result.push([item]);
     } else {
