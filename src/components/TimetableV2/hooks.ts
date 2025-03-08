@@ -9,6 +9,7 @@ import {
 import { useGetPeopleQuery } from "../../store/peopleApi";
 import { Group, NewProgram, Person, Pkg, Program } from "./types";
 import { level } from "../../helpers/Level";
+import { useCallback, useMemo } from "react";
 
 export function usePrograms(): Program[] {
   const { table } = useSelector<any, any>((state) => state.auth);
@@ -19,7 +20,10 @@ export function usePrograms(): Program[] {
 export function useGroups(): Group[] {
   const { table } = useSelector<any, any>((state) => state.auth);
   const { data: groups }: { data?: Group[] } = useGetGroupsQuery(table);
-  return [...(groups ?? [])].sort((a, b) => a.order - b.order);
+  return useMemo(
+    () => [...(groups ?? [])].sort((a, b) => a.order - b.order),
+    [groups],
+  );
 }
 
 export function usePkgs(): Pkg[] {
@@ -37,18 +41,24 @@ export function usePeople(): Person[] {
 export function useUpdateProgram(): (program: Program) => void {
   const { table } = useSelector<any, any>((state) => state.auth);
   const [updateProgramMutation] = useUpdateProgramMutation();
-  return (program: Program) => {
-    updateProgramMutation({ table, data: program });
-  };
+  return useCallback(
+    (program: Program) => {
+      updateProgramMutation({ table, data: program });
+    },
+    [table, updateProgramMutation],
+  );
 }
 
 export function useAddProgram(): (program: NewProgram) => void {
   const { table } = useSelector<any, any>((state) => state.auth);
   const [addProgramMutation] = useAddProgramMutation();
-  return (program: NewProgram) => {
-    delete program._id;
-    addProgramMutation({ table, data: program });
-  };
+  return useCallback(
+    (program: NewProgram) => {
+      delete program._id;
+      addProgramMutation({ table, data: program });
+    },
+    [table, addProgramMutation],
+  );
 }
 
 export function useUserLevel(): number {
