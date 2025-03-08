@@ -14,17 +14,11 @@ import {
 import {
   useAddProgram,
   useGroups,
-  usePeople,
-  usePkgs,
   usePrograms,
   useUpdateProgram,
 } from "./hooks";
 import { Temporal } from "@js-temporal/polyfill";
-import {
-  epochMillisecondsToPlainDateTime,
-  groupNeighbours,
-  isProgramHighlighted,
-} from "./utils";
+import { epochMillisecondsToPlainDateTime, groupNeighbours } from "./utils";
 import { maxTime, minTime } from "../../helpers/timeCompare";
 import { useNavigate } from "react-router";
 import { TimeLabels } from "./TimeLabels";
@@ -33,6 +27,7 @@ import { SegmentBox } from "./SegmentBox";
 import { Button } from "react-bootstrap";
 import { isColorDark } from "../../helpers/isColorDark";
 import { HoveringInfo } from "./HoveringInfo";
+import { isProgramHighlighted, useFilters } from "./filtering";
 
 interface ComposeScheduleProps {
   editable: boolean;
@@ -131,52 +126,8 @@ export const ComposeSchedule = ({
       : (sortedAttendeGroupIds as [string, ...string[]]); // safe cast because showVirtualGroup is false, so there is at least one group
   }, [atendeeGroups, showVirtualGroup]);
 
-  // Owner filtering
-  const [ownerFilter, setOwnerFilter] = useState<string | null>(null);
-  const people = usePeople();
-  const availableOwners = useMemo(() => {
-    const result: { id: string; name: string; count: number }[] = [];
-    for (const program of programs) {
-      for (const { person: ownerId } of program.people) {
-        let ownerRecord = result.find((it) => it.id === ownerId);
-        if (!ownerRecord) {
-          const person = people.find((it) => it._id === ownerId);
-          if (!person) {
-            continue;
-          }
-          ownerRecord = { id: ownerId, name: person.name, count: 0 };
-          result.push(ownerRecord);
-        }
-        ownerRecord!.count++;
-      }
-    }
-    result.sort((a, b) => a.name.localeCompare(b.name));
-    return result;
-  }, [programs, people]);
-
-  // Package filtering
-  const [packageFilter, setPackageFilter] = useState<string | null>(null);
-  const programmeGroups = usePkgs();
-  const availablePackages = useMemo(() => {
-    const result = programmeGroups.map((it) => ({
-      id: it._id,
-      name: it.name,
-      color: it.color,
-      count: 0,
-    }));
-
-    for (const program of programs) {
-      if (!program.pkg) {
-        continue;
-      }
-      const packageRecord = result.find((it) => it.id === program.pkg);
-      if (packageRecord) {
-        packageRecord.count++;
-      }
-    }
-
-    return result;
-  }, [programs, programmeGroups]);
+  // Filtering
+  const { state: filterState, component: filterComponent } = useFilters();
 
   const concurrentBlocksMap = useMemo(() => {
     // Get all unique blockOrder for each date and atendee group
@@ -769,8 +720,7 @@ export const ComposeSchedule = ({
                   editable={editable && !segment.plannable.locked}
                   isHighlighted={isProgramHighlighted(
                     segment.plannable,
-                    ownerFilter,
-                    packageFilter,
+                    filterState,
                   )}
                   violations={violations.get(segment.plannable._id) ?? []}
                   lines={lines}
@@ -821,38 +771,7 @@ export const ComposeSchedule = ({
         {!printView && (
           <div className="schedulePage__bottomControls">
             <div className="schedulePage__bottomControlsLeft">
-              <label>
-                Majitel programu:{" "}
-                <select
-                  value={ownerFilter ?? ""}
-                  onChange={(e) => setOwnerFilter(e.target.value || null)}
-                >
-                  <option value="">Všichni</option>
-                  {availableOwners.map((it) => (
-                    <option key={it.id} value={it.id}>
-                      {it.name} ({it.count})
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Balíček:{" "}
-                <select
-                  value={packageFilter ?? ""}
-                  onChange={(e) => setPackageFilter(e.target.value || null)}
-                >
-                  <option value="">Všechny</option>
-                  {availablePackages.map((it) => (
-                    <option
-                      key={it.id}
-                      value={it.id}
-                      style={{ backgroundColor: it.color }}
-                    >
-                      {it.name} ({it.count})
-                    </option>
-                  ))}
-                </select>
-              </label>
+              {filterComponent}
             </div>
 
             <div className="schedulePage__bottomControlsRight">

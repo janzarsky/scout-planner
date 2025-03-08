@@ -32,25 +32,6 @@ export function groupNeighbours(_items: number[]): number[][] {
   return result;
 }
 
-/**
- * Determines if a program should be highlighted based on filters
- */
-export function isProgramHighlighted(
-  program: { people: { person: string }[]; pkg: string | null },
-  ownerFilter: string | null,
-  packageFilter: string | null,
-): boolean {
-  if (ownerFilter === null && packageFilter === null) {
-    return true;
-  }
-  const ownerSatisfied =
-    ownerFilter === null ||
-    program.people.some((it) => it.person === ownerFilter);
-  const packageSatified =
-    packageFilter === null || program.pkg === packageFilter;
-  return ownerSatisfied && packageSatified;
-}
-
 // Cache for storing previously calculated PlainDateTime results
 const dateTimeCache = new Map<number, Temporal.PlainDateTime>();
 
