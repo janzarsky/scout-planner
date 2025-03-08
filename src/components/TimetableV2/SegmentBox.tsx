@@ -15,7 +15,7 @@ interface SegmentBoxProps {
   segment: Segment;
   earliestTime: Temporal.PlainTime;
   latestTime: Temporal.PlainTime;
-  isHovering: HoverStatus;
+  isHovering: boolean;
   isDragged?: boolean;
   setHovering: (isHovering: HoverStatus) => void;
   dayIndex: number;
@@ -94,7 +94,7 @@ export function SegmentBox({
     <div
       className={[
         "scheduleTable__plannable",
-        isHovering != null && "scheduleTable__plannable--hovering",
+        isHovering && "scheduleTable__plannable--hovering",
         isDragged && "scheduleTable__plannable--dragged",
         segment.start?.equals(startTime) && "scheduleTable__plannable--start",
         segment.end?.equals(endTime) && "scheduleTable__plannable--end",

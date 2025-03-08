@@ -670,11 +670,7 @@ export const ComposeSchedule = ({
                   segment={segment}
                   earliestTime={earliestTime}
                   latestTime={latestTime}
-                  isHovering={
-                    hoveringPlannable?.id === segment.plannable._id
-                      ? hoveringPlannable
-                      : null
-                  }
+                  isHovering={hoveringPlannable?.id === segment.plannable._id}
                   isDragged={draggingPlannable?.id === segment.plannable._id}
                   setHovering={(isHovering) =>
                     setHoveringPlannable(
@@ -728,7 +724,7 @@ export const ComposeSchedule = ({
                 segment={segment}
                 earliestTime={earliestTime}
                 latestTime={latestTime}
-                isHovering={null}
+                isHovering={false}
                 setHovering={() => {}}
                 dayIndex={dates.findIndex((it) => it.equals(segment.date))}
                 onDragStart={(widthRatio) => {
