@@ -1,6 +1,5 @@
-import React, { Fragment, useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-  DEFAULT_PROGRAM_COLOR,
   HoverStatusExtended,
   Lines,
   LOCAL_TIMEZONE,
@@ -24,10 +23,9 @@ import { useNavigate } from "react-router";
 import { TimeLabels } from "./TimeLabels";
 import { DataLabels } from "./DataLabels";
 import { SegmentBox } from "./SegmentBox";
-import { Button } from "react-bootstrap";
-import { isColorDark } from "../../helpers/isColorDark";
 import { HoveringInfo } from "./HoveringInfo";
 import { isProgramHighlighted, useFilters } from "./filtering";
+import { Tray } from "./Tray";
 
 interface ComposeScheduleProps {
   editable: boolean;
@@ -792,56 +790,14 @@ export const ComposeSchedule = ({
       </div>
 
       {editable && (
-        <div
-          className="schedulePage__tray"
+        <Tray
           onDragOver={onTrayDragOver}
           onDrop={onTrayDrop}
-        >
-          <div className="schedulePage_trayHeader">
-            <h2 className="schedulePage_trayHeaderTitle">Odkladiště</h2>
-            <Button
-              onClick={onCreateTrayItem}
-              variant="outline-primary"
-              size="sm"
-            >
-              <i className="fa fa-plus"></i>
-            </Button>
-          </div>
-          {notScheduledPlannables.map((plannable) => {
-            const color =
-              (plannable.pkg
-                ? programmeGroups.find((it) => it._id === plannable.pkg)?.color
-                : null) ?? DEFAULT_PROGRAM_COLOR;
-            const isDark = color !== null ? isColorDark(color) : false;
-            return (
-              <div
-                key={plannable._id}
-                className={[
-                  "schedulePage__traySegment",
-                  isDark && "schedulePage__traySegment--dark",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                style={
-                  {
-                    "--segment-color": color,
-                  } as any
-                }
-                draggable={true}
-                onDragStart={(e) => {
-                  e.dataTransfer.setData(MIME_TYPE, plannable._id as string);
-                  e.dataTransfer.effectAllowed = "move";
-                  setDraggingPlannable({ id: plannable._id });
-                }}
-                onClick={() => {
-                  setEditingTrayItem(plannable._id);
-                }}
-              >
-                {plannable.title}
-              </div>
-            );
-          })}
-        </div>
+          onCreateTrayItem={onCreateTrayItem}
+          notScheduledPlannables={notScheduledPlannables}
+          setDraggingPlannable={setDraggingPlannable}
+          setEditingTrayItem={setEditingTrayItem}
+        />
       )}
 
       {contextMenu && contextMenuProgram && (
