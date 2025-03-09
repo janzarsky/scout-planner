@@ -35,6 +35,7 @@ import { useGetRulesQuery } from "../store/rulesApi";
 import { useGetTimetableQuery } from "../store/timetableApi";
 import { useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
+import { useConfig } from "../store/configSlice";
 
 export default function App() {
   const [violations, setViolations] = useState(new Map());
@@ -140,8 +141,10 @@ export default function App() {
     return tmp;
   }, [violations, otherProblems]);
 
+  const newAppLayout = useConfig("newAppLayout");
+
   return (
-    <div className="App">
+    <div className={"app" + (newAppLayout ? " new-layout" : "")}>
       <Notifications />
       <Routes>
         <Route path="add" element={<AddProgramModal />} />

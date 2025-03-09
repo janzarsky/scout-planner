@@ -22,6 +22,7 @@ import {
   useGetProgramsQuery,
   useUpdateProgramMutation,
 } from "../store/programsApi";
+import { useConfig } from "../store/configSlice";
 
 export default function Timetable({
   violations,
@@ -88,45 +89,64 @@ export default function Timetable({
   const timeIndicatorRect = getTimeIndicatorRect(settings, time);
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
 
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <div
-        className="timetable"
-        style={{
-          gridTemplateRows:
-            "repeat(" +
-            (settings.days.length * settings.groupCnt + 1) +
-            ", auto)",
-          gridTemplateColumns:
-            "auto auto repeat(" +
-            settings.timeSpan * settings.timeHeaders.length +
-            ", minmax(" +
-            (width * 20) / 100 +
-            "px, 1fr))",
-        }}
-      >
-        {userLevel >= level.EDIT && (
-          <Droppables settings={settings} onDrop={onDroppableDrop} />
-        )}
-        <TimeHeaders settings={settings} />
-        <DateHeaders settings={settings} />
-        <GroupHeaders settings={settings} />
-        <Blocks
-          settings={settings}
-          violations={violations}
-          onDrop={onDroppableDrop}
-        />
-        {timeIndicatorRect && (
-          <TimeIndicator
-            x={timeIndicatorRect.x}
-            y={timeIndicatorRect.y}
-            height={timeIndicatorRect.height}
-          />
-        )}
-      </div>
-      {!printView && (
-        <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
+  const timetableDiv = (
+    <div
+      className="timetable"
+      style={{
+        gridTemplateRows:
+          "repeat(" +
+          (settings.days.length * settings.groupCnt + 1) +
+          ", auto)",
+        gridTemplateColumns:
+          "auto auto repeat(" +
+          settings.timeSpan * settings.timeHeaders.length +
+          ", minmax(" +
+          (width * 20) / 100 +
+          "px, 1fr))",
+      }}
+    >
+      {userLevel >= level.EDIT && (
+        <Droppables settings={settings} onDrop={onDroppableDrop} />
       )}
-    </DndProvider>
+      <TimeHeaders settings={settings} />
+      <DateHeaders settings={settings} />
+      <GroupHeaders settings={settings} />
+      <Blocks
+        settings={settings}
+        violations={violations}
+        onDrop={onDroppableDrop}
+      />
+      {timeIndicatorRect && (
+        <TimeIndicator
+          x={timeIndicatorRect.x}
+          y={timeIndicatorRect.y}
+          height={timeIndicatorRect.height}
+        />
+      )}
+    </div>
   );
+
+  const trayDiv = !printView && (
+    <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
+  );
+
+  const pinTray = useSelector((state) => state.view.pinTray);
+  const newAppLayout = useConfig("newAppLayout");
+
+  if (pinTray || !newAppLayout) {
+    return (
+      <DndProvider backend={HTML5Backend}>
+        {timetableDiv}
+        {trayDiv}
+      </DndProvider>
+    );
+  } else
+    return (
+      <DndProvider backend={HTML5Backend}>
+        <div className="common-container">
+          {timetableDiv}
+          {trayDiv}
+        </div>
+      </DndProvider>
+    );
 }
