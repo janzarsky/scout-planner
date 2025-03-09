@@ -1,10 +1,17 @@
-export function getProgramRects(programs, settings, addButton = true) {
-  const dayWidth = (settings.dayEnd - settings.dayStart) / settings.timeStep;
+export function getTrayWidth(settings) {
+  return (settings.dayEnd - settings.dayStart) / settings.timeStep;
+}
 
+export function getProgramRects(
+  programs,
+  timeStep,
+  trayWidth,
+  addButton = true,
+) {
   return programs.reduce(
     (acc, prog) => {
-      const width = Math.ceil(prog.duration / settings.timeStep);
-      const isOverflowing = acc.x + width > dayWidth;
+      const width = Math.ceil(prog.duration / timeStep);
+      const isOverflowing = acc.x + width > trayWidth;
       const rect = {
         x: isOverflowing ? 0 : acc.x,
         y: isOverflowing ? acc.y + 1 : acc.y,

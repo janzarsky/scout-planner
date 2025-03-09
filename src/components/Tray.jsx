@@ -1,7 +1,11 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import { getProgramRects, sortTrayPrograms } from "../helpers/TrayUtils";
+import {
+  getProgramRects,
+  getTrayWidth,
+  sortTrayPrograms,
+} from "../helpers/TrayUtils";
 import { useNavigate } from "react-router";
 import { level } from "../helpers/Level";
 import { Block } from "./Blocks";
@@ -45,9 +49,11 @@ export function Tray({ settings, onDroppableDrop }) {
     packagesLoaded ? packages : [],
   );
 
+  const trayWidth = getTrayWidth(settings);
   const programRects = getProgramRects(
     sortedPrograms,
-    settings,
+    settings.timeStep,
+    trayWidth,
     userLevel >= level.EDIT,
   );
 

@@ -1,22 +1,31 @@
 import { describe, expect, it } from "vitest";
 import { parseDuration, parseTime } from "./DateUtils";
-import { getProgramRects, sortTrayPrograms } from "./TrayUtils";
+import { getProgramRects, getTrayWidth, sortTrayPrograms } from "./TrayUtils";
 
-describe("getProgramRects", () => {
+describe("getTrayWidth", () => {
   const settings = {
     dayStart: parseTime("7:00"),
     dayEnd: parseTime("22:00"),
     timeStep: parseDuration("0:15"),
   };
 
+  it("should return number of slots", () => {
+    expect(getTrayWidth(settings)).toEqual(60);
+  });
+});
+
+describe("getProgramRects", () => {
+  const timeStep = parseDuration("0:15");
+  const trayWidth = 60;
+
   it("should return empty array for no programs", () => {
-    expect(getProgramRects([], settings)).toEqual([]);
+    expect(getProgramRects([], timeStep, trayWidth)).toEqual([]);
   });
 
   it("should position one program at the top left corner", () => {
     const prog = { duration: parseDuration("1:00") };
 
-    expect(getProgramRects([prog], settings)).toEqual([
+    expect(getProgramRects([prog], timeStep, trayWidth)).toEqual([
       [prog, { x: 4, y: 0, width: 4, height: 1 }],
     ]);
   });
@@ -24,7 +33,7 @@ describe("getProgramRects", () => {
   it("should remove the space for add button when not requested", () => {
     const prog = { duration: parseDuration("1:00") };
 
-    expect(getProgramRects([prog], settings, false)).toEqual([
+    expect(getProgramRects([prog], timeStep, trayWidth, false)).toEqual([
       [prog, { x: 0, y: 0, width: 4, height: 1 }],
     ]);
   });
@@ -33,7 +42,7 @@ describe("getProgramRects", () => {
     const prog1 = { duration: parseDuration("1:00") };
     const prog2 = { duration: parseDuration("1:00") };
 
-    expect(getProgramRects([prog1, prog2], settings)).toEqual([
+    expect(getProgramRects([prog1, prog2], timeStep, trayWidth)).toEqual([
       [prog1, { x: 4, y: 0, width: 4, height: 1 }],
       [prog2, { x: 8, y: 0, width: 4, height: 1 }],
     ]);
@@ -43,7 +52,7 @@ describe("getProgramRects", () => {
     const prog1 = { duration: parseDuration("10:00") };
     const prog2 = { duration: parseDuration("10:00") };
 
-    expect(getProgramRects([prog1, prog2], settings)).toEqual([
+    expect(getProgramRects([prog1, prog2], timeStep, trayWidth)).toEqual([
       [prog1, { x: 4, y: 0, width: 40, height: 1 }],
       [prog2, { x: 0, y: 1, width: 40, height: 1 }],
     ]);
@@ -54,11 +63,13 @@ describe("getProgramRects", () => {
     const prog2 = { duration: parseDuration("5:00") };
     const prog3 = { duration: parseDuration("5:00") };
 
-    expect(getProgramRects([prog1, prog2, prog3], settings)).toEqual([
-      [prog1, { x: 4, y: 0, width: 40, height: 1 }],
-      [prog2, { x: 0, y: 1, width: 20, height: 1 }],
-      [prog3, { x: 20, y: 1, width: 20, height: 1 }],
-    ]);
+    expect(getProgramRects([prog1, prog2, prog3], timeStep, trayWidth)).toEqual(
+      [
+        [prog1, { x: 4, y: 0, width: 40, height: 1 }],
+        [prog2, { x: 0, y: 1, width: 20, height: 1 }],
+        [prog3, { x: 20, y: 1, width: 20, height: 1 }],
+      ],
+    );
   });
 });
 
