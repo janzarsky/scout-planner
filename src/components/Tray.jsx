@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,6 +15,7 @@ import { useGetPackagesQuery } from "../store/packagesApi";
 import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
 import { togglePinTray } from "../store/viewSlice";
+import { useConfig } from "../store/configSlice";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { table } = useSelector((state) => state.auth);
@@ -49,7 +50,37 @@ export function Tray({ settings, onDroppableDrop }) {
     packagesLoaded ? packages : [],
   );
 
-  const trayWidth = getTrayWidth(settings);
+  const trayWrapperRef = useRef(null);
+  const trayHeaderRef = useRef(null);
+
+  function getTrayWrapperWidth() {
+    if (trayWrapperRef.current && trayHeaderRef.current)
+      return (
+        trayWrapperRef.current.clientWidth - trayHeaderRef.current.offsetWidth
+      );
+
+    return null;
+  }
+
+  const [trayWrapperWidth, setTrayWrapperWidth] = useState(
+    getTrayWrapperWidth(),
+  );
+  useEffect(() => {
+    function handleResize() {
+      setTrayWrapperWidth(getTrayWrapperWidth());
+    }
+
+    if (newTray) {
+      trayWrapperRef.current.addEventListener("resize", handleResize);
+      return () =>
+        trayWrapperRef.current.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  const newTray = useConfig("newTray");
+  const trayWidth = newTray
+    ? getTrayWidth(settings, trayWrapperWidth, width)
+    : getTrayWidth(settings);
   const programRects = getProgramRects(
     sortedPrograms,
     settings.timeStep,
@@ -64,7 +95,12 @@ export function Tray({ settings, onDroppableDrop }) {
 
   return (
     <div
-      className={"tray-wrapper" + (pinned ? " pinned" : "")}
+      ref={trayWrapperRef}
+      className={
+        "tray-wrapper" +
+        (pinned ? " pinned" : "") +
+        (newTray ? " new-tray" : "")
+      }
       style={{
         gridTemplateColumns:
           "auto auto repeat(" +
@@ -75,6 +111,7 @@ export function Tray({ settings, onDroppableDrop }) {
       }}
     >
       <div
+        ref={trayHeaderRef}
         className="tray-header"
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,

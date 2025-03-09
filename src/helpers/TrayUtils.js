@@ -3,7 +3,9 @@ export function getTrayWidth(settings, windowWidth, timetableWidthSettings) {
     (settings.dayEnd - settings.dayStart) / settings.timeStep;
 
   if (windowWidth && timetableWidthSettings) {
-    const windowSlots = windowWidth / ((timetableWidthSettings * 20) / 100);
+    const windowSlots = Math.floor(
+      windowWidth / ((timetableWidthSettings * 20) / 100),
+    );
 
     if (timetableSlots > windowSlots) return windowSlots;
   }
