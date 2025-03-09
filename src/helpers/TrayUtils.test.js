@@ -9,8 +9,16 @@ describe("getTrayWidth", () => {
     timeStep: parseDuration("0:15"),
   };
 
-  it("should return number of slots", () => {
+  it("should return number of slots when no window width is provided", () => {
     expect(getTrayWidth(settings)).toEqual(60);
+  });
+
+  it("should return number of slots when there is enough space", () => {
+    expect(getTrayWidth(settings, 1920, 100)).toEqual(60);
+  });
+
+  it("should return less slots when there is less space", () => {
+    expect(getTrayWidth(settings, 500, 100)).toEqual(25);
   });
 });
 
