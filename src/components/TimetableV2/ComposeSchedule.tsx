@@ -1,548 +1,31 @@
-import React, { Fragment, useCallback, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { useGetGroupsQuery } from "../store/groupsApi";
-import { useGetPackagesQuery } from "../store/packagesApi";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-  useGetProgramsQuery,
-  useUpdateProgramMutation,
-  useAddProgramMutation,
-} from "../store/programsApi";
-import { useGetPeopleQuery } from "../store/peopleApi";
+  HoverStatusExtended,
+  Lines,
+  LOCAL_TIMEZONE,
+  MIME_TYPE,
+  Program,
+  ScheduledProgram,
+  Segment,
+  UnscheduledProgram,
+  Violations,
+} from "./types";
+import {
+  useAddProgram,
+  useGroups,
+  usePrograms,
+  useUpdateProgram,
+} from "./hooks";
 import { Temporal } from "@js-temporal/polyfill";
-import { isColorDark } from "../helpers/isColorDark";
-import { maxTime, minTime } from "../helpers/timeCompare";
-import { level } from "../helpers/Level";
+import { epochMillisecondsToPlainDateTime, groupNeighbours } from "./utils";
+import { maxTime, minTime } from "../../helpers/timeCompare";
 import { useNavigate } from "react-router";
-import Button from "react-bootstrap/Button";
-
-const DEFAULT_PROGRAM_COLOR = "#81d4fa";
-
-interface Program {
-  pkg: string | null;
-  notes: string;
-  begin: number | null; // Null signifies that the program is in tray
-  _id: string;
-  duration: number;
-  locked: boolean;
-  ranges: { [key: string]: "0" | "1" | "2" | "3" };
-  blockOrder: number;
-  people: { person: string; optional?: boolean }[];
-  title: string;
-  place: string;
-  url: string;
-  groups: string[];
-}
-type ScheduledProgram = Program & { begin: number };
-type UnscheduledProgram = Program & { begin: null };
-
-interface Pkg {
-  _id: string;
-  name: string;
-  color: string;
-}
-
-interface Group {
-  _id: string;
-  order: number;
-  name: string;
-}
-
-interface Person {
-  _id: string;
-  name: string;
-}
-
-type Violation = { msg: string; program: string; satisied?: boolean };
-type Violations = Map<string, Violation[]>;
-
-type Lines = {
-  date: Temporal.PlainDate;
-  offset: number;
-  concurrentLines: number;
-  groups: { group: string | null; concurrentLines: number }[];
-}[];
-
-export default function Timetable({
-  violations,
-  printView = false,
-}: {
-  violations: Violations;
-  timeProvider: null | (() => number);
-  printView: boolean;
-}) {
-  const { userLevel } = useSelector<any, any>((state) => state.auth);
-  return (
-    <ComposeSchedule
-      editable={userLevel >= level.EDIT && !printView}
-      violations={violations}
-      printView={printView}
-    />
-  );
-}
-
-function usePrograms(): Program[] {
-  const { table } = useSelector<any, any>((state) => state.auth);
-  const { data: programs }: { data?: Program[] } = useGetProgramsQuery(table);
-  return programs ?? [];
-}
-
-function useGroups(): Group[] {
-  const { table } = useSelector<any, any>((state) => state.auth);
-  const { data: groups }: { data?: Group[] } = useGetGroupsQuery(table);
-  return [...(groups ?? [])].sort((a, b) => a.order - b.order);
-}
-
-function usePkgs(): Pkg[] {
-  const { table } = useSelector<any, any>((state) => state.auth);
-  const { data: pkgs }: { data?: Pkg[] } = useGetPackagesQuery(table);
-  return pkgs ?? [];
-}
-
-function usePeople(): Person[] {
-  const { table } = useSelector<any, any>((state) => state.auth);
-  const { data: people }: { data?: Person[] } = useGetPeopleQuery(table);
-  return people ?? [];
-}
-
-function useUpdateProgram(): (program: Program) => void {
-  const { table } = useSelector<any, any>((state) => state.auth);
-  const [updateProgramMutation] = useUpdateProgramMutation();
-  return (program: Program) => {
-    updateProgramMutation({ table, data: program });
-  };
-}
-
-type NewProgram = Omit<Program, "_id"> & { _id: any };
-function useAddProgram(): (program: NewProgram) => void {
-  const { table } = useSelector<any, any>((state) => state.auth);
-  const [addProgramMutation] = useAddProgramMutation();
-  return (program: NewProgram) => {
-    delete program._id;
-    addProgramMutation({ table, data: program });
-  };
-}
-
-const LOCAL_TIMEZONE = Temporal.TimeZone.from("UTC");
-
-const MIME_TYPE = "application/prs.plannable";
-
-type Segment = {
-  date: Temporal.PlainDate;
-  plannable: Program;
-  start: Temporal.PlainTime | null;
-  end: Temporal.PlainTime | null;
-  atendeeGroups: number[];
-  blockOrders: number[][];
-};
-
-/**
- * Groups neighbouring numbers into arrays of consecutive numbers
- * @param _items Array of numbers
- * @returns Array of arrays of consecutive numbers
- *
- * @example
- * groupNeighbours([1, 2, 3, 5, 6, 8, 9, 10])
- * // => [[1, 2, 3], [5, 6], [8, 9, 10]]
- */
-function groupNeighbours(_items: number[]): number[][] {
-  const items = [..._items];
-  items.sort();
-  const result: number[][] = [];
-
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-
-    if (
-      result.length === 0 ||
-      result[result.length - 1][result[result.length - 1].length - 1] !==
-        item - 1
-    ) {
-      result.push([item]);
-    } else {
-      result[result.length - 1].push(item);
-    }
-  }
-
-  return result;
-}
-
-function isProgramHighlighted(
-  program: Program,
-  ownerFilter: string | null,
-  packageFilter: string | null,
-): boolean {
-  if (ownerFilter === null && packageFilter === null) {
-    return true;
-  }
-  const ownerSatisfied =
-    ownerFilter === null ||
-    program.people.some((it) => it.person === ownerFilter);
-  const packageSatified =
-    packageFilter === null || program.pkg === packageFilter;
-  return ownerSatisfied && packageSatified;
-}
-
-type HoverStatus = null | {
-  clientX: number;
-  clientY: number;
-};
-
-type HoverStatusExtended = null | {
-  clientX: number;
-  clientY: number;
-  id: string;
-};
-
-interface SegmentBoxProps {
-  segment: Segment;
-  earliestTime: Temporal.PlainTime;
-  latestTime: Temporal.PlainTime;
-  isHovering: HoverStatus;
-  isDragged?: boolean;
-  setHovering: (isHovering: HoverStatus) => void;
-  dayIndex: number;
-  onDragStart: (ratio: number) => void;
-  onDragEnd: () => void;
-  onClick: () => void;
-  onContextMenu?: (x: number, y: number) => void;
-  editable: boolean;
-  isHighlighted: boolean | null;
-  violations: Violation[];
-  lines: Lines;
-}
-
-function SegmentBox({
-  segment,
-  earliestTime,
-  latestTime,
-  isHovering,
-  isDragged = false,
-  setHovering,
-  dayIndex,
-  onDragStart,
-  onDragEnd,
-  onClick,
-  onContextMenu,
-  editable,
-  isHighlighted,
-  violations,
-  lines,
-}: SegmentBoxProps) {
-  const program = segment.plannable;
-  const dayLength = earliestTime.until(latestTime);
-  const setStartTime = segment.start ?? earliestTime;
-  const startTime =
-    Temporal.PlainTime.compare(setStartTime, earliestTime) < 0
-      ? earliestTime
-      : setStartTime;
-  const startOffset =
-    earliestTime.until(startTime).total({ unit: "seconds" }) /
-    dayLength.total({ unit: "seconds" });
-  const setEndTime = segment.end ?? latestTime;
-  const endTime =
-    Temporal.PlainTime.compare(setEndTime, latestTime) > 0
-      ? latestTime
-      : setEndTime;
-  const duration = startTime.until(endTime);
-  const relativeDuration =
-    duration.total({ unit: "seconds" }) / dayLength.total({ unit: "seconds" });
-
-  const [clickWidthRatio, setClickWidthRatio] = useState(0);
-
-  if (dayIndex < 0) {
-    return null;
-  }
-  const line = lines[dayIndex];
-  const linesInDayBeforeGroup = line.groups
-    .slice(0, segment.atendeeGroups[0])
-    .reduce((acc, it) => acc + it.concurrentLines, 0);
-  const blockOrdersBefore = segment.blockOrders[0][0];
-  const linesSpan = segment.atendeeGroups.reduce((acc, groupIdx, idx) => {
-    const blocks = segment.blockOrders[idx].length;
-    return acc + blocks;
-  }, 0);
-
-  const pkgs = usePkgs();
-  const pkg = pkgs.find((pkg) => pkg._id === segment.plannable.pkg);
-  const color = pkg?.color ?? DEFAULT_PROGRAM_COLOR;
-  const isDark = color !== null && isColorDark(color);
-
-  // Format to name1, name2, name3 (optionalname1, optionalname2)
-  const people = usePeople();
-  const owners = segment.plannable.people.map((person) => ({
-    name: people.find((p) => p._id === person.person)?.name ?? person.person,
-    optional: person.optional,
-  }));
-  const nonOptionalOwners = owners.filter((owner) => !owner.optional);
-  const optionalOwners = owners.filter((owner) => owner.optional);
-  const ownersString = nonOptionalOwners.map((owner) => owner.name).join(", ");
-  const optionalOwnersString = optionalOwners
-    .map((owner) => owner.name)
-    .join(", ");
-  const ownersStr =
-    ownersString + (optionalOwnersString ? ` (${optionalOwnersString})` : "");
-
-  return (
-    <div
-      className={[
-        "scheduleTable__plannable",
-        isHovering != null && "scheduleTable__plannable--hovering",
-        isDragged && "scheduleTable__plannable--dragged",
-        segment.start?.equals(startTime) && "scheduleTable__plannable--start",
-        segment.end?.equals(endTime) && "scheduleTable__plannable--end",
-        isDark && "scheduleTable__plannable--dark",
-        isHighlighted && "scheduleTable__plannable--highlighted",
-        isHighlighted === false && "scheduleTable__plannable--notHighlighted",
-        violations.length > 0 && "scheduleTable__plannable--violated",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      style={
-        {
-          "--segment-start": startOffset,
-          "--segment-duration": relativeDuration,
-          "--segment-color": color,
-          "--segment-line-start":
-            line.offset + linesInDayBeforeGroup + blockOrdersBefore,
-          "--segment-line-span": linesSpan,
-        } as any
-      }
-      onMouseEnter={(e) =>
-        setHovering({ clientX: e.clientX, clientY: e.clientY })
-      }
-      onMouseMove={(e) =>
-        setHovering({ clientX: e.clientX, clientY: e.clientY })
-      }
-      onMouseLeave={() => setHovering(null)}
-      {...(editable
-        ? {
-            draggable: true,
-            onDragStart: (e) => {
-              e.dataTransfer.setData(MIME_TYPE, program._id as string);
-              e.dataTransfer.effectAllowed = "move";
-
-              const canvas = document.createElement("canvas");
-              canvas.width = canvas.height = 0;
-              e.dataTransfer.setDragImage(canvas, 25, 25);
-
-              onDragStart(clickWidthRatio);
-            },
-            onDragEnd: () => {
-              onDragEnd();
-            },
-            onMouseDown: (e) => {
-              if (segment.start !== null && segment.end !== null) {
-                setClickWidthRatio(
-                  e.nativeEvent.offsetX / e.currentTarget.offsetWidth,
-                );
-              } else {
-                setClickWidthRatio(0);
-              }
-            },
-          }
-        : {})}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-      onContextMenu={
-        onContextMenu
-          ? (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onContextMenu?.(e.clientX, e.clientY);
-            }
-          : undefined
-      }
-    >
-      <div className="scheduleTable__plannableTitle">
-        {program.locked && <i className="fa fa-lock me-1" />}
-        {violations.length > 0 && (
-          <i className="fa fa-exclamation-triangle me-1" />
-        )}
-        {program.title}
-      </div>
-      {ownersStr.length > 0 && (
-        <div className="scheduleTable__plannableOwners">{ownersStr}</div>
-      )}
-      {isHovering != null && !isDragged && (
-        <div
-          className="scheduleTable__plannableExpansion"
-          style={
-            {
-              "--position-x": `${isHovering.clientX}px`,
-              "--position-y": `${isHovering.clientY}px`,
-            } as any
-          }
-        >
-          <div className="scheduleTable__plannableTitle">{program.title}</div>
-          {violations.length > 0 && (
-            <div className="scheduleTable__plannableOwners">
-              <i className="fa fa-exclamation-triangle me-1" />
-              {violations.map((violation) => violation.msg).join(", ")}
-            </div>
-          )}
-          <div className="scheduleTable__plannableOwners">
-            {pkg?.name ?? "Bez balíčku"}
-          </div>
-          {ownersStr.length > 0 && (
-            <div className="scheduleTable__plannableOwners">{ownersStr}</div>
-          )}
-          <div className="scheduleTable__plannableOwners">
-            {startTime.toLocaleString("cs-CZ", {
-              hour: "numeric",
-              minute: "2-digit",
-            })}{" "}
-            -{" "}
-            {endTime.toLocaleString("cs-CZ", {
-              hour: "numeric",
-              minute: "2-digit",
-            })}{" "}
-            ({duration.total({ unit: "minute" })} min)
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface TimeLabelsProps {
-  earliestTime: Temporal.PlainTime;
-  timeLabels: Temporal.PlainTime[];
-  dayLength: Temporal.Duration;
-  lines: Lines;
-}
-
-function TimeLabels({
-  earliestTime,
-  timeLabels,
-  dayLength,
-  lines,
-}: TimeLabelsProps) {
-  return (
-    <>
-      <div className="scheduleTable__timeLabels">
-        {timeLabels.map((label) => {
-          const startOffset =
-            earliestTime.until(label).total({ unit: "minutes" }) /
-            dayLength.total({ unit: "minutes" });
-          return (
-            <div
-              key={label.toString()}
-              className={`scheduleTable__timeLabel`}
-              style={{ "--time": startOffset } as any}
-            >
-              {label.toLocaleString("cs-CZ", {
-                hour: "numeric",
-                minute: "2-digit",
-              })}
-            </div>
-          );
-        })}
-      </div>
-
-      {timeLabels.map((label) => {
-        const startOffset =
-          earliestTime.until(label).total({ unit: "minutes" }) /
-          dayLength.total({ unit: "minutes" });
-        const isMajor = label.minute === 0;
-        return (
-          <div
-            key={label.toString()}
-            className={`scheduleTable__timeLine ${isMajor ? "scheduleTable__timeLine--major" : ""}`}
-            style={
-              {
-                "--time": startOffset,
-                "--lines-count": lines.reduce(
-                  (acc, it) => acc + it.concurrentLines,
-                  0,
-                ),
-              } as any
-            }
-          />
-        );
-      })}
-    </>
-  );
-}
-
-interface DataLabelsProps {
-  lines: Lines;
-}
-
-function DataLabels({ lines }: DataLabelsProps) {
-  const groups = useGroups();
-
-  return (
-    <>
-      {lines.map((line, index) => (
-        <Fragment key={line.date.toString()}>
-          <div
-            className="scheduleTable__dayLabel"
-            style={
-              {
-                "--day-offset": line.offset,
-                "--lines-count": line.concurrentLines,
-              } as any
-            }
-          >
-            {line.date.toLocaleString("cs-CZ", {
-              day: "numeric",
-              month: "narrow",
-              weekday: "short",
-            })}
-          </div>
-
-          <div
-            className="scheduleTable__day"
-            style={
-              {
-                "--day-offset": line.offset,
-                "--lines-count": line.concurrentLines,
-              } as any
-            }
-            data-date={line.date.toString()}
-          />
-
-          {line.groups.map((group, groupIndex) => {
-            const groupOffset = line.groups
-              .slice(0, groupIndex)
-              .reduce((acc, it) => acc + it.concurrentLines, 0);
-            return (
-              <div
-                key={group.group ?? "virtual"}
-                className="scheduleTable__groupLabel"
-                style={
-                  {
-                    "--day-offset": line.offset,
-                    "--group-index": groupOffset,
-                    "--group-concurrent": group.concurrentLines,
-                  } as any
-                }
-              >
-                {group.group === null
-                  ? null
-                  : groups.find((it) => it._id === group.group)?.name}
-              </div>
-            );
-          })}
-
-          {index !== 0 && (
-            <div
-              className="scheduleTable__dayLine"
-              style={
-                {
-                  "--day-offset": line.offset,
-                  "--lines-count": line.concurrentLines,
-                } as any
-              }
-            />
-          )}
-        </Fragment>
-      ))}
-    </>
-  );
-}
+import { TimeLabels } from "./TimeLabels";
+import { DataLabels } from "./DataLabels";
+import { SegmentBox } from "./SegmentBox";
+import { HoveringInfo } from "./HoveringInfo";
+import { isProgramHighlighted, useFilters } from "./filtering";
+import { Tray } from "./Tray";
 
 interface ComposeScheduleProps {
   editable: boolean;
@@ -580,9 +63,7 @@ export const ComposeSchedule = ({
   const dates = useMemo(() => {
     const scheduledDateTimes = scheduledPlannables.map(
       (program): [Temporal.PlainDateTime, Temporal.Duration] => [
-        Temporal.Instant.fromEpochMilliseconds(program.begin)
-          .toZonedDateTimeISO(LOCAL_TIMEZONE)
-          .toPlainDateTime(),
+        epochMillisecondsToPlainDateTime(program.begin),
         Temporal.Duration.from({ milliseconds: program.duration }),
       ],
     );
@@ -643,52 +124,8 @@ export const ComposeSchedule = ({
       : (sortedAttendeGroupIds as [string, ...string[]]); // safe cast because showVirtualGroup is false, so there is at least one group
   }, [atendeeGroups, showVirtualGroup]);
 
-  // Owner filtering
-  const [ownerFilter, setOwnerFilter] = useState<string | null>(null);
-  const people = usePeople();
-  const availableOwners = useMemo(() => {
-    const result: { id: string; name: string; count: number }[] = [];
-    for (const program of programs) {
-      for (const { person: ownerId } of program.people) {
-        let ownerRecord = result.find((it) => it.id === ownerId);
-        if (!ownerRecord) {
-          const person = people.find((it) => it._id === ownerId);
-          if (!person) {
-            continue;
-          }
-          ownerRecord = { id: ownerId, name: person.name, count: 0 };
-          result.push(ownerRecord);
-        }
-        ownerRecord!.count++;
-      }
-    }
-    result.sort((a, b) => a.name.localeCompare(b.name));
-    return result;
-  }, [programs, people]);
-
-  // Package filtering
-  const [packageFilter, setPackageFilter] = useState<string | null>(null);
-  const programmeGroups = usePkgs();
-  const availablePackages = useMemo(() => {
-    const result = programmeGroups.map((it) => ({
-      id: it._id,
-      name: it.name,
-      color: it.color,
-      count: 0,
-    }));
-
-    for (const program of programs) {
-      if (!program.pkg) {
-        continue;
-      }
-      const packageRecord = result.find((it) => it.id === program.pkg);
-      if (packageRecord) {
-        packageRecord.count++;
-      }
-    }
-
-    return result;
-  }, [programs, programmeGroups]);
+  // Filtering
+  const { state: filterState, component: filterComponent } = useFilters();
 
   const concurrentBlocksMap = useMemo(() => {
     // Get all unique blockOrder for each date and atendee group
@@ -697,9 +134,7 @@ export const ComposeSchedule = ({
       Map<string | null, number[]>
     >();
     for (const program of scheduledPlannables) {
-      const start = Temporal.Instant.fromEpochMilliseconds(program.begin)
-        .toZonedDateTimeISO(LOCAL_TIMEZONE)
-        .toPlainDateTime();
+      const start = epochMillisecondsToPlainDateTime(program.begin);
       const end = start.add({ milliseconds: program.duration });
       const days = [start.toPlainDate()];
       if (!start.equals(end.toPlainDate())) {
@@ -751,10 +186,7 @@ export const ComposeSchedule = ({
         : { start: Temporal.PlainDateTime },
     ): Segment[] {
       const start =
-        opts?.start ??
-        Temporal.Instant.fromEpochMilliseconds(plannable.begin!)
-          .toZonedDateTimeISO(LOCAL_TIMEZONE)
-          .toPlainDateTime();
+        opts?.start ?? epochMillisecondsToPlainDateTime(plannable.begin!);
       const duration = Temporal.Duration.from({
         milliseconds: plannable.duration,
       });
@@ -790,9 +222,7 @@ export const ComposeSchedule = ({
 
         // All block in the same time and same groups, but with different block order
         const concurrentBlocks = scheduledPlannables.filter((it) => {
-          const start = Temporal.Instant.fromEpochMilliseconds(it.begin)
-            .toZonedDateTimeISO(LOCAL_TIMEZONE)
-            .toPlainDateTime();
+          const start = epochMillisecondsToPlainDateTime(it.begin);
           const end = start.add({ milliseconds: it.duration });
           return (
             Temporal.PlainDateTime.compare(dateStart, end) < 0 &&
@@ -899,9 +329,7 @@ export const ComposeSchedule = ({
     const swappingPlannableSegments =
       swappingPlannable.length == 1
         ? createSegmentsForPlannable(swappingPlannable[0], {
-            start: Temporal.Instant.fromEpochMilliseconds(plannable.begin!)
-              .toZonedDateTimeISO(LOCAL_TIMEZONE)
-              .toPlainDateTime(),
+            start: epochMillisecondsToPlainDateTime(plannable.begin!),
           })
         : [];
 
@@ -1136,10 +564,6 @@ export const ComposeSchedule = ({
 
   const navigate = useNavigate();
 
-  const onCreateTrayItem = useCallback(() => {
-    navigate("add");
-  }, [navigate]);
-
   const onClickToCreate = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const start = getDateTimeForPosition([e.clientX, e.clientY]);
@@ -1163,11 +587,7 @@ export const ComposeSchedule = ({
       }
 
       for (let i = 0; i < times; i++) {
-        const originalStart = Temporal.Instant.fromEpochMilliseconds(
-          trayItem.begin!,
-        )
-          .toZonedDateTimeISO(LOCAL_TIMEZONE)
-          .toPlainDateTime();
+        const originalStart = epochMillisecondsToPlainDateTime(trayItem.begin!);
         const newStart = originalStart
           .add({ days: i + 1 })
           .toZonedDateTime(LOCAL_TIMEZONE);
@@ -1181,7 +601,7 @@ export const ComposeSchedule = ({
     [addProgram, programs],
   );
 
-  const setEditingTrayItem = useCallback(
+  const setEditingProgram = useCallback(
     (programId: string) => {
       navigate(`edit/${programId}`);
     },
@@ -1243,18 +663,14 @@ export const ComposeSchedule = ({
               lines={lines}
             />
 
-            {[...segments].map((segment, index) => {
+            {segments.map((segment, index) => {
               return (
                 <SegmentBox
                   key={index}
                   segment={segment}
                   earliestTime={earliestTime}
                   latestTime={latestTime}
-                  isHovering={
-                    hoveringPlannable?.id === segment.plannable._id
-                      ? hoveringPlannable
-                      : null
-                  }
+                  isHovering={hoveringPlannable?.id === segment.plannable._id}
                   isDragged={draggingPlannable?.id === segment.plannable._id}
                   setHovering={(isHovering) =>
                     setHoveringPlannable(
@@ -1278,7 +694,7 @@ export const ComposeSchedule = ({
                     setDraggingPlannableStart(null);
                   }}
                   onClick={() => {
-                    setEditingTrayItem(segment.plannable._id);
+                    setEditingProgram(segment.plannable._id);
                   }}
                   onContextMenu={
                     !editable
@@ -1294,8 +710,7 @@ export const ComposeSchedule = ({
                   editable={editable && !segment.plannable.locked}
                   isHighlighted={isProgramHighlighted(
                     segment.plannable,
-                    ownerFilter,
-                    packageFilter,
+                    filterState,
                   )}
                   violations={violations.get(segment.plannable._id) ?? []}
                   lines={lines}
@@ -1309,7 +724,7 @@ export const ComposeSchedule = ({
                 segment={segment}
                 earliestTime={earliestTime}
                 latestTime={latestTime}
-                isHovering={null}
+                isHovering={false}
                 setHovering={() => {}}
                 dayIndex={dates.findIndex((it) => it.equals(segment.date))}
                 onDragStart={(widthRatio) => {
@@ -1323,7 +738,7 @@ export const ComposeSchedule = ({
                   setDraggingPlannableStart(null);
                 }}
                 onClick={() => {
-                  setEditingTrayItem(segment.plannable._id);
+                  setEditingProgram(segment.plannable._id);
                 }}
                 editable={editable}
                 isHighlighted={null}
@@ -1331,43 +746,22 @@ export const ComposeSchedule = ({
                 lines={lines}
               />
             ))}
+
+            {hoveringPlannable && !draggingPlannable && (
+              <HoveringInfo
+                program={
+                  programs.find((it) => it._id === hoveringPlannable.id)!
+                }
+                violations={violations.get(hoveringPlannable.id) ?? []}
+                screenLocation={hoveringPlannable}
+              />
+            )}
           </div>
         </div>
         {!printView && (
           <div className="schedulePage__bottomControls">
             <div className="schedulePage__bottomControlsLeft">
-              <label>
-                Majitel programu:{" "}
-                <select
-                  value={ownerFilter ?? ""}
-                  onChange={(e) => setOwnerFilter(e.target.value || null)}
-                >
-                  <option value="">Všichni</option>
-                  {availableOwners.map((it) => (
-                    <option key={it.id} value={it.id}>
-                      {it.name} ({it.count})
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Balíček:{" "}
-                <select
-                  value={packageFilter ?? ""}
-                  onChange={(e) => setPackageFilter(e.target.value || null)}
-                >
-                  <option value="">Všechny</option>
-                  {availablePackages.map((it) => (
-                    <option
-                      key={it.id}
-                      value={it.id}
-                      style={{ backgroundColor: it.color }}
-                    >
-                      {it.name} ({it.count})
-                    </option>
-                  ))}
-                </select>
-              </label>
+              {filterComponent}
             </div>
 
             <div className="schedulePage__bottomControlsRight">
@@ -1388,56 +782,12 @@ export const ComposeSchedule = ({
       </div>
 
       {editable && (
-        <div
-          className="schedulePage__tray"
+        <Tray
           onDragOver={onTrayDragOver}
           onDrop={onTrayDrop}
-        >
-          <div className="schedulePage_trayHeader">
-            <h2 className="schedulePage_trayHeaderTitle">Odkladiště</h2>
-            <Button
-              onClick={onCreateTrayItem}
-              variant="outline-primary"
-              size="sm"
-            >
-              <i className="fa fa-plus"></i>
-            </Button>
-          </div>
-          {notScheduledPlannables.map((plannable) => {
-            const color =
-              (plannable.pkg
-                ? programmeGroups.find((it) => it._id === plannable.pkg)?.color
-                : null) ?? DEFAULT_PROGRAM_COLOR;
-            const isDark = color !== null ? isColorDark(color) : false;
-            return (
-              <div
-                key={plannable._id}
-                className={[
-                  "schedulePage__traySegment",
-                  isDark && "schedulePage__traySegment--dark",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                style={
-                  {
-                    "--segment-color": color,
-                  } as any
-                }
-                draggable={true}
-                onDragStart={(e) => {
-                  e.dataTransfer.setData(MIME_TYPE, plannable._id as string);
-                  e.dataTransfer.effectAllowed = "move";
-                  setDraggingPlannable({ id: plannable._id });
-                }}
-                onClick={() => {
-                  setEditingTrayItem(plannable._id);
-                }}
-              >
-                {plannable.title}
-              </div>
-            );
-          })}
-        </div>
+          notScheduledPlannables={notScheduledPlannables}
+          setDraggingPlannable={setDraggingPlannable}
+        />
       )}
 
       {contextMenu && contextMenuProgram && (
