@@ -22,6 +22,7 @@ import {
   useGetProgramsQuery,
   useUpdateProgramMutation,
 } from "../store/programsApi";
+import { useConfig } from "../store/configSlice";
 
 export default function Timetable({
   violations,
@@ -129,10 +130,23 @@ export default function Timetable({
     <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
   );
 
-  return (
-    <DndProvider backend={HTML5Backend}>
-      {timetableDiv}
-      {trayDiv}
-    </DndProvider>
-  );
+  const pinTray = useSelector((state) => state.view.pinTray);
+  const newAppLayout = useConfig("newAppLayout");
+
+  if (pinTray || !newAppLayout) {
+    return (
+      <DndProvider backend={HTML5Backend}>
+        {timetableDiv}
+        {trayDiv}
+      </DndProvider>
+    );
+  } else
+    return (
+      <DndProvider backend={HTML5Backend}>
+        <div className="common-container">
+          {timetableDiv}
+          {trayDiv}
+        </div>
+      </DndProvider>
+    );
 }
