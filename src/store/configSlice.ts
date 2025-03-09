@@ -8,6 +8,7 @@ const defaultConfig = {
   timetableLayoutVersionSwitchingEnabled:
     import.meta.env
       .VITE_REACT_APP_TIMETABLE_LAYOUT_VERSION_SWITCHING_ENABLED === "true",
+  newTray: import.meta.env.VITE_REACT_APP_NEW_TRAY === "true",
 };
 
 type Config = typeof defaultConfig;
