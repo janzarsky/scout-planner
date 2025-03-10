@@ -102,30 +102,9 @@ export function Tray({ settings, onDroppableDrop }) {
     userLevel >= level.EDIT,
   );
 
-  const pinned = useSelector((state) => state.view.pinTray);
-  const dispatch = useDispatch();
-
   return (
     <TrayWrapper ref={trayWrapperRef} settings={settings} width={width}>
-      <div
-        ref={trayHeaderRef}
-        className="tray-header"
-        style={{
-          gridRowStart: settings.days.length * settings.groupCnt + 2,
-        }}
-        title="Odkladiště"
-      >
-        <div className="tray-header-icon">
-          <i className="fa fa-archive" aria-hidden="true"></i>
-        </div>
-        <button
-          className={"btn" + (pinned ? " btn-dark" : "")}
-          onClick={() => dispatch(togglePinTray())}
-          title="Připnout"
-        >
-          <i className="fa fa-thumb-tack" aria-hidden="true"></i>
-        </button>
-      </div>
+      <TrayHeader ref={trayHeaderRef} settings={settings} />
       <div
         className={
           "tray" +
@@ -180,6 +159,33 @@ function TrayWrapper({ children, ref, settings, width }) {
       }}
     >
       {children}
+    </div>
+  );
+}
+
+function TrayHeader({ ref, settings }) {
+  const dispatch = useDispatch();
+  const pinned = useSelector((state) => state.view.pinTray);
+
+  return (
+    <div
+      ref={ref}
+      className="tray-header"
+      style={{
+        gridRowStart: settings.days.length * settings.groupCnt + 2,
+      }}
+      title="Odkladiště"
+    >
+      <div className="tray-header-icon">
+        <i className="fa fa-archive" aria-hidden="true"></i>
+      </div>
+      <button
+        className={"btn" + (pinned ? " btn-dark" : "")}
+        onClick={() => dispatch(togglePinTray())}
+        title="Připnout"
+      >
+        <i className="fa fa-thumb-tack" aria-hidden="true"></i>
+      </button>
     </div>
   );
 }
