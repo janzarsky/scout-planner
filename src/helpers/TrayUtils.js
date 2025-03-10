@@ -1,3 +1,8 @@
+export function getTrayPrograms(programs, packages) {
+  const trayPrograms = programs.filter((p) => typeof p.begin !== "number");
+  return sortTrayPrograms(trayPrograms, packages);
+}
+
 export function getTrayWidth(settings, windowWidth, timetableWidthSettings) {
   const timetableSlots =
     (settings.dayEnd - settings.dayStart) / settings.timeStep;

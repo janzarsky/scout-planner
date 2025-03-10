@@ -3,8 +3,8 @@ import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getProgramRects,
+  getTrayPrograms,
   getTrayWidth,
-  sortTrayPrograms,
 } from "../helpers/TrayUtils";
 import { useNavigate } from "react-router";
 import { level } from "../helpers/Level";
@@ -42,13 +42,8 @@ export function Tray({ settings, onDroppableDrop }) {
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
   const userLevel = useSelector((state) => state.auth.userLevel);
 
-  const trayPrograms = programsLoaded
-    ? programs.filter((p) => typeof p.begin !== "number")
-    : [];
-  const sortedPrograms = sortTrayPrograms(
-    trayPrograms,
-    packagesLoaded ? packages : [],
-  );
+  const trayPrograms =
+    programsLoaded && packagesLoaded ? getTrayPrograms(programs, packages) : [];
 
   const newTray = useConfig("newTray");
   const wrapperRef = useRef(null);
@@ -60,7 +55,7 @@ export function Tray({ settings, onDroppableDrop }) {
     ? getTrayWidth(settings, trayWrapperWidth, width)
     : getTrayWidth(settings);
   const programRects = getProgramRects(
-    sortedPrograms,
+    trayPrograms,
     settings.timeStep,
     trayWidth,
     userLevel >= level.EDIT,
