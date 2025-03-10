@@ -50,6 +50,7 @@ export function Tray({ settings, onDroppableDrop }) {
     packagesLoaded ? packages : [],
   );
 
+  const newTray = useConfig("newTray");
   const trayWrapperRef = useRef(null);
   const trayHeaderRef = useRef(null);
 
@@ -62,22 +63,35 @@ export function Tray({ settings, onDroppableDrop }) {
     return null;
   }
 
-  const [trayWrapperWidth, setTrayWrapperWidth] = useState(
-    getTrayWrapperWidth(),
-  );
+  const [trayWrapperWidth, setTrayWrapperWidth] = useState(null);
+  const [firstRender, setFirstRender] = useState(false);
+
   useEffect(() => {
     function handleResize() {
       setTrayWrapperWidth(getTrayWrapperWidth());
     }
 
     if (newTray) {
-      trayWrapperRef.current.addEventListener("resize", handleResize);
-      return () =>
-        trayWrapperRef.current.removeEventListener("resize", handleResize);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
 
-  const newTray = useConfig("newTray");
+  useEffect(() => {
+    if (newTray && !firstRender) setFirstRender(true);
+  }, [firstRender]);
+
+  useEffect(() => {
+    if (
+      newTray &&
+      firstRender &&
+      trayWrapperRef.current &&
+      trayHeaderRef.current
+    ) {
+      setTrayWrapperWidth(getTrayWrapperWidth());
+    }
+  }, [firstRender]);
+
   const trayWidth = newTray
     ? getTrayWidth(settings, trayWrapperWidth, width)
     : getTrayWidth(settings);
