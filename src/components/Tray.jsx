@@ -108,21 +108,11 @@ export function Tray({ settings, onDroppableDrop }) {
   const navigate = useNavigate();
 
   return (
-    <div
+    <TrayWrapper
       ref={trayWrapperRef}
-      className={
-        "tray-wrapper" +
-        (pinned ? " pinned" : "") +
-        (newTray ? " new-tray" : "")
-      }
-      style={{
-        gridTemplateColumns:
-          "auto auto repeat(" +
-          settings.timeSpan * settings.timeHeaders.length +
-          ", minmax(" +
-          (width * 20) / 100 +
-          "px, 1fr))",
-      }}
+      pinned={pinned}
+      settings={settings}
+      width={width}
     >
       <div
         ref={trayHeaderRef}
@@ -191,6 +181,31 @@ export function Tray({ settings, onDroppableDrop }) {
           })}
         </Block>
       </div>
+    </TrayWrapper>
+  );
+}
+
+function TrayWrapper({ children, ref, pinned, settings, width }) {
+  const newTray = useConfig("newTray");
+
+  return (
+    <div
+      ref={ref}
+      className={
+        "tray-wrapper" +
+        (pinned ? " pinned" : "") +
+        (newTray ? " new-tray" : "")
+      }
+      style={{
+        gridTemplateColumns:
+          "auto auto repeat(" +
+          settings.timeSpan * settings.timeHeaders.length +
+          ", minmax(" +
+          (width * 20) / 100 +
+          "px, 1fr))",
+      }}
+    >
+      {children}
     </div>
   );
 }
