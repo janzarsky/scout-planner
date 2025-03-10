@@ -54,7 +54,7 @@ export function Tray({ settings, onDroppableDrop }) {
   const wrapperRef = useRef(null);
   const headerRef = useRef(null);
 
-  const [trayWrapperWidth, setTrayWrapperWidth] = useState(null);
+  const trayWrapperWidth = useResizing(wrapperRef, headerRef);
 
   const trayWidth = newTray
     ? getTrayWidth(settings, trayWrapperWidth, width)
@@ -67,51 +67,44 @@ export function Tray({ settings, onDroppableDrop }) {
   );
 
   return (
-    <TrayResizer
-      wrapperRef={wrapperRef}
-      headerRef={headerRef}
-      setWidth={setTrayWrapperWidth}
-    >
-      <TrayWrapper ref={wrapperRef} settings={settings} width={width}>
-        <TrayHeader ref={headerRef} settings={settings} />
-        <div
-          className={
-            "tray" +
-            (isOver ? " drag-over" : "") +
-            (!isOver && canDrop ? " can-drop" : "")
-          }
-          style={{
-            gridRowStart: settings.days.length * settings.groupCnt + 2,
-            gridColumnEnd:
-              "span " + settings.timeHeaders.length * settings.timeSpan,
-          }}
+    <TrayWrapper ref={wrapperRef} settings={settings} width={width}>
+      <TrayHeader ref={headerRef} settings={settings} />
+      <div
+        className={
+          "tray" +
+          (isOver ? " drag-over" : "") +
+          (!isOver && canDrop ? " can-drop" : "")
+        }
+        style={{
+          gridRowStart: settings.days.length * settings.groupCnt + 2,
+          gridColumnEnd:
+            "span " + settings.timeHeaders.length * settings.timeSpan,
+        }}
+      >
+        <Block
+          rect={getRect(
+            settings.dayStart,
+            settings.dayEnd - settings.dayStart,
+            [],
+            settings,
+          )}
         >
-          <Block
-            rect={getRect(
-              settings.dayStart,
-              settings.dayEnd - settings.dayStart,
-              [],
-              settings,
-            )}
-          >
-            {userLevel >= level.EDIT && (
-              <TrayButton ref={drop} canDrop={canDrop} />
-            )}
-            {programRects.map(([program, rect]) => {
-              return (
-                <Program key={program._id} rect={rect} program={program} />
-              );
-            })}
-          </Block>
-        </div>
-      </TrayWrapper>
-    </TrayResizer>
+          {userLevel >= level.EDIT && (
+            <TrayButton ref={drop} canDrop={canDrop} />
+          )}
+          {programRects.map(([program, rect]) => {
+            return <Program key={program._id} rect={rect} program={program} />;
+          })}
+        </Block>
+      </div>
+    </TrayWrapper>
   );
 }
 
-function TrayResizer({ children, wrapperRef, headerRef, setWidth }) {
+function useResizing(wrapperRef, headerRef) {
   const newTray = useConfig("newTray");
   const [firstRender, setFirstRender] = useState(false);
+  const [width, setWidth] = useState(null);
 
   function getTrayWrapperWidth() {
     if (wrapperRef.current && headerRef.current)
@@ -141,7 +134,7 @@ function TrayResizer({ children, wrapperRef, headerRef, setWidth }) {
     }
   }, [firstRender]);
 
-  return children;
+  return width;
 }
 
 function TrayWrapper({ children, ref, settings, width }) {
