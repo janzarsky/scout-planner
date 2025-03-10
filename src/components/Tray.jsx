@@ -108,12 +108,7 @@ export function Tray({ settings, onDroppableDrop }) {
   const navigate = useNavigate();
 
   return (
-    <TrayWrapper
-      ref={trayWrapperRef}
-      pinned={pinned}
-      settings={settings}
-      width={width}
-    >
+    <TrayWrapper ref={trayWrapperRef} settings={settings} width={width}>
       <div
         ref={trayHeaderRef}
         className="tray-header"
@@ -185,8 +180,9 @@ export function Tray({ settings, onDroppableDrop }) {
   );
 }
 
-function TrayWrapper({ children, ref, pinned, settings, width }) {
+function TrayWrapper({ children, ref, settings, width }) {
   const newTray = useConfig("newTray");
+  const pinned = useSelector((state) => state.view.pinTray);
 
   return (
     <div
