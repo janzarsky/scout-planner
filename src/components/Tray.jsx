@@ -105,8 +105,6 @@ export function Tray({ settings, onDroppableDrop }) {
   const pinned = useSelector((state) => state.view.pinTray);
   const dispatch = useDispatch();
 
-  const navigate = useNavigate();
-
   return (
     <TrayWrapper ref={trayWrapperRef} settings={settings} width={width}>
       <div
@@ -149,27 +147,7 @@ export function Tray({ settings, onDroppableDrop }) {
           )}
         >
           {userLevel >= level.EDIT && (
-            <button
-              ref={drop}
-              className="tray-add-program"
-              onClick={() =>
-                navigate("add", { state: { begin: null, groupId: null } })
-              }
-            >
-              {canDrop ? (
-                <i
-                  className="fa fa-arrow-down"
-                  aria-hidden="true"
-                  title="Přesunout na odkladiště"
-                />
-              ) : (
-                <i
-                  className="fa fa-plus"
-                  aria-hidden="true"
-                  title="Nový program"
-                />
-              )}
-            </button>
+            <TrayButton ref={drop} canDrop={canDrop} />
           )}
           {programRects.map(([program, rect]) => {
             return <Program key={program._id} rect={rect} program={program} />;
@@ -203,5 +181,27 @@ function TrayWrapper({ children, ref, settings, width }) {
     >
       {children}
     </div>
+  );
+}
+
+function TrayButton({ ref, canDrop }) {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      ref={ref}
+      className="tray-add-program"
+      onClick={() => navigate("add", { state: { begin: null, groupId: null } })}
+    >
+      {canDrop ? (
+        <i
+          className="fa fa-arrow-down"
+          aria-hidden="true"
+          title="Přesunout na odkladiště"
+        />
+      ) : (
+        <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
+      )}
+    </button>
   );
 }
