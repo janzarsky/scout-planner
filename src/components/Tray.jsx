@@ -3,8 +3,8 @@ import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getProgramRects,
+  getTrayPrograms,
   getTrayWidth,
-  sortTrayPrograms,
 } from "../helpers/TrayUtils";
 import { useNavigate } from "react-router";
 import { level } from "../helpers/Level";
@@ -42,107 +42,28 @@ export function Tray({ settings, onDroppableDrop }) {
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
   const userLevel = useSelector((state) => state.auth.userLevel);
 
-  const trayPrograms = programsLoaded
-    ? programs.filter((p) => typeof p.begin !== "number")
-    : [];
-  const sortedPrograms = sortTrayPrograms(
-    trayPrograms,
-    packagesLoaded ? packages : [],
-  );
+  const trayPrograms =
+    programsLoaded && packagesLoaded ? getTrayPrograms(programs, packages) : [];
 
   const newTray = useConfig("newTray");
-  const trayWrapperRef = useRef(null);
-  const trayHeaderRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const headerRef = useRef(null);
 
-  function getTrayWrapperWidth() {
-    if (trayWrapperRef.current && trayHeaderRef.current)
-      return (
-        trayWrapperRef.current.clientWidth - trayHeaderRef.current.offsetWidth
-      );
-
-    return null;
-  }
-
-  const [trayWrapperWidth, setTrayWrapperWidth] = useState(null);
-  const [firstRender, setFirstRender] = useState(false);
-
-  useEffect(() => {
-    function handleResize() {
-      setTrayWrapperWidth(getTrayWrapperWidth());
-    }
-
-    if (newTray) {
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (newTray && !firstRender) setFirstRender(true);
-  }, [firstRender]);
-
-  useEffect(() => {
-    if (
-      newTray &&
-      firstRender &&
-      trayWrapperRef.current &&
-      trayHeaderRef.current
-    ) {
-      setTrayWrapperWidth(getTrayWrapperWidth());
-    }
-  }, [firstRender]);
+  const trayWrapperWidth = useResizing(wrapperRef, headerRef);
 
   const trayWidth = newTray
     ? getTrayWidth(settings, trayWrapperWidth, width)
     : getTrayWidth(settings);
   const programRects = getProgramRects(
-    sortedPrograms,
+    trayPrograms,
     settings.timeStep,
     trayWidth,
     userLevel >= level.EDIT,
   );
 
-  const pinned = useSelector((state) => state.view.pinTray);
-  const dispatch = useDispatch();
-
-  const navigate = useNavigate();
-
   return (
-    <div
-      ref={trayWrapperRef}
-      className={
-        "tray-wrapper" +
-        (pinned ? " pinned" : "") +
-        (newTray ? " new-tray" : "")
-      }
-      style={{
-        gridTemplateColumns:
-          "auto auto repeat(" +
-          settings.timeSpan * settings.timeHeaders.length +
-          ", minmax(" +
-          (width * 20) / 100 +
-          "px, 1fr))",
-      }}
-    >
-      <div
-        ref={trayHeaderRef}
-        className="tray-header"
-        style={{
-          gridRowStart: settings.days.length * settings.groupCnt + 2,
-        }}
-        title="Odkladiště"
-      >
-        <div className="tray-header-icon">
-          <i className="fa fa-archive" aria-hidden="true"></i>
-        </div>
-        <button
-          className={"btn" + (pinned ? " btn-dark" : "")}
-          onClick={() => dispatch(togglePinTray())}
-          title="Připnout"
-        >
-          <i className="fa fa-thumb-tack" aria-hidden="true"></i>
-        </button>
-      </div>
+    <TrayWrapper ref={wrapperRef} settings={settings} width={width}>
+      <TrayHeader ref={headerRef} settings={settings} />
       <div
         className={
           "tray" +
@@ -164,33 +85,124 @@ export function Tray({ settings, onDroppableDrop }) {
           )}
         >
           {userLevel >= level.EDIT && (
-            <button
-              ref={drop}
-              className="tray-add-program"
-              onClick={() =>
-                navigate("add", { state: { begin: null, groupId: null } })
-              }
-            >
-              {canDrop ? (
-                <i
-                  className="fa fa-arrow-down"
-                  aria-hidden="true"
-                  title="Přesunout na odkladiště"
-                />
-              ) : (
-                <i
-                  className="fa fa-plus"
-                  aria-hidden="true"
-                  title="Nový program"
-                />
-              )}
-            </button>
+            <TrayButton ref={drop} canDrop={canDrop} />
           )}
           {programRects.map(([program, rect]) => {
             return <Program key={program._id} rect={rect} program={program} />;
           })}
         </Block>
       </div>
+    </TrayWrapper>
+  );
+}
+
+function useResizing(wrapperRef, headerRef) {
+  const newTray = useConfig("newTray");
+  const [firstRender, setFirstRender] = useState(false);
+  const [width, setWidth] = useState(null);
+
+  function getTrayWrapperWidth() {
+    if (wrapperRef.current && headerRef.current)
+      return wrapperRef.current.clientWidth - headerRef.current.offsetWidth;
+
+    return null;
+  }
+
+  useEffect(() => {
+    function handleResize() {
+      setWidth(getTrayWrapperWidth());
+    }
+
+    if (newTray) {
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (newTray && !firstRender) setFirstRender(true);
+  }, [firstRender]);
+
+  useEffect(() => {
+    if (newTray && firstRender && wrapperRef.current && headerRef.current) {
+      setWidth(getTrayWrapperWidth());
+    }
+  }, [firstRender]);
+
+  return width;
+}
+
+function TrayWrapper({ children, ref, settings, width }) {
+  const newTray = useConfig("newTray");
+  const pinned = useSelector((state) => state.view.pinTray);
+
+  return (
+    <div
+      ref={ref}
+      className={
+        "tray-wrapper" +
+        (pinned ? " pinned" : "") +
+        (newTray ? " new-tray" : "")
+      }
+      style={{
+        gridTemplateColumns:
+          "auto auto repeat(" +
+          settings.timeSpan * settings.timeHeaders.length +
+          ", minmax(" +
+          (width * 20) / 100 +
+          "px, 1fr))",
+      }}
+    >
+      {children}
     </div>
+  );
+}
+
+function TrayHeader({ ref, settings }) {
+  const dispatch = useDispatch();
+  const pinned = useSelector((state) => state.view.pinTray);
+
+  return (
+    <div
+      ref={ref}
+      className="tray-header"
+      style={{
+        gridRowStart: settings.days.length * settings.groupCnt + 2,
+      }}
+      title="Odkladiště"
+    >
+      <div className="tray-header-icon">
+        <i className="fa fa-archive" aria-hidden="true"></i>
+      </div>
+      <button
+        className={"btn" + (pinned ? " btn-dark" : "")}
+        onClick={() => dispatch(togglePinTray())}
+        title="Připnout"
+      >
+        <i className="fa fa-thumb-tack" aria-hidden="true"></i>
+      </button>
+    </div>
+  );
+}
+
+function TrayButton({ ref, canDrop }) {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      ref={ref}
+      className="tray-add-program"
+      onClick={() => navigate("add", { state: { begin: null, groupId: null } })}
+    >
+      {canDrop ? (
+        <i
+          className="fa fa-arrow-down"
+          aria-hidden="true"
+          title="Přesunout na odkladiště"
+        />
+      ) : (
+        <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
+      )}
+    </button>
   );
 }
