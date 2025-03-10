@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import { getProgramRects, sortTrayPrograms } from "../helpers/TrayUtils";
+import {
+  getProgramRects,
+  getTrayWidth,
+  sortTrayPrograms,
+} from "../helpers/TrayUtils";
 import { useNavigate } from "react-router";
 import { level } from "../helpers/Level";
 import { Block } from "./Blocks";
@@ -11,6 +15,7 @@ import { useGetPackagesQuery } from "../store/packagesApi";
 import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
 import { togglePinTray } from "../store/viewSlice";
+import { useConfig } from "../store/configSlice";
 
 export function Tray({ settings, onDroppableDrop }) {
   const { table } = useSelector((state) => state.auth);
@@ -45,9 +50,55 @@ export function Tray({ settings, onDroppableDrop }) {
     packagesLoaded ? packages : [],
   );
 
+  const newTray = useConfig("newTray");
+  const trayWrapperRef = useRef(null);
+  const trayHeaderRef = useRef(null);
+
+  function getTrayWrapperWidth() {
+    if (trayWrapperRef.current && trayHeaderRef.current)
+      return (
+        trayWrapperRef.current.clientWidth - trayHeaderRef.current.offsetWidth
+      );
+
+    return null;
+  }
+
+  const [trayWrapperWidth, setTrayWrapperWidth] = useState(null);
+  const [firstRender, setFirstRender] = useState(false);
+
+  useEffect(() => {
+    function handleResize() {
+      setTrayWrapperWidth(getTrayWrapperWidth());
+    }
+
+    if (newTray) {
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (newTray && !firstRender) setFirstRender(true);
+  }, [firstRender]);
+
+  useEffect(() => {
+    if (
+      newTray &&
+      firstRender &&
+      trayWrapperRef.current &&
+      trayHeaderRef.current
+    ) {
+      setTrayWrapperWidth(getTrayWrapperWidth());
+    }
+  }, [firstRender]);
+
+  const trayWidth = newTray
+    ? getTrayWidth(settings, trayWrapperWidth, width)
+    : getTrayWidth(settings);
   const programRects = getProgramRects(
     sortedPrograms,
-    settings,
+    settings.timeStep,
+    trayWidth,
     userLevel >= level.EDIT,
   );
 
@@ -58,7 +109,12 @@ export function Tray({ settings, onDroppableDrop }) {
 
   return (
     <div
-      className={"tray-wrapper" + (pinned ? " pinned" : "")}
+      ref={trayWrapperRef}
+      className={
+        "tray-wrapper" +
+        (pinned ? " pinned" : "") +
+        (newTray ? " new-tray" : "")
+      }
       style={{
         gridTemplateColumns:
           "auto auto repeat(" +
@@ -69,6 +125,7 @@ export function Tray({ settings, onDroppableDrop }) {
       }}
     >
       <div
+        ref={trayHeaderRef}
         className="tray-header"
         style={{
           gridRowStart: settings.days.length * settings.groupCnt + 2,

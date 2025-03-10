@@ -106,6 +106,9 @@ p {
   overflow: auto;
   max-height: 30vh;
 }
+.tray-wrapper.new-tray {
+  overflow-x: hidden;
+}
 .tray {
   grid-column-start: 3;
 }
