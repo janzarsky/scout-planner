@@ -5,7 +5,8 @@ import Timetable from "../../src/components/Timetable";
 import { getStore } from "../../src/store";
 import { parseDuration } from "../../src/helpers/DateUtils";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
-import { setTable } from "../../src/store/authSlice";
+import { setTable, testing } from "../../src/store/authSlice";
+import { level } from "../../src/helpers/Level";
 
 describe("Timetable", () => {
   const now = Date.parse("Sun Mar 05 11:00:00 2023 UTC");
@@ -25,7 +26,7 @@ describe("Timetable", () => {
     );
   }
 
-  function stubClient(programs) {
+  function stubClient(programs, programsSecond) {
     cy.stub(firestoreClientFactory, "getClient")
       .returns({
         getGroups: cy
@@ -57,11 +58,18 @@ describe("Timetable", () => {
           .stub()
           .resolves(() => {})
           .as("streamTimetable"),
-        getPrograms: cy.stub().resolves(programs).as("getPrograms"),
+        getPrograms: cy
+          .stub()
+          .onFirstCall()
+          .resolves(programs)
+          .onSecondCall()
+          .resolves(programsSecond)
+          .as("getPrograms"),
         streamPrograms: cy
           .stub()
           .resolves(() => {})
           .as("streamPrograms"),
+        updateProgram: cy.spy(async (program) => program).as("updateProgram"),
       })
       .log(false);
   }
@@ -178,5 +186,120 @@ describe("Timetable", () => {
     cy.contains("Ne");
     cy.contains("Po").should("not.exist");
     cy.contains("Út").should("not.exist");
+  });
+
+  describe("drag and drop", () => {
+    beforeEach(() => {
+      store.dispatch(testing.setUserLevel(level.EDIT));
+    });
+
+    it("programs can be dragged to new time", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1"],
+        people: [],
+      };
+      const updatedProg = {
+        ...prog,
+        begin: prog.begin + parseDuration("2:00"),
+      };
+      stubClient([prog], [updatedProg]);
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 11; grid-row-start: 2;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", updatedProg);
+    });
+
+    it("programs can be dragged to new group", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1"],
+        people: [],
+      };
+      const updatedProg = {
+        ...prog,
+        groups: ["group2"],
+      };
+      stubClient([prog], [updatedProg]);
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 3;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", updatedProg);
+    });
+
+    it("programs can be dragged to new day", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1"],
+        people: [],
+      };
+      const updatedProg = {
+        ...prog,
+        begin: prog.begin + parseDuration("24:00"),
+      };
+      stubClient([prog], [updatedProg]);
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 4;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", updatedProg);
+    });
+
+    it("programs can be swapped", () => {
+      const prog1 = {
+        _id: "testprogramid",
+        title: "Test program 1",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1"],
+        people: [],
+      };
+      const prog2 = {
+        _id: "testprogramid",
+        title: "Test program 2",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("1:00"),
+        groups: ["group2"],
+        people: [],
+      };
+      const updatedProg1 = {
+        ...prog1,
+        begin: prog2.begin,
+        groups: [...prog2.groups],
+      };
+      const updatedProg2 = {
+        ...prog2,
+        begin: prog1.begin,
+        groups: [...prog1.groups],
+      };
+      stubClient([prog1, prog2], [updatedProg1, updatedProg2]);
+      mountTimetable();
+
+      cy.get(".program:first").drag(".program:last", { force: true });
+
+      cy.get("@updateProgram").should("have.been.calledTwice");
+      cy.get("@updateProgram").should("have.been.calledWith", updatedProg2);
+      cy.get("@updateProgram").should("have.been.calledWith", updatedProg1);
+    });
   });
 });

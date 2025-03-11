@@ -10,6 +10,7 @@ import { MemoryRouter } from "react-router";
 import { testing } from "../../src/components/AuthProvider";
 import { testing as commandTesting } from "../../src/components/CommandContext";
 import { getCommandHandler } from "../../src/store/commandHandler";
+import "@4tw/cypress-drag-drop";
 
 // the order is important for CSS
 import "../../src/index.css";
