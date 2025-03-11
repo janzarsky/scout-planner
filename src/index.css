@@ -199,9 +199,6 @@ p {
   text-orientation: sideways;
   transform: rotate(180deg);
 }
-.program-wrapper.drag-over .program {
-  background-color: #29b6f6 !important;
-}
 
 .program-text {
   flex: 1;
@@ -333,6 +330,23 @@ p {
 .program-wrapper:hover .program-url.narrow,
 .program-wrapper:hover .program-move.narrow {
   display: none;
+}
+
+.program-drag-over {
+  display: none;
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: calc(100% - 0.25rem);
+  height: calc(100% - 0.25rem);
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.25rem;
+  color: #455a64;
+  background-color: rgba(41, 182, 246, 0.8);
+}
+.program-wrapper.drag-over .program-drag-over {
+  display: flex;
 }
 
 .droppable {

@@ -108,6 +108,7 @@ export default function Program({ program, rect, violations }) {
           narrow={narrow}
         />
       )}
+      <ProgramDragOver />
     </div>
   );
 }
@@ -347,6 +348,14 @@ function ProgramClone({ clone, narrow }) {
       onClick={clone}
     >
       <i className="fa fa-clone" />
+    </div>
+  );
+}
+
+function ProgramDragOver() {
+  return (
+    <div className="program-drag-over">
+      <i className="fa fa-exchange" />
     </div>
   );
 }
