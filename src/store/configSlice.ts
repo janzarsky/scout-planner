@@ -9,6 +9,7 @@ const defaultConfig = {
     import.meta.env
       .VITE_REACT_APP_TIMETABLE_LAYOUT_VERSION_SWITCHING_ENABLED === "true",
   newTray: import.meta.env.VITE_REACT_APP_NEW_TRAY === "true",
+  dropIntoBlock: import.meta.env.VITE_REACT_APP_DROP_INTO_BLOCK === "true",
 };
 
 type Config = typeof defaultConfig;
