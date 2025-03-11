@@ -27,7 +27,6 @@ export default function Program({ program, rect, violations }) {
     useGetProgramsQuery(table);
 
   const [addProgramMutation] = useAddProgramMutation();
-  const [updateProgramMutation] = useUpdateProgramMutation();
 
   const ref = useRef(null);
 
@@ -39,6 +38,8 @@ export default function Program({ program, rect, violations }) {
     }),
   }));
 
+  const swapPrograms = useProgramSwap();
+
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
@@ -48,18 +49,7 @@ export default function Program({ program, rect, violations }) {
           : null;
 
         if (otherProg) {
-          const newProg = {
-            ...program,
-            groups: [...otherProg.groups],
-            begin: otherProg.begin,
-          };
-          const newOtherProg = {
-            ...otherProg,
-            groups: [...program.groups],
-            begin: program.begin,
-          };
-          updateProgramMutation({ table, data: newProg });
-          updateProgramMutation({ table, data: newOtherProg });
+          swapPrograms(program, otherProg);
         }
       },
       collect: (monitor) => ({
@@ -112,6 +102,26 @@ export default function Program({ program, rect, violations }) {
       <ProgramDragOver />
     </div>
   );
+}
+
+function useProgramSwap() {
+  const { table } = useSelector((state) => state.auth);
+  const [updateProgramMutation] = useUpdateProgramMutation();
+
+  return (program, otherProg) => {
+    const newProg = {
+      ...program,
+      groups: [...otherProg.groups],
+      begin: otherProg.begin,
+    };
+    const newOtherProg = {
+      ...otherProg,
+      groups: [...program.groups],
+      begin: program.begin,
+    };
+    updateProgramMutation({ table, data: newProg });
+    updateProgramMutation({ table, data: newOtherProg });
+  };
 }
 
 function getHighlightStatus(pkg, people) {
