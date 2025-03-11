@@ -23,8 +23,6 @@ export default function Program({ program, rect, violations }) {
     useGetPackagesQuery(table);
   const { data: settings, isSuccess: settingsLoaded } =
     useGetSettingsQuery(table);
-  const { data: programs, isSuccess: programsLoaded } =
-    useGetProgramsQuery(table);
 
   const [addProgramMutation] = useAddProgramMutation();
 
@@ -43,15 +41,7 @@ export default function Program({ program, rect, violations }) {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => {
-        var otherProg = programsLoaded
-          ? programs.find((program) => program._id === item.id)
-          : null;
-
-        if (otherProg) {
-          swapPrograms(program, otherProg);
-        }
-      },
+      drop: (item) => swapPrograms(program._id, item.id),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
@@ -106,21 +96,32 @@ export default function Program({ program, rect, violations }) {
 
 function useProgramSwap() {
   const { table } = useSelector((state) => state.auth);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
   const [updateProgramMutation] = useUpdateProgramMutation();
 
-  return (program, otherProg) => {
-    const newProg = {
-      ...program,
-      groups: [...otherProg.groups],
-      begin: otherProg.begin,
-    };
-    const newOtherProg = {
-      ...otherProg,
-      groups: [...program.groups],
-      begin: program.begin,
-    };
-    updateProgramMutation({ table, data: newProg });
-    updateProgramMutation({ table, data: newOtherProg });
+  return (id1, id2) => {
+    var prog1 = programsLoaded
+      ? programs.find((program) => program._id === id1)
+      : null;
+    var prog2 = programsLoaded
+      ? programs.find((program) => program._id === id2)
+      : null;
+
+    if (prog1 && prog2) {
+      const newProg1 = {
+        ...prog1,
+        groups: [...prog2.groups],
+        begin: prog2.begin,
+      };
+      const newProg2 = {
+        ...prog2,
+        groups: [...prog1.groups],
+        begin: prog1.begin,
+      };
+      updateProgramMutation({ table, data: newProg1 });
+      updateProgramMutation({ table, data: newProg2 });
+    }
   };
 }
 
