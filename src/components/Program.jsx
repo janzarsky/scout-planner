@@ -14,6 +14,7 @@ import {
   useGetProgramsQuery,
   useUpdateProgramMutation,
 } from "../store/programsApi";
+import { useConfig } from "../store/configSlice";
 
 export default function Program({ program, rect, violations }) {
   const { table, userLevel } = useSelector((state) => state.auth);
@@ -353,11 +354,26 @@ function ProgramClone({ clone, narrow }) {
 }
 
 function ProgramDragOver() {
-  return (
-    <div className="program-drag-over">
-      <i className="fa fa-exchange" />
-    </div>
-  );
+  const dropIntoBlock = useConfig("dropIntoBlock");
+
+  if (dropIntoBlock) {
+    return (
+      <div className="program-drag-over-v2">
+        <div className="program-drag-over-v2-swap">
+          <i className="fa fa-exchange" />
+        </div>
+        <div className="program-drag-over-v2-move">
+          <i className="fa fa-arrow-down" />
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="program-drag-over">
+        <i className="fa fa-exchange" />
+      </div>
+    );
+  }
 }
 
 function isHidden(programTitle) {

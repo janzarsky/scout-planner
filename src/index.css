@@ -349,6 +349,38 @@ p {
   display: flex;
 }
 
+.program-drag-over-v2 {
+  display: none;
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: calc(100% - 0.25rem);
+  height: calc(100% - 0.25rem);
+  align-content: stretch;
+  align-items: stretch;
+  flex-direction: column;
+  color: #455a64;
+}
+.program-wrapper.drag-over .program-drag-over-v2 {
+  display: flex;
+}
+.program-drag-over-v2-swap,
+.program-drag-over-v2-move {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.program-drag-over-v2-swap {
+  background-color: rgba(255, 204, 128, 0.8);
+  flex: 2 1 0;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+.program-drag-over-v2-move {
+  background-color: rgba(41, 182, 246, 0.8);
+  flex: 1 1 0;
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
 .droppable {
   border-radius: 0.25rem;
 }
