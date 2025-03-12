@@ -111,7 +111,10 @@ export function useDroppableDrop() {
             ? prog.groups
             : [groupId];
 
-        updateProgramMutation({ table, data: { ...prog, begin, groups } });
+        updateProgramMutation({
+          table,
+          data: { ...prog, begin, groups, blockOrder: 0 },
+        });
       }
     },
     [client],

@@ -232,7 +232,10 @@ function useTrayDrop() {
       var prog = currentPrograms.find((program) => program._id === item.id);
 
       if (prog) {
-        updateProgramMutation({ table, data: { ...prog, begin: null } });
+        updateProgramMutation({
+          table,
+          data: { ...prog, begin: null, blockOrder: 0 },
+        });
       }
     },
     [client],
