@@ -16,13 +16,17 @@ import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
 import { togglePinTray } from "../store/viewSlice";
 import { useConfig } from "../store/configSlice";
+import { useDroppableDrop } from "./Droppables";
 
-export function Tray({ settings, onDroppableDrop }) {
+export function Tray({ settings }) {
   const { table } = useSelector((state) => state.auth);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsQuery(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);
+
+  // TODO remove this dependency
+  const onDroppableDrop = useDroppableDrop();
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
