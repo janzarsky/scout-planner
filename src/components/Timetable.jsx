@@ -11,7 +11,6 @@ import { Droppables } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
-import { useCommandHandler } from "./CommandContext";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import {
   DEFAULT_TIME_STEP,
@@ -111,7 +110,6 @@ export default function Timetable({
 
 function useDroppableDrop() {
   const { table } = useSelector((state) => state.auth);
-  const { dispatchCommand } = useCommandHandler();
 
   const client = useMemo(
     () => firestoreClientFactory.getClient(table),
@@ -133,6 +131,6 @@ function useDroppableDrop() {
         updateProgramMutation({ table, data: { ...prog, begin, groups } });
       }
     },
-    [client, dispatchCommand],
+    [client],
   );
 }
