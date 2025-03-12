@@ -267,7 +267,7 @@ describe("Timetable", () => {
 
     it("programs can be swapped", () => {
       const prog1 = {
-        _id: "testprogramid",
+        _id: "prog1",
         title: "Test program 1",
         duration: parseDuration("2:00"),
         begin: now - parseDuration("3:00"),
@@ -275,7 +275,7 @@ describe("Timetable", () => {
         people: [],
       };
       const prog2 = {
-        _id: "testprogramid",
+        _id: "prog2",
         title: "Test program 2",
         duration: parseDuration("2:00"),
         begin: now - parseDuration("1:00"),
@@ -298,8 +298,8 @@ describe("Timetable", () => {
       cy.get(".program:first").drag(".program:last", { force: true });
 
       cy.get("@updateProgram").should("have.been.calledTwice");
-      cy.get("@updateProgram").should("have.been.calledWith", updatedProg2);
       cy.get("@updateProgram").should("have.been.calledWith", updatedProg1);
+      cy.get("@updateProgram").should("have.been.calledWith", updatedProg2);
     });
   });
 });
