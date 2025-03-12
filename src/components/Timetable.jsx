@@ -28,33 +28,11 @@ export default function Timetable({
   timeProvider = null,
   printView = false,
 }) {
-  const { dispatchCommand } = useCommandHandler();
-
   const { table, userLevel } = useSelector((state) => state.auth);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsQuery(table);
-  const client = useMemo(
-    () => firestoreClientFactory.getClient(table),
-    [table],
-  );
-  const [updateProgramMutation] = useUpdateProgramMutation();
 
-  const onDroppableDrop = useCallback(
-    (item, begin, groupId, currentPrograms) => {
-      var prog = currentPrograms.find((program) => program._id === item.id);
-      if (prog) {
-        // single-group programs should be always updated according to the target group,
-        // multi-group programs should be only updated in case they are dragged to a new group
-        const groups =
-          !groupId || prog.groups.indexOf(groupId) !== -1
-            ? prog.groups
-            : [groupId];
-
-        updateProgramMutation({ table, data: { ...prog, begin, groups } });
-      }
-    },
-    [client, dispatchCommand],
-  );
+  const onDroppableDrop = useDroppableDrop();
 
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: timetableSettings, isSuccess: settingsLoaded } =
@@ -128,5 +106,33 @@ export default function Timetable({
         <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
       )}
     </DndProvider>
+  );
+}
+
+function useDroppableDrop() {
+  const { table } = useSelector((state) => state.auth);
+  const { dispatchCommand } = useCommandHandler();
+
+  const client = useMemo(
+    () => firestoreClientFactory.getClient(table),
+    [table],
+  );
+  const [updateProgramMutation] = useUpdateProgramMutation();
+
+  return useCallback(
+    (item, begin, groupId, currentPrograms) => {
+      var prog = currentPrograms.find((program) => program._id === item.id);
+      if (prog) {
+        // single-group programs should be always updated according to the target group,
+        // multi-group programs should be only updated in case they are dragged to a new group
+        const groups =
+          !groupId || prog.groups.indexOf(groupId) !== -1
+            ? prog.groups
+            : [groupId];
+
+        updateProgramMutation({ table, data: { ...prog, begin, groups } });
+      }
+    },
+    [client, dispatchCommand],
   );
 }
