@@ -28,6 +28,8 @@ export default function Program({ program, rect, violations }) {
 
   const ref = useRef(null);
 
+  const dropIntoBlock = useConfig("dropIntoBlock");
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "program",
     item: { id: program._id },
@@ -41,8 +43,8 @@ export default function Program({ program, rect, violations }) {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item, monitor) => {
-        if (!monitor.didDrop()) swapPrograms(program._id, item.id);
+      drop: (item) => {
+        if (!dropIntoBlock) swapPrograms(program._id, item.id);
       },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
