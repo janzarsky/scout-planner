@@ -28,6 +28,8 @@ export default function Program({ program, rect, violations }) {
 
   const ref = useRef(null);
 
+  const dropIntoBlock = useConfig("dropIntoBlock");
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "program",
     item: { id: program._id },
@@ -41,7 +43,9 @@ export default function Program({ program, rect, violations }) {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => swapPrograms(program._id, item.id),
+      drop: (item) => {
+        if (!dropIntoBlock) swapPrograms(program._id, item.id);
+      },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
@@ -89,7 +93,7 @@ export default function Program({ program, rect, violations }) {
           narrow={narrow}
         />
       )}
-      <ProgramDragOver />
+      <ProgramDragOver programId={program._id} />
     </div>
   );
 }
@@ -364,16 +368,34 @@ function ProgramClone({ clone, narrow }) {
   );
 }
 
-function ProgramDragOver() {
-  const dropIntoBlock = useConfig("dropIntoBlock");
+function ProgramDragOver({ programId }) {
+  const dropIntoBlockFeature = useConfig("dropIntoBlock");
+  const swapPrograms = useProgramSwap();
+  const dropIntoBlock = useDropIntoBlock();
 
-  if (dropIntoBlock) {
+  const [, dropSwap] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => swapPrograms(programId, item.id),
+    }),
+    [],
+  );
+
+  const [, dropBlock] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => dropIntoBlock(item.id, programId),
+    }),
+    [],
+  );
+
+  if (dropIntoBlockFeature) {
     return (
       <div className="program-drag-over-v2">
-        <div className="program-drag-over-v2-swap">
+        <div className="program-drag-over-v2-swap" ref={dropSwap}>
           <i className="fa fa-exchange" />
         </div>
-        <div className="program-drag-over-v2-move">
+        <div className="program-drag-over-v2-move" ref={dropBlock}>
           <i className="fa fa-arrow-down" />
         </div>
       </div>
@@ -385,6 +407,32 @@ function ProgramDragOver() {
       </div>
     );
   }
+}
+
+function useDropIntoBlock() {
+  const { table } = useSelector((state) => state.auth);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
+  const [updateProgramMutation] = useUpdateProgramMutation();
+
+  return (draggedProgId, blockProgramId) => {
+    var program = programsLoaded
+      ? programs.find((program) => program._id === draggedProgId)
+      : null;
+    var blockProgram = programsLoaded
+      ? programs.find((program) => program._id === blockProgramId)
+      : null;
+
+    if (program && blockProgram) {
+      const newProgram = {
+        ...program,
+        groups: [...blockProgram.groups],
+        begin: blockProgram.begin,
+        blockOrder: blockProgram.blockOrder + 1,
+      };
+      updateProgramMutation({ table, data: newProgram });
+    }
+  };
 }
 
 function isHidden(programTitle) {
