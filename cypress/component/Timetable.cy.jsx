@@ -201,6 +201,7 @@ describe("Timetable", () => {
         begin: now - parseDuration("3:00"),
         groups: ["group1"],
         people: [],
+        blockOrder: 0,
       };
       const updatedProg = {
         ...prog,
@@ -225,6 +226,7 @@ describe("Timetable", () => {
         begin: now - parseDuration("3:00"),
         groups: ["group1"],
         people: [],
+        blockOrder: 0,
       };
       const updatedProg = {
         ...prog,
@@ -249,6 +251,7 @@ describe("Timetable", () => {
         begin: now - parseDuration("3:00"),
         groups: ["group1"],
         people: [],
+        blockOrder: 0,
       };
       const updatedProg = {
         ...prog,
@@ -259,6 +262,32 @@ describe("Timetable", () => {
 
       cy.contains("Test program").drag(
         "[style='grid-column-start: 3; grid-row-start: 4;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", updatedProg);
+    });
+
+    it("dragging programs will reset their block order", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1"],
+        people: [],
+        blockOrder: 3,
+      };
+      const updatedProg = {
+        ...prog,
+        begin: prog.begin + parseDuration("2:00"),
+        blockOrder: 0,
+      };
+      stubClient([prog], [updatedProg]);
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 11; grid-row-start: 2;']",
         { force: true },
       );
 
