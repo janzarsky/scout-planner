@@ -41,7 +41,9 @@ export default function Program({ program, rect, violations }) {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) => swapPrograms(program._id, item.id),
+      drop: (item, monitor) => {
+        if (!monitor.didDrop()) swapPrograms(program._id, item.id);
+      },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
@@ -89,7 +91,7 @@ export default function Program({ program, rect, violations }) {
           narrow={narrow}
         />
       )}
-      <ProgramDragOver />
+      <ProgramDragOver programId={program._id} />
     </div>
   );
 }
@@ -364,16 +366,33 @@ function ProgramClone({ clone, narrow }) {
   );
 }
 
-function ProgramDragOver() {
+function ProgramDragOver({ programId }) {
   const dropIntoBlock = useConfig("dropIntoBlock");
+  const swapPrograms = useProgramSwap();
+
+  const [, dropSwap] = useDrop(
+    () => ({
+      accept: "program",
+      drop: (item) => swapPrograms(programId, item.id),
+    }),
+    [],
+  );
+
+  const [, dropBlock] = useDrop(
+    () => ({
+      accept: "program",
+      drop: () => console.debug("Not implemented - drop into block"),
+    }),
+    [],
+  );
 
   if (dropIntoBlock) {
     return (
       <div className="program-drag-over-v2">
-        <div className="program-drag-over-v2-swap">
+        <div className="program-drag-over-v2-swap" ref={dropSwap}>
           <i className="fa fa-exchange" />
         </div>
-        <div className="program-drag-over-v2-move">
+        <div className="program-drag-over-v2-move" ref={dropBlock}>
           <i className="fa fa-arrow-down" />
         </div>
       </div>
