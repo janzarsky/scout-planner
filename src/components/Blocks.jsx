@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
 
-export function Blocks({ settings, violations, onDrop }) {
+export function Blocks({ settings, violations }) {
   const { table } = useSelector((state) => state.auth);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsQuery(table);
@@ -27,7 +27,7 @@ export function Blocks({ settings, violations, onDrop }) {
           violations={violations}
         />
       ))}
-      <BlockDroppables data={block.droppablesData} onDrop={onDrop} />
+      <BlockDroppables data={block.droppablesData} />
     </Block>
   ));
 }

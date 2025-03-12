@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,22 +19,27 @@ import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
 import { useGetPackagesQuery } from "../store/packagesApi";
 import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
-import { useGetProgramsQuery } from "../store/programsApi";
+import {
+  useGetProgramsQuery,
+  useUpdateProgramMutation,
+} from "../store/programsApi";
 import { togglePinTray } from "../store/viewSlice";
 import { useConfig } from "../store/configSlice";
+import { firestoreClientFactory } from "../FirestoreClient";
 
-export function Tray({ settings, onDroppableDrop }) {
+export function Tray({ settings }) {
   const { table } = useSelector((state) => state.auth);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsQuery(table);
   const { data: packages, isSuccess: packagesLoaded } =
     useGetPackagesQuery(table);
 
+  const onDroppableDrop = useTrayDrop();
+
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "program",
-      drop: (item) =>
-        onDroppableDrop(item, null, null, programsLoaded ? programs : []),
+      drop: (item) => onDroppableDrop(item, programsLoaded ? programs : []),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
         canDrop: !!monitor.canDrop(),
@@ -204,5 +215,26 @@ function TrayButton({ ref, canDrop }) {
         <i className="fa fa-plus" aria-hidden="true" title="Nový program" />
       )}
     </button>
+  );
+}
+
+function useTrayDrop() {
+  const { table } = useSelector((state) => state.auth);
+
+  const client = useMemo(
+    () => firestoreClientFactory.getClient(table),
+    [table],
+  );
+  const [updateProgramMutation] = useUpdateProgramMutation();
+
+  return useCallback(
+    (item, currentPrograms) => {
+      var prog = currentPrograms.find((program) => program._id === item.id);
+
+      if (prog) {
+        updateProgramMutation({ table, data: { ...prog, begin: null } });
+      }
+    },
+    [client],
   );
 }

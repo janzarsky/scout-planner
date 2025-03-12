@@ -2,59 +2,30 @@ import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useSelector } from "react-redux";
-import { firestoreClientFactory } from "../FirestoreClient";
 import { level } from "../helpers/Level";
 import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Droppables } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
 import { Tray } from "./Tray";
-import { useCommandHandler } from "./CommandContext";
 import { useGetGroupsQuery } from "../store/groupsApi";
 import {
   DEFAULT_TIME_STEP,
   DEFAULT_WIDTH,
   useGetSettingsQuery,
 } from "../store/settingsApi";
-import {
-  useGetProgramsQuery,
-  useUpdateProgramMutation,
-} from "../store/programsApi";
+import { useGetProgramsQuery } from "../store/programsApi";
 
 export default function Timetable({
   violations,
   timeProvider = null,
   printView = false,
 }) {
-  const { dispatchCommand } = useCommandHandler();
-
   const { table, userLevel } = useSelector((state) => state.auth);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsQuery(table);
-  const client = useMemo(
-    () => firestoreClientFactory.getClient(table),
-    [table],
-  );
-  const [updateProgramMutation] = useUpdateProgramMutation();
-
-  const onDroppableDrop = useCallback(
-    (item, begin, groupId, currentPrograms) => {
-      var prog = currentPrograms.find((program) => program._id === item.id);
-      if (prog) {
-        // single-group programs should be always updated according to the target group,
-        // multi-group programs should be only updated in case they are dragged to a new group
-        const groups =
-          !groupId || prog.groups.indexOf(groupId) !== -1
-            ? prog.groups
-            : [groupId];
-
-        updateProgramMutation({ table, data: { ...prog, begin, groups } });
-      }
-    },
-    [client, dispatchCommand],
-  );
 
   const { data: groups, isSuccess: groupsLoaded } = useGetGroupsQuery(table);
   const { data: timetableSettings, isSuccess: settingsLoaded } =
@@ -105,17 +76,11 @@ export default function Timetable({
             "px, 1fr))",
         }}
       >
-        {userLevel >= level.EDIT && (
-          <Droppables settings={settings} onDrop={onDroppableDrop} />
-        )}
+        {userLevel >= level.EDIT && <Droppables settings={settings} />}
         <TimeHeaders settings={settings} />
         <DateHeaders settings={settings} />
         <GroupHeaders settings={settings} />
-        <Blocks
-          settings={settings}
-          violations={violations}
-          onDrop={onDroppableDrop}
-        />
+        <Blocks settings={settings} violations={violations} />
         {timeIndicatorRect && (
           <TimeIndicator
             x={timeIndicatorRect.x}
@@ -124,9 +89,7 @@ export default function Timetable({
           />
         )}
       </div>
-      {!printView && (
-        <Tray settings={settings} onDroppableDrop={onDroppableDrop} />
-      )}
+      {!printView && <Tray settings={settings} />}
     </DndProvider>
   );
 }
