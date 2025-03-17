@@ -11,7 +11,7 @@ describe("get identity", () => {
   it("throws error when called with invalid auth header", async () => {
     const req = {
       headers: {
-        authorization: "asdf",
+        authorization: "invalid_value",
       },
     };
     await expect(testing.getIdentity(req)).rejects.toThrowError("Unauthorized");
@@ -21,7 +21,7 @@ describe("get identity", () => {
   it.skip("throws error when called with invalid ID token", async () => {
     const req = {
       headers: {
-        authorization: "Bearer eyJhbGciOiJ",
+        authorization: "Bearer abc",
       },
     };
     await expect(testing.getIdentity(req)).rejects.toThrowError();
