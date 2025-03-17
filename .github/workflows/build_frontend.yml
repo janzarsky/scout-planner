@@ -8,11 +8,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
+      - name: Build app
         uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm ci
+
+      - name: Build functions
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+        working-directory: ./functions
+
+      - name: Run checks
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: npm run format
       - run: npm run lint
       - run: npm run build
