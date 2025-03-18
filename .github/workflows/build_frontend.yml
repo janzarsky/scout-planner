@@ -13,12 +13,15 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+      - run: npm run test
 
       - name: Build functions
         uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm ci
+        working-directory: ./functions
+      - run: npm run test
         working-directory: ./functions
 
       - name: Run checks
@@ -28,7 +31,6 @@ jobs:
       - run: npm run format
       - run: npm run lint
       - run: npm run build
-      - run: npm run test
 
       - name: Cypress tests
         uses: cypress-io/github-action@v5.1.0
