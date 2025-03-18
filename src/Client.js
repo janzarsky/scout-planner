@@ -1,4 +1,3 @@
-import { getAuth } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -6,7 +5,6 @@ import {
   doc,
   getDoc,
   getDocs,
-  getFirestore,
   onSnapshot,
   query,
   setDoc,
@@ -15,7 +13,7 @@ import {
 import { level } from "./helpers/Level";
 
 export class Client {
-  constructor(table) {
+  constructor(table, db, auth) {
     [
       ["programs", "Program", "Programs"],
       ["packages", "Package", "Packages"],
@@ -34,8 +32,8 @@ export class Client {
         this.streamAll(path, callback);
     });
 
-    this.db = getFirestore();
-    this.auth = getAuth();
+    this.db = db;
+    this.auth = auth;
     this.table = table;
   }
 
