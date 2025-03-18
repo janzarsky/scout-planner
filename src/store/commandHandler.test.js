@@ -1,4 +1,4 @@
-import { describe, vi } from "vitest";
+import { describe, vi, beforeEach, it, expect } from "vitest";
 import { getCommandHandler } from "./commandHandler";
 
 describe("Command handler", () => {

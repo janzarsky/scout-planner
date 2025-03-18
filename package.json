@@ -25,7 +25,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "test": "vitest --globals",
+    "test": "vitest",
     "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.jsx src/**/*.ts src/**/*.tsx cypress/**/*.js cypress/**/*.jsx",
     "format": "prettier --check ."
   },
@@ -50,7 +50,6 @@
     "eslint": "^9.22.0",
     "eslint-plugin-cypress": "^4.1.0",
     "eslint-plugin-react": "^7.37.4",
-    "globals": "^15.14.0",
     "prettier": "3.4.2",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.0",
