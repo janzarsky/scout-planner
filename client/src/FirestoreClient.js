@@ -1,7 +1,7 @@
 import { Client } from "./Client";
 
 export const firestoreClientFactory = {
-  getClient() {
-    return new Client(...arguments);
+  getClient(table) {
+    return new Client(table);
   },
 };
