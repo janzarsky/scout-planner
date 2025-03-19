@@ -23,3 +23,5 @@ jobs:
         uses: cypress-io/github-action@v5.1.0
         with:
           component: true
+          working-directory: client
+          install: false
