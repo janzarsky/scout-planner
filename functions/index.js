@@ -2,6 +2,7 @@ import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { Client } from "./Client.js";
 
 http("clone-timetable", cloneTimetable);
 
@@ -61,7 +62,10 @@ function getOptions(req) {
 
 async function cloneData(source) {
   const db = getFirestore();
-  const sourceTimetable = await db.doc("timetables/" + source).get();
+  const auth = getAuth();
+
+  const client = new Client(source, db, auth);
+  const sourceTimetable = await client.getTimetable();
 
   console.log(sourceTimetable);
 
