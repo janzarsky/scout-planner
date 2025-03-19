@@ -48,6 +48,8 @@ export function AuthProvider({ children }) {
     await signOut(auth);
   };
 
+  auth && auth.currentUser.getIdToken().then((a) => console.log(a));
+
   const authChanged = useCallback((firebaseUser) => {
     if (firebaseUser) setUser(firebaseUser);
     setInitializing(false);
