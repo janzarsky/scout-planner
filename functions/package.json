@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npx functions-framework --target=clone-timetable",
     "test": "vitest",
-    "lint": "eslint --no-error-on-unmatched-pattern **/*.js **/*.ts",
+    "lint": "eslint --no-error-on-unmatched-pattern index.js index.test.js",
     "format": "prettier --check ."
   },
   "dependencies": {
@@ -14,7 +14,9 @@
     "firebase-functions": "^6.3.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "eslint": "^9.22.0",
+    "globals": "^16.0.0",
     "prettier": "^3.5.3",
     "vitest": "^3.0.9"
   }

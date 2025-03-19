@@ -12,27 +12,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci
-      - run: npm run test
-
-      - name: Build functions
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci
-        working-directory: ./functions
-      - run: npm run test
-        working-directory: ./functions
-
-      - name: Run checks
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm run format
-      - run: npm run lint
+      - run: npm ci -ws
+      - run: npm run test -ws
+      - run: npm run format -ws
+      - run: npm run lint -ws
       - run: npm run build
+        working-directory: client
 
       - name: Cypress tests
         uses: cypress-io/github-action@v5.1.0
         with:
           component: true
+          working-directory: client
+          install: false

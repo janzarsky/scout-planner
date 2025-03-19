@@ -52,11 +52,6 @@ export default [
     },
   },
   {
-    files: [
-      "cypress/**/*.js",
-      "cypress/**/*.jsx",
-      "functions/**/*.js",
-      "functions/**/*.ts",
-    ],
+    files: ["cypress/**/*.js", "cypress/**/*.jsx"],
   },
 ];
