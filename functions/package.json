@@ -2,10 +2,11 @@
   "name": "scout-planner-functions",
   "version": "0.1.0",
   "type": "module",
+  "main": "src/index.js",
   "scripts": {
     "start": "npx functions-framework --target=clone-timetable",
     "test": "vitest",
-    "lint": "eslint --no-error-on-unmatched-pattern index.js index.test.js",
+    "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.ts",
     "format": "prettier --check ."
   },
   "dependencies": {
