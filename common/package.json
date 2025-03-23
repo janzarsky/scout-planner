@@ -1,0 +1,14 @@
+{
+  "name": "@scout-planner/common",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./level": {
+      "import": "./src/level.js",
+      "require": "./src/level.js"
+    }
+  },
+  "files": [
+    "src"
+  ]
+}
