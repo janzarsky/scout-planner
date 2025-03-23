@@ -13,7 +13,7 @@ import {
   getTrayWidth,
 } from "../helpers/TrayUtils";
 import { useNavigate } from "react-router";
-import { level } from "../helpers/Level";
+import { level } from "@scout-planner/common/level";
 import { Block } from "./Blocks";
 import { getRect } from "../helpers/TimetableUtils";
 import Program from "./Program";
