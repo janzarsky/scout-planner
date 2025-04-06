@@ -26,7 +26,7 @@ describe("Timetable", () => {
     );
   }
 
-  function stubClient(programs, programsSecond) {
+  function stubClient(programs, programsSecond, timetable = {}) {
     cy.stub(firestoreClientFactory, "getClient")
       .returns({
         getGroups: cy
@@ -53,7 +53,7 @@ describe("Timetable", () => {
           .stub()
           .resolves(() => {})
           .as("streamPackages"),
-        getTimetable: cy.stub().resolves({}).as("getTimetable"),
+        getTimetable: cy.stub().resolves(timetable).as("getTimetable"),
         streamTimetable: cy
           .stub()
           .resolves(() => {})
@@ -241,6 +241,31 @@ describe("Timetable", () => {
       );
 
       cy.get("@updateProgram").should("have.been.calledOnceWith", updatedProg);
+    });
+
+    it("programs cannot be dragged to new group with group lock", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1"],
+        people: [],
+        blockOrder: 0,
+      };
+      const updatedProg = {
+        ...prog,
+        groups: ["group2"],
+      };
+      stubClient([prog], [updatedProg], { settings: { groupLock: true } });
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 3;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.not.been.called");
     });
 
     it("programs can be dragged to new day", () => {
