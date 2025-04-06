@@ -8,6 +8,7 @@ function addDefaults(data) {
   return {
     timeStep: DEFAULT_TIME_STEP,
     width: DEFAULT_WIDTH,
+    groupLock: false,
     ...(data && data.settings ? data.settings : {}),
   };
 }
