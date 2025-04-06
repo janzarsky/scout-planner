@@ -8,6 +8,7 @@ import {
   useUpdateProgramMutation,
 } from "../store/programsApi";
 import { firestoreClientFactory } from "../FirestoreClient";
+import { useGetSettingsQuery } from "../store/settingsApi";
 
 export function Droppables({ settings }) {
   const data = useMemo(() => getDroppablesData(settings), [settings]);
@@ -68,14 +69,20 @@ function Droppable({ x, y, begin, group }) {
     useGetProgramsQuery(table);
   const navigate = useNavigate();
   const onDrop = useDroppableDrop();
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsQuery(table);
+  const groupLock = settingsLoaded ? settings.groupLock : false;
 
-  const [{ isOver }, drop] = useDrop(
+  const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "program",
+      canDrop: (item) =>
+        groupLock ? canDropProgram(item, group, programs) : true,
       drop: (item) =>
         onDrop(item, begin, group, programsLoaded ? programs : []),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
+        canDrop: !!monitor.canDrop(),
       }),
     }),
     [programs],
@@ -84,11 +91,16 @@ function Droppable({ x, y, begin, group }) {
   return (
     <div
       ref={drop}
-      className={"droppable " + (isOver ? "drag-over" : "")}
+      className={"droppable " + (isOver && canDrop ? "drag-over" : "")}
       style={{ gridColumnStart: x, gridRowStart: y }}
       onClick={() => navigate("add", { state: { begin, groupId: group } })}
     />
   );
+}
+
+function canDropProgram(item, group, programs) {
+  var prog = programs.find((program) => program._id === item.id);
+  return prog && prog.groups.indexOf(group) !== -1;
 }
 
 export function useDroppableDrop() {
