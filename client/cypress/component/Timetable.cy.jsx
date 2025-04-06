@@ -42,6 +42,11 @@ describe("Timetable", () => {
               name: "G2",
               order: 1,
             },
+            {
+              _id: "group3",
+              name: "G3",
+              order: 1,
+            },
           ])
           .as("getGroups"),
         streamGroups: cy
@@ -104,7 +109,7 @@ describe("Timetable", () => {
 
     cy.get(".block")
       .first()
-      .should("have.css", "grid-area", "2 / 3 / span 2 / span 8")
+      .should("have.css", "grid-area", "2 / 3 / span 3 / span 8")
       .within(() => {
         cy.get(".program-wrapper").should(
           "have.css",
@@ -243,7 +248,28 @@ describe("Timetable", () => {
       cy.get("@updateProgram").should("have.been.calledOnceWith", updatedProg);
     });
 
-    it("programs cannot be dragged to new group with group lock", () => {
+    it("single-group programs can be dragged to the same group with group lock", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1"],
+        people: [],
+        blockOrder: 0,
+      };
+      stubClient([prog], [prog], { settings: { groupLock: true } });
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 2;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", prog);
+    });
+
+    it("single-group programs cannot be dragged to a different group with group lock", () => {
       const prog = {
         _id: "testprogramid",
         title: "Test program",
@@ -268,6 +294,94 @@ describe("Timetable", () => {
       cy.get("@updateProgram").should("have.not.been.called");
     });
 
+    it("dragging multi-group program to an existing group preserves groups", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1", "group2"],
+        people: [],
+        blockOrder: 0,
+      };
+      stubClient([prog], [prog]);
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 3;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", prog);
+    });
+
+    it("multi-group programs can be dragged to the same group with group lock", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1", "group2"],
+        people: [],
+        blockOrder: 0,
+      };
+      stubClient([prog], [prog], { settings: { groupLock: true } });
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 3;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", prog);
+    });
+
+    it("dragging multi-group program to a new group discards existing groups", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1", "group2"],
+        people: [],
+        blockOrder: 0,
+      };
+      const updatedProg = {
+        ...prog,
+        groups: ["group3"],
+      };
+      stubClient([prog], [updatedProg]);
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 4;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.been.calledOnceWith", updatedProg);
+    });
+
+    it("multi-group programs cannot be dragged to a new group with group lock", () => {
+      const prog = {
+        _id: "testprogramid",
+        title: "Test program",
+        duration: parseDuration("2:00"),
+        begin: now - parseDuration("3:00"),
+        groups: ["group1", "group2"],
+        people: [],
+        blockOrder: 0,
+      };
+      stubClient([prog], [prog], { settings: { groupLock: true } });
+      mountTimetable();
+
+      cy.contains("Test program").drag(
+        "[style='grid-column-start: 3; grid-row-start: 4;']",
+        { force: true },
+      );
+
+      cy.get("@updateProgram").should("have.not.been.called");
+    });
+
     it("programs can be dragged to new day", () => {
       const prog = {
         _id: "testprogramid",
@@ -286,7 +400,7 @@ describe("Timetable", () => {
       mountTimetable();
 
       cy.contains("Test program").drag(
-        "[style='grid-column-start: 3; grid-row-start: 4;']",
+        "[style='grid-column-start: 3; grid-row-start: 5;']",
         { force: true },
       );
 
