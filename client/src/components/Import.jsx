@@ -84,7 +84,6 @@ async function importData(data, client) {
         ),
       ),
     ]).then((people) => new Map(people)),
-    client.updateTimetable(data.timetable),
   ])
     // replace package, group, and range IDs in programs
     .then(([pkgs, groups, ranges, people]) =>
@@ -147,7 +146,8 @@ async function importData(data, client) {
     // add all rules
     .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))
     // add all users (at the end, so there are no issues with permissions)
-    .then(() => importUsersFirestore(data.users, client));
+    .then(() => importUsersFirestore(data.users, client))
+    .then(() => client.updateTimetable(data.timetable));
 }
 
 function importUsersFirestore(users, client) {
