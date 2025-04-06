@@ -10,5 +10,10 @@
   },
   "files": [
     "src"
-  ]
+  ],
+  "scripts": {
+    "test": "vitest",
+    "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.ts",
+    "format": "prettier --check ."
+  }
 }
