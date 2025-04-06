@@ -23,6 +23,8 @@ export default function Program({ program, rect, violations }) {
     useGetPackagesQuery(table);
   const { data: settings, isSuccess: settingsLoaded } =
     useGetSettingsQuery(table);
+  const { data: programs, isSuccess: programsLoaded } =
+    useGetProgramsQuery(table);
 
   const [addProgramMutation] = useAddProgramMutation();
 
@@ -40,17 +42,24 @@ export default function Program({ program, rect, violations }) {
 
   const swapPrograms = useProgramSwap();
 
-  const [{ isOver }, drop] = useDrop(
+  const groupLock = settingsLoaded ? settings.groupLock : false;
+
+  const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "program",
+      canDrop: (item) =>
+        groupLock
+          ? canDropProgram(item.id, program._id, programsLoaded ? programs : [])
+          : true,
       drop: (item) => {
         if (!dropIntoBlock) swapPrograms(program._id, item.id);
       },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
+        canDrop: !!monitor.canDrop(),
       }),
     }),
-    [],
+    [program, programs, programsLoaded],
   );
 
   drag(drop(ref));
@@ -64,7 +73,7 @@ export default function Program({ program, rect, violations }) {
       className={
         "program-wrapper " +
         (isDragging ? " dragged" : "") +
-        (isOver ? " drag-over" : "")
+        (isOver && canDrop ? " drag-over" : "")
       }
       style={{
         gridColumnStart: rect.x + 1,
@@ -96,6 +105,20 @@ export default function Program({ program, rect, violations }) {
       <ProgramDragOver programId={program._id} />
     </div>
   );
+}
+
+function canDropProgram(sourceId, targetId, programs) {
+  var source = programs.find((p) => p._id === sourceId);
+  var target = programs.find((p) => p._id === targetId);
+
+  if (!source || !target) return false;
+
+  if (source.groups.length !== target.groups.length) return false;
+
+  for (const g of source.groups)
+    if (target.groups.indexOf(g) === -1) return false;
+
+  return true;
 }
 
 function useProgramSwap() {
