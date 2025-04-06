@@ -35,6 +35,7 @@ export default function Settings() {
   const timetableLayoutVersionSwitchingEnabled = useConfig(
     "timetableLayoutVersionSwitchingEnabled",
   );
+  const groupLockSettings = useConfig("groupLockSettings");
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { table } = useSelector((state) => state.auth);
   const { data: timetableData, isSuccess: layoutVersionLoaded } =
@@ -61,6 +62,7 @@ export default function Settings() {
         {userLevel >= level.EDIT && timetableLayoutVersionSwitchingEnabled && (
           <TimetableLayoutVersion />
         )}
+        {userLevel >= level.EDIT && groupLockSettings && <GroupLock />}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
@@ -285,6 +287,72 @@ function TimetableLayoutVersion() {
             <Form.Label className="pt-2">
               {queryLoaded &&
                 timetableLayoutVersions.find((it) => it.key === version)?.label}
+            </Form.Label>
+          )}
+        </Col>
+        <Col>
+          {editing ? (
+            <Button type="submit">
+              <i className="fa fa-check"></i> Uložit
+            </Button>
+          ) : (
+            <Button type="submit">
+              <i className="fa fa-pencil"></i> Upravit
+            </Button>
+          )}
+        </Col>
+      </Row>
+    </Form>
+  );
+}
+
+function GroupLock() {
+  const { table } = useSelector((state) => state.auth);
+  const { data: settings, isSuccess: settingsLoaded } =
+    useGetSettingsQuery(table);
+  const [updateSettings] = useUpdateSettingsMutation();
+
+  const [groupLock, setGroupLock] = useState(
+    settingsLoaded ? settings.groupLock : false,
+  );
+  const [editing, setEditing] = useState(false);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if (editing) {
+      updateSettings({
+        table,
+        data: { ...settings, groupLock: groupLock == "true" },
+      });
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Row className="mb-3">
+        <Form.Label column sm="2">
+          Přesouvání programů mezi skupinami &nbsp;
+        </Form.Label>
+        <Col sm="3">
+          {editing ? (
+            <Form.Select
+              value={groupLock}
+              onChange={(e) => setGroupLock(e.target.value)}
+            >
+              <option key={false} value={false}>
+                Povoleno
+              </option>
+              <option key={true} value={true}>
+                Zakázáno
+              </option>
+            </Form.Select>
+          ) : (
+            <Form.Label className="pt-2">
+              {settingsLoaded && settings.groupLock ? "Zakázáno" : "Povoleno"}
             </Form.Label>
           )}
         </Col>
