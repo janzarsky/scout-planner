@@ -3,7 +3,7 @@
 import React from "react";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import Users from "../../src/components/Users";
-import { level } from "@scout-planner/common/level";
+import { level } from "../../src/helpers/Level";
 import { getStore } from "../../src/store";
 import { setTable, testing } from "../../src/store/authSlice";
 

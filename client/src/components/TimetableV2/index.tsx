@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { ComposeSchedule } from "./ComposeSchedule";
 import { Violations } from "./types";
 import React from "react";
-import { level } from "@scout-planner/common/level";
+import { level } from "../../helpers/Level";
 
 export default function Timetable({
   violations,
