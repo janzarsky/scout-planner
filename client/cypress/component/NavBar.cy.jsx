@@ -3,7 +3,7 @@
 import React from "react";
 import { testing as authTesting, setTable } from "../../src/store/authSlice";
 import { getStore } from "../../src/store";
-import { level } from "@scout-planner/common/level";
+import { level } from "../../src/helpers/Level";
 import {
   setActiveRange,
   toggleHighlightedPackage,

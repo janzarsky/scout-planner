@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { level } from "@scout-planner/common/level";
+import { level } from "../helpers/Level";
 
 export const getPermissions = createAsyncThunk(
   "auth/getPermissions",

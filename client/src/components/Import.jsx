@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { firestoreClientFactory } from "../FirestoreClient";
 import { useSelector } from "react-redux";
-import { level } from "@scout-planner/common/level";
+import { level } from "../helpers/Level";
 
 export default function Import() {
   const [dataToImport, setDataToImport] = useState();
