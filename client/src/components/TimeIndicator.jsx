@@ -16,7 +16,7 @@ export function TimeIndicator({ settings, timeProvider }) {
   useEffect(() => {
     const interval = setInterval(
       () => setTime(timeProvider ? timeProvider() : Date.now()),
-      (1000 * timeStep) / 2,
+      timeStep / 2,
     );
 
     return () => clearInterval(interval);
