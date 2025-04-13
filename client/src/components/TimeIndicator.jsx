@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
 
-export function TimeIndicator({ settings, time }) {
+export function TimeIndicator({ settings, timeProvider, timeStep }) {
+  const [time, setTime] = useState(timeProvider ? timeProvider() : Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(
+      () => setTime(timeProvider ? timeProvider() : Date.now()),
+      (1000 * timeStep) / 2,
+    );
+
+    return () => clearInterval(interval);
+  }, []);
+
   const rect = getTimeIndicatorRect(settings, time);
 
   if (!rect) return null;

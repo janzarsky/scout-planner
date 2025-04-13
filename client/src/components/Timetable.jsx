@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { level } from "../helpers/Level";
 import { TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Droppables } from "./Droppables";
 import { DateHeaders, GroupHeaders, TimeHeaders } from "./Headers";
 import { Blocks } from "./Blocks";
@@ -45,17 +45,6 @@ export default function Timetable({
     [programs, groups, timetableSettings, timeProvider],
   );
 
-  const [time, setTime] = useState(timeProvider ? timeProvider() : Date.now());
-
-  useEffect(() => {
-    const interval = setInterval(
-      () => setTime(timeProvider ? timeProvider() : Date.now()),
-      (1000 * timeStep) / 2,
-    );
-
-    return () => clearInterval(interval);
-  }, []);
-
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
 
   return (
@@ -80,7 +69,11 @@ export default function Timetable({
         <DateHeaders settings={settings} />
         <GroupHeaders settings={settings} />
         <Blocks settings={settings} violations={violations} />
-        <TimeIndicator settings={settings} time={time} />
+        <TimeIndicator
+          settings={settings}
+          timeProvider={timeProvider}
+          timeStep={timeStep}
+        />
       </div>
       {!printView && <Tray settings={settings} />}
     </DndProvider>
