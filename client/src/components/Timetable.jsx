@@ -3,7 +3,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useSelector } from "react-redux";
 import { level } from "../helpers/Level";
-import { getTimeIndicatorRect, TimeIndicator } from "./TimeIndicator";
+import { TimeIndicator } from "./TimeIndicator";
 import { getTimetableSettings } from "../helpers/TimetableSettings";
 import { useEffect, useMemo, useState } from "react";
 import { Droppables } from "./Droppables";
@@ -56,7 +56,6 @@ export default function Timetable({
     return () => clearInterval(interval);
   }, []);
 
-  const timeIndicatorRect = getTimeIndicatorRect(settings, time);
   const width = settingsLoaded ? timetableSettings.width : DEFAULT_WIDTH;
 
   return (
@@ -81,13 +80,7 @@ export default function Timetable({
         <DateHeaders settings={settings} />
         <GroupHeaders settings={settings} />
         <Blocks settings={settings} violations={violations} />
-        {timeIndicatorRect && (
-          <TimeIndicator
-            x={timeIndicatorRect.x}
-            y={timeIndicatorRect.y}
-            height={timeIndicatorRect.height}
-          />
-        )}
+        <TimeIndicator settings={settings} time={time} />
       </div>
       {!printView && <Tray settings={settings} />}
     </DndProvider>

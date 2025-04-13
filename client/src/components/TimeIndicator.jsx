@@ -1,20 +1,24 @@
 import React from "react";
 import { getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
 
-export function TimeIndicator({ x, y, height }) {
+export function TimeIndicator({ settings, time }) {
+  const rect = getTimeIndicatorRect(settings, time);
+
+  if (!rect) return null;
+
   return (
     <div
       className="timeindicator"
       style={{
-        gridColumnStart: x + 3,
-        gridRowStart: y + 2,
-        gridRowEnd: "span " + height,
+        gridColumnStart: rect.x + 3,
+        gridRowStart: rect.y + 2,
+        gridRowEnd: "span " + rect.height,
       }}
     ></div>
   );
 }
 
-export function getTimeIndicatorRect(settings, now) {
+function getTimeIndicatorRect(settings, now) {
   // the times in timetable are in UTC (we don't know the timezone of the actual event)
   // the indicator assumes that you are in the correct timezone
   const zoneAdjust = now - new Date(now).getTimezoneOffset() * 60 * 1000;
