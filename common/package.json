@@ -15,5 +15,12 @@
     "test": "vitest",
     "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.ts",
     "format": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "vitest": "^3.1.1"
   }
 }
