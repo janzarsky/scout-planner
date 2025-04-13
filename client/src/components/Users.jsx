@@ -3,7 +3,7 @@ import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { level } from "../helpers/Level";
+import { level } from "@scout-planner/common/level";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useSelector } from "react-redux";
 import {

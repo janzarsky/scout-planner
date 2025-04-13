@@ -11,7 +11,7 @@ import {
   parseDate,
   parseTime,
 } from "../helpers/DateUtils";
-import { level } from "../helpers/Level";
+import { level } from "@scout-planner/common/level";
 import { useSelector } from "react-redux";
 import Row from "react-bootstrap/esm/Row";
 import { useGetGroupsQuery } from "../store/groupsApi";

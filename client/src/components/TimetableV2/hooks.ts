@@ -8,7 +8,7 @@ import {
 } from "../../store/programsApi";
 import { useGetPeopleQuery } from "../../store/peopleApi";
 import { Group, NewProgram, Person, Pkg, Program } from "./types";
-import { level } from "../../helpers/Level";
+import { level } from "@scout-planner/common/level";
 import { useCallback, useMemo } from "react";
 
 export function usePrograms(): Program[] {
