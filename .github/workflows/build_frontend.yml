@@ -17,6 +17,8 @@ jobs:
       - run: npm run format -ws
       - run: npm run lint -ws
       - run: npm run build
+        working-directory: common
+      - run: npm run build
         working-directory: client
 
       - name: Cypress tests
