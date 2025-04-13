@@ -69,11 +69,7 @@ export default function Timetable({
         <DateHeaders settings={settings} />
         <GroupHeaders settings={settings} />
         <Blocks settings={settings} violations={violations} />
-        <TimeIndicator
-          settings={settings}
-          timeProvider={timeProvider}
-          timeStep={timeStep}
-        />
+        <TimeIndicator settings={settings} timeProvider={timeProvider} />
       </div>
       {!printView && <Tray settings={settings} />}
     </DndProvider>

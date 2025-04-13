@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { getOnlyDate, getOnlyTime } from "../helpers/DateUtils";
+import { DEFAULT_TIME_STEP, useGetSettingsQuery } from "../store/settingsApi";
+import { useSelector } from "react-redux";
 
-export function TimeIndicator({ settings, timeProvider, timeStep }) {
+export function TimeIndicator({ settings, timeProvider }) {
+  const { table } = useSelector((state) => state.auth);
+  const { data: timetableSettings, isSuccess: settingsLoaded } =
+    useGetSettingsQuery(table);
+  const timeStep = settingsLoaded
+    ? timetableSettings.timeStep
+    : DEFAULT_TIME_STEP;
+
   const [time, setTime] = useState(timeProvider ? timeProvider() : Date.now());
 
   useEffect(() => {
