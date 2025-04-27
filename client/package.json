@@ -48,7 +48,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "cypress": "^14.1.0",
     "eslint": "^9.24.0",
-    "eslint-plugin-cypress": "^4.1.0",
+    "eslint-plugin-cypress": "^4.3.0",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^16.0.0",
     "prettier": "3.5.3",
