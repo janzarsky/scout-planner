@@ -66,7 +66,7 @@ p {
   border-radius: 0 0 0.25rem 0.25rem;
 }
 .timeheader-minutes {
-  color: #78909C;
+  color: #78909c;
 }
 .dateheader {
   padding: 0.125rem 0.375rem;
@@ -480,10 +480,10 @@ p {
 }
 
 .schedulePage__traySegment {
-  padding: .2em .4em;
+  padding: 0.2em 0.4em;
   margin: 0 0 1px 1px;
   background: var(--segment-color, white);
-  border-radius: .5em;
+  border-radius: 0.5em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -524,9 +524,8 @@ p {
   flex: 1 0 auto;
   display: flex;
   justify-content: flex-start;
-  gap: .5em;
+  gap: 0.5em;
 }
-
 
 .schedulePage__bottomControlsRight {
   flex: 1 0 auto;
@@ -591,14 +590,15 @@ p {
 }
 
 .scheduleTable__groupLabel {
-  grid-row: calc(var(--day-offset) + var(--group-index) + 2) / span var(--group-concurrent);
+  grid-row: calc(var(--day-offset) + var(--group-index) + 2) / span
+    var(--group-concurrent);
   grid-column: 2;
   white-space: nowrap;
   align-self: stretch;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-right: .5em;
+  margin-right: 0.5em;
   position: sticky;
   left: 4em;
   z-index: 1;
@@ -656,11 +656,12 @@ p {
   z-index: 1;
 }
 
-.scheduleTable__plannable, .scheduleTable__plannableExpansion {
+.scheduleTable__plannable,
+.scheduleTable__plannableExpansion {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: .2em .3em;
+  padding: 0.2em 0.3em;
   justify-content: flex-start;
   background: var(--segment-color, white);
 }
@@ -675,7 +676,8 @@ p {
   border-bottom-right-radius: 0.5em;
 }
 
-.scheduleTable__plannable::after, .scheduleTable__plannableExpansion::after {
+.scheduleTable__plannable::after,
+.scheduleTable__plannableExpansion::after {
   content: "";
   position: absolute;
   top: 0;
@@ -690,10 +692,11 @@ p {
 }
 
 .scheduleTable__plannable--dragged {
-  opacity: .5;
+  opacity: 0.5;
 }
 
-.scheduleTable__plannable--hovering::after, .scheduleTable__plannableExpansion::after {
+.scheduleTable__plannable--hovering::after,
+.scheduleTable__plannableExpansion::after {
   opacity: 1;
 }
 
@@ -701,7 +704,7 @@ p {
   overflow: hidden;
   max-height: 100%;
   white-space: nowrap;
-  font-size: .7em;
+  font-size: 0.7em;
   flex: 0 0 auto;
 }
 
@@ -709,8 +712,8 @@ p {
   overflow: hidden;
   max-height: 100%;
   white-space: nowrap;
-  font-size: .5em;
-  padding: .1em .5em;
+  font-size: 0.5em;
+  padding: 0.1em 0.5em;
   background: #ccc7;
   border-radius: 1em;
   max-width: 100%;
@@ -722,7 +725,7 @@ p {
   left: var(--position-x);
   bottom: calc(100vh - var(--position-y));
   z-index: 1;
-  padding: .5em;
+  padding: 0.5em;
   color: black;
   background: white;
   border-radius: 0.5em;
@@ -731,12 +734,11 @@ p {
   pointer-events: none;
 }
 
-
 .scheduleTable__plannableExpansion .scheduleTable__plannableTitle {
   font-size: 1rem;
 }
 .scheduleTable__plannableExpansion .scheduleTable__plannableOwners {
-  font-size: .7rem;
+  font-size: 0.7rem;
 }
 
 .scheduleTable__plannable--dark {
@@ -744,7 +746,7 @@ p {
 }
 
 .scheduleTable__plannable--notHighlighted {
-  opacity: .3;
+  opacity: 0.3;
   filter: blur(1px);
 }
 
@@ -755,7 +757,7 @@ p {
     rgba(0, 0, 0, 0) 1.25rem,
     rgba(66, 66, 66, 0.15) 1.25rem,
     rgba(66, 66, 66, 0.15) 2.5rem
-    );
+  );
 }
 
 .dialog {
@@ -799,9 +801,9 @@ p {
   display: flex;
   flex-direction: column;
   min-width: 10em;
-  padding: .1em;
-  gap: .1em;
-  border-radius: .1em;
+  padding: 0.1em;
+  gap: 0.1em;
+  border-radius: 0.1em;
   align-items: stretch;
   border: 1px solid #aaa;
 }
@@ -840,7 +842,7 @@ p {
 .fastInput__input {
   flex: 1;
   font-size: 1em;
-  padding: .5em;
+  padding: 0.5em;
   border-radius: 10px;
   border: 1px solid #aaa;
   font-family: inherit;
@@ -853,21 +855,107 @@ p {
 }
 
 .fastInput__completedValue {
-  font-size: .7em;
-  margin-bottom: .5em;
-  padding-bottom: .5em;
+  font-size: 0.7em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.5em;
   border-bottom: 1px solid #ccc;
 }
 
 .fastInput__title {
-  margin: 0 0 .2em;
+  margin: 0 0 0.2em;
   font-size: 1.5em;
   text-align: center;
 }
 
 .fastInput__closeHint {
   text-align: center;
-  font-size: .6em;
+  font-size: 0.6em;
   margin: 0 0 1em;
   color: #999;
+}
+
+/* PRINT - SINGLE DAY */
+
+.singleDayPrint {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.singleDayPrint__wrapper {
+  display: grid;
+  grid-gap: 1px;
+  grid-template-columns: repeat(calc(var(--group-count) - 1), 1fr auto) 1fr;
+  padding: 2px;
+  text-align: center;
+  font-size: 10pt;
+  font-family: 'Times New Roman', Times, serif;
+  overflow: 0;
+}
+
+.singleDayPrint__groupHeader {
+  grid-row: 1;
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0px solid black;
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+  margin: -2px -2px 0 0;
+}
+
+.singleDayPrint__program {
+  grid-row: var(--start-offset) / var(--end-offset);
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  border-left-width: 0;
+  border-right-width: 0;
+  margin: -2px -2px 0 0;
+  padding: 0 0.5em;
+}
+
+.singleDayPrint__program--bold {
+  font-weight: bold;
+}
+
+.singleDayPrint__timeHeader {
+  grid-row: 1;
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+  margin: -2px -2px 0 0;
+}
+
+.singleDayPrint__time {
+  grid-row: var(--start-offset) / var(--end-offset);
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  margin: -2px -2px 0 0;
+  padding: 0.5em;
+}
+
+@media screen {
+  .newPrint__print {
+    /* Not just display: none; to support iframes */
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: -999px;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
 }
