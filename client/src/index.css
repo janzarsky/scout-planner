@@ -435,12 +435,6 @@ p {
   }
 }
 
-@media screen {
-  .print-preview {
-    display: none;
-  }
-}
-
 .App:has(.schedulePage) {
   display: flex;
   flex-direction: column;
