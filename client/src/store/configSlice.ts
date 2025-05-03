@@ -13,6 +13,7 @@ const defaultConfig = {
   dropIntoBlock: import.meta.env.VITE_REACT_APP_DROP_INTO_BLOCK === "true",
   cloneFeature: import.meta.env.VITE_REACT_APP_CLONE_FEATURE === "true",
   shiftFeature: import.meta.env.VITE_REACT_APP_SHIFT_FEATURE === "true",
+  newPrint: import.meta.env.VITE_REACT_APP_NEW_PRINT === "true",
 };
 
 type Config = typeof defaultConfig;

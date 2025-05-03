@@ -873,3 +873,89 @@ p {
   margin: 0 0 1em;
   color: #999;
 }
+
+/* PRINT - SINGLE DAY */
+
+.singleDayPrint {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.singleDayPrint__wrapper {
+  display: grid;
+  grid-gap: 1px;
+  grid-template-columns: repeat(calc(var(--group-count) - 1), 1fr auto) 1fr;
+  padding: 2px;
+  text-align: center;
+  font-size: 10pt;
+  font-family: 'Times New Roman', Times, serif;
+  overflow: 0;
+}
+
+.singleDayPrint__groupHeader {
+  grid-row: 1;
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0px solid black;
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+  margin: -2px -2px 0 0;
+}
+
+.singleDayPrint__program {
+  grid-row: var(--start-offset) / var(--end-offset);
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  border-left-width: 0;
+  border-right-width: 0;
+  margin: -2px -2px 0 0;
+  padding: 0 0.5em;
+}
+
+.singleDayPrint__program--bold {
+  font-weight: bold;
+}
+
+.singleDayPrint__timeHeader {
+  grid-row: 1;
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+  margin: -2px -2px 0 0;
+}
+
+.singleDayPrint__time {
+  grid-row: var(--start-offset) / var(--end-offset);
+  grid-column: var(--column);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  margin: -2px -2px 0 0;
+  padding: 0.5em;
+}
+
+@media screen {
+  .newPrint__print {
+    /* Not just display: none; to support iframes */
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: -999px;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
+}
