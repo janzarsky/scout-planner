@@ -2,7 +2,7 @@ import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { useSelector } from "react-redux";
 import { formatTime } from "../helpers/DateUtils";
-import { level } from "@scout-planner/common/level";
+import { level } from "../helpers/Level";
 import { useRef } from "react";
 import { useNavigate } from "react-router";
 import { arraysIntersect } from "../helpers/Sorting";

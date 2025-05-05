@@ -6,7 +6,7 @@ import { getStore } from "../../src/store";
 import { parseDuration } from "../../src/helpers/DateUtils";
 import { firestoreClientFactory } from "../../src/FirestoreClient";
 import { setTable, testing } from "../../src/store/authSlice";
-import { level } from "@scout-planner/common/level";
+import { level } from "../../src/helpers/Level";
 
 describe("Timetable", () => {
   const now = Date.parse("Sun Mar 05 11:00:00 2023 UTC");

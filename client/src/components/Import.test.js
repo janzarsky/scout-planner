@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
-import { level } from "@scout-planner/common/level";
+import { level } from "../helpers/Level";
 import { testing } from "./Import";
 
 var client;

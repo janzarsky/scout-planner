@@ -6,7 +6,7 @@ import { PeopleFilterToggle } from "./PeopleFilter";
 import { ViewSettingsToggle } from "./ViewSettings";
 import { RangesSettingsToggle } from "./RangesSettings";
 import { NavLink, Route, Routes } from "react-router";
-import { level } from "@scout-planner/common/level";
+import { level } from "../helpers/Level";
 import { GoogleLogin } from "./GoogleLogin";
 import { useGetTimetableQuery } from "../store/timetableApi";
 

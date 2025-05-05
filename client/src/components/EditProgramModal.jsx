@@ -14,7 +14,7 @@ import {
   parseDuration,
   parseTime,
 } from "../helpers/DateUtils";
-import { level } from "@scout-planner/common/level";
+import { level } from "../helpers/Level";
 import { byName, byOrder } from "../helpers/Sorting";
 import { parseIntOrZero } from "../helpers/Parsing";
 import { useLocation, useNavigate, useParams } from "react-router";
