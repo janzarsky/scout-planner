@@ -10,6 +10,8 @@ import { useGetPeopleQuery } from "../../store/peopleApi";
 import { Group, NewProgram, Person, Pkg, Program } from "./types";
 import { level } from "@scout-planner/common/level";
 import { useCallback, useMemo } from "react";
+import { Temporal } from "@js-temporal/polyfill";
+import { epochMillisecondsToPlainDateTime } from "./utils";
 
 export function usePrograms(): Program[] {
   const { table } = useSelector<any, any>((state) => state.auth);
@@ -74,4 +76,26 @@ export function useAddProgram(): (program: NewProgram) => void {
 export function useUserLevel(): number {
   const { userLevel } = useSelector<any, any>((state) => state.auth);
   return userLevel ?? level.VIEW;
+}
+
+/**
+ * Returns a list of unique program dates sorted in ascending order.
+ *
+ * @returns {Temporal.PlainDate[]} An array of unique program dates.
+ */
+export function getProgramDates() {
+  const programs = usePrograms();
+  const dates = useMemo(() => {
+    const dates: Temporal.PlainDate[] = [];
+    for (const program of programs) {
+      if (program.begin) {
+        const d = epochMillisecondsToPlainDateTime(program.begin).toPlainDate();
+        if (!dates.some((it) => it.equals(d))) {
+          dates.push(d);
+        }
+      }
+    }
+    return [...dates].sort((a, b) => Temporal.PlainDate.compare(a, b));
+  }, [programs]);
+  return dates;
 }
