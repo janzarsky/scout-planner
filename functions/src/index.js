@@ -2,6 +2,7 @@ import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { level } from "@scout-planner/common/level";
 
 http("clone-timetable", cloneTimetable);
 
@@ -64,6 +65,9 @@ async function cloneData(source) {
   const sourceTimetable = await db.doc("timetables/" + source).get();
 
   console.log(sourceTimetable);
+
+  // FIXME: test of level
+  console.log(level.ADMIN);
 
   throw new Error("Not implemented");
 }
