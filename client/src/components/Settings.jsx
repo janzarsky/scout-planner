@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
-import { level } from "../helpers/Level";
+import { level } from "@scout-planner/common/level";
 import Import from "./Import";
 import Export from "./Export";
 import { formatDurationInMinutes } from "../helpers/DateUtils";
