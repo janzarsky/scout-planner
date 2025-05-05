@@ -15,7 +15,7 @@ import { checkRules } from "../Checker";
 import Settings from "./Settings";
 import Users from "./Users";
 import Stats from "./Stats";
-import { level } from "@scout-planner/common/level";
+import { level } from "../helpers/Level";
 import Container from "react-bootstrap/esm/Container";
 import { getPermissions } from "../store/authSlice";
 import { PackageFilter } from "./PackageFilter";

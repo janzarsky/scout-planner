@@ -5,8 +5,7 @@
   "workspaces": {
     "packages": [
       "client",
-      "functions",
-      "common"
+      "functions"
     ]
   }
 }

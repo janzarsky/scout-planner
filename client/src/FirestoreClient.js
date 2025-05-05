@@ -12,7 +12,7 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { level } from "@scout-planner/common/level";
+import { level } from "./helpers/Level";
 
 class FirestoreClient {
   constructor(table) {
