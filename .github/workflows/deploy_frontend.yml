@@ -16,10 +16,6 @@ jobs:
       group: frontend
       cancel-in-progress: true
 
-    defaults:
-      run:
-        working-directory: client
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,8 +24,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci
+      - run: npm ci -ws
       - run: npm run build
+        working-directory: client
         env:
           VITE_REACT_APP_API_KEY: ${{ secrets.GCP_API_KEY }}
           VITE_REACT_APP_AUTH_DOMAIN: ${{ vars.GCP_AUTH_DOMAIN }}
