@@ -27,7 +27,8 @@
     "build": "vite build",
     "test": "vitest",
     "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.jsx src/**/*.ts src/**/*.tsx cypress/**/*.js cypress/**/*.jsx",
-    "format": "prettier --check ."
+    "format": "prettier --check .",
+    "gcp-build": "true"
   },
   "browserslist": {
     "production": [
