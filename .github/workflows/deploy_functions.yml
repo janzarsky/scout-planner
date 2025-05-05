@@ -41,5 +41,5 @@ jobs:
           name: clone-timetable
           runtime: nodejs22
           region: europe-central2
-          source_dir: functions
+          source_dir: functions/dist
           entry_point: clone-timetable

@@ -7,16 +7,18 @@
     "start": "npx functions-framework --target=clone-timetable",
     "test": "vitest",
     "lint": "eslint --no-error-on-unmatched-pattern src/**/*.js src/**/*.ts",
-    "format": "prettier --check ."
+    "format": "prettier --check .",
+    "build": "node build.cjs && cp package-template.json dist/package.json"
   },
   "dependencies": {
-    "@scout-planner/common": "^0.1.0",
     "@google-cloud/functions-framework": "^3.5.1",
+    "@scout-planner/common": "^0.1.0",
     "firebase-admin": "^13.3.0",
     "firebase-functions": "^6.3.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "esbuild": "^0.25.3",
     "eslint": "^9.24.0",
     "globals": "^16.0.0",
     "prettier": "^3.5.3",

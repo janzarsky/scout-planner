@@ -1,0 +1,7 @@
+{
+  "name": "scout-planner-functions",
+  "version": "0.1.0",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.5.1"
+  }
+}
