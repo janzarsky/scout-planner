@@ -16,4 +16,12 @@
 # Node.js dependencies:
 node_modules/
 
-functions/
+# We need just the dist/ directory, everything else should not be send to
+# prevent remote build
+package.json
+package-lock.json
+
+cypress/
+public/
+src/
+
