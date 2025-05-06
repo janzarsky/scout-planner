@@ -2,7 +2,8 @@ import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
-import { level } from "@scout-planner/common/level";
+import { importData } from "@scout-planner/common/importer";
+import { Client } from "./client";
 
 http("clone-timetable", cloneTimetable);
 
@@ -12,7 +13,7 @@ async function cloneTimetable(req, res) {
   let email = null;
   try {
     email = await getIdentity(req);
-    console.debug("Got customer email: " + email);
+    console.debug(`Got customer email: "${email}"`);
   } catch (error) {
     console.error(error);
     res.status(401).send("Unauthorized");
@@ -21,14 +22,16 @@ async function cloneTimetable(req, res) {
   let options = null;
   try {
     options = getOptions(req);
-    console.debug("Got options: " + options);
+    console.debug(
+      `Got source: "${options.source}" and destination: "${options.destination}"`,
+    );
   } catch (error) {
     console.error(error);
     res.status(400).send("Invalid parameters");
   }
 
   try {
-    await cloneData(options.source);
+    await cloneData(options.source, options.destination);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");
@@ -60,16 +63,28 @@ function getOptions(req) {
   return { source, destination };
 }
 
-async function cloneData(source) {
+async function cloneData(source, destination) {
   const db = getFirestore();
-  const sourceTimetable = await db.doc("timetables/" + source).get();
 
-  console.log(sourceTimetable);
+  const sourceClient = new Client(source, db);
+  const data = await loadData(source, sourceClient);
 
-  // FIXME: test of level
-  console.log(level.ADMIN);
+  const destinationClient = new Client(destination, db);
+  await importData(data, destinationClient);
+}
 
-  throw new Error("Not implemented");
+async function loadData(client) {
+  // TODO
+  return {
+    programs: [],
+    pkgs: [],
+    groups: [],
+    rules: [],
+    ranges: [],
+    users: [],
+    people: [],
+    settings: { title: "importTest" },
+  };
 }
 
 export const testing = {
