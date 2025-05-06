@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
-import { level } from "@scout-planner/common/level";
-import { testing } from "./Import";
+import { level } from "./level";
+import { importData } from "./importer";
 
 var client;
 
@@ -36,7 +36,7 @@ beforeEach(() => {
 });
 
 test("empty data", async () => {
-  return testing.importData(emptyData, client).then(() => {
+  return importData(emptyData, client).then(() => {
     expect(client.updateTimetable).toHaveBeenCalledWith({ settings: {} });
   });
 });
@@ -57,7 +57,7 @@ test("single program", async () => {
     ],
   };
 
-  await testing.importData(data, client);
+  await importData(data, client);
 
   expect(client.addProgram).toHaveBeenCalledWith(data.programs[0]);
 });
@@ -90,7 +90,7 @@ test("program with groups", async () => {
     ],
   };
 
-  await testing.importData(data, client);
+  await importData(data, client);
 
   expect(client.addGroup).toHaveBeenCalledWith(data.groups[0]);
   expect(client.addGroup).toHaveBeenCalledWith(data.groups[1]);
@@ -123,7 +123,7 @@ test("program with package", async () => {
       },
     ],
   };
-  return testing.importData(data, client).then(() => {
+  return importData(data, client).then(() => {
     expect(client.addPackage).toHaveBeenCalledWith(data.pkgs[0]);
     expect(client.addProgram).toHaveBeenCalledWith({
       ...data.programs[0],
@@ -159,7 +159,7 @@ test("program with ranges", async () => {
       },
     ],
   };
-  return testing.importData(data, client).then(() => {
+  return importData(data, client).then(() => {
     expect(client.addRange).toHaveBeenCalledWith(data.ranges[0]);
     expect(client.addRange).toHaveBeenCalledWith(data.ranges[1]);
     expect(client.addProgram).toHaveBeenCalledWith({
@@ -196,7 +196,7 @@ test("program with object people", async () => {
       },
     ],
   };
-  return testing.importData(data, client).then(() => {
+  return importData(data, client).then(() => {
     expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
     expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
     expect(client.addProgram).toHaveBeenCalledWith({
@@ -233,7 +233,7 @@ test("program with string people", async () => {
       },
     ],
   };
-  return testing.importData(data, client).then(() => {
+  return importData(data, client).then(() => {
     expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
     expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
     expect(client.addProgram).toHaveBeenCalledWith({
@@ -265,7 +265,7 @@ test("program with mixed people", async () => {
       },
     ],
   };
-  return testing.importData(data, client).then(() => {
+  return importData(data, client).then(() => {
     expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
     expect(client.addProgram).toHaveBeenCalledWith({
       ...data.programs[0],
@@ -281,7 +281,7 @@ describe("users", () => {
       users: [{ _id: "user0", email: "test@user.com", level: level.ADMIN }],
     };
 
-    await testing.importData(data, client);
+    await importData(data, client);
 
     expect(client.updateUser).toHaveBeenCalledWith({
       ...data.users[0],
@@ -295,7 +295,7 @@ describe("users", () => {
       users: [{ _id: "public", email: "public", level: level.ADMIN }],
     };
 
-    await testing.importData(data, client);
+    await importData(data, client);
 
     expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
   });
@@ -310,7 +310,7 @@ describe("users", () => {
       ],
     };
 
-    await testing.importData(data, client);
+    await importData(data, client);
 
     expect(client.setPublicLevel).toHaveBeenCalledWith(level.ADMIN);
     expect(client.updateUser).toHaveBeenCalledWith({
