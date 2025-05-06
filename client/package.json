@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@js-temporal/polyfill": "^0.4.4",
+    "@js-temporal/polyfill": "^0.5.1",
     "@reduxjs/toolkit": "^2.7.0",
     "@scout-planner/common": "^0.1.0",
     "@testing-library/jest-dom": "^6.6.3",
