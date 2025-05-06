@@ -6,6 +6,10 @@
     "./level": {
       "import": "./src/level.js",
       "require": "./src/level.js"
+    },
+    "./importer": {
+      "import": "./src/importer.js",
+      "require": "./src/importer.js"
     }
   },
   "files": [

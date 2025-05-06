@@ -1,4 +1,4 @@
-import { level } from "@scout-planner/common/level";
+import { level } from "./level";
 
 export async function importData(data, client) {
   // data fixes
