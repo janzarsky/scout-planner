@@ -75,26 +75,28 @@ async function cloneData(source, destination) {
 }
 
 async function loadData(client) {
-  const groups = await client.getGroups();
-  const ranges = await client.getRanges();
-  const pkgs = await client.getPackages();
-  const rules = await client.getRules();
-  const users = await client.getUsers();
-  const people = await client.getPeople();
-  const programs = (await client.getPrograms()).filter((p) => !p.deleted);
-  const timetable = addTimetableDefaults(await client.getTimetable());
-  const settings = addSettingsDefaults(await client.getTimetable());
+  const [groups, ranges, pkgs, rules, users, people, programs, timetable] =
+    await Promise.all([
+      client.getGroups(),
+      client.getRanges(),
+      client.getPackages(),
+      client.getRules(),
+      client.getUsers(),
+      client.getPeople(),
+      client.getPrograms(),
+      client.getTimetable(),
+    ]);
 
   return {
-    programs,
-    pkgs,
     groups,
-    rules,
     ranges,
+    pkgs,
+    rules,
     users,
-    settings,
     people,
-    timetable,
+    programs: programs.filter((p) => !p.deleted),
+    settings: addSettingsDefaults(timetable),
+    timetable: addTimetableDefaults(timetable),
   };
 }
 
