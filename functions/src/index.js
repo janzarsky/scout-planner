@@ -65,25 +65,57 @@ function getOptions(req) {
 
 async function cloneData(source, destination) {
   const db = getFirestore();
+  db.settings({ ignoreUndefinedProperties: true });
 
   const sourceClient = new Client(source, db);
-  const data = await loadData(source, sourceClient);
+  const data = await loadData(sourceClient);
 
   const destinationClient = new Client(destination, db);
   await importData(data, destinationClient);
 }
 
 async function loadData(client) {
-  // TODO
+  const groups = await client.getGroups();
+  const ranges = await client.getRanges();
+  const pkgs = await client.getPackages();
+  const rules = await client.getRules();
+  const users = await client.getUsers();
+  const people = await client.getPeople();
+  const programs = (await client.getPrograms()).filter((p) => !p.deleted);
+  const timetable = addTimetableDefaults(await client.getTimetable());
+  const settings = addSettingsDefaults(await client.getTimetable());
+
   return {
-    programs: [],
-    pkgs: [],
-    groups: [],
-    rules: [],
-    ranges: [],
-    users: [],
-    people: [],
-    settings: { title: "importTest" },
+    programs,
+    pkgs,
+    groups,
+    rules,
+    ranges,
+    users,
+    settings,
+    people,
+    timetable,
+  };
+}
+
+// TODO deduplicate these helper functions
+function addTimetableDefaults(data) {
+  return {
+    title: null,
+    layoutVersion: "v1",
+    ...data,
+  };
+}
+
+const DEFAULT_TIME_STEP = 15 * 60 * 1000;
+const DEFAULT_WIDTH = 100;
+
+function addSettingsDefaults(data) {
+  return {
+    timeStep: DEFAULT_TIME_STEP,
+    width: DEFAULT_WIDTH,
+    groupLock: false,
+    ...(data && data.settings ? data.settings : {}),
   };
 }
 
