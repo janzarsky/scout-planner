@@ -4,10 +4,14 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { importData } from "@scout-planner/common/importer";
 import { Client } from "./client";
+import { level } from "@scout-planner/common/level";
 
 http("clone-timetable", cloneTimetable);
 
 initializeApp();
+
+const db = getFirestore();
+db.settings({ ignoreUndefinedProperties: true });
 
 async function cloneTimetable(req, res) {
   let email = null;
@@ -17,6 +21,7 @@ async function cloneTimetable(req, res) {
   } catch (error) {
     console.error(error);
     res.status(401).send("Unauthorized");
+    return;
   }
 
   let options = null;
@@ -28,15 +33,44 @@ async function cloneTimetable(req, res) {
   } catch (error) {
     console.error(error);
     res.status(400).send("Invalid parameters");
+    return;
   }
 
   try {
-    await cloneData(options.source, options.destination);
+    const accessLevel = await getAccessLevel(db, options.source, email);
+    console.debug(`Got access level to source table: ${accessLevel}`);
+    if (accessLevel < level.VIEW) {
+      res.status(403).send("Access to source table forbidden");
+      return;
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");
+    return;
   }
 
+  try {
+    const accessLevel = await getAccessLevel(db, options.destination, email);
+    console.debug(`Got access level to destination table: ${accessLevel}`);
+    if (accessLevel < level.ADMIN) {
+      res.status(403).send("Access to destination table forbidden");
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+    return;
+  }
+
+  try {
+    await cloneData(db, options.source, options.destination);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+    return;
+  }
+
+  console.debug("Successfully cloned");
   res.status(200).send("Successfullly cloned");
 }
 
@@ -63,10 +97,12 @@ function getOptions(req) {
   return { source, destination };
 }
 
-async function cloneData(source, destination) {
-  const db = getFirestore();
-  db.settings({ ignoreUndefinedProperties: true });
+async function getAccessLevel(db, table, user) {
+  const client = new Client(table, db);
+  return await client.getAccessLevel(user);
+}
 
+async function cloneData(db, source, destination) {
   const sourceClient = new Client(source, db);
   const data = await loadData(sourceClient);
 
