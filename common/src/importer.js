@@ -105,3 +105,7 @@ function importUsersFirestore(users, client) {
 async function importTimetable(timetable, client) {
   await client.updateTimetable(timetable);
 }
+
+export const testing = {
+  replaceIdsInRules,
+};

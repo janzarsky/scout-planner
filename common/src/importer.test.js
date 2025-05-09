@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { level } from "./level";
-import { importData } from "./importer";
+import { importData, testing } from "./importer";
 
 describe("importer", () => {
   var client;
@@ -328,5 +328,105 @@ describe("importer", () => {
         _id: data.users[2].email,
       });
     });
+  });
+});
+
+describe("rules ID replacement", () => {
+  it("returns nothing when there are no rules and IDs", () =>
+    expect(testing.replaceIdsInRules([], new Map())).toEqual([]));
+
+  it("returns nothing when there are no rules", () =>
+    expect(
+      testing.replaceIdsInRules([], new Map([["prog1", "prog2"]])),
+    ).toEqual([]));
+
+  ["is_before_date", "is_after_date"].forEach((ruleName) => {
+    it(`replaces program ID in a ${ruleName} rule`, () => {
+      const rule = {
+        program: "prog1",
+        condition: ruleName,
+        value: 1692639300000,
+      };
+
+      expect(
+        testing.replaceIdsInRules([rule], new Map([["prog1", "prog2"]])),
+      ).toEqual([
+        {
+          ...rule,
+          program: "prog2",
+        },
+      ]);
+    });
+  });
+
+  ["is_before_program", "is_after_program"].forEach((ruleName) => {
+    it(`replaces both program IDs in a ${ruleName} rule`, () => {
+      const rule = {
+        program: "prog1",
+        condition: ruleName,
+        value: "prog2",
+      };
+      const map = new Map([
+        ["prog1", "newProg1"],
+        ["prog2", "newProg2"],
+      ]);
+
+      expect(testing.replaceIdsInRules([rule], map)).toEqual([
+        {
+          ...rule,
+          program: "newProg1",
+          value: "newProg2",
+        },
+      ]);
+    });
+  });
+
+  it("replaces program IDs in multiple rules", () => {
+    const rules = [
+      {
+        program: "prog1",
+        condition: "is_before_date",
+        value: 1692639300000,
+      },
+      {
+        program: "prog1",
+        condition: "is_after_program",
+        value: "prog2",
+      },
+    ];
+    const map = new Map([
+      ["prog1", "newProg1"],
+      ["prog2", "newProg2"],
+    ]);
+
+    expect(testing.replaceIdsInRules(rules, map)).toEqual([
+      {
+        ...rules[0],
+        program: "newProg1",
+      },
+      {
+        ...rules[1],
+        program: "newProg1",
+        value: "newProg2",
+      },
+    ]);
+  });
+
+  it("keeps other properties", () => {
+    const rule = {
+      _id: "rule1",
+      program: "prog1",
+      condition: "is_before_date",
+      value: 1692639300000,
+    };
+
+    expect(
+      testing.replaceIdsInRules([rule], new Map([["prog1", "prog2"]])),
+    ).toEqual([
+      {
+        ...rule,
+        program: "prog2",
+      },
+    ]);
   });
 });
