@@ -16,18 +16,8 @@ export async function importData(data, client) {
     .then(([pkgs, groups, ranges, people]) =>
       replaceIdsInPrograms(data.programs, pkgs, groups, ranges, people),
     )
+    .then((programs) => importPrograms(programs, client))
     // add all programs
-    .then((programs) =>
-      Promise.all(
-        programs.map((prog) =>
-          client.addProgram(prog).then(
-            // create program ID replacement map
-            (newProg) => [prog._id, newProg._id],
-          ),
-        ),
-      ),
-    )
-    .then((programs) => new Map(programs))
     // replace program IDs in rules
     .then((programs) =>
       data.rules.map((rule) => {
@@ -88,6 +78,16 @@ async function importPeople(people, client) {
   }
 
   const idPairs = await Promise.all([...people.map(importPerson)]);
+  return new Map(idPairs);
+}
+
+async function importPrograms(programs, client) {
+  async function importProgram(program) {
+    const newProgram = await client.addProgram(program);
+    return [program._id, newProgram._id];
+  }
+
+  const idPairs = await Promise.all(programs.map(importProgram));
   return new Map(idPairs);
 }
 
