@@ -37,9 +37,9 @@ describe("importer", () => {
   });
 
   it("imports empty timetable", async () => {
-    return importData(emptyData, client).then(() => {
-      expect(client.updateTimetable).toHaveBeenCalledWith({ settings: {} });
-    });
+    await importData(emptyData, client);
+
+    expect(client.updateTimetable).toHaveBeenCalledWith({ settings: {} });
   });
 
   it("imports single program", async () => {
@@ -124,12 +124,13 @@ describe("importer", () => {
         },
       ],
     };
-    return importData(data, client).then(() => {
-      expect(client.addPackage).toHaveBeenCalledWith(data.pkgs[0]);
-      expect(client.addProgram).toHaveBeenCalledWith({
-        ...data.programs[0],
-        pkg: "pkg1_new",
-      });
+
+    await importData(data, client);
+
+    expect(client.addPackage).toHaveBeenCalledWith(data.pkgs[0]);
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      pkg: "pkg1_new",
     });
   });
 
@@ -160,13 +161,14 @@ describe("importer", () => {
         },
       ],
     };
-    return importData(data, client).then(() => {
-      expect(client.addRange).toHaveBeenCalledWith(data.ranges[0]);
-      expect(client.addRange).toHaveBeenCalledWith(data.ranges[1]);
-      expect(client.addProgram).toHaveBeenCalledWith({
-        ...data.programs[0],
-        ranges: { range1_new: 42, range2_new: 23 },
-      });
+
+    await importData(data, client);
+
+    expect(client.addRange).toHaveBeenCalledWith(data.ranges[0]);
+    expect(client.addRange).toHaveBeenCalledWith(data.ranges[1]);
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      ranges: { range1_new: 42, range2_new: 23 },
     });
   });
 
@@ -197,13 +199,14 @@ describe("importer", () => {
         },
       ],
     };
-    return importData(data, client).then(() => {
-      expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
-      expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
-      expect(client.addProgram).toHaveBeenCalledWith({
-        ...data.programs[0],
-        people: [{ person: "person1_new" }, { person: "person2_new" }],
-      });
+
+    await importData(data, client);
+
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      people: [{ person: "person1_new" }, { person: "person2_new" }],
     });
   });
 
@@ -234,13 +237,14 @@ describe("importer", () => {
         },
       ],
     };
-    return importData(data, client).then(() => {
-      expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
-      expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
-      expect(client.addProgram).toHaveBeenCalledWith({
-        ...data.programs[0],
-        people: ["Person 1", "Person 2"],
-      });
+
+    await importData(data, client);
+
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[1]);
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      people: ["Person 1", "Person 2"],
     });
   });
 
@@ -266,12 +270,13 @@ describe("importer", () => {
         },
       ],
     };
-    return importData(data, client).then(() => {
-      expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
-      expect(client.addProgram).toHaveBeenCalledWith({
-        ...data.programs[0],
-        people: [{ person: "person1_new" }, "Person 2"],
-      });
+
+    await importData(data, client);
+
+    expect(client.addPerson).toHaveBeenCalledWith(data.people[0]);
+    expect(client.addProgram).toHaveBeenCalledWith({
+      ...data.programs[0],
+      people: [{ person: "person1_new" }, "Person 2"],
     });
   });
 
