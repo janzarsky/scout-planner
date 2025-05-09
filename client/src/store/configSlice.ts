@@ -5,6 +5,7 @@ const defaultConfig = {
   apiKey: import.meta.env.VITE_REACT_APP_API_KEY,
   authDomain: import.meta.env.VITE_REACT_APP_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_REACT_APP_PROJECT_ID,
+  functionsBaseUrl: import.meta.env.VITE_REACT_APP_FUNCTIONS_BASE_URL,
   timetableLayoutVersionSwitchingEnabled:
     import.meta.env
       .VITE_REACT_APP_TIMETABLE_LAYOUT_VERSION_SWITCHING_ENABLED === "true",
