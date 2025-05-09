@@ -13,11 +13,17 @@ export async function importData(data, client) {
     importEntity(data.ranges, client.addRange),
     importEntity(data.people, client.addPerson),
   ])
-    .then(([pkgs, groups, ranges, people]) =>
-      replaceIdsInPrograms(data.programs, pkgs, groups, ranges, people),
+    .then(([pkgIds, groupIds, rangeIds, personIds]) =>
+      replaceIdsInPrograms(
+        data.programs,
+        pkgIds,
+        groupIds,
+        rangeIds,
+        personIds,
+      ),
     )
     .then((programs) => importEntity(programs, client.addProgram))
-    .then((programIdPairs) => replaceIdsInRules(data.rules, programIdPairs))
+    .then((programIds) => replaceIdsInRules(data.rules, programIds))
     // add all rules
     .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))
     // add all users (at the end, so there are no issues with permissions)
@@ -35,17 +41,17 @@ async function importEntity(data, importFn) {
   return new Map(idPairs);
 }
 
-function replaceIdsInPrograms(programs, pkgs, groups, ranges, people) {
+function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
   return programs.map((prog) => ({
     ...prog,
-    pkg: pkgs.get(prog.pkg) ? pkgs.get(prog.pkg) : null,
+    pkg: pkgIds.get(prog.pkg) ? pkgIds.get(prog.pkg) : null,
     groups: prog.groups.map((oldGroup) =>
-      groups.get(oldGroup) ? groups.get(oldGroup) : null,
+      groupIds.get(oldGroup) ? groupIds.get(oldGroup) : null,
     ),
     ranges: prog.ranges
       ? Object.fromEntries(
           Object.entries(prog.ranges).map(([oldRange, val]) => [
-            ranges.get(oldRange),
+            rangeIds.get(oldRange),
             val,
           ]),
         )
@@ -55,25 +61,25 @@ function replaceIdsInPrograms(programs, pkgs, groups, ranges, people) {
         ? oldPerson
         : {
             ...oldPerson,
-            person: people.get(oldPerson.person)
-              ? people.get(oldPerson.person)
+            person: personIds.get(oldPerson.person)
+              ? personIds.get(oldPerson.person)
               : null,
           },
     ),
   }));
 }
 
-function replaceIdsInRules(rules, programIdPairs) {
+function replaceIdsInRules(rules, programIds) {
   return rules.map((rule) => {
     var value = rule.value;
     if (
       rule.condition === "is_before_program" ||
       rule.condition === "is_after_program"
     )
-      value = programIdPairs.get(rule.value);
+      value = programIds.get(rule.value);
     return {
       ...rule,
-      program: programIdPairs.get(rule.program),
+      program: programIds.get(rule.program),
       value: value,
     };
   });
