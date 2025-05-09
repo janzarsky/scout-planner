@@ -51,8 +51,8 @@ function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
     ...prog,
     pkg: pkgIds.get(prog.pkg) ? pkgIds.get(prog.pkg) : null,
     groups: prog.groups
-      ? prog.groups.map((oldGroup) =>
-          groupIds.get(oldGroup) ? groupIds.get(oldGroup) : null,
+      ? prog.groups.flatMap((oldGroup) =>
+          groupIds.get(oldGroup) ? [groupIds.get(oldGroup)] : [],
         )
       : [],
     ranges: prog.ranges

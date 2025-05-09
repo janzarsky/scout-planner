@@ -476,4 +476,152 @@ describe("programs ID replacement", () => {
       ),
     ).toEqual([{ groups: [], people: [], pkg: null, ranges: null }]);
   });
+
+  it("processes multiple programs", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{ _id: "prog1" }, { _id: "prog2" }],
+        new Map(),
+        new Map(),
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual([
+      { _id: "prog1", groups: [], people: [], pkg: null, ranges: null },
+      { _id: "prog2", groups: [], people: [], pkg: null, ranges: null },
+    ]);
+  });
+
+  it("replaces package ID", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{ pkg: "package1" }],
+        new Map([["package1", "package2"]]),
+        new Map(),
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual([
+      {
+        pkg: "package2",
+        groups: [],
+        ranges: null,
+        people: [],
+      },
+    ]);
+  });
+
+  it("discards non-existing package ID", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{ pkg: "package1" }],
+        new Map(),
+        new Map(),
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual([
+      {
+        pkg: null,
+        groups: [],
+        ranges: null,
+        people: [],
+      },
+    ]);
+  });
+
+  it("replaces group IDs", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{ groups: ["group1", "group2"] }],
+        new Map(),
+        new Map([
+          ["group1", "newGroup1"],
+          ["group2", "newGroup2"],
+        ]),
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual([
+      {
+        pkg: null,
+        groups: ["newGroup1", "newGroup2"],
+        ranges: null,
+        people: [],
+      },
+    ]);
+  });
+
+  it("discards non-existing group IDs", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{ groups: ["group1", "group2"] }],
+        new Map(),
+        new Map([["group1", "newGroup1"]]),
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual([
+      {
+        pkg: null,
+        groups: ["newGroup1"],
+        ranges: null,
+        people: [],
+      },
+    ]);
+  });
+
+  it("replaces range IDs", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{ ranges: { range1: 1, range2: 2 } }],
+        new Map(),
+        new Map(),
+        new Map([
+          ["range1", "newRange1"],
+          ["range2", "newRange2"],
+        ]),
+        new Map(),
+      ),
+    ).toEqual([
+      {
+        pkg: null,
+        groups: [],
+        ranges: { newRange1: 1, newRange2: 2 },
+        people: [],
+      },
+    ]);
+  });
+
+  it("replaces people IDs", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [
+          {
+            people: [
+              { person: "person1" },
+              { person: "person2", optional: true },
+            ],
+          },
+        ],
+        new Map(),
+        new Map(),
+        new Map(),
+        new Map([
+          ["person1", "newPerson1"],
+          ["person2", "newPerson2"],
+        ]),
+      ),
+    ).toEqual([
+      {
+        pkg: null,
+        groups: [],
+        ranges: null,
+        people: [
+          { person: "newPerson1" },
+          { person: "newPerson2", optional: true },
+        ],
+      },
+    ]);
+  });
 });
