@@ -17,23 +17,7 @@ export async function importData(data, client) {
       replaceIdsInPrograms(data.programs, pkgs, groups, ranges, people),
     )
     .then((programs) => importEntity(programs, client.addProgram))
-    // add all programs
-    // replace program IDs in rules
-    .then((programs) =>
-      data.rules.map((rule) => {
-        var value = rule.value;
-        if (
-          rule.condition === "is_before_program" ||
-          rule.condition === "is_after_program"
-        )
-          value = programs.get(rule.value);
-        return {
-          ...rule,
-          program: programs.get(rule.program),
-          value: value,
-        };
-      }),
-    )
+    .then((programIdPairs) => replaceIdsInRules(data.rules, programIdPairs))
     // add all rules
     .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))
     // add all users (at the end, so there are no issues with permissions)
@@ -77,6 +61,22 @@ function replaceIdsInPrograms(programs, pkgs, groups, ranges, people) {
           },
     ),
   }));
+}
+
+function replaceIdsInRules(rules, programIdPairs) {
+  return rules.map((rule) => {
+    var value = rule.value;
+    if (
+      rule.condition === "is_before_program" ||
+      rule.condition === "is_after_program"
+    )
+      value = programIdPairs.get(rule.value);
+    return {
+      ...rule,
+      program: programIdPairs.get(rule.program),
+      value: value,
+    };
+  });
 }
 
 function importUsersFirestore(users, client) {
