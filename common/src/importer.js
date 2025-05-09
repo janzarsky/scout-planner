@@ -1,21 +1,17 @@
 import { level } from "./level";
 
 export async function importData(data, client) {
-  // data fixes
-  data.ranges ??= [];
-  data.users ??= [];
-  data.people ??= [];
-  data.timetable ??= { settings: data.settings ?? {} };
+  const fullData = getDataFixes(data);
 
   return await Promise.all([
-    importEntity(data.pkgs, client.addPackage),
-    importEntity(data.groups, client.addGroup),
-    importEntity(data.ranges, client.addRange),
-    importEntity(data.people, client.addPerson),
+    importEntity(fullData.pkgs, client.addPackage),
+    importEntity(fullData.groups, client.addGroup),
+    importEntity(fullData.ranges, client.addRange),
+    importEntity(fullData.people, client.addPerson),
   ])
     .then(([pkgIds, groupIds, rangeIds, personIds]) =>
       replaceIdsInPrograms(
-        data.programs,
+        fullData.programs,
         pkgIds,
         groupIds,
         rangeIds,
@@ -23,11 +19,21 @@ export async function importData(data, client) {
       ),
     )
     .then((programs) => importEntity(programs, client.addProgram))
-    .then((programIds) => replaceIdsInRules(data.rules, programIds))
+    .then((programIds) => replaceIdsInRules(fullData.rules, programIds))
     .then((rules) => importEntity(rules, client.addRule))
     // add all users (at the end, so there are no issues with permissions)
-    .then(() => importUsersFirestore(data.users, client))
-    .then(() => importTimetable(data.timetable, client));
+    .then(() => importUsersFirestore(fullData.users, client))
+    .then(() => importTimetable(fullData.timetable, client));
+}
+
+function getDataFixes(data) {
+  return {
+    ...data,
+    ranges: data.ranges ?? [],
+    users: data.users ?? [],
+    people: data.people ?? [],
+    timetable: data.timetable ?? { settings: data.settings ?? {} },
+  };
 }
 
 async function importEntity(data, importFn) {
