@@ -49,30 +49,47 @@ async function importEntity(data, importFn) {
 function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
   return programs.map((prog) => ({
     ...prog,
-    pkg: pkgIds.get(prog.pkg) ? pkgIds.get(prog.pkg) : null,
-    groups: prog.groups
-      ? prog.groups.flatMap((oldGroup) =>
-          groupIds.get(oldGroup) ? [groupIds.get(oldGroup)] : [],
-        )
-      : [],
-    ranges: prog.ranges
-      ? Object.fromEntries(
-          Object.entries(prog.ranges).flatMap(([oldRange, val]) => {
-            const newRangeId = rangeIds.get(oldRange);
-            return newRangeId ? [[newRangeId, val]] : [];
-          }),
-        )
-      : null,
-    people: prog.people
-      ? prog.people.flatMap((oldPerson) => {
-          if (typeof oldPerson === "string") return [oldPerson];
-          else {
-            const newPersonId = personIds.get(oldPerson.person);
-            return newPersonId ? { ...oldPerson, person: newPersonId } : [];
-          }
-        })
-      : [],
+    pkg: lookupPackage(prog, pkgIds),
+    groups: lookupGroups(prog, groupIds),
+    ranges: lookupRanges(prog, rangeIds),
+    people: lookupPeople(prog, personIds),
   }));
+}
+
+function lookupPackage(program, pkgIds) {
+  return pkgIds.get(program.pkg) ?? null;
+}
+
+function lookupGroups(program, groupIds) {
+  if (!program.groups) return [];
+
+  return program.groups.flatMap((oldId) => {
+    const newId = groupIds.get(oldId);
+    return newId ? [newId] : [];
+  });
+}
+
+function lookupRanges(program, rangeIds) {
+  if (!program.ranges) return null;
+
+  return Object.fromEntries(
+    Object.entries(program.ranges).flatMap(([oldId, val]) => {
+      const newId = rangeIds.get(oldId);
+      return newId ? [[newId, val]] : [];
+    }),
+  );
+}
+
+function lookupPeople(program, personIds) {
+  if (!program.people) return [];
+
+  return program.people.flatMap((oldPerson) => {
+    if (typeof oldPerson === "string") return [oldPerson];
+    else {
+      const newId = personIds.get(oldPerson.person);
+      return newId ? { ...oldPerson, person: newId } : [];
+    }
+  });
 }
 
 function replaceIdsInRules(rules, programIds) {
