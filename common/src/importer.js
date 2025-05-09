@@ -78,48 +78,44 @@ export async function importData(data, client) {
     .then(() => client.updateTimetable(data.timetable));
 }
 
-function importPackages(pkgs, client) {
-  return Promise.all([
-    ...pkgs.map((pkg) =>
-      client.addPackage(pkg).then(
-        // create package ID replacement map
-        (newPkg) => [pkg._id, newPkg._id],
-      ),
-    ),
-  ]).then((pkgs) => new Map(pkgs));
+async function importPackages(pkgs, client) {
+  async function importPackage(pkg) {
+    const newPkg = await client.addPackage(pkg);
+    return [pkg._id, newPkg._id];
+  }
+
+  const idPairs = await Promise.all([...pkgs.map(importPackage)]);
+  return new Map(idPairs);
 }
 
-function importGroups(groups, client) {
-  return Promise.all([
-    ...groups.map((group) =>
-      client.addGroup(group).then(
-        // create group ID replacement map
-        (newGroup) => [group._id, newGroup._id],
-      ),
-    ),
-  ]).then((groups) => new Map(groups));
+async function importGroups(groups, client) {
+  async function importGroup(group) {
+    const newGroup = await client.addGroup(group);
+    return [group._id, newGroup._id];
+  }
+
+  const idPairs = await Promise.all([...groups.map(importGroup)]);
+  return new Map(idPairs);
 }
 
-function importRanges(ranges, client) {
-  return Promise.all([
-    ...ranges.map((range) =>
-      client.addRange(range).then(
-        // create range ID replacement map
-        (newRange) => [range._id, newRange._id],
-      ),
-    ),
-  ]).then((ranges) => new Map(ranges));
+async function importRanges(ranges, client) {
+  async function importRange(range) {
+    const newRange = await client.addRange(range);
+    return [range._id, newRange._id];
+  }
+
+  const idPairs = await Promise.all([...ranges.map(importRange)]);
+  return new Map(idPairs);
 }
 
-function importPeople(people, client) {
-  return Promise.all([
-    ...people.map((person) =>
-      client.addPerson(person).then(
-        // create person ID replacement map
-        (newPerson) => [person._id, newPerson._id],
-      ),
-    ),
-  ]).then((people) => new Map(people));
+async function importPeople(people, client) {
+  async function importPerson(person) {
+    const newPerson = await client.addPerson(person);
+    return [person._id, newPerson._id];
+  }
+
+  const idPairs = await Promise.all([...people.map(importPerson)]);
+  return new Map(idPairs);
 }
 
 function importUsersFirestore(users, client) {
