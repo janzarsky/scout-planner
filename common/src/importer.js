@@ -13,35 +13,8 @@ export async function importData(data, client) {
     importRanges(data.ranges, client),
     importPeople(data.people, client),
   ])
-    // replace package, group, and range IDs in programs
     .then(([pkgs, groups, ranges, people]) =>
-      data.programs.map((prog) => {
-        return {
-          ...prog,
-          pkg: pkgs.get(prog.pkg) ? pkgs.get(prog.pkg) : null,
-          groups: prog.groups.map((oldGroup) =>
-            groups.get(oldGroup) ? groups.get(oldGroup) : null,
-          ),
-          ranges: prog.ranges
-            ? Object.fromEntries(
-                Object.entries(prog.ranges).map(([oldRange, val]) => [
-                  ranges.get(oldRange),
-                  val,
-                ]),
-              )
-            : null,
-          people: prog.people.map((oldPerson) =>
-            typeof oldPerson === "string"
-              ? oldPerson
-              : {
-                  ...oldPerson,
-                  person: people.get(oldPerson.person)
-                    ? people.get(oldPerson.person)
-                    : null,
-                },
-          ),
-        };
-      }),
+      replaceIdsInPrograms(data.programs, pkgs, groups, ranges, people),
     )
     // add all programs
     .then((programs) =>
@@ -116,6 +89,36 @@ async function importPeople(people, client) {
 
   const idPairs = await Promise.all([...people.map(importPerson)]);
   return new Map(idPairs);
+}
+
+function replaceIdsInPrograms(programs, pkgs, groups, ranges, people) {
+  return programs.map((prog) => {
+    return {
+      ...prog,
+      pkg: pkgs.get(prog.pkg) ? pkgs.get(prog.pkg) : null,
+      groups: prog.groups.map((oldGroup) =>
+        groups.get(oldGroup) ? groups.get(oldGroup) : null,
+      ),
+      ranges: prog.ranges
+        ? Object.fromEntries(
+            Object.entries(prog.ranges).map(([oldRange, val]) => [
+              ranges.get(oldRange),
+              val,
+            ]),
+          )
+        : null,
+      people: prog.people.map((oldPerson) =>
+        typeof oldPerson === "string"
+          ? oldPerson
+          : {
+              ...oldPerson,
+              person: people.get(oldPerson.person)
+                ? people.get(oldPerson.person)
+                : null,
+            },
+      ),
+    };
+  });
 }
 
 function importUsersFirestore(users, client) {
