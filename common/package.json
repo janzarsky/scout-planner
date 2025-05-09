@@ -1,6 +1,7 @@
 {
   "name": "@scout-planner/common",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "exports": {
     "./level": {
