@@ -643,4 +643,30 @@ describe("programs ID replacement", () => {
       },
     ]);
   });
+
+  it("discards non-existing people IDs", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [
+          {
+            people: [
+              { person: "person1" },
+              { person: "person2", optional: true },
+            ],
+          },
+        ],
+        new Map(),
+        new Map(),
+        new Map(),
+        new Map([["person1", "newPerson1"]]),
+      ),
+    ).toEqual([
+      {
+        pkg: null,
+        groups: [],
+        ranges: null,
+        people: [{ person: "newPerson1" }],
+      },
+    ]);
+  });
 });

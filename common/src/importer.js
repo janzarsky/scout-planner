@@ -64,16 +64,13 @@ function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
         )
       : null,
     people: prog.people
-      ? prog.people.map((oldPerson) =>
-          typeof oldPerson === "string"
-            ? oldPerson
-            : {
-                ...oldPerson,
-                person: personIds.get(oldPerson.person)
-                  ? personIds.get(oldPerson.person)
-                  : null,
-              },
-        )
+      ? prog.people.flatMap((oldPerson) => {
+          if (typeof oldPerson === "string") return [oldPerson];
+          else {
+            const newPersonId = personIds.get(oldPerson.person);
+            return newPersonId ? { ...oldPerson, person: newPersonId } : [];
+          }
+        })
       : [],
   }));
 }
