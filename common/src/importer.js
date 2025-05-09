@@ -24,8 +24,7 @@ export async function importData(data, client) {
     )
     .then((programs) => importEntity(programs, client.addProgram))
     .then((programIds) => replaceIdsInRules(data.rules, programIds))
-    // add all rules
-    .then((rules) => Promise.all(rules.map((rule) => client.addRule(rule))))
+    .then((rules) => importEntity(rules, client.addRule))
     // add all users (at the end, so there are no issues with permissions)
     .then(() => importUsersFirestore(data.users, client))
     .then(() => client.updateTimetable(data.timetable));
