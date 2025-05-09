@@ -47,7 +47,7 @@ async function importPackages(pkgs, client) {
     return [pkg._id, newPkg._id];
   }
 
-  const idPairs = await Promise.all([...pkgs.map(importPackage)]);
+  const idPairs = await Promise.all(pkgs.map(importPackage));
   return new Map(idPairs);
 }
 
@@ -57,7 +57,7 @@ async function importGroups(groups, client) {
     return [group._id, newGroup._id];
   }
 
-  const idPairs = await Promise.all([...groups.map(importGroup)]);
+  const idPairs = await Promise.all(groups.map(importGroup));
   return new Map(idPairs);
 }
 
@@ -67,7 +67,7 @@ async function importRanges(ranges, client) {
     return [range._id, newRange._id];
   }
 
-  const idPairs = await Promise.all([...ranges.map(importRange)]);
+  const idPairs = await Promise.all(ranges.map(importRange));
   return new Map(idPairs);
 }
 
@@ -77,7 +77,7 @@ async function importPeople(people, client) {
     return [person._id, newPerson._id];
   }
 
-  const idPairs = await Promise.all([...people.map(importPerson)]);
+  const idPairs = await Promise.all(people.map(importPerson));
   return new Map(idPairs);
 }
 
