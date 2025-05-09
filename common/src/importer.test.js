@@ -452,3 +452,28 @@ describe("rules ID replacement", () => {
     ]);
   });
 });
+
+describe("programs ID replacement", () => {
+  it("returns nothing when there are no programs and IDs", () =>
+    expect(
+      testing.replaceIdsInPrograms(
+        [],
+        new Map(),
+        new Map(),
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual([]));
+
+  it("returns simple program without references", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{}],
+        new Map(),
+        new Map(),
+        new Map(),
+        new Map(),
+      ),
+    ).toEqual([{ groups: [], people: [], pkg: null, ranges: null }]);
+  });
+});

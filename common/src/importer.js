@@ -50,9 +50,11 @@ function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
   return programs.map((prog) => ({
     ...prog,
     pkg: pkgIds.get(prog.pkg) ? pkgIds.get(prog.pkg) : null,
-    groups: prog.groups.map((oldGroup) =>
-      groupIds.get(oldGroup) ? groupIds.get(oldGroup) : null,
-    ),
+    groups: prog.groups
+      ? prog.groups.map((oldGroup) =>
+          groupIds.get(oldGroup) ? groupIds.get(oldGroup) : null,
+        )
+      : [],
     ranges: prog.ranges
       ? Object.fromEntries(
           Object.entries(prog.ranges).map(([oldRange, val]) => [
@@ -61,16 +63,18 @@ function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
           ]),
         )
       : null,
-    people: prog.people.map((oldPerson) =>
-      typeof oldPerson === "string"
-        ? oldPerson
-        : {
-            ...oldPerson,
-            person: personIds.get(oldPerson.person)
-              ? personIds.get(oldPerson.person)
-              : null,
-          },
-    ),
+    people: prog.people
+      ? prog.people.map((oldPerson) =>
+          typeof oldPerson === "string"
+            ? oldPerson
+            : {
+                ...oldPerson,
+                person: personIds.get(oldPerson.person)
+                  ? personIds.get(oldPerson.person)
+                  : null,
+              },
+        )
+      : [],
   }));
 }
 
@@ -111,4 +115,5 @@ async function importTimetable(timetable, client) {
 
 export const testing = {
   replaceIdsInRules,
+  replaceIdsInPrograms,
 };
