@@ -27,7 +27,7 @@ export async function importData(data, client) {
     .then((rules) => importEntity(rules, client.addRule))
     // add all users (at the end, so there are no issues with permissions)
     .then(() => importUsersFirestore(data.users, client))
-    .then(() => client.updateTimetable(data.timetable));
+    .then(() => importTimetable(data.timetable, client));
 }
 
 async function importEntity(data, importFn) {
@@ -94,4 +94,8 @@ function importUsersFirestore(users, client) {
     ...realUsers.map((user) => client.updateUser({ ...user, _id: user.email })),
     client.setPublicLevel(publicUserLevel),
   ]);
+}
+
+async function importTimetable(timetable, client) {
+  await client.updateTimetable(timetable);
 }
