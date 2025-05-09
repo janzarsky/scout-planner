@@ -8,42 +8,10 @@ export async function importData(data, client) {
   data.timetable ??= { settings: data.settings ?? {} };
 
   return await Promise.all([
-    // add all packages
-    Promise.all([
-      ...data.pkgs.map((pkg) =>
-        client.addPackage(pkg).then(
-          // create package ID replacement map
-          (newPkg) => [pkg._id, newPkg._id],
-        ),
-      ),
-    ]).then((pkgs) => new Map(pkgs)),
-    // add all groups
-    Promise.all([
-      ...data.groups.map((group) =>
-        client.addGroup(group).then(
-          // create group ID replacement map
-          (newGroup) => [group._id, newGroup._id],
-        ),
-      ),
-    ]).then((groups) => new Map(groups)),
-    // add all ranges
-    Promise.all([
-      ...data.ranges.map((range) =>
-        client.addRange(range).then(
-          // create range ID replacement map
-          (newRange) => [range._id, newRange._id],
-        ),
-      ),
-    ]).then((ranges) => new Map(ranges)),
-    // add all people
-    Promise.all([
-      ...data.people.map((person) =>
-        client.addPerson(person).then(
-          // create person ID replacement map
-          (newPerson) => [person._id, newPerson._id],
-        ),
-      ),
-    ]).then((people) => new Map(people)),
+    importPackages(data.pkgs, client),
+    importGroups(data.groups, client),
+    importRanges(data.ranges, client),
+    importPeople(data.people, client),
   ])
     // replace package, group, and range IDs in programs
     .then(([pkgs, groups, ranges, people]) =>
@@ -108,6 +76,50 @@ export async function importData(data, client) {
     // add all users (at the end, so there are no issues with permissions)
     .then(() => importUsersFirestore(data.users, client))
     .then(() => client.updateTimetable(data.timetable));
+}
+
+function importPackages(pkgs, client) {
+  return Promise.all([
+    ...pkgs.map((pkg) =>
+      client.addPackage(pkg).then(
+        // create package ID replacement map
+        (newPkg) => [pkg._id, newPkg._id],
+      ),
+    ),
+  ]).then((pkgs) => new Map(pkgs));
+}
+
+function importGroups(groups, client) {
+  return Promise.all([
+    ...groups.map((group) =>
+      client.addGroup(group).then(
+        // create group ID replacement map
+        (newGroup) => [group._id, newGroup._id],
+      ),
+    ),
+  ]).then((groups) => new Map(groups));
+}
+
+function importRanges(ranges, client) {
+  return Promise.all([
+    ...ranges.map((range) =>
+      client.addRange(range).then(
+        // create range ID replacement map
+        (newRange) => [range._id, newRange._id],
+      ),
+    ),
+  ]).then((ranges) => new Map(ranges));
+}
+
+function importPeople(people, client) {
+  return Promise.all([
+    ...people.map((person) =>
+      client.addPerson(person).then(
+        // create person ID replacement map
+        (newPerson) => [person._id, newPerson._id],
+      ),
+    ),
+  ]).then((people) => new Map(people));
 }
 
 function importUsersFirestore(users, client) {
