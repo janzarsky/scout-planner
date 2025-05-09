@@ -593,6 +593,25 @@ describe("programs ID replacement", () => {
     ]);
   });
 
+  it("discards non-existing range IDs", () => {
+    expect(
+      testing.replaceIdsInPrograms(
+        [{ ranges: { range1: 1, range2: 2 } }],
+        new Map(),
+        new Map(),
+        new Map([["range1", "newRange1"]]),
+        new Map(),
+      ),
+    ).toEqual([
+      {
+        pkg: null,
+        groups: [],
+        ranges: { newRange1: 1 },
+        people: [],
+      },
+    ]);
+  });
+
   it("replaces people IDs", () => {
     expect(
       testing.replaceIdsInPrograms(

@@ -57,10 +57,10 @@ function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
       : [],
     ranges: prog.ranges
       ? Object.fromEntries(
-          Object.entries(prog.ranges).map(([oldRange, val]) => [
-            rangeIds.get(oldRange),
-            val,
-          ]),
+          Object.entries(prog.ranges).flatMap(([oldRange, val]) => {
+            const newRangeId = rangeIds.get(oldRange);
+            return newRangeId ? [[newRangeId, val]] : [];
+          }),
         )
       : null,
     people: prog.people
