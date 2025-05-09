@@ -412,8 +412,7 @@ describe("rules ID replacement", () => {
     ]);
   });
 
-  // TODO: implementation needs to be fixed
-  it.skip("discards rules with broken program", () => {
+  it("discards rules with broken program", () => {
     const rule = {
       program: "prog1",
       condition: "is_before_date",
@@ -423,8 +422,7 @@ describe("rules ID replacement", () => {
     expect(testing.replaceIdsInRules([rule], new Map())).toEqual([]);
   });
 
-  // TODO: implementation needs to be fixed
-  it.skip("discards rules with broken value field", () => {
+  it("discards rules with broken value field", () => {
     const rule = {
       program: "prog1",
       condition: "is_before_program",

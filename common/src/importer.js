@@ -75,18 +75,21 @@ function replaceIdsInPrograms(programs, pkgIds, groupIds, rangeIds, personIds) {
 }
 
 function replaceIdsInRules(rules, programIds) {
-  return rules.map((rule) => {
+  return rules.flatMap((rule) => {
     var value = rule.value;
     if (
       rule.condition === "is_before_program" ||
       rule.condition === "is_after_program"
-    )
+    ) {
       value = programIds.get(rule.value);
-    return {
-      ...rule,
-      program: programIds.get(rule.program),
-      value: value,
-    };
+
+      if (!value) return [];
+    }
+
+    const program = programIds.get(rule.program);
+    if (!program) return [];
+
+    return [{ ...rule, program, value }];
   });
 }
 
