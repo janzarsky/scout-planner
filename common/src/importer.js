@@ -8,15 +8,15 @@ export async function importData(data, client) {
   data.timetable ??= { settings: data.settings ?? {} };
 
   return await Promise.all([
-    importPackages(data.pkgs, client),
-    importGroups(data.groups, client),
-    importRanges(data.ranges, client),
-    importPeople(data.people, client),
+    importEntity(data.pkgs, client.addPackage),
+    importEntity(data.groups, client.addGroup),
+    importEntity(data.ranges, client.addRange),
+    importEntity(data.people, client.addPerson),
   ])
     .then(([pkgs, groups, ranges, people]) =>
       replaceIdsInPrograms(data.programs, pkgs, groups, ranges, people),
     )
-    .then((programs) => importPrograms(programs, client))
+    .then((programs) => importEntity(programs, client.addProgram))
     // add all programs
     // replace program IDs in rules
     .then((programs) =>
@@ -41,53 +41,13 @@ export async function importData(data, client) {
     .then(() => client.updateTimetable(data.timetable));
 }
 
-async function importPackages(pkgs, client) {
-  async function importPackage(pkg) {
-    const newPkg = await client.addPackage(pkg);
-    return [pkg._id, newPkg._id];
+async function importEntity(data, importFn) {
+  async function importItem(item) {
+    const newItem = await importFn(item);
+    return [item._id, newItem._id];
   }
 
-  const idPairs = await Promise.all(pkgs.map(importPackage));
-  return new Map(idPairs);
-}
-
-async function importGroups(groups, client) {
-  async function importGroup(group) {
-    const newGroup = await client.addGroup(group);
-    return [group._id, newGroup._id];
-  }
-
-  const idPairs = await Promise.all(groups.map(importGroup));
-  return new Map(idPairs);
-}
-
-async function importRanges(ranges, client) {
-  async function importRange(range) {
-    const newRange = await client.addRange(range);
-    return [range._id, newRange._id];
-  }
-
-  const idPairs = await Promise.all(ranges.map(importRange));
-  return new Map(idPairs);
-}
-
-async function importPeople(people, client) {
-  async function importPerson(person) {
-    const newPerson = await client.addPerson(person);
-    return [person._id, newPerson._id];
-  }
-
-  const idPairs = await Promise.all(people.map(importPerson));
-  return new Map(idPairs);
-}
-
-async function importPrograms(programs, client) {
-  async function importProgram(program) {
-    const newProgram = await client.addProgram(program);
-    return [program._id, newProgram._id];
-  }
-
-  const idPairs = await Promise.all(programs.map(importProgram));
+  const idPairs = await Promise.all(data.map(importItem));
   return new Map(idPairs);
 }
 
