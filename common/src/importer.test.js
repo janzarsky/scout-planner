@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, test, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { level } from "./level";
 import { importData } from "./importer";
 
@@ -36,13 +36,13 @@ describe("importer", () => {
     };
   });
 
-  test("empty data", async () => {
+  it("imports empty timetable", async () => {
     return importData(emptyData, client).then(() => {
       expect(client.updateTimetable).toHaveBeenCalledWith({ settings: {} });
     });
   });
 
-  test("single program", async () => {
+  it("imports single program", async () => {
     const data = {
       ...emptyData,
       programs: [
@@ -63,7 +63,7 @@ describe("importer", () => {
     expect(client.addProgram).toHaveBeenCalledWith(data.programs[0]);
   });
 
-  test("program with groups", async () => {
+  it("imports program with groups", async () => {
     const data = {
       ...emptyData,
       programs: [
@@ -101,7 +101,7 @@ describe("importer", () => {
     });
   });
 
-  test("program with package", async () => {
+  it("imports program with package", async () => {
     const data = {
       ...emptyData,
       programs: [
@@ -133,7 +133,7 @@ describe("importer", () => {
     });
   });
 
-  test("program with ranges", async () => {
+  it("imports program with ranges", async () => {
     const data = {
       ...emptyData,
       programs: [
@@ -170,7 +170,7 @@ describe("importer", () => {
     });
   });
 
-  test("program with object people", async () => {
+  it("imports program with object people", async () => {
     const data = {
       ...emptyData,
       programs: [
@@ -207,7 +207,7 @@ describe("importer", () => {
     });
   });
 
-  test("program with string people", async () => {
+  it("imports program with string people", async () => {
     const data = {
       ...emptyData,
       programs: [
@@ -244,7 +244,7 @@ describe("importer", () => {
     });
   });
 
-  test("program with mixed people", async () => {
+  it("imports program with mixed people", async () => {
     const data = {
       ...emptyData,
       programs: [
@@ -275,7 +275,7 @@ describe("importer", () => {
     });
   });
 
-  describe("users", () => {
+  describe("imports users", () => {
     it("imports one user", async () => {
       const data = {
         ...emptyData,
