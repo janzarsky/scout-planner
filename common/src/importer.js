@@ -3,27 +3,27 @@ import { level } from "./level";
 export async function importData(data, client) {
   const fullData = getDataFixes(data);
 
-  return await Promise.all([
+  const [pkgIds, groupIds, rangeIds, personIds] = await Promise.all([
     importEntity(fullData.pkgs, client.addPackage),
     importEntity(fullData.groups, client.addGroup),
     importEntity(fullData.ranges, client.addRange),
     importEntity(fullData.people, client.addPerson),
-  ])
-    .then(([pkgIds, groupIds, rangeIds, personIds]) =>
-      replaceIdsInPrograms(
-        fullData.programs,
-        pkgIds,
-        groupIds,
-        rangeIds,
-        personIds,
-      ),
-    )
-    .then((programs) => importEntity(programs, client.addProgram))
-    .then((programIds) => replaceIdsInRules(fullData.rules, programIds))
-    .then((rules) => importEntity(rules, client.addRule))
-    // add all users (at the end, so there are no issues with permissions)
-    .then(() => importUsersFirestore(fullData.users, client))
-    .then(() => importTimetable(fullData.timetable, client));
+  ]);
+
+  const replacedPrograms = replaceIdsInPrograms(
+    fullData.programs,
+    pkgIds,
+    groupIds,
+    rangeIds,
+    personIds,
+  );
+  const programIds = await importEntity(replacedPrograms, client.addProgram);
+
+  const replacedRules = await replaceIdsInRules(fullData.rules, programIds);
+  await importEntity(replacedRules, client.addRule);
+
+  await importUsersFirestore(fullData.users, client);
+  await importTimetable(fullData.timetable, client);
 }
 
 function getDataFixes(data) {
