@@ -24,7 +24,7 @@ import { RangesSettings } from "./RangesSettings";
 import { useAuth } from "./AuthProvider";
 import { Route, Routes } from "react-router";
 import { PeopleFilter } from "./PeopleFilter";
-import { PrintWrapper } from "./PrintOptions";
+import { Print } from "./Print";
 import { Notifications } from "./Notifications";
 import { NavBar } from "./NavBar";
 import { useGetRangesQuery } from "../store/rangesApi";
@@ -221,7 +221,7 @@ export default function App() {
         <Route
           path="print"
           element={
-            <PrintWrapper
+            <Print
               dataLoaded={dataLoaded}
               permissionsLoaded={permissionsLoaded}
               violationsPerProgram={violationsPerProgram}
