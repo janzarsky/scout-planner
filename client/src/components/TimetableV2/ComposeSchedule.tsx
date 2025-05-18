@@ -31,7 +31,7 @@ interface ComposeScheduleProps {
   editable: boolean;
   violations: Violations;
   printView: boolean;
-  showOnlyGroups?: (string | null)[];
+  showOnlyGroups?: string[];
 }
 
 export const ComposeSchedule = ({
@@ -63,11 +63,11 @@ export const ComposeSchedule = ({
 
   // Hard filtering (based on props - for printing)
   const scheduledPlannables = useMemo(() => {
-    if (showOnlyGroups) {
+    if (showOnlyGroups && showOnlyGroups.length > 0) {
       return scheduledPlannablesAll.filter(
         (it) =>
           it.groups.some((group) => showOnlyGroups.includes(group)) ||
-          (it.groups.length === 0 && showOnlyGroups.includes(null)),
+          it.groups.length === 0,
       );
     }
     return scheduledPlannablesAll;
@@ -144,28 +144,26 @@ export const ComposeSchedule = ({
 
   const atendeeGroups = useGroups();
 
-  // Show virtual group on the top, if there are no groups or if there are programs without groups
+  // Show virtual group on the top, if there are no groups
   const hasAtLeastOneGroup = atendeeGroups.length > 0;
-  const programsWithoutGroups = useMemo(() => {
-    return scheduledPlannables.filter((it) => it.groups.length === 0);
-  }, [scheduledPlannables]);
-  const showVirtualGroup =
-    !hasAtLeastOneGroup || programsWithoutGroups.length > 0;
-  const shownGroups: [null | string, ...string[]] = useMemo(() => {
+  const shownGroups: (string | null)[] = useMemo(() => {
+    if (!hasAtLeastOneGroup) {
+      return [null];
+    }
+
     const sortedAttendeGroupIds = atendeeGroups.map((it) => it._id);
-    const groups = showVirtualGroup
-      ? ([null, ...sortedAttendeGroupIds] as [null, ...string[]])
-      : (sortedAttendeGroupIds as [string, ...string[]]); // safe cast because showVirtualGroup is false, so there is at least one group
+
+    const groups = sortedAttendeGroupIds as [string, ...string[]]; // safe cast because hasAtLeastOneGroup is true, so there is at least one group
 
     // Filter based on showOnlyGroups
-    if (showOnlyGroups) {
+    if (showOnlyGroups && showOnlyGroups.length > 0) {
       return groups.filter((group) => showOnlyGroups.includes(group)) as [
-        null | string,
+        string,
         ...string[],
       ];
     }
     return groups;
-  }, [atendeeGroups, showVirtualGroup, showOnlyGroups]);
+  }, [atendeeGroups, hasAtLeastOneGroup, showOnlyGroups]);
 
   // Soft filtering (based on state - highlighting)
   const { state: filterState, component: filterComponent } = useFilters();
@@ -185,7 +183,10 @@ export const ComposeSchedule = ({
       }
 
       for (const date of days) {
-        const groups = program.groups.length === 0 ? [null] : program.groups;
+        const groups =
+          program.groups.length === 0
+            ? atendeeGroups.map((it) => it._id)
+            : program.groups;
         for (const group of groups) {
           const d = date.toString();
           if (!blockOrdersByDateAndGroup.has(d)) {
@@ -221,6 +222,28 @@ export const ComposeSchedule = ({
     return blockOrdersByDateAndGroup;
   }, [scheduledPlannables, dates, shownGroups]);
 
+  const resolveGroups = useCallback(
+    (groups: string[]): (string | null)[] => {
+      // If there are no defined groups, use virtual group
+      if (atendeeGroups.length === 0) {
+        return [null];
+      }
+
+      const existingGroups = groups.filter((group) =>
+        atendeeGroups.some((it) => it._id === group),
+      );
+
+      // If the program has no groups show it in all groups
+      if (existingGroups.length === 0) {
+        return atendeeGroups.map((it) => it._id);
+      }
+
+      // If the program has some groups, show it only in those groups
+      return existingGroups;
+    },
+    [atendeeGroups],
+  );
+
   const createSegmentsForPlannable = useCallback(
     function <T extends Program>(
       plannable: T,
@@ -235,8 +258,7 @@ export const ComposeSchedule = ({
       });
       const end = start.add(duration);
 
-      const shownInGroups: Array<null | string> =
-        plannable.groups.length === 0 ? [null] : plannable.groups;
+      const shownInGroups = resolveGroups(plannable.groups);
 
       // Find all dates between start and end (inclusive)
       let endDate = start.toPlainDate();
@@ -270,7 +292,10 @@ export const ComposeSchedule = ({
           return (
             Temporal.PlainDateTime.compare(dateStart, end) < 0 &&
             Temporal.PlainDateTime.compare(dateEnd, start) > 0 &&
-            it.groups.some((group) => shownInGroups.includes(group)) &&
+            (shownInGroups.includes(null) ||
+              resolveGroups(it.groups).some((group) =>
+                shownInGroups.includes(group),
+              )) &&
             it._id !== plannable._id &&
             it.blockOrder !== plannable.blockOrder
           );
@@ -335,7 +360,7 @@ export const ComposeSchedule = ({
         });
       });
     },
-    [shownGroups, concurrentBlocksMap, scheduledPlannables],
+    [shownGroups, concurrentBlocksMap, scheduledPlannables, resolveGroups],
   );
 
   const segments = useMemo(() => {

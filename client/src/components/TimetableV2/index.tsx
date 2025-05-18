@@ -12,7 +12,7 @@ export default function Timetable({
   violations: Violations;
   timeProvider: null | (() => number);
   printView: boolean;
-  showOnlyGroups?: (string | null)[];
+  showOnlyGroups?: string[];
 }) {
   const { userLevel } = useSelector<any, any>((state) => state.auth);
   return (
