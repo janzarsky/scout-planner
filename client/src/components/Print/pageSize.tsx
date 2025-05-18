@@ -40,7 +40,7 @@ const pageSizes = {
     margin: "10mm",
     label: "A0",
   },
-} as const;
+} as const satisfies Record<string, PageSize>;
 
 export type PageSizeKey = keyof typeof pageSizes;
 
