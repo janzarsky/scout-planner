@@ -1,5 +1,5 @@
 import React from "react";
-import { level } from "../../../helpers/Level";
+import { level } from "@scout-planner/common/level";
 import { TimetableWrapper } from "../../App";
 import { PrintLayout } from "./types";
 
