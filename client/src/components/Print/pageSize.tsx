@@ -66,7 +66,7 @@ export const PageSizeSelector: React.FC<{
 
   return (
     <div className="mb-3">
-      <label>Velikost stránky:</label>
+      <label>Formát:</label>
       <div className="d-flex flex-row gap-3 flex-wrap">
         {Object.entries(pageSizes).map(([key, value]) => (
           <div key={key} className="form-check">
