@@ -1,5 +1,7 @@
 import React from "react";
 import { Violations } from "./TimetableV2/types";
+import { useConfig } from "../store/configSlice";
+import { PrintWrapper as OldPrint } from "./PrintOptions";
 import { NewPrint } from "./Print/NewPrint";
 
 export const Print: React.FC<{
@@ -8,8 +10,11 @@ export const Print: React.FC<{
   dataLoaded: boolean;
   permissionsLoaded: boolean;
 }> = ({ violationsPerProgram, userLevel, dataLoaded, permissionsLoaded }) => {
+  const newPrint = useConfig("newPrint");
+  const Component = newPrint ? NewPrint : OldPrint;
+
   return (
-    <NewPrint
+    <Component
       violationsPerProgram={violationsPerProgram}
       userLevel={userLevel}
       dataLoaded={dataLoaded}
