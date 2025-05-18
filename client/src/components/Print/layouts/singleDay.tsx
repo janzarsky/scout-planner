@@ -17,7 +17,6 @@ interface SingleDayOptions {
 
 type SingleDayValidOptions = SingleDayOptions;
 
-
 const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
   label: "Na den",
   initialOptions: {
@@ -143,20 +142,14 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
   validateOptions: (
     options: SingleDayOptions,
   ): options is SingleDayValidOptions => true,
-  PrintComponent: ({
-    options: { date, boldPkgs },
-  }) => {
+  PrintComponent: ({ options: { date, boldPkgs } }) => {
     const allDays = getProgramDates();
     const days = date ? [date] : allDays;
 
     return (
       <>
         {days.map((day) => (
-          <PrintDay
-            key={day.toString()}
-            date={day}
-            boldPkgs={boldPkgs}
-          />
+          <PrintDay key={day.toString()} date={day} boldPkgs={boldPkgs} />
         ))}
       </>
     );
@@ -209,11 +202,13 @@ const PrintDay: React.FC<
   const groups = useMemo(() => {
     // If no groups are defined, show a single group
     if (definedGroups.length === 0) {
-      return [{
-        _id: "",
-        order: 0,
-        name: "",
-      }];
+      return [
+        {
+          _id: "",
+          order: 0,
+          name: "",
+        },
+      ];
     }
     return definedGroups;
   }, [definedGroups, programs]);
@@ -252,7 +247,11 @@ const PrintDay: React.FC<
 
             {/* Programs */}
             {programs
-              .filter((program) => program.groups.includes(group._id) || program.groups.length === 0)
+              .filter(
+                (program) =>
+                  program.groups.includes(group._id) ||
+                  program.groups.length === 0,
+              )
               .map((program) => {
                 const begin = epochMillisecondsToPlainDateTime(program.begin);
                 const start = begin.toPlainTime();
