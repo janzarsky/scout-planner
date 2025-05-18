@@ -231,11 +231,6 @@ const PrintDay: React.FC<
         return false;
       }
 
-      // Do not show programs that are not in any group
-      if (program.groups.length === 0) {
-        return false;
-      }
-
       return true;
     });
   }, [allPrograms, date]);
@@ -261,7 +256,18 @@ const PrintDay: React.FC<
     return Array.from(set).sort(Temporal.PlainTime.compare);
   }, [programs]);
 
-  const groups = useGroups();
+  const definedGroups = useGroups();
+  const groups = useMemo(() => {
+    // If no groups are defined, show a single group
+    if (definedGroups.length === 0) {
+      return [{
+        _id: "",
+        order: 0,
+        name: "",
+      }];
+    }
+    return definedGroups;
+  }, [definedGroups, programs]);
 
   return (
     <div className="singleDayPrint">
@@ -290,7 +296,7 @@ const PrintDay: React.FC<
 
             {/* Programs */}
             {programs
-              .filter((program) => program.groups.includes(group._id))
+              .filter((program) => program.groups.includes(group._id) || program.groups.length === 0)
               .map((program) => {
                 const begin = epochMillisecondsToPlainDateTime(program.begin);
                 const start = begin.toPlainTime();
