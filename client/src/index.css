@@ -882,16 +882,6 @@ p {
   flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 10pt;
-}
-
-.singleDayPrint__title {
-  text-align: center;
-  font-size: 2em;
-  margin: 0 0 0.5em;
-  text-transform: uppercase;
-  font-weight: bold;
 }
 
 .singleDayPrint__wrapper {
@@ -900,6 +890,8 @@ p {
   grid-template-columns: repeat(calc(var(--group-count) - 1), 1fr auto) 1fr;
   padding: 2px;
   text-align: center;
+  font-size: 10pt;
+  font-family: 'Times New Roman', Times, serif;
   overflow: 0;
 }
 
