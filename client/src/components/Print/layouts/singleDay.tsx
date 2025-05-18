@@ -9,20 +9,35 @@ import {
 } from "../../TimetableV2/hooks";
 import { epochMillisecondsToPlainDateTime } from "../../TimetableV2/utils";
 import { ScheduledProgram } from "../../TimetableV2/types";
+import { AutosizeIframe } from "../AutosizeIframe";
 
 interface SingleDayOptions {
   date?: Temporal.PlainDate;
   boldPkgs: (string | null)[];
+  headerHtml: string;
 }
 
 type SingleDayValidOptions = SingleDayOptions;
 
+// Support {{datum}} in HTML header
+function formatHtml(html: string, date: Temporal.PlainDate) {
+  return html.replaceAll(
+    "{{datum}}",
+    date.toLocaleString("cs-CZ", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
+  );
+}
 
 const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
   label: "Na den",
   initialOptions: {
     date: undefined,
     boldPkgs: [],
+    headerHtml: "",
   },
   OptionsComponent: ({ options, setOptions }) => {
     const days = getProgramDates();
@@ -137,6 +152,38 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
             ))}
           </div>
         </div>
+
+        <div className="mb-3">
+          <label htmlFor="headerHtml">HTML záhlaví:</label>
+          <textarea
+            id="headerHtml"
+            className="form-control"
+            value={options.headerHtml}
+            onChange={(e) => {
+              setOptions((prevOptions) => ({
+                ...prevOptions,
+                headerHtml: e.target.value,
+              }));
+            }}
+          />
+        </div>
+
+        {options.headerHtml && (
+          <div className="mb-3">
+            <div>Náhled záhlaví</div>
+            <div className="border border-1">
+              <AutosizeIframe
+                document={formatHtml(
+                  options.headerHtml,
+                  day ??
+                    Temporal.Now.zonedDateTime(
+                      Temporal.Calendar.from("iso8601"),
+                    ).toPlainDate(),
+                )}
+              />
+            </div>
+          </div>
+        )}
       </>
     );
   },
@@ -144,7 +191,7 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
     options: SingleDayOptions,
   ): options is SingleDayValidOptions => true,
   PrintComponent: ({
-    options: { date, boldPkgs },
+    options: { date, boldPkgs, headerHtml },
   }) => {
     const allDays = getProgramDates();
     const days = date ? [date] : allDays;
@@ -156,6 +203,7 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
             key={day.toString()}
             date={day}
             boldPkgs={boldPkgs}
+            headerHtml={headerHtml}
           />
         ))}
       </>
@@ -165,7 +213,7 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
 
 const PrintDay: React.FC<
   SingleDayValidOptions & { date: Temporal.PlainDate }
-> = ({ date, boldPkgs }) => {
+> = ({ date, boldPkgs, headerHtml }) => {
   const allPrograms = usePrograms();
   const programs: ScheduledProgram[] = useMemo(() => {
     return allPrograms.filter((program): program is ScheduledProgram => {
@@ -220,14 +268,7 @@ const PrintDay: React.FC<
 
   return (
     <div className="singleDayPrint">
-      <h2 className="singleDayPrint__title">
-        {date.toLocaleString("cs-CZ", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })}
-      </h2>
+      {headerHtml && <AutosizeIframe document={formatHtml(headerHtml, date)} />}
       <div
         className="singleDayPrint__wrapper"
         style={
