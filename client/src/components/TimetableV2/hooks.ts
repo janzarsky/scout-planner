@@ -83,7 +83,7 @@ export function useUserLevel(): number {
  *
  * @returns {Temporal.PlainDate[]} An array of unique program dates.
  */
-export function getProgramDates() {
+export function useProgramDates() {
   const programs = usePrograms();
   const dates = useMemo(() => {
     const dates: Temporal.PlainDate[] = [];
