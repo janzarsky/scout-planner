@@ -643,7 +643,7 @@ export const ComposeSchedule = ({
         .toInstant().epochMilliseconds;
       navigate("add", { state: { begin } });
     },
-    [getDateTimeForPosition],
+    [getDateTimeForPosition, navigate],
   );
 
   const addProgram = useAddProgram();
