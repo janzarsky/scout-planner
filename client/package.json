@@ -16,7 +16,7 @@
     "popper.js": "^1.16.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.9",
-    "react-datepicker": "^8.1.0",
+    "react-datepicker": "^8.3.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.1.0",
