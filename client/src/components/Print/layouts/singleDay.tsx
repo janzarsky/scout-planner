@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { PrintLayout } from "./types";
 import { Temporal } from "@js-temporal/polyfill";
 import {
-  getProgramDates,
+  useProgramDates,
   useGroups,
   usePkgs,
   usePrograms,
@@ -24,7 +24,7 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
     boldPkgs: [],
   },
   OptionsComponent: ({ options, setOptions }) => {
-    const days = getProgramDates();
+    const days = useProgramDates();
     const packages = usePkgs();
     const day = options.date;
 
@@ -143,7 +143,7 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
     options: SingleDayOptions,
   ): options is SingleDayValidOptions => true,
   PrintComponent: ({ options: { date, boldPkgs } }) => {
-    const allDays = getProgramDates();
+    const allDays = useProgramDates();
     const days = date ? [date] : allDays;
 
     return (
