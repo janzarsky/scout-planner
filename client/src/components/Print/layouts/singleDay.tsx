@@ -1,6 +1,4 @@
 import React, { useMemo } from "react";
-import { level } from "../../../helpers/Level";
-import { TimetableWrapper } from "../../App";
 import { PrintLayout } from "./types";
 import { Temporal } from "@js-temporal/polyfill";
 import {
@@ -193,7 +191,6 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
     options: SingleDayOptions,
   ): options is SingleDayValidOptions => true,
   PrintComponent: ({
-    violationsPerProgram,
     options: { date, boldPkgs, headerHtml },
   }) => {
     const allDays = getProgramDates();
