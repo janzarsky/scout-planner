@@ -9,6 +9,5 @@
 # production
 /dist
 
-**/*.css
 **/*.md
 **/*.html
