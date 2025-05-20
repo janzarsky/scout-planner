@@ -11,7 +11,7 @@
     "build": "node build.cjs && cp package-template.json dist/package.json"
   },
   "dependencies": {
-    "@google-cloud/functions-framework": "^3.5.1",
+    "@google-cloud/functions-framework": "^4.0.0",
     "@scout-planner/common": "^0.1.0",
     "firebase-admin": "^13.3.0",
     "firebase-functions": "^6.3.2"
