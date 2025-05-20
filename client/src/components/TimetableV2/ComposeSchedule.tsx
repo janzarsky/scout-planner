@@ -31,18 +31,20 @@ interface ComposeScheduleProps {
   editable: boolean;
   violations: Violations;
   printView: boolean;
+  showOnlyGroups?: string[];
 }
 
 export const ComposeSchedule = ({
   editable,
   violations,
   printView,
+  showOnlyGroups,
 }: ComposeScheduleProps) => {
   const [widthScale, setWidthScale] = useState(1);
 
   // Programs
   const programs = usePrograms();
-  const scheduledPlannables = useMemo(() => {
+  const scheduledPlannablesAll = useMemo(() => {
     return programs.filter((it): it is ScheduledProgram => it.begin !== null);
   }, [programs]);
   const notScheduledPlannables = useMemo(() => {
@@ -59,6 +61,18 @@ export const ComposeSchedule = ({
     return programs.find((it) => it._id === contextMenu?.id);
   }, [programs, contextMenu]);
 
+  // Hard filtering (based on props - for printing)
+  const scheduledPlannables = useMemo(() => {
+    if (showOnlyGroups && showOnlyGroups.length > 0) {
+      return scheduledPlannablesAll.filter(
+        (it) =>
+          it.groups.some((group) => showOnlyGroups.includes(group)) ||
+          it.groups.length === 0,
+      );
+    }
+    return scheduledPlannablesAll;
+  }, [scheduledPlannablesAll, showOnlyGroups]);
+
   // All dates of the schedule
   const dates = useMemo(() => {
     const scheduledDateTimes = scheduledPlannables.map(
@@ -68,63 +82,90 @@ export const ComposeSchedule = ({
       ],
     );
 
-    // Find the first and last date of the schedule
-    let [firstDate, lastDate] = scheduledDateTimes.reduce<
-      [Temporal.PlainDate | null, Temporal.PlainDate | null]
-    >(
-      ([firstDate, lastDate], [start, duration]) => {
-        const startPlain = start.toPlainDate();
-        const endPlain = start.add(duration).toPlainDate();
-        return [
-          firstDate === null ||
-          Temporal.PlainDate.compare(startPlain, firstDate) < 0
-            ? startPlain
-            : firstDate,
-          lastDate === null ||
-          Temporal.PlainDate.compare(endPlain, lastDate) > 0
-            ? endPlain
-            : lastDate,
-        ];
-      },
-      [null, null],
-    );
+    // Find all dates between start and end (inclusive) of all programs
+    const allDates = scheduledDateTimes
+      .flatMap(([start, duration]) => {
+        const end = start.add(duration);
+        const dateRange: Temporal.PlainDate[] = [];
+        for (
+          let date = start.toPlainDate();
+          Temporal.PlainDate.compare(date, end.toPlainDate()) <= 0;
+          date = date.add({ days: 1 })
+        ) {
+          dateRange.push(date);
+        }
+        return dateRange;
+      })
+      .sort((a, b) => Temporal.PlainDate.compare(a, b));
 
     // If there are no scheduled programs, show only the current date
-    if (firstDate === null || lastDate === null) {
+    if (allDates.length === 0) {
       return [Temporal.Now.plainDateISO(LOCAL_TIMEZONE)];
     }
 
-    // Start one day before the first date and end one day after the last date
-    firstDate = firstDate.subtract({ days: 1 });
-    lastDate = lastDate.add({ days: 1 });
-
-    // Get all dates between the first and last date
-    let last = firstDate;
-    const dates = [last];
-    while (Temporal.PlainDateTime.compare(last, lastDate) < 0) {
-      last = last.add(Temporal.Duration.from({ days: 1 }));
-      dates.push(last);
+    // Remove duplicates
+    const allUniqueDates: Temporal.PlainDate[] = [];
+    for (const date of allDates) {
+      if (
+        allUniqueDates.length === 0 ||
+        !date.equals(allUniqueDates[allUniqueDates.length - 1])
+      ) {
+        allUniqueDates.push(date);
+      }
     }
-    return dates;
-  }, [scheduledPlannables]);
+
+    // Show all scheduled date plus one day before and after each date if not print view
+    const shownDates: Temporal.PlainDate[] = [];
+    for (let i = 0; i < allUniqueDates.length; i++) {
+      const date = allUniqueDates[i];
+
+      // If previous date is not shown, add it
+      const yesterday = date.subtract({ days: 1 });
+      const previousShownDate = shownDates[shownDates.length - 1];
+      if (
+        !printView &&
+        (!previousShownDate || !previousShownDate.equals(yesterday))
+      ) {
+        shownDates.push(yesterday);
+      }
+
+      shownDates.push(date);
+
+      // If next date is not shown, add it
+      const tomorrow = date.add({ days: 1 });
+      const nextDate = allUniqueDates[i + 1];
+      if (!printView && (!nextDate || !tomorrow.equals(nextDate))) {
+        shownDates.push(tomorrow);
+      }
+    }
+
+    return shownDates;
+  }, [scheduledPlannables, printView]);
 
   const atendeeGroups = useGroups();
 
-  // Show virtual group on the top, if there are no groups or if there are programs without groups
+  // Show virtual group on the top, if there are no groups
   const hasAtLeastOneGroup = atendeeGroups.length > 0;
-  const programsWithoutGroups = scheduledPlannables.filter(
-    (it) => it.groups.length === 0,
-  );
-  const showVirtualGroup =
-    !hasAtLeastOneGroup || programsWithoutGroups.length > 0;
-  const shownGroups: [null | string, ...string[]] = useMemo(() => {
-    const sortedAttendeGroupIds = atendeeGroups.map((it) => it._id);
-    return showVirtualGroup
-      ? [null, ...sortedAttendeGroupIds]
-      : (sortedAttendeGroupIds as [string, ...string[]]); // safe cast because showVirtualGroup is false, so there is at least one group
-  }, [atendeeGroups, showVirtualGroup]);
+  const shownGroups: (string | null)[] = useMemo(() => {
+    if (!hasAtLeastOneGroup) {
+      return [null];
+    }
 
-  // Filtering
+    const sortedAttendeGroupIds = atendeeGroups.map((it) => it._id);
+
+    const groups = sortedAttendeGroupIds as [string, ...string[]]; // safe cast because hasAtLeastOneGroup is true, so there is at least one group
+
+    // Filter based on showOnlyGroups
+    if (showOnlyGroups && showOnlyGroups.length > 0) {
+      return groups.filter((group) => showOnlyGroups.includes(group)) as [
+        string,
+        ...string[],
+      ];
+    }
+    return groups;
+  }, [atendeeGroups, hasAtLeastOneGroup, showOnlyGroups]);
+
+  // Soft filtering (based on state - highlighting)
   const { state: filterState, component: filterComponent } = useFilters();
 
   const concurrentBlocksMap = useMemo(() => {
@@ -142,7 +183,10 @@ export const ComposeSchedule = ({
       }
 
       for (const date of days) {
-        const groups = program.groups.length === 0 ? [null] : program.groups;
+        const groups =
+          program.groups.length === 0
+            ? atendeeGroups.map((it) => it._id)
+            : program.groups;
         for (const group of groups) {
           const d = date.toString();
           if (!blockOrdersByDateAndGroup.has(d)) {
@@ -178,6 +222,28 @@ export const ComposeSchedule = ({
     return blockOrdersByDateAndGroup;
   }, [scheduledPlannables, dates, shownGroups]);
 
+  const resolveGroups = useCallback(
+    (groups: string[]): (string | null)[] => {
+      // If there are no defined groups, use virtual group
+      if (atendeeGroups.length === 0) {
+        return [null];
+      }
+
+      const existingGroups = groups.filter((group) =>
+        atendeeGroups.some((it) => it._id === group),
+      );
+
+      // If the program has no groups show it in all groups
+      if (existingGroups.length === 0) {
+        return atendeeGroups.map((it) => it._id);
+      }
+
+      // If the program has some groups, show it only in those groups
+      return existingGroups;
+    },
+    [atendeeGroups],
+  );
+
   const createSegmentsForPlannable = useCallback(
     function <T extends Program>(
       plannable: T,
@@ -192,8 +258,7 @@ export const ComposeSchedule = ({
       });
       const end = start.add(duration);
 
-      const shownInGroups: Array<null | string> =
-        plannable.groups.length === 0 ? [null] : plannable.groups;
+      const shownInGroups = resolveGroups(plannable.groups);
 
       // Find all dates between start and end (inclusive)
       let endDate = start.toPlainDate();
@@ -227,15 +292,18 @@ export const ComposeSchedule = ({
           return (
             Temporal.PlainDateTime.compare(dateStart, end) < 0 &&
             Temporal.PlainDateTime.compare(dateEnd, start) > 0 &&
-            it.groups.some((group) => shownInGroups.includes(group)) &&
+            (shownInGroups.includes(null) ||
+              resolveGroups(it.groups).some((group) =>
+                shownInGroups.includes(group),
+              )) &&
             it._id !== plannable._id &&
             it.blockOrder !== plannable.blockOrder
           );
         });
 
-        const shownGroupsIndices = shownInGroups.map((groupId) =>
-          shownGroups.indexOf(groupId),
-        );
+        const shownGroupsIndices = shownInGroups
+          .map((groupId) => shownGroups.indexOf(groupId))
+          .filter((groupIdx) => groupIdx !== -1);
         const mapForDayByGroupIdxToBlockOrder = new Map(
           Array.from(mapForDate.entries()).map(
             ([group, blockOrders]): [number, number[]] => [
@@ -292,7 +360,7 @@ export const ComposeSchedule = ({
         });
       });
     },
-    [shownGroups, concurrentBlocksMap, scheduledPlannables],
+    [shownGroups, concurrentBlocksMap, scheduledPlannables, resolveGroups],
   );
 
   const segments = useMemo(() => {
@@ -575,7 +643,7 @@ export const ComposeSchedule = ({
         .toInstant().epochMilliseconds;
       navigate("add", { state: { begin } });
     },
-    [getDateTimeForPosition],
+    [getDateTimeForPosition, navigate],
   );
 
   const addProgram = useAddProgram();
