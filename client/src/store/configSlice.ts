@@ -12,6 +12,7 @@ const defaultConfig = {
   dropIntoBlock: import.meta.env.VITE_REACT_APP_DROP_INTO_BLOCK === "true",
   groupLockSettings:
     import.meta.env.VITE_REACT_APP_GROUP_LOCK_SETTINGS === "true",
+  newPrint: import.meta.env.VITE_REACT_APP_NEW_PRINT === "true",
 };
 
 type Config = typeof defaultConfig;
