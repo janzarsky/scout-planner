@@ -31,7 +31,7 @@ async function cloneTimetable(req, res) {
     console.debug(`Got customer email: "${email}"`);
   } catch (error) {
     console.error(error);
-    res.status(401).send("Unauthorized");
+    res.status(401).send({ message: "Unauthorized" });
     return;
   }
 
@@ -43,7 +43,7 @@ async function cloneTimetable(req, res) {
     );
   } catch (error) {
     console.error(error);
-    res.status(400).send("Invalid parameters");
+    res.status(400).send({ message: "Invalid parameters" });
     return;
   }
 
@@ -51,12 +51,12 @@ async function cloneTimetable(req, res) {
     const accessLevel = await getAccessLevel(db, options.source, email);
     console.debug(`Got access level to source table: ${accessLevel}`);
     if (accessLevel < level.VIEW) {
-      res.status(403).send("Access to source table forbidden");
+      res.status(403).send({ message: "Access to source table forbidden" });
       return;
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal server error");
+    res.status(500).send({ message: "Internal server error" });
     return;
   }
 
@@ -64,12 +64,14 @@ async function cloneTimetable(req, res) {
     const accessLevel = await getAccessLevel(db, options.destination, email);
     console.debug(`Got access level to destination table: ${accessLevel}`);
     if (accessLevel < level.ADMIN) {
-      res.status(403).send("Access to destination table forbidden");
+      res
+        .status(403)
+        .send({ message: "Access to destination table forbidden" });
       return;
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal server error");
+    res.status(500).send({ message: "Internal server error" });
     return;
   }
 
@@ -77,12 +79,12 @@ async function cloneTimetable(req, res) {
     await cloneData(db, options.source, options.destination);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal server error");
+    res.status(500).send({ message: "Internal server error" });
     return;
   }
 
   console.debug("Successfully cloned");
-  res.status(200).send("Successfullly cloned");
+  res.status(200).send({ message: "Successfullly cloned" });
 }
 
 async function getIdentity(req) {
