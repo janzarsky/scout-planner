@@ -6,7 +6,6 @@ interface ImportMetaEnv {
   readonly VITE_REACT_APP_TIMETABLE_LAYOUT_VERSION_SWITCHING_ENABLED: string;
   readonly VITE_REACT_APP_NEW_TRAY: string;
   readonly VITE_REACT_APP_DROP_INTO_BLOCK: string;
-  readonly VITE_REACT_APP_GROUP_LOCK_SETTINGS: string;
   readonly VITE_REACT_APP_CLONE_FEATURE: string;
 }
 
