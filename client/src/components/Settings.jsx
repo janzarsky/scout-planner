@@ -30,6 +30,7 @@ import {
   useUpdateLayoutVersionMutation,
 } from "../store/timetableApi";
 import { useConfig } from "../store/configSlice";
+import Clone from "./Clone";
 
 export default function Settings() {
   const timetableLayoutVersionSwitchingEnabled = useConfig(
@@ -63,6 +64,7 @@ export default function Settings() {
           <TimetableLayoutVersion />
         )}
         {userLevel >= level.EDIT && groupLockSettings && <GroupLock />}
+        {<Clone />}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
