@@ -37,6 +37,7 @@ export default function Settings() {
     "timetableLayoutVersionSwitchingEnabled",
   );
   const groupLockSettings = useConfig("groupLockSettings");
+  const cloneFeature = useConfig("cloneFeature");
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { table } = useSelector((state) => state.auth);
   const { data: timetableData, isSuccess: layoutVersionLoaded } =
@@ -64,7 +65,7 @@ export default function Settings() {
           <TimetableLayoutVersion />
         )}
         {userLevel >= level.EDIT && groupLockSettings && <GroupLock />}
-        {<Clone />}
+        {cloneFeature && <Clone />}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
