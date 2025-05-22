@@ -47,6 +47,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     await signOut(auth);
   };
+  const getIdToken = async () => auth?.currentUser?.getIdToken() ?? null;
 
   const authChanged = useCallback((firebaseUser) => {
     if (firebaseUser) setUser(firebaseUser);
@@ -58,7 +59,9 @@ export function AuthProvider({ children }) {
   }, [authChanged]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, initializing, db }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, getIdToken, initializing, db }}
+    >
       {children}
     </AuthContext.Provider>
   );
