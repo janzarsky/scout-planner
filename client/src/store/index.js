@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import programsReducer from "./programsSlice";
 import viewReducer from "./viewSlice";
 import authReducer from "./authSlice";
 import errorsReducer from "./errorsSlice";
@@ -20,7 +19,6 @@ import { errorLogger } from "./errorLogger";
 export function getStore() {
   return configureStore({
     reducer: {
-      programs: programsReducer,
       view: viewReducer,
       auth: authReducer,
       errors: errorsReducer,
