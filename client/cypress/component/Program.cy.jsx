@@ -43,7 +43,7 @@ describe("Program", () => {
   function mountProgram(program, violations) {
     cy.mount(
       <Program program={program} rect={rect} violations={violations} />,
-      { dndProvider: true, reduxStore: store, router: true, command: true },
+      { dndProvider: true, reduxStore: store, router: true },
     );
   }
 

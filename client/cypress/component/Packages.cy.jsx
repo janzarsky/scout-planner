@@ -15,7 +15,7 @@ describe("Packages", () => {
   });
 
   it("empty", () => {
-    cy.mount(<Packages />, { reduxStore: store, command: true });
+    cy.mount(<Packages />, { reduxStore: store });
 
     cy.get("[value='Nový balíček']");
     cy.get("[data-test=pkgs-new-color]");
@@ -23,7 +23,7 @@ describe("Packages", () => {
   });
 
   it("select color from list", () => {
-    cy.mount(<Packages />, { reduxStore: store, command: true });
+    cy.mount(<Packages />, { reduxStore: store });
 
     cy.get("[data-test='pkgs-new-color']").should(
       "have.css",
