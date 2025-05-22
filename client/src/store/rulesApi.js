@@ -8,9 +8,13 @@ export const rulesApi = createApi({
   endpoints: (builder) => ({
     getRules: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getRules();
-        return { data };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getRules();
+          return { data };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -30,17 +34,25 @@ export const rulesApi = createApi({
     }),
     addRule: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.addRule(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.addRule(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["rules"],
     }),
     deleteRule: builder.mutation({
       async queryFn({ table, id }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.deleteRule(id);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.deleteRule(id);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["rules"],
     }),

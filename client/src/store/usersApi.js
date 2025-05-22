@@ -8,9 +8,13 @@ export const usersApi = createApi({
   endpoints: (builder) => ({
     getUsers: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getUsers();
-        return { data };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getUsers();
+          return { data };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -30,26 +34,38 @@ export const usersApi = createApi({
     }),
     addUser: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        // note that update here is on purpose (users are indexed by email)
-        await client.updateUser(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          // note that update here is on purpose (users are indexed by email)
+          await client.updateUser(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["users"],
     }),
     updateUser: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.updateUser(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.updateUser(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["users"],
     }),
     deleteUser: builder.mutation({
       async queryFn({ table, id }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.deleteUser(id);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.deleteUser(id);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["users"],
     }),
