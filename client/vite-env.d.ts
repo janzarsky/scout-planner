@@ -7,6 +7,7 @@ interface ImportMetaEnv {
   readonly VITE_REACT_APP_NEW_TRAY: string;
   readonly VITE_REACT_APP_DROP_INTO_BLOCK: string;
   readonly VITE_REACT_APP_GROUP_LOCK: string;
+  readonly VITE_REACT_APP_CLONE_FEATURE: string;
 }
 
 interface ImportMeta {
