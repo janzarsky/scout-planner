@@ -8,7 +8,6 @@ import { Provider, useDispatch, useSelector } from "react-redux";
 import { getStore } from "./store";
 import { setTable } from "./store/authSlice";
 import { AuthProvider } from "./components/AuthProvider";
-import { CommandProvider } from "./components/CommandContext";
 import Homepage from "./components/Homepage";
 
 function AppWrapper() {
@@ -22,9 +21,7 @@ function AppWrapper() {
 
   return storeTable ? (
     <AuthProvider>
-      <CommandProvider>
-        <App />
-      </CommandProvider>
+      <App />
     </AuthProvider>
   ) : null;
 }
