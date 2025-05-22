@@ -16,8 +16,12 @@ export const timetableApi = createApi({
   endpoints: (builder) => ({
     getTimetable: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        return { data: addDefaults(await client.getTimetable()) };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          return { data: addDefaults(await client.getTimetable()) };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -37,17 +41,25 @@ export const timetableApi = createApi({
     }),
     updateTitle: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.updateTimetable({ title: data });
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.updateTimetable({ title: data });
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["timetable"],
     }),
     updateLayoutVersion: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.updateTimetable({ layoutVersion: data });
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.updateTimetable({ layoutVersion: data });
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["timetable"],
     }),

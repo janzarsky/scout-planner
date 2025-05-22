@@ -8,9 +8,13 @@ export const peopleApi = createApi({
   endpoints: (builder) => ({
     getPeople: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getPeople();
-        return { data };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getPeople();
+          return { data };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -30,25 +34,37 @@ export const peopleApi = createApi({
     }),
     addPerson: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        const res = await client.addPerson(data);
-        return { data: res._id };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const res = await client.addPerson(data);
+          return { data: res._id };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["people"],
     }),
     updatePerson: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.updatePerson(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.updatePerson(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["people"],
     }),
     deletePerson: builder.mutation({
       async queryFn({ table, id }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.deletePerson(id);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.deletePerson(id);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["people"],
     }),

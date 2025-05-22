@@ -8,13 +8,17 @@ export const programsApi = createApi({
   endpoints: (builder) => ({
     getProgram: builder.query({
       async queryFn({ table, id }) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getProgram(id);
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getProgram(id);
 
-        // data fix
-        if (data.deleted) return { error: "Program deleted" };
+          // data fix
+          if (data.deleted) return { error: "Program deleted" };
 
-        return { data: data };
+          return { data: data };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       providesTags: (program) =>
         program
@@ -26,10 +30,14 @@ export const programsApi = createApi({
     }),
     getPrograms: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getPrograms();
-        // data fix
-        return { data: data.filter((p) => !p.deleted) };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getPrograms();
+          // data fix
+          return { data: data.filter((p) => !p.deleted) };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -55,17 +63,25 @@ export const programsApi = createApi({
     }),
     addProgram: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.addProgram(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.addProgram(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: [{ type: "program", id: "LIST" }],
     }),
     updateProgram: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.updateProgram(data);
-        return { data };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.updateProgram(data);
+          return { data };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: (program) => [
         ...(program ? [{ type: "program", id: program._id }] : []),
@@ -74,9 +90,13 @@ export const programsApi = createApi({
     }),
     deleteProgram: builder.mutation({
       async queryFn({ table, id }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.deleteProgram(id);
-        return { data: id };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.deleteProgram(id);
+          return { data: id };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: (id) => [
         { type: "program", id },

@@ -8,9 +8,13 @@ export const groupsApi = createApi({
   endpoints: (builder) => ({
     getGroups: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getGroups();
-        return { data };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getGroups();
+          return { data };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -30,25 +34,37 @@ export const groupsApi = createApi({
     }),
     addGroup: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.addGroup(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.addGroup(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["groups"],
     }),
     updateGroup: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.updateGroup(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.updateGroup(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["groups"],
     }),
     deleteGroup: builder.mutation({
       async queryFn({ table, id }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.deleteGroup(id);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.deleteGroup(id);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["groups"],
     }),

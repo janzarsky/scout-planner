@@ -8,9 +8,13 @@ export const publicLevelApi = createApi({
   endpoints: (builder) => ({
     getPublicLevel: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getPublicLevel();
-        return { data };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getPublicLevel();
+          return { data };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -30,9 +34,13 @@ export const publicLevelApi = createApi({
     }),
     setPublicLevel: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.setPublicLevel(data);
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.setPublicLevel(data);
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["publicLevel"],
     }),

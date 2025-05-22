@@ -20,11 +20,15 @@ export const settingsApi = createApi({
   endpoints: (builder) => ({
     getSettings: builder.query({
       async queryFn(table) {
-        const client = firestoreClientFactory.getClient(table);
-        const data = await client.getTimetable();
-        return {
-          data: addDefaults(data),
-        };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          const data = await client.getTimetable();
+          return {
+            data: addDefaults(data),
+          };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       async onCacheEntryAdded(
         table,
@@ -44,9 +48,13 @@ export const settingsApi = createApi({
     }),
     updateSettings: builder.mutation({
       async queryFn({ table, data }) {
-        const client = firestoreClientFactory.getClient(table);
-        await client.updateTimetable({ settings: data });
-        return { data: null };
+        try {
+          const client = firestoreClientFactory.getClient(table);
+          await client.updateTimetable({ settings: data });
+          return { data: null };
+        } catch (e) {
+          return { error: { message: e.message } };
+        }
       },
       invalidatesTags: ["settings"],
     }),
