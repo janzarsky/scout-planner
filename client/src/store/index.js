@@ -15,6 +15,7 @@ import { timetableApi } from "./timetableApi";
 import { settingsApi } from "./settingsApi";
 import { programsApi } from "./programsApi";
 import { cloneApi } from "./cloneApi";
+import { errorLogger } from "./errorLogger";
 
 export function getStore() {
   return configureStore({
@@ -48,6 +49,7 @@ export function getStore() {
         .concat(timetableApi.middleware)
         .concat(settingsApi.middleware)
         .concat(programsApi.middleware)
-        .concat(cloneApi.middleware),
+        .concat(cloneApi.middleware)
+        .concat(errorLogger),
   });
 }
