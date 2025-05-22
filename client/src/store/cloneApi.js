@@ -1,15 +1,18 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const cloneApi = createApi({
-  baseQuery: fakeBaseQuery(),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_REACT_APP_FUNCTIONS_BASE_URL,
+  }),
   reducerPath: "cloneApi",
   endpoints: (builder) => ({
     clone: builder.mutation({
-      async queryFn({ source, destination }) {
-        console.debug(`Cloning from ${source} to ${destination}`);
-
-        throw new Error("Not implemented");
-      },
+      query: ({ source, destination, token }) => ({
+        url: `/clone-timetable`,
+        params: { source, destination },
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }),
     }),
   }),
 });
