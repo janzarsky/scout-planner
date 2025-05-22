@@ -35,7 +35,7 @@ describe("Ranges", () => {
 
   it("is empty when there are no ranges", () => {
     stubClient([]);
-    cy.mount(<Ranges />, { reduxStore: store, command: true });
+    cy.mount(<Ranges />, { reduxStore: store });
     cy.get("@getRanges").should("have.been.calledOnce");
 
     cy.get("[value='Nová linka']");
@@ -47,7 +47,7 @@ describe("Ranges", () => {
       { _id: "range1", name: "Range 1" },
       { _id: "range2", name: "Range 2" },
     ]);
-    cy.mount(<Ranges />, { reduxStore: store, command: true });
+    cy.mount(<Ranges />, { reduxStore: store });
     cy.get("@getRanges").should("have.been.calledOnce");
 
     cy.contains("Range 1");
@@ -58,7 +58,7 @@ describe("Ranges", () => {
 
   it("allows deleting a range", () => {
     stubClient([{ _id: "range1", name: "Range 1" }], []);
-    cy.mount(<Ranges />, { reduxStore: store, command: true });
+    cy.mount(<Ranges />, { reduxStore: store });
     cy.get("@getRanges").should("have.been.calledOnce");
 
     cy.contains("Range 1");
@@ -69,7 +69,7 @@ describe("Ranges", () => {
 
   it("adds new range", () => {
     stubClient([], [{ _id: "range1", name: "Range 1" }]);
-    cy.mount(<Ranges />, { reduxStore: store, command: true });
+    cy.mount(<Ranges />, { reduxStore: store });
     cy.get("@getRanges").should("have.been.calledOnce");
 
     cy.get("input").clear();
@@ -85,7 +85,7 @@ describe("Ranges", () => {
       [{ _id: "range1", name: "Range 1" }],
       [{ _id: "range1", name: "Range 2" }],
     );
-    cy.mount(<Ranges />, { reduxStore: store, command: true });
+    cy.mount(<Ranges />, { reduxStore: store });
     cy.get("@getRanges").should("have.been.calledOnce");
 
     cy.contains("Upravit").click();

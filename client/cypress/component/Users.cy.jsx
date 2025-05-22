@@ -47,7 +47,7 @@ describe("Users", () => {
     it("displays warning when not logged in and there is no public access", () => {
       store.dispatch(testing.setUserLevel(level.EDIT));
       stubClient(level.EDIT, []);
-      cy.mount(<Users />, { reduxStore: store, command: true });
+      cy.mount(<Users />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
       cy.contains("spravovat uživatele");
@@ -57,7 +57,7 @@ describe("Users", () => {
     it("displays warning when not logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
       stubClient(level.ADMIN, []);
-      cy.mount(<Users />, { reduxStore: store, command: true });
+      cy.mount(<Users />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
       cy.contains("spravovat uživatele");
@@ -67,10 +67,7 @@ describe("Users", () => {
     it("displays instructions when logged in and there is an explicit public access", () => {
       store.dispatch(testing.setUserLevel(level.ADMIN));
       stubClient(level.ADMIN, []);
-      cy.mount(<Users userEmail="test@email.com" />, {
-        reduxStore: store,
-        command: true,
-      });
+      cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.contains("Kdokoliv");
       cy.contains("spravovat uživatele");
@@ -83,10 +80,7 @@ describe("Users", () => {
       stubClient(level.ADMIN, [
         { _id: "user1", email: "test@email.com", level: level.ADMIN },
       ]);
-      cy.mount(<Users userEmail="test@email.com" />, {
-        reduxStore: store,
-        command: true,
-      });
+      cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.get("tbody tr")
         .eq(0)
@@ -102,10 +96,7 @@ describe("Users", () => {
       stubClient(level.ADMIN, [
         { _id: "user1", email: "test@email.com", level: level.ADMIN },
       ]);
-      cy.mount(<Users userEmail="test@email.com" />, {
-        reduxStore: store,
-        command: true,
-      });
+      cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.contains("Upravit").first().click();
       cy.get("select").first().select("zobrazovat");
@@ -121,10 +112,7 @@ describe("Users", () => {
       stubClient(level.ADMIN, [
         { _id: "user1", email: "test@email.com", level: level.NONE },
       ]);
-      cy.mount(<Users userEmail="test@email.com" />, {
-        reduxStore: store,
-        command: true,
-      });
+      cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.get("tbody tr")
         .eq(1)
@@ -140,10 +128,7 @@ describe("Users", () => {
       stubClient(level.NONE, [
         { _id: "user1", email: "test@email.com", level: level.ADMIN },
       ]);
-      cy.mount(<Users userEmail="test@email.com" />, {
-        reduxStore: store,
-        command: true,
-      });
+      cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.get("tbody tr")
         .eq(1)
@@ -171,10 +156,7 @@ describe("Users", () => {
             level: level.ADMIN,
           },
         ]);
-        cy.mount(<Users userEmail="test@email.com" />, {
-          reduxStore: store,
-          command: true,
-        });
+        cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
         cy.get("tbody tr")
           .eq(2)
@@ -206,10 +188,7 @@ describe("Users", () => {
           },
         ],
       );
-      cy.mount(<Users userEmail="test@email.com" />, {
-        reduxStore: store,
-        command: true,
-      });
+      cy.mount(<Users userEmail="test@email.com" />, { reduxStore: store });
 
       cy.get("tbody tr").eq(1).contains("Upravit").click();
       cy.get("select").first().select("zobrazovat");
@@ -236,7 +215,7 @@ describe("Users", () => {
         },
       ],
     );
-    cy.mount(<Users />, { reduxStore: store, command: true });
+    cy.mount(<Users />, { reduxStore: store });
 
     cy.get("input").clear();
     cy.get("input").type("another@email.com");

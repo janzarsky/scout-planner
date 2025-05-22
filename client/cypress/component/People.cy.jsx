@@ -39,7 +39,7 @@ describe("People", () => {
 
   it("empty", () => {
     stubClient([], []);
-    cy.mount(<People />, { reduxStore: store, command: true });
+    cy.mount(<People />, { reduxStore: store });
     cy.contains("Organizátor");
     cy.get("[data-test='people-new-name']");
     cy.get("[data-test='people-new-add']").click();
@@ -50,7 +50,7 @@ describe("People", () => {
       { _id: "person1", name: "Person 1" },
       { _id: "person2", name: "Person 2" },
     ]);
-    cy.mount(<People />, { reduxStore: store, command: true });
+    cy.mount(<People />, { reduxStore: store });
 
     cy.contains("Organizátor");
     cy.contains("Person 1");
@@ -67,7 +67,7 @@ describe("People", () => {
         },
       ],
     );
-    cy.mount(<People />, { reduxStore: store, command: true });
+    cy.mount(<People />, { reduxStore: store });
     cy.get("[data-test='people-new-name']").clear();
     cy.get("[data-test='people-new-name']").type("Person 1");
     cy.get("[data-test='people-new-add']").click();
@@ -78,7 +78,7 @@ describe("People", () => {
 
   it("remove person", () => {
     stubClient([{ _id: "person1", name: "Person 1" }], []);
-    cy.mount(<People />, { reduxStore: store, command: true });
+    cy.mount(<People />, { reduxStore: store });
 
     cy.contains("Smazat").click();
 
@@ -91,7 +91,7 @@ describe("People", () => {
       [{ _id: "person1", name: "Person 1" }],
       [{ _id: "person1", name: "Person 2" }],
     );
-    cy.mount(<People />, { reduxStore: store, command: true });
+    cy.mount(<People />, { reduxStore: store });
 
     cy.contains("Upravit").click();
     cy.get("[data-test='people-edit-name']").clear();
