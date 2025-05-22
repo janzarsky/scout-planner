@@ -14,6 +14,7 @@ import { usersApi } from "./usersApi";
 import { timetableApi } from "./timetableApi";
 import { settingsApi } from "./settingsApi";
 import { programsApi } from "./programsApi";
+import { cloneApi } from "./cloneApi";
 
 export function getStore() {
   return configureStore({
@@ -33,6 +34,7 @@ export function getStore() {
       [timetableApi.reducerPath]: timetableApi.reducer,
       [settingsApi.reducerPath]: settingsApi.reducer,
       [programsApi.reducerPath]: programsApi.reducer,
+      [cloneApi.reducerPath]: cloneApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
@@ -45,6 +47,7 @@ export function getStore() {
         .concat(usersApi.middleware)
         .concat(timetableApi.middleware)
         .concat(settingsApi.middleware)
-        .concat(programsApi.middleware),
+        .concat(programsApi.middleware)
+        .concat(cloneApi.middleware),
   });
 }
