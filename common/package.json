@@ -11,6 +11,10 @@
     "./importer": {
       "import": "./src/importer.js",
       "require": "./src/importer.js"
+    },
+    "./timetableIdValidator": {
+      "import": "./src/timetableIdValidator.js",
+      "require": "./src/timetableIdValidator.js"
     }
   },
   "files": [
