@@ -22,10 +22,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci -ws
-      - run: npm run test -ws
-      - run: npm run format -ws
-      - run: npm run lint -ws
+      - run: npm ci -w common -w client
+      - run: npm run test -w common -w client
+      - run: npm run format -w common -w client
+      - run: npm run lint -w common -w client
       - run: npm run build
         working-directory: common
       - run: npm run build
