@@ -14,6 +14,7 @@ import {
 export default function Clone() {
   const [destination, setDestination] = useState(null);
   const [destValid, setDestValid] = useState(true);
+  const [prevDest, setPrevDest] = useState(null);
 
   const { table } = useSelector((state) => state.auth);
   const [cloneRtk] = useCloneMutation();
@@ -35,7 +36,11 @@ export default function Clone() {
     const dest =
       destination && destination !== "" ? destination : generateTimetableId();
 
-    cloneRtk({ source: table, destination: dest, token });
+    cloneRtk({ source: table, destination: dest, token })
+      .unwrap()
+      .then(() => {
+        setPrevDest(dest);
+      });
   }
 
   return (
@@ -45,6 +50,18 @@ export default function Clone() {
         <p className="text-danger">
           <i className="fa fa-exclamation-triangle" />
           &nbsp; Pro kopírování se prosím přihlaste
+        </p>
+      )}
+      {prevDest && (
+        <p className="text-success">
+          Harmonogram zkopírován do{" "}
+          <a
+            href={"/" + encodeURIComponent(prevDest)}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {prevDest}
+          </a>
         </p>
       )}
       <Form onSubmit={handleSubmit}>
