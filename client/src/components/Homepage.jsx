@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router";
+import { generateTimetableId } from "@scout-planner/common/timetableIdUtils";
 
 export default function Homepage() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function Homepage() {
   const valid = state.match(/^[\w-]+$/);
 
   const random = useCallback(
-    () => navigate(`/${Math.floor(Math.random() * 10e13).toString(16)}`),
+    () => navigate("/" + generateTimetableId()),
     [navigate],
   );
 

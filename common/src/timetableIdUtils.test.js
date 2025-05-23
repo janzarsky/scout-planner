@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isValidTimetableId } from "./timetableIdUtils";
+import { generateTimetableId, isValidTimetableId } from "./timetableIdUtils";
 
 describe("Timetable ID validator", () => {
   it("rejects empty string", () =>
@@ -16,4 +16,15 @@ describe("Timetable ID validator", () => {
 
   it("accepts strings with underscores and hyphens characters", () =>
     expect(isValidTimetableId("abc-123_ABC")).toEqual(true));
+});
+
+describe("Timetable ID generator", () => {
+  it("produces string at least 8 characters long", () =>
+    expect(generateTimetableId().length).toBeGreaterThanOrEqual(8));
+
+  it("produces alphanumeric string", () =>
+    expect(generateTimetableId()).toMatch(/[a-zA-Z0-9]+/));
+
+  it("produces valid string", () =>
+    expect(isValidTimetableId(generateTimetableId())).toEqual(true));
 });
