@@ -58,4 +58,9 @@ describe("Clone", () => {
     cy.get("input").should("have.class", "is-invalid");
     cy.contains("nesmí být stejné");
   });
+
+  it("if empty, the destination ID is not highlighted as valid", () => {
+    cy.mount(<Clone />, { auth: true, authValue: { user: "test@user.com" } });
+    cy.get("input").should("not.have.class", "is-invalid");
+  });
 });

@@ -58,7 +58,7 @@ export default function Clone() {
               value={destination ?? ""}
               placeholder={destination ? "" : "(vygenerovat automaticky)"}
               onChange={(e) => handleDestChange(e.target.value)}
-              isValid={destValid}
+              isValid={destination && destValid}
               isInvalid={!destValid}
               disabled={!user}
             />
