@@ -107,6 +107,16 @@ function getOptions(req) {
   const destination = req.query.destination;
   if (!destination) throw new Error("Invalid parameters");
 
+  if (source === destination)
+    throw new Error("Source and destination cannot be the same");
+
+  // TODO: unify across codebase
+  const isValidId = (id) => /^[a-zA-Z0-9_-]+$/.test(id) && id.length >= 3;
+
+  if (!isValidId(source)) throw new Error("Invalid source ID");
+
+  if (!isValidId(destination)) throw new Error("Invalid destination ID");
+
   return { source, destination };
 }
 
