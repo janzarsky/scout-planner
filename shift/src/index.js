@@ -1,6 +1,7 @@
 import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { isValidTimetableId } from "@scout-planner/common/timetableIdValidator";
 
 http("shift-timetable", shiftTimetable);
 
@@ -43,10 +44,7 @@ function getOptions(req) {
   const offset = parseInt(req.query.offset);
   if (isNaN(offset)) throw new Error("Invalid parameters");
 
-  // TODO: unify across codebase
-  const isValidId = (id) => /^[a-zA-Z0-9_-]+$/.test(id) && id.length >= 3;
-
-  if (!isValidId(source)) throw new Error("Invalid source ID");
+  if (!isValidTimetableId(source)) throw new Error("Invalid source ID");
 
   return { source, offset };
 }

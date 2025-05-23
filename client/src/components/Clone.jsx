@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { Col, Row } from "react-bootstrap";
 import { useCloneMutation } from "../store/cloneApi";
 import { useAuth } from "./AuthProvider";
+import { isValidTimetableId } from "@scout-planner/common/timetableIdValidator";
 
 export default function Clone() {
   const [destination, setDestination] = useState(null);
@@ -15,15 +16,11 @@ export default function Clone() {
   const [cloneRtk] = useCloneMutation();
   const { user, getIdToken } = useAuth();
 
-  const idRegex = /^[a-zA-Z0-9_-]+$/;
-
   function handleDestChange(destination) {
     setDestination(destination);
     setDestValid(
       !destination ||
-        (idRegex.test(destination) &&
-          destination.length >= 3 &&
-          destination !== table),
+        (isValidTimetableId(destination) && destination !== table),
     );
   }
 
