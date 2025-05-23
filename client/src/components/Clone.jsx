@@ -9,10 +9,20 @@ import { useAuth } from "./AuthProvider";
 
 export default function Clone() {
   const [destination, setDestination] = useState(null);
+  const [destValid, setDestValid] = useState(true);
 
   const { table } = useSelector((state) => state.auth);
   const [cloneRtk] = useCloneMutation();
   const { user, getIdToken } = useAuth();
+
+  const idRegex = /^[a-zA-Z0-9_-]+$/;
+
+  function handleDestChange(destination) {
+    setDestination(destination);
+    setDestValid(
+      !destination || (idRegex.test(destination) && destination.length >= 3),
+    );
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -44,12 +54,19 @@ export default function Clone() {
             <Form.Control
               value={destination ?? ""}
               placeholder={destination ? "" : "(vygenerovat automaticky)"}
-              onChange={(e) => setDestination(e.target.value)}
+              onChange={(e) => handleDestChange(e.target.value)}
+              isValid={destValid}
+              isInvalid={!destValid}
               disabled={!user}
             />
+            <Form.Control.Feedback type="invalid">
+              {destination && destination.length < 3
+                ? "Cílové ID musí mít alespoň tři znaky"
+                : "Cílové ID nesmí obsahovat speciální znaky, pouze číslice a písmena bez diakritiky, podtržítka a pomlčky"}
+            </Form.Control.Feedback>
           </Col>
           <Col sm="7" className="mb-2">
-            <Button type="submit" disabled={!user}>
+            <Button type="submit" disabled={!user || !destValid}>
               <i className="fa fa-clone"></i> Vytvořit kopii
             </Button>
           </Col>
