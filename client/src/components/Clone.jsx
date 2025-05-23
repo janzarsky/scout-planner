@@ -20,7 +20,10 @@ export default function Clone() {
   function handleDestChange(destination) {
     setDestination(destination);
     setDestValid(
-      !destination || (idRegex.test(destination) && destination.length >= 3),
+      !destination ||
+        (idRegex.test(destination) &&
+          destination.length >= 3 &&
+          destination !== table),
     );
   }
 
@@ -62,7 +65,9 @@ export default function Clone() {
             <Form.Control.Feedback type="invalid">
               {destination && destination.length < 3
                 ? "Cílové ID musí mít alespoň tři znaky"
-                : "Cílové ID nesmí obsahovat speciální znaky, pouze číslice a písmena bez diakritiky, podtržítka a pomlčky"}
+                : destination === table
+                  ? "Cílové ID nesmí být stejné jako ID aktuálního harmonogramu"
+                  : "Cílové ID nesmí obsahovat speciální znaky, pouze číslice a písmena bez diakritiky, podtržítka a pomlčky"}
             </Form.Control.Feedback>
           </Col>
           <Col sm="7" className="mb-2">

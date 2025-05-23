@@ -42,4 +42,20 @@ describe("Clone", () => {
     cy.get("input").should("have.class", "is-invalid");
     cy.contains("speciální znaky");
   });
+
+  it("validates destination is different than source", () => {
+    const store = getStore();
+    store.dispatch(setTable("source"));
+    cy.mount(<Clone />, {
+      auth: true,
+      authValue: { user: "test@user.com" },
+      reduxStore: store,
+    });
+
+    cy.get("input").type("source");
+
+    cy.get("button").should("be.disabled");
+    cy.get("input").should("have.class", "is-invalid");
+    cy.contains("nesmí být stejné");
+  });
 });
