@@ -12,7 +12,7 @@ export default function Clone() {
 
   const { table } = useSelector((state) => state.auth);
   const [cloneRtk] = useCloneMutation();
-  const { getIdToken } = useAuth();
+  const { user, getIdToken } = useAuth();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -29,6 +29,12 @@ export default function Clone() {
   return (
     <>
       <h3>Vytvořit kopii</h3>
+      {!user && (
+        <p className="text-danger">
+          <i className="fa fa-exclamation-triangle" />
+          &nbsp; Pro kopírování se prosím přihlaste
+        </p>
+      )}
       <Form onSubmit={handleSubmit}>
         <Row>
           <Form.Label column sm="2">
@@ -39,10 +45,11 @@ export default function Clone() {
               value={destination ?? ""}
               placeholder={destination ? "" : "(vygenerovat automaticky)"}
               onChange={(e) => setDestination(e.target.value)}
+              disabled={!user}
             />
           </Col>
           <Col sm="7" className="mb-2">
-            <Button type="submit">
+            <Button type="submit" disabled={!user}>
               <i className="fa fa-clone"></i> Vytvořit kopii
             </Button>
           </Col>
