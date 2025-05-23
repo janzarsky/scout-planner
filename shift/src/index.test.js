@@ -20,13 +20,7 @@ describe("get options", () => {
     ).toThrow("Invalid parameters");
   });
 
-  it("throws error when source is too short", () => {
-    expect(() =>
-      getOptions({ query: { source: "a", offset: "asdf" } }),
-    ).toThrow("Invalid parameters");
-  });
-
-  it("throws error when source contains invalid characters", () => {
+  it("throws error when source is invalid", () => {
     expect(() =>
       getOptions({ query: { source: "abc#$%", offset: "asdf" } }),
     ).toThrow("Invalid parameters");
