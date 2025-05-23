@@ -6,7 +6,8 @@
     "packages": [
       "client",
       "clone",
-      "common"
+      "common",
+      "shift"
     ]
   }
 }
