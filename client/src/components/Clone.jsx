@@ -32,7 +32,8 @@ export default function Clone() {
 
     const token = await getIdToken();
 
-    const dest = destination ?? generateTimetableId();
+    const dest =
+      destination && destination !== "" ? destination : generateTimetableId();
 
     cloneRtk({ source: table, destination: dest, token });
   }
