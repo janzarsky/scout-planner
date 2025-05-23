@@ -55,7 +55,11 @@ export default function Clone() {
       {prevDest && (
         <p className="text-success">
           Harmonogram zkopírován do{" "}
-          <a href={"/" + encodeURIComponent(prevDest)} target="_blank" rel="noreferrer">
+          <a
+            href={"/" + encodeURIComponent(prevDest)}
+            target="_blank"
+            rel="noreferrer"
+          >
             {prevDest}
           </a>
         </p>
