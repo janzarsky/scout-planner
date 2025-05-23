@@ -107,6 +107,9 @@ function getOptions(req) {
   const destination = req.query.destination;
   if (!destination) throw new Error("Invalid parameters");
 
+  if (source === destination)
+    throw new Error("Source and destination cannot be the same");
+
   return { source, destination };
 }
 
