@@ -21,5 +21,34 @@ async function shiftTimetable(req, res) {
     return;
   }
 
+  let options = null;
+  try {
+    options = getOptions(req);
+    console.debug(
+      `Got source: "${options.source}" and offset: "${options.offset}"`,
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(400).send({ message: "Invalid parameters" });
+    return;
+  }
+
   res.status(500).send({ message: "Not implemented" });
 }
+
+function getOptions(req) {
+  const source = req.query.source;
+  if (!source) throw new Error("Invalid parameters");
+
+  const offset = parseInt(req.query.offset);
+  if (isNaN(offset)) throw new Error("Invalid parameters");
+
+  // TODO: unify across codebase
+  const isValidId = (id) => /^[a-zA-Z0-9_-]+$/.test(id) && id.length >= 3;
+
+  if (!isValidId(source)) throw new Error("Invalid source ID");
+
+  return { source, offset };
+}
+
+export const testing = { getOptions };
