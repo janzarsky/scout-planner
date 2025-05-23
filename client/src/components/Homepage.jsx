@@ -31,6 +31,8 @@ export default function Homepage() {
               onChange={(e) => setTable(e.target.value)}
               placeholder="Kód"
               autoFocus={true}
+              isValid={table && isValidTimetableId(table)}
+              isInvalid={table && !isValidTimetableId(table)}
             />
             <Button
               type="submit"
