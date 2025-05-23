@@ -13,6 +13,9 @@ export const cloneApi = createApi({
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       }),
+      transformErrorResponse: (response) => ({
+        message: response.data?.message,
+      }),
     }),
   }),
 });
