@@ -6,7 +6,10 @@ import { useSelector } from "react-redux";
 import { Col, Row } from "react-bootstrap";
 import { useCloneMutation } from "../store/cloneApi";
 import { useAuth } from "./AuthProvider";
-import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
+import {
+  generateTimetableId,
+  isValidTimetableId,
+} from "@scout-planner/common/timetableIdUtils";
 
 export default function Clone() {
   const [destination, setDestination] = useState(null);
@@ -29,9 +32,7 @@ export default function Clone() {
 
     const token = await getIdToken();
 
-    // TODO: extract ID generation to a helper function
-    const dest =
-      destination ?? `/${Math.floor(Math.random() * 10e13).toString(16)}`;
+    const dest = destination ?? generateTimetableId();
 
     cloneRtk({ source: table, destination: dest, token });
   }
