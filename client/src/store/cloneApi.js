@@ -14,10 +14,26 @@ export const cloneApi = createApi({
         headers: { Authorization: `Bearer ${token}` },
       }),
       transformErrorResponse: (response) => ({
-        message: response.data?.message,
+        message: translateError(response),
       }),
     }),
   }),
 });
 
+const msgs = {
+  unauthorized: "Pro vytváření kopií se prosím přihlaste",
+  forbidden: "Nemáte přístup k cílovému nebo zdrojovému harmonogramu",
+  generic: "Během kopírování nastala chyba",
+};
+
+function translateError(response) {
+  if (response?.status === 401) return msgs.unauthorized;
+
+  if (response?.status === 403) return msgs.forbidden;
+
+  return msgs.generic;
+}
+
 export const { useCloneMutation } = cloneApi;
+
+export const testing = { translateError, msgs };
