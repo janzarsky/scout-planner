@@ -2,6 +2,12 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "shift/**"
+      - "common/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy_shift.yml"
   workflow_dispatch:
 
 jobs:

@@ -2,6 +2,12 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "client/**"
+      - "common/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy_frontend.yml"
   workflow_dispatch:
 
 jobs:
