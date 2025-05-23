@@ -74,6 +74,8 @@ export default function Clone() {
             <Button type="submit" disabled={!user || !destValid}>
               <i className="fa fa-clone"></i> Vytvořit kopii
             </Button>
+            <i className="fa fa-flask ms-3" aria-hidden="true"></i>{" "}
+            <small>Experimentální funkce</small>
           </Col>
         </Row>
       </Form>
