@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy_functions:
+  deploy_clone:
     runs-on: ubuntu-latest
 
     permissions:
@@ -13,7 +13,7 @@ jobs:
       id-token: write
 
     concurrency:
-      group: functions
+      group: clone
       cancel-in-progress: true
 
     steps:
@@ -28,7 +28,7 @@ jobs:
       - run: npm run build
         working-directory: common
       - run: npm run build
-        working-directory: functions
+        working-directory: clone
 
       - name: Auth
         uses: "google-github-actions/auth@v2"
@@ -41,5 +41,5 @@ jobs:
           name: clone-timetable
           runtime: nodejs22
           region: europe-central2
-          source_dir: functions/dist
+          source_dir: clone/dist
           entry_point: clone-timetable
