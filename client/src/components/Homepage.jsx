@@ -3,13 +3,16 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router";
-import { generateTimetableId } from "@scout-planner/common/timetableIdUtils";
+import {
+  generateTimetableId,
+  isValidTimetableId,
+} from "@scout-planner/common/timetableIdUtils";
 
 export default function Homepage() {
   const navigate = useNavigate();
-  const [state, setState] = useState("");
-  const submit = useCallback(() => navigate(`/${state}`), [navigate, state]);
-  const valid = state.match(/^[\w-]+$/);
+  const [table, setTable] = useState("");
+
+  const submit = useCallback(() => navigate(`/${table}`), [navigate, table]);
 
   const random = useCallback(
     () => navigate("/" + generateTimetableId()),
@@ -24,14 +27,16 @@ export default function Homepage() {
         <Form>
           <InputGroup className="mb-4">
             <Form.Control
-              value={state}
-              onChange={(e) => setState(e.target.value)}
+              value={table}
+              onChange={(e) => setTable(e.target.value)}
               placeholder="Kód"
               autoFocus={true}
+              isValid={table && isValidTimetableId(table)}
+              isInvalid={table && !isValidTimetableId(table)}
             />
             <Button
               type="submit"
-              disabled={!valid}
+              disabled={!isValidTimetableId(table)}
               variant="primary"
               onClick={submit}
             >
