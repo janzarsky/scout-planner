@@ -30,18 +30,18 @@ export default function Clone() {
     <>
       <h3>Vytvořit kopii</h3>
       <Form onSubmit={handleSubmit}>
-        <Row className="mb-3">
+        <Row>
           <Form.Label column sm="2">
             Cílové ID
           </Form.Label>
-          <Col sm="3">
+          <Col sm="3" className="mb-2">
             <Form.Control
               value={destination ?? ""}
               placeholder={destination ? "" : "(vygenerovat automaticky)"}
               onChange={(e) => setDestination(e.target.value)}
             />
           </Col>
-          <Col>
+          <Col sm="7" className="mb-2">
             <Button type="submit">
               <i className="fa fa-clone"></i> Vytvořit kopii
             </Button>
