@@ -9,10 +9,23 @@ import { useAuth } from "./AuthProvider";
 
 export default function Clone() {
   const [destination, setDestination] = useState(null);
+  const [destValid, setDestValid] = useState(true);
 
   const { table } = useSelector((state) => state.auth);
   const [cloneRtk] = useCloneMutation();
-  const { getIdToken } = useAuth();
+  const { user, getIdToken } = useAuth();
+
+  const idRegex = /^[a-zA-Z0-9_-]+$/;
+
+  function handleDestChange(destination) {
+    setDestination(destination);
+    setDestValid(
+      !destination ||
+        (idRegex.test(destination) &&
+          destination.length >= 3 &&
+          destination !== table),
+    );
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -29,20 +42,36 @@ export default function Clone() {
   return (
     <>
       <h3>Vytvořit kopii</h3>
+      {!user && (
+        <p className="text-danger">
+          <i className="fa fa-exclamation-triangle" />
+          &nbsp; Pro kopírování se prosím přihlaste
+        </p>
+      )}
       <Form onSubmit={handleSubmit}>
-        <Row className="mb-3">
+        <Row>
           <Form.Label column sm="2">
             Cílové ID
           </Form.Label>
-          <Col sm="3">
+          <Col sm="3" className="mb-2">
             <Form.Control
               value={destination ?? ""}
               placeholder={destination ? "" : "(vygenerovat automaticky)"}
-              onChange={(e) => setDestination(e.target.value)}
+              onChange={(e) => handleDestChange(e.target.value)}
+              isValid={destination && destValid}
+              isInvalid={!destValid}
+              disabled={!user}
             />
+            <Form.Control.Feedback type="invalid">
+              {destination && destination.length < 3
+                ? "Cílové ID musí mít alespoň tři znaky"
+                : destination === table
+                  ? "Cílové ID nesmí být stejné jako ID aktuálního harmonogramu"
+                  : "Cílové ID nesmí obsahovat speciální znaky, pouze číslice a písmena bez diakritiky, podtržítka a pomlčky"}
+            </Form.Control.Feedback>
           </Col>
-          <Col>
-            <Button type="submit">
+          <Col sm="7" className="mb-2">
+            <Button type="submit" disabled={!user || !destValid}>
               <i className="fa fa-clone"></i> Vytvořit kopii
             </Button>
           </Col>
