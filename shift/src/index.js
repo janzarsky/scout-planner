@@ -1,7 +1,7 @@
 import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { isValidTimetableId } from "@scout-planner/common/timetableIdValidator";
+import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 
 http("shift-timetable", shiftTimetable);
 

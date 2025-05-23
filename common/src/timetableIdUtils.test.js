@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isValidTimetableId } from "./timetableIdValidator";
+import { isValidTimetableId } from "./timetableIdUtils";
 
 describe("Timetable ID validator", () => {
   it("rejects empty string", () =>

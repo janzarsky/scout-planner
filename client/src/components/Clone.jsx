@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { Col, Row } from "react-bootstrap";
 import { useCloneMutation } from "../store/cloneApi";
 import { useAuth } from "./AuthProvider";
-import { isValidTimetableId } from "@scout-planner/common/timetableIdValidator";
+import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 
 export default function Clone() {
   const [destination, setDestination] = useState(null);

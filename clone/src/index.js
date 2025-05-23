@@ -5,7 +5,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { importData } from "@scout-planner/common/importer";
 import { Client } from "./client";
 import { level } from "@scout-planner/common/level";
-import { isValidTimetableId } from "@scout-planner/common/timetableIdValidator";
+import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 
 http("clone-timetable", cloneTimetable);
 
