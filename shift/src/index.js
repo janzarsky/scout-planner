@@ -60,7 +60,16 @@ async function shiftTimetable(req, res) {
     return;
   }
 
-  res.status(500).send({ message: "Not implemented" });
+  try {
+    await shiftData(db, options.table, options.offset);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Internal server error" });
+    return;
+  }
+
+  console.debug("Successfully shifted");
+  res.status(200).send({ message: "Successfullly shifted" });
 }
 
 // TODO: unify across functions
@@ -92,6 +101,11 @@ function getOptions(req) {
 async function getAccessLevel(db, table, user) {
   const client = new Client(table, db);
   return await client.getAccessLevel(user);
+}
+
+async function shiftData(db, table, offset) {
+  console.debug(`Shifting: ${db}, ${table}, ${offset}`);
+  throw new Error("Not implemented");
 }
 
 export const testing = { getOptions };
