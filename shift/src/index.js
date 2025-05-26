@@ -107,7 +107,11 @@ async function shift(db, table, offset) {
   const client = new Client(table, db);
   const data = await loadData(client);
 
-  const shifted = shiftData(data, offset);
+  const shifted = {
+    programs: shiftPrograms(data.programs, offset),
+    rules: shiftRules(data.rules, offset),
+    people: shiftPeople(data.people, offset),
+  };
   await updateData(client, shifted);
 }
 
@@ -120,13 +124,30 @@ async function loadData(client) {
   return { programs, rules, people };
 }
 
-function shiftData(data, offset) {
+function shiftPrograms(programs, offset) {
   // TODO
-  return { ...data };
+  return [...programs];
+}
+
+function shiftRules(rules, offset) {
+  // TODO
+  return [...rules];
+}
+
+function shiftPeople(people, offset) {
+  // TODO
+  return [...people];
 }
 
 async function updateData(client, data) {
   // TODO
 }
 
-export const testing = { getOptions, loadData, shiftData, updateData };
+export const testing = {
+  getOptions,
+  loadData,
+  shiftPrograms,
+  shiftRules,
+  shiftPeople,
+  updateData,
+};
