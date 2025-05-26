@@ -162,7 +162,11 @@ function shiftAbsence(absence, offset) {
 }
 
 async function updateData(client, data) {
-  // TODO
+  return Promise.all([
+    ...data.programs.map((p) => client.patchProgram(p)),
+    ...data.rules.map((r) => client.patchRule(r)),
+    ...data.people.map((p) => client.patchPerson(p)),
+  ]);
 }
 
 export const testing = {

@@ -1,8 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { testing } from ".";
 
-const { getOptions, loadData, shiftPrograms, shiftRules, shiftPeople } =
-  testing;
+const {
+  getOptions,
+  loadData,
+  shiftPrograms,
+  shiftRules,
+  shiftPeople,
+  updateData,
+} = testing;
 
 describe("get options", () => {
   it("throws error when no parameters", () => {
@@ -182,5 +188,39 @@ describe("shift people attendance", () => {
     expect(shiftPeople([p], 86400)).toEqual([
       { _id: "person1", absence: [{ begin: 1748286400, end: 1748459200 }] },
     ]);
+  });
+});
+
+describe("update data", () => {
+  it("does nothing when there are no data", async () =>
+    expect(updateData({}, { programs: [], rules: [], people: [] })).resolves);
+
+  it("patches programs, rules, and people", async () => {
+    const client = {
+      patchProgram: vi.fn(),
+      patchRule: vi.fn(),
+      patchPerson: vi.fn(),
+    };
+    expect(
+      updateData(client, {
+        programs: [{ _id: "prog1", begin: 1748200000 }],
+        rules: [{ _id: "rule1", value: 1748286400 }],
+        people: [
+          { _id: "person1", absence: [{ begin: 1748286400, end: 1748459200 }] },
+        ],
+      }),
+    ).resolves;
+    expect(client.patchProgram).toBeCalledWith({
+      _id: "prog1",
+      begin: 1748200000,
+    });
+    expect(client.patchRule).toBeCalledWith({
+      _id: "rule1",
+      value: 1748286400,
+    });
+    expect(client.patchPerson).toBeCalledWith({
+      _id: "person1",
+      absence: [{ begin: 1748286400, end: 1748459200 }],
+    });
   });
 });

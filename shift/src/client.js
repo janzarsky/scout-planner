@@ -11,8 +11,9 @@ export class Client {
       ["ranges", "Range", "Ranges"],
       ["users", "User", "Users"],
       ["people", "Person", "People"],
-    ].forEach(([path, , namePlural]) => {
+    ].forEach(([path, nameSingular, namePlural]) => {
       this[`get${namePlural}`] = () => this.getAll(path);
+      this[`patch${nameSingular}`] = (data) => this.patch(path, data);
     });
 
     this.db = db;
@@ -61,6 +62,19 @@ export class Client {
         ...doc.data(),
         _id: doc.id,
       }));
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async patch(coll, data) {
+    try {
+      const { _id: id, ...update } = data;
+      await this.db
+        .doc(`timetables/${this.table}/${coll}/${id}`)
+        .update(update);
+
+      return data;
     } catch (e) {
       throw new Error(e.message);
     }
