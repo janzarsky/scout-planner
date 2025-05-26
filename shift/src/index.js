@@ -2,6 +2,9 @@ import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
+import { getAuth } from "firebase-admin/auth";
+import { level } from "@scout-planner/common/level";
+import { Client } from "./client";
 
 http("shift-timetable", shiftTimetable);
 
@@ -22,11 +25,21 @@ async function shiftTimetable(req, res) {
     return;
   }
 
+  let email = null;
+  try {
+    email = await getIdentity(req);
+    console.debug(`Got customer email: "${email}"`);
+  } catch (error) {
+    console.error(error);
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+
   let options = null;
   try {
     options = getOptions(req);
     console.debug(
-      `Got source: "${options.source}" and offset: "${options.offset}"`,
+      `Got table: "${options.table}" and offset: "${options.offset}"`,
     );
   } catch (error) {
     console.error(error);
@@ -34,19 +47,133 @@ async function shiftTimetable(req, res) {
     return;
   }
 
-  res.status(500).send({ message: "Not implemented" });
+  try {
+    const accessLevel = await getAccessLevel(db, options.source, email);
+    console.debug(`Got access level to table: ${accessLevel}`);
+    if (accessLevel < level.EDIT) {
+      res.status(403).send({ message: "Access to table forbidden" });
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Internal server error" });
+    return;
+  }
+
+  try {
+    await shift(db, options.table, options.offset);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Internal server error" });
+    return;
+  }
+
+  console.debug("Successfully shifted");
+  res.status(200).send({ message: "Successfullly shifted" });
+}
+
+// TODO: unify across functions
+async function getIdentity(req) {
+  const authorizationHeader = req.headers.authorization;
+  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+    console.log("throwing");
+    throw new Error("Unauthorized");
+  }
+  const idToken = authorizationHeader.split("Bearer ")[1];
+
+  const token = await getAuth().verifyIdToken(idToken);
+
+  return token.email;
 }
 
 function getOptions(req) {
-  const source = req.query.source;
-  if (!source) throw new Error("Invalid parameters");
+  const table = req.query.table;
+  if (!table) throw new Error("Invalid parameters");
 
   const offset = parseInt(req.query.offset);
   if (isNaN(offset)) throw new Error("Invalid parameters");
 
-  if (!isValidTimetableId(source)) throw new Error("Invalid source ID");
+  if (!isValidTimetableId(table)) throw new Error("Invalid source ID");
 
-  return { source, offset };
+  return { table, offset };
 }
 
-export const testing = { getOptions };
+async function getAccessLevel(db, table, user) {
+  const client = new Client(table, db);
+  return await client.getAccessLevel(user);
+}
+
+async function shift(db, table, offset) {
+  const client = new Client(table, db);
+  const data = await loadData(client);
+
+  const shifted = {
+    programs: shiftPrograms(data.programs, offset),
+    rules: shiftRules(data.rules, offset),
+    people: shiftPeople(data.people, offset),
+  };
+  await updateData(client, shifted);
+}
+
+async function loadData(client) {
+  const [programs, rules, people] = await Promise.all([
+    client.getPrograms(),
+    client.getRules(),
+    client.getPeople(),
+  ]);
+  return { programs, rules, people };
+}
+
+function shiftPrograms(programs, offset) {
+  return programs.flatMap((p) =>
+    // programs without valid begin property should be exluded because we do
+    // not want to update those
+    Number.isFinite(p.begin) ? [{ _id: p._id, begin: p.begin + offset }] : [],
+  );
+}
+
+function shiftRules(rules, offset) {
+  return rules.flatMap((r) =>
+    (r.condition === "is_after_date" || r.condition === "is_before_date") &&
+    Number.isFinite(r.value)
+      ? [{ _id: r._id, value: r.value + offset }]
+      : [],
+  );
+}
+
+function shiftPeople(people, offset) {
+  return people.flatMap((person) =>
+    person.absence?.length > 0
+      ? [{ _id: person._id, absence: shiftAbsence(person.absence, offset) }]
+      : [],
+  );
+}
+
+function shiftAbsence(absence, offset) {
+  return absence.flatMap((a) =>
+    Number.isFinite(a.begin) && Number.isFinite(a.end)
+      ? {
+          ...a,
+          begin: a.begin + offset,
+          end: a.end + offset,
+        }
+      : [],
+  );
+}
+
+async function updateData(client, data) {
+  return Promise.all([
+    ...data.programs.map((p) => client.patchProgram(p)),
+    ...data.rules.map((r) => client.patchRule(r)),
+    ...data.people.map((p) => client.patchPerson(p)),
+  ]);
+}
+
+export const testing = {
+  getOptions,
+  loadData,
+  shiftPrograms,
+  shiftRules,
+  shiftPeople,
+  updateData,
+};
