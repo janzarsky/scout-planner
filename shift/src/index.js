@@ -133,8 +133,12 @@ function shiftPrograms(programs, offset) {
 }
 
 function shiftRules(rules, offset) {
-  // TODO
-  return [...rules];
+  return rules.flatMap((r) =>
+    (r.condition === "is_after_date" || r.condition === "is_before_date") &&
+    Number.isFinite(r.value)
+      ? [{ _id: r._id, value: r.value + offset }]
+      : [],
+  );
 }
 
 function shiftPeople(people, offset) {

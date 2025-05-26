@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { testing } from ".";
 
-const { getOptions, loadData, shiftPrograms } = testing;
+const { getOptions, loadData, shiftPrograms, shiftRules } = testing;
 
 describe("get options", () => {
   it("throws error when no parameters", () => {
@@ -86,4 +86,53 @@ describe("shift programs", () => {
         86400,
       ),
     ).toEqual([{ _id: "prog1", begin: 1748286400 }]));
+});
+
+describe("shift rules", () => {
+  it("accepts empty array", () => expect(shiftRules([], 42)).toEqual([]));
+
+  it("ignores rules without time and date", () => {
+    const r1 = {
+      _id: "rule1",
+      condition: "is_after_program",
+      program: "prog1",
+      value: "prog2",
+    };
+    const r2 = {
+      _id: "rule2",
+      condition: "is_before_program",
+      program: "prog2",
+      value: "prog3",
+    };
+    expect(shiftRules([r1, r2], 86400)).toEqual([]);
+  });
+
+  it("shifts values by offset", () => {
+    const r1 = {
+      _id: "rule1",
+      condition: "is_after_date",
+      program: "prog1",
+      value: 1748113600,
+    };
+    const r2 = {
+      _id: "rule2",
+      condition: "is_before_date",
+      program: "prog2",
+      value: 1748286400,
+    };
+    expect(shiftRules([r1, r2], 86400)).toEqual([
+      { _id: "rule1", value: 1748200000 },
+      { _id: "rule2", value: 1748372800 },
+    ]);
+  });
+
+  it("ignores rules with value that is not numeric", () => {
+    const r = {
+      _id: "rule1",
+      condition: "is_after_date",
+      program: "prog1",
+      value: "x",
+    };
+    expect(shiftRules([r], 86400)).toEqual([]);
+  });
 });
