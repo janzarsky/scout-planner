@@ -37,7 +37,7 @@ async function shiftTimetable(req, res) {
   try {
     options = getOptions(req);
     console.debug(
-      `Got source: "${options.source}" and offset: "${options.offset}"`,
+      `Got table: "${options.table}" and offset: "${options.offset}"`,
     );
   } catch (error) {
     console.error(error);
@@ -63,15 +63,15 @@ async function getIdentity(req) {
 }
 
 function getOptions(req) {
-  const source = req.query.source;
-  if (!source) throw new Error("Invalid parameters");
+  const table = req.query.table;
+  if (!table) throw new Error("Invalid parameters");
 
   const offset = parseInt(req.query.offset);
   if (isNaN(offset)) throw new Error("Invalid parameters");
 
-  if (!isValidTimetableId(source)) throw new Error("Invalid source ID");
+  if (!isValidTimetableId(table)) throw new Error("Invalid source ID");
 
-  return { source, offset };
+  return { table, offset };
 }
 
 export const testing = { getOptions };

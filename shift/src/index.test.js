@@ -9,28 +9,28 @@ describe("get options", () => {
   });
 
   it("throws error when no offset", () => {
-    expect(() => getOptions({ query: { source: "timetable1" } })).toThrow(
+    expect(() => getOptions({ query: { table: "timetable1" } })).toThrow(
       "Invalid parameters",
     );
   });
 
   it("throws error when offset is not a number", () => {
     expect(() =>
-      getOptions({ query: { source: "timetable1", offset: "asdf" } }),
+      getOptions({ query: { table: "timetable1", offset: "asdf" } }),
     ).toThrow("Invalid parameters");
   });
 
-  it("throws error when source is invalid", () => {
+  it("throws error when table is invalid", () => {
     expect(() =>
-      getOptions({ query: { source: "abc#$%", offset: "asdf" } }),
+      getOptions({ query: { table: "abc#$%", offset: "asdf" } }),
     ).toThrow("Invalid parameters");
   });
 
-  it("returns source and offset", () => {
+  it("returns table and offset", () => {
     expect(
       getOptions({
-        query: { source: "timetable1", offset: "86400" },
+        query: { table: "timetable1", offset: "86400" },
       }),
-    ).toEqual({ source: "timetable1", offset: 86400 });
+    ).toEqual({ table: "timetable1", offset: 86400 });
   });
 });
