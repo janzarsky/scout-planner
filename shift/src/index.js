@@ -2,6 +2,7 @@ import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
+import { getAuth } from "firebase-admin/auth";
 
 http("shift-timetable", shiftTimetable);
 
@@ -22,6 +23,16 @@ async function shiftTimetable(req, res) {
     return;
   }
 
+  let email = null;
+  try {
+    email = await getIdentity(req);
+    console.debug(`Got customer email: "${email}"`);
+  } catch (error) {
+    console.error(error);
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+
   let options = null;
   try {
     options = getOptions(req);
@@ -35,6 +46,20 @@ async function shiftTimetable(req, res) {
   }
 
   res.status(500).send({ message: "Not implemented" });
+}
+
+// TODO: unify across functions
+async function getIdentity(req) {
+  const authorizationHeader = req.headers.authorization;
+  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+    console.log("throwing");
+    throw new Error("Unauthorized");
+  }
+  const idToken = authorizationHeader.split("Bearer ")[1];
+
+  const token = await getAuth().verifyIdToken(idToken);
+
+  return token.email;
 }
 
 function getOptions(req) {
