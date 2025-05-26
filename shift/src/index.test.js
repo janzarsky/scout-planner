@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { testing } from ".";
 
-const { getOptions, loadData, shiftPrograms, shiftRules } = testing;
+const { getOptions, loadData, shiftPrograms, shiftRules, shiftPeople } =
+  testing;
 
 describe("get options", () => {
   it("throws error when no parameters", () => {
@@ -134,5 +135,52 @@ describe("shift rules", () => {
       value: "x",
     };
     expect(shiftRules([r], 86400)).toEqual([]);
+  });
+});
+
+describe("shift people attendance", () => {
+  it("accepts empty array", () => expect(shiftPeople([], 42)).toEqual([]));
+
+  it("ignores people without absence (undefined)", () =>
+    expect(shiftPeople([{ _id: "person1" }], 42)).toEqual([]));
+
+  it("ignores people without absence (empty)", () =>
+    expect(shiftPeople([{ _id: "person1", absence: [] }], 42)).toEqual([]));
+
+  it("shifts absence by offset", () => {
+    const p = {
+      _id: "person1",
+      absence: [{ begin: 1748200000, end: 1748372800 }],
+    };
+    expect(shiftPeople([p], 86400)).toEqual([
+      {
+        _id: "person1",
+        absence: [{ begin: 1748286400, end: 1748459200 }],
+      },
+    ]);
+  });
+
+  it("deletes invalid absence entries", () => {
+    // the whole absence array will be updated at once, so we should do a data
+    // cleanup here
+    const p = {
+      _id: "person1",
+      absence: [
+        { begin: 1748200000, end: "x" },
+        { begin: "x", end: 1748372800 },
+      ],
+    };
+    expect(shiftPeople([p], 86400)).toEqual([{ _id: "person1", absence: [] }]);
+  });
+
+  it("returns just ID and absence properties", () => {
+    const p = {
+      _id: "person1",
+      absence: [{ begin: 1748200000, end: 1748372800 }],
+      extra: "property",
+    };
+    expect(shiftPeople([p], 86400)).toEqual([
+      { _id: "person1", absence: [{ begin: 1748286400, end: 1748459200 }] },
+    ]);
   });
 });

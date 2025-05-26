@@ -142,8 +142,23 @@ function shiftRules(rules, offset) {
 }
 
 function shiftPeople(people, offset) {
-  // TODO
-  return [...people];
+  return people.flatMap((person) =>
+    person.absence?.length > 0
+      ? [{ _id: person._id, absence: shiftAbsence(person.absence, offset) }]
+      : [],
+  );
+}
+
+function shiftAbsence(absence, offset) {
+  return absence.flatMap((a) =>
+    Number.isFinite(a.begin) && Number.isFinite(a.end)
+      ? {
+          ...a,
+          begin: a.begin + offset,
+          end: a.end + offset,
+        }
+      : [],
+  );
 }
 
 async function updateData(client, data) {
