@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { testing } from ".";
 
-const { getOptions, loadData } = testing;
+const { getOptions, loadData, shiftPrograms } = testing;
 
 describe("get options", () => {
   it("throws error when no parameters", () => {
@@ -58,4 +58,32 @@ describe("load data", () => {
     };
     await expect(loadData(client)).rejects.toThrow("Something went wrong");
   });
+});
+
+describe("shift programs", () => {
+  it("accepts empty array", () => expect(shiftPrograms([], 42)).toEqual([]));
+
+  it("adds offset to the begin property", () =>
+    expect(shiftPrograms([{ _id: "prog1", begin: 1748200000 }], 86400)).toEqual(
+      [{ _id: "prog1", begin: 1748286400 }],
+    ));
+
+  it("adds negative offset to the begin property", () =>
+    expect(
+      shiftPrograms([{ _id: "prog1", begin: 1748200000 }], -86400),
+    ).toEqual([{ _id: "prog1", begin: 1748113600 }]));
+
+  it("ignores programs without begin property", () =>
+    expect(shiftPrograms([{ _id: "prog1" }], 86400)).toEqual([]));
+
+  it("ignores programs with begin property that is not numeric", () =>
+    expect(shiftPrograms([{ _id: "prog1", begin: "x" }], 86400)).toEqual([]));
+
+  it("returns just ID and begin properties", () =>
+    expect(
+      shiftPrograms(
+        [{ _id: "prog1", begin: 1748200000, extra: "property" }],
+        86400,
+      ),
+    ).toEqual([{ _id: "prog1", begin: 1748286400 }]));
 });

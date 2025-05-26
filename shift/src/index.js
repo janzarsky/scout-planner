@@ -125,8 +125,11 @@ async function loadData(client) {
 }
 
 function shiftPrograms(programs, offset) {
-  // TODO
-  return [...programs];
+  return programs.flatMap((p) =>
+    // programs without valid begin property should be exluded because we do
+    // not want to update those
+    Number.isFinite(p.begin) ? [{ _id: p._id, begin: p.begin + offset }] : [],
+  );
 }
 
 function shiftRules(rules, offset) {
