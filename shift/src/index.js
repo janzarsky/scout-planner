@@ -61,7 +61,7 @@ async function shiftTimetable(req, res) {
   }
 
   try {
-    await shiftData(db, options.table, options.offset);
+    await shift(db, options.table, options.offset);
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Internal server error" });
@@ -103,9 +103,30 @@ async function getAccessLevel(db, table, user) {
   return await client.getAccessLevel(user);
 }
 
-async function shiftData(db, table, offset) {
-  console.debug(`Shifting: ${db}, ${table}, ${offset}`);
-  throw new Error("Not implemented");
+async function shift(db, table, offset) {
+  const client = new Client(table, db);
+  const data = await loadData(client);
+
+  const shifted = shiftData(data, offset);
+  await updateData(client, shifted);
 }
 
-export const testing = { getOptions };
+async function loadData(client) {
+  const [programs, rules, people] = await Promise.all([
+    client.getPrograms(),
+    client.getRules(),
+    client.getPeople(),
+  ]);
+  return { programs, rules, people };
+}
+
+function shiftData(data, offset) {
+  // TODO
+  return { ...data };
+}
+
+async function updateData(client, data) {
+  // TODO
+}
+
+export const testing = { getOptions, loadData, shiftData, updateData };

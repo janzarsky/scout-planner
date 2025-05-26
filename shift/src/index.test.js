@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { testing } from ".";
 
-const { getOptions } = testing;
+const { getOptions, loadData } = testing;
 
 describe("get options", () => {
   it("throws error when no parameters", () => {
@@ -32,5 +32,30 @@ describe("get options", () => {
         query: { table: "timetable1", offset: "86400" },
       }),
     ).toEqual({ table: "timetable1", offset: 86400 });
+  });
+});
+
+describe("load data", () => {
+  it("loads programs, rules, and people", async () => {
+    const client = {
+      getPrograms: async () => [{ _id: "prog1" }],
+      getRules: async () => [{ _id: "rule1" }],
+      getPeople: async () => [{ _id: "person1" }],
+    };
+    const res = await loadData(client);
+    expect(res).toHaveProperty("programs", [{ _id: "prog1" }]);
+    expect(res).toHaveProperty("rules", [{ _id: "rule1" }]);
+    expect(res).toHaveProperty("people", [{ _id: "person1" }]);
+  });
+
+  it("throws on error", async () => {
+    const client = {
+      getPrograms: async () => [{ _id: "prog1" }],
+      getRules: async () => [{ _id: "rule1" }],
+      getPeople: async () => {
+        throw new Error("Something went wrong");
+      },
+    };
+    await expect(loadData(client)).rejects.toThrow("Something went wrong");
   });
 });
