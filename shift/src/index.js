@@ -3,6 +3,8 @@ import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 import { getAuth } from "firebase-admin/auth";
+import { level } from "@scout-planner/common/level";
+import { Client } from "./client";
 
 http("shift-timetable", shiftTimetable);
 
@@ -45,6 +47,19 @@ async function shiftTimetable(req, res) {
     return;
   }
 
+  try {
+    const accessLevel = await getAccessLevel(db, options.source, email);
+    console.debug(`Got access level to table: ${accessLevel}`);
+    if (accessLevel < level.EDIT) {
+      res.status(403).send({ message: "Access to table forbidden" });
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Internal server error" });
+    return;
+  }
+
   res.status(500).send({ message: "Not implemented" });
 }
 
@@ -72,6 +87,11 @@ function getOptions(req) {
   if (!isValidTimetableId(table)) throw new Error("Invalid source ID");
 
   return { table, offset };
+}
+
+async function getAccessLevel(db, table, user) {
+  const client = new Client(table, db);
+  return await client.getAccessLevel(user);
 }
 
 export const testing = { getOptions };
