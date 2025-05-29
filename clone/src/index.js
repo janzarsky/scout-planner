@@ -9,7 +9,7 @@ import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
 
 http("clone-timetable", async (req, res) =>
-  corsMiddleware(req, res, async () => cloneTimetable(req, res)),
+  corsMiddleware(["POST"])(req, res, async () => cloneTimetable(req, res)),
 );
 
 initializeApp();

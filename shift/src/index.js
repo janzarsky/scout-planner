@@ -8,7 +8,7 @@ import { Client } from "./client";
 import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
 
 http("shift-timetable", async (req, res) =>
-  corsMiddleware(req, res, async () => shiftTimetable(req, res)),
+  corsMiddleware(["POST"])(req, res, async () => shiftTimetable(req, res)),
 );
 
 initializeApp();
