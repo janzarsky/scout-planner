@@ -1,4 +1,4 @@
-export function corsMiddleware(req, res, next) {
+export async function corsMiddleware(req, res, next) {
   // TODO: add specific origins
   res.set("Access-Control-Allow-Origin", "*");
 
@@ -10,5 +10,5 @@ export function corsMiddleware(req, res, next) {
     return;
   }
 
-  next();
+  await next();
 }

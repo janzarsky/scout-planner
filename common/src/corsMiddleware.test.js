@@ -2,22 +2,22 @@ import { describe, expect, it, vi } from "vitest";
 import { corsMiddleware } from "./corsMiddleware";
 
 describe("CORS middleware", () => {
-  it("always adds allow origin header", () => {
+  it("always adds allow origin header", async () => {
     const res = { set: vi.fn() };
     const next = vi.fn();
 
-    corsMiddleware({ method: "GET" }, res, next);
+    await corsMiddleware({ method: "GET" }, res, next);
 
     expect(res.set).toBeCalledWith("Access-Control-Allow-Origin", "*");
     expect(next).toBeCalled();
   });
 
-  it("adds CORS header when the request method is OPTIONS", () => {
+  it("adds CORS header when the request method is OPTIONS", async () => {
     const send = vi.fn();
     const res = { set: vi.fn(), status: vi.fn().mockReturnValue({ send }) };
     const next = vi.fn();
 
-    corsMiddleware({ method: "OPTIONS" }, res, next);
+    await corsMiddleware({ method: "OPTIONS" }, res, next);
 
     expect(res.set).toBeCalledWith("Access-Control-Allow-Origin", "*");
     expect(res.set).toBeCalledWith("Access-Control-Allow-Methods", "POST");
