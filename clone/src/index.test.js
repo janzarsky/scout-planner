@@ -1,5 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { testing } from ".";
+
+const { cloneTimetable } = testing;
 
 describe("get identity", () => {
   it("throws error when called without auth header", async () => {
@@ -47,5 +49,38 @@ describe("get options", () => {
         query: { source: "timetable1", destination: "timetable2" },
       }),
     ).toEqual({ source: "timetable1", destination: "timetable2" });
+  });
+});
+
+describe("clone timetable", () => {
+  it("replies to OPTIONS request", () => {
+    const send = vi.fn();
+    const res = {
+      set: vi.fn(),
+      status: vi.fn().mockReturnValue({ send }),
+    };
+
+    expect(cloneTimetable({ method: "OPTIONS" }, res)).resolves;
+    expect(res.set).toBeCalledWith("Access-Control-Allow-Origin", "*");
+    expect(res.set).toBeCalledWith("Access-Control-Allow-Methods", "POST");
+    expect(res.set).toBeCalledWith(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
+    expect(res.status).toBeCalledWith(204);
+    expect(send).toBeCalled();
+  });
+
+  it("rejects invalid methods", () => {
+    const send = vi.fn();
+    const res = {
+      set: vi.fn(),
+      status: vi.fn().mockReturnValue({ send }),
+    };
+
+    expect(cloneTimetable({ method: "GET" }, res)).resolves;
+    expect(res.set).toBeCalledWith("Allow", "POST, OPTIONS");
+    expect(res.status).toBeCalledWith(405);
+    expect(send).toBeCalled();
   });
 });

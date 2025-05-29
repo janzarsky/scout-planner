@@ -187,6 +187,7 @@ function addSettingsDefaults(data) {
 }
 
 export const testing = {
+  cloneTimetable,
   getIdentity,
   getOptions,
 };
