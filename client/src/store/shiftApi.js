@@ -13,8 +13,25 @@ export const shiftApi = createApi({
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       }),
+      transformErrorResponse: (response) => ({
+        message: translateError(response),
+      }),
     }),
   }),
 });
+
+const msgs = {
+  unauthorized: "Pro posun data se prosím přihlaste",
+  forbidden: "Nemáte přístup k cílovému harmonogramu",
+  generic: "Během posunu data nastala chyba",
+};
+
+function translateError(response) {
+  if (response?.status === 401) return msgs.unauthorized;
+
+  if (response?.status === 403) return msgs.forbidden;
+
+  return msgs.generic;
+}
 
 export const { useShiftMutation } = shiftApi;
