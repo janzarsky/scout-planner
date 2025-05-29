@@ -4,6 +4,10 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./authMiddleware": {
+      "import": "./src/authMiddleware.js",
+      "require": "./src/authMiddleware.js"
+    },
     "./corsMiddleware": {
       "import": "./src/corsMiddleware.js",
       "require": "./src/corsMiddleware.js"
@@ -39,5 +43,8 @@
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "vitest": "^3.1.3"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.3.0"
   }
 }

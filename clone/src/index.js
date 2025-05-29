@@ -1,15 +1,17 @@
 import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { importData } from "@scout-planner/common/importer";
 import { Client } from "./client";
 import { level } from "@scout-planner/common/level";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
+import { authMiddleware } from "@scout-planner/common/authMiddleware";
 
 http("clone-timetable", async (req, res) =>
-  corsMiddleware(["POST"])(req, res, async () => cloneTimetable(req, res)),
+  corsMiddleware(["POST"])(req, res, async () =>
+    authMiddleware(req, res, async () => cloneTimetable(req, res)),
+  ),
 );
 
 initializeApp();
@@ -18,16 +20,6 @@ const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
 
 async function cloneTimetable(req, res) {
-  let email = null;
-  try {
-    email = await getIdentity(req);
-    console.debug("Got customer email: '%s'", email);
-  } catch (error) {
-    console.error(error);
-    res.status(401).send({ message: "Unauthorized" });
-    return;
-  }
-
   let options = null;
   try {
     options = getOptions(req);
@@ -43,7 +35,7 @@ async function cloneTimetable(req, res) {
   }
 
   try {
-    const accessLevel = await getAccessLevel(db, options.source, email);
+    const accessLevel = await getAccessLevel(db, options.source, req.email);
     console.debug("Got access level to source table: %d", accessLevel);
     if (accessLevel < level.VIEW) {
       res.status(403).send({ message: "Access to source table forbidden" });
@@ -56,7 +48,11 @@ async function cloneTimetable(req, res) {
   }
 
   try {
-    const accessLevel = await getAccessLevel(db, options.destination, email);
+    const accessLevel = await getAccessLevel(
+      db,
+      options.destination,
+      req.email,
+    );
     console.debug("Got access level to destination table: %d", accessLevel);
     if (accessLevel < level.ADMIN) {
       res
@@ -80,18 +76,6 @@ async function cloneTimetable(req, res) {
 
   console.debug("Successfully cloned");
   res.status(200).send({ message: "Successfullly cloned" });
-}
-
-async function getIdentity(req) {
-  const authorizationHeader = req.headers.authorization;
-  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    throw new Error("Unauthorized");
-  }
-  const idToken = authorizationHeader.split("Bearer ")[1];
-
-  const token = await getAuth().verifyIdToken(idToken);
-
-  return token.email;
 }
 
 function getOptions(req) {
@@ -174,6 +158,5 @@ function addSettingsDefaults(data) {
 
 export const testing = {
   cloneTimetable,
-  getIdentity,
   getOptions,
 };
