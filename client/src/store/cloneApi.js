@@ -10,7 +10,7 @@ export const cloneApi = createApi({
       query: ({ source, destination, token }) => ({
         url: `/clone-timetable`,
         params: { source, destination },
-        method: "GET",
+        method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       }),
       transformErrorResponse: (response) => ({
