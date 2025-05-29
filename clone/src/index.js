@@ -6,8 +6,11 @@ import { importData } from "@scout-planner/common/importer";
 import { Client } from "./client";
 import { level } from "@scout-planner/common/level";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
+import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
 
-http("clone-timetable", cloneTimetable);
+http("clone-timetable", async (req, res) =>
+  corsMiddleware(["POST"])(req, res, async () => cloneTimetable(req, res)),
+);
 
 initializeApp();
 
@@ -15,24 +18,6 @@ const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
 
 async function cloneTimetable(req, res) {
-  // TODO: add specific origins
-  res.set("Access-Control-Allow-Origin", "*");
-
-  if (req.method === "OPTIONS") {
-    res.set("Access-Control-Allow-Methods", "POST");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Max-Age", "3600");
-    res.status(204).send("");
-    return;
-  }
-
-  if (req.method !== "POST") {
-    console.error(`Method not allowed: ` + req.method);
-    res.set("Allow", "POST, OPTIONS");
-    res.status(405).send({ message: "Method not allowed" });
-    return;
-  }
-
   let email = null;
   try {
     email = await getIdentity(req);

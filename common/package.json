@@ -4,6 +4,10 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./corsMiddleware": {
+      "import": "./src/corsMiddleware.js",
+      "require": "./src/corsMiddleware.js"
+    },
     "./level": {
       "import": "./src/level.js",
       "require": "./src/level.js"
