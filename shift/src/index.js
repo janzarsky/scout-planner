@@ -20,7 +20,7 @@ async function shiftTimetable(req, res) {
   let email = null;
   try {
     email = await getIdentity(req);
-    console.debug(`Got customer email: "${email}"`);
+    console.debug("Got customer email: '%s'", email);
   } catch (error) {
     console.error(error);
     res.status(401).send({ message: "Unauthorized" });
@@ -31,7 +31,9 @@ async function shiftTimetable(req, res) {
   try {
     options = getOptions(req);
     console.debug(
-      `Got table: "${options.table}" and offset: "${options.offset}"`,
+      "Got table: '%s' and offset: '%s'",
+      options.table,
+      options.offset,
     );
   } catch (error) {
     console.error(error);
@@ -41,7 +43,7 @@ async function shiftTimetable(req, res) {
 
   try {
     const accessLevel = await getAccessLevel(db, options.source, email);
-    console.debug(`Got access level to table: ${accessLevel}`);
+    console.debug("Got access level to table: %d", accessLevel);
     if (accessLevel < level.EDIT) {
       res.status(403).send({ message: "Access to table forbidden" });
       return;
@@ -68,7 +70,6 @@ async function shiftTimetable(req, res) {
 async function getIdentity(req) {
   const authorizationHeader = req.headers.authorization;
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    console.log("throwing");
     throw new Error("Unauthorized");
   }
   const idToken = authorizationHeader.split("Bearer ")[1];

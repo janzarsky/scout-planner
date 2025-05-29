@@ -21,7 +21,7 @@ async function cloneTimetable(req, res) {
   let email = null;
   try {
     email = await getIdentity(req);
-    console.debug(`Got customer email: "${email}"`);
+    console.debug("Got customer email: '%s'", email);
   } catch (error) {
     console.error(error);
     res.status(401).send({ message: "Unauthorized" });
@@ -32,7 +32,9 @@ async function cloneTimetable(req, res) {
   try {
     options = getOptions(req);
     console.debug(
-      `Got source: "${options.source}" and destination: "${options.destination}"`,
+      "Got source: '%s' and destination: '%s'",
+      options.source,
+      options.destination,
     );
   } catch (error) {
     console.error(error);
@@ -42,7 +44,7 @@ async function cloneTimetable(req, res) {
 
   try {
     const accessLevel = await getAccessLevel(db, options.source, email);
-    console.debug(`Got access level to source table: ${accessLevel}`);
+    console.debug("Got access level to source table: %d", accessLevel);
     if (accessLevel < level.VIEW) {
       res.status(403).send({ message: "Access to source table forbidden" });
       return;
@@ -55,7 +57,7 @@ async function cloneTimetable(req, res) {
 
   try {
     const accessLevel = await getAccessLevel(db, options.destination, email);
-    console.debug(`Got access level to destination table: ${accessLevel}`);
+    console.debug("Got access level to destination table: %d", accessLevel);
     if (accessLevel < level.ADMIN) {
       res
         .status(403)
@@ -83,7 +85,6 @@ async function cloneTimetable(req, res) {
 async function getIdentity(req) {
   const authorizationHeader = req.headers.authorization;
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    console.log("throwing");
     throw new Error("Unauthorized");
   }
   const idToken = authorizationHeader.split("Bearer ")[1];
