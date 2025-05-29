@@ -2,13 +2,15 @@ import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
-import { getAuth } from "firebase-admin/auth";
 import { level } from "@scout-planner/common/level";
 import { Client } from "./client";
 import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
+import { authMiddleware } from "@scout-planner/common/authMiddleware";
 
 http("shift-timetable", async (req, res) =>
-  corsMiddleware(["POST"])(req, res, async () => shiftTimetable(req, res)),
+  corsMiddleware(["POST"])(req, res, async () =>
+    authMiddleware(req, res, async (req, res) => shiftTimetable(req, res)),
+  ),
 );
 
 initializeApp();
@@ -17,16 +19,6 @@ const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
 
 async function shiftTimetable(req, res) {
-  let email = null;
-  try {
-    email = await getIdentity(req);
-    console.debug("Got customer email: '%s'", email);
-  } catch (error) {
-    console.error(error);
-    res.status(401).send({ message: "Unauthorized" });
-    return;
-  }
-
   let options = null;
   try {
     options = getOptions(req);
@@ -42,7 +34,7 @@ async function shiftTimetable(req, res) {
   }
 
   try {
-    const accessLevel = await getAccessLevel(db, options.source, email);
+    const accessLevel = await getAccessLevel(db, options.source, req.email);
     console.debug("Got access level to table: %d", accessLevel);
     if (accessLevel < level.EDIT) {
       res.status(403).send({ message: "Access to table forbidden" });
@@ -64,19 +56,6 @@ async function shiftTimetable(req, res) {
 
   console.debug("Successfully shifted");
   res.status(200).send({ message: "Successfullly shifted" });
-}
-
-// TODO: unify across functions
-async function getIdentity(req) {
-  const authorizationHeader = req.headers.authorization;
-  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    throw new Error("Unauthorized");
-  }
-  const idToken = authorizationHeader.split("Bearer ")[1];
-
-  const token = await getAuth().verifyIdToken(idToken);
-
-  return token.email;
 }
 
 function getOptions(req) {
