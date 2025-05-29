@@ -5,8 +5,11 @@ import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 import { getAuth } from "firebase-admin/auth";
 import { level } from "@scout-planner/common/level";
 import { Client } from "./client";
+import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
 
-http("shift-timetable", shiftTimetable);
+http("shift-timetable", async (req, res) =>
+  corsMiddleware(req, res, async () => shiftTimetable(req, res)),
+);
 
 initializeApp();
 
@@ -14,17 +17,6 @@ const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
 
 async function shiftTimetable(req, res) {
-  // TODO: add specific origins
-  res.set("Access-Control-Allow-Origin", "*");
-
-  if (req.method === "OPTIONS") {
-    res.set("Access-Control-Allow-Methods", "GET");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Max-Age", "3600");
-    res.status(204).send("");
-    return;
-  }
-
   let email = null;
   try {
     email = await getIdentity(req);
