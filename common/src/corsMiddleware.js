@@ -3,6 +3,7 @@ export const corsMiddleware = (allowedMethods) => async (req, res, next) => {
   res.set("Access-Control-Allow-Origin", "*");
 
   if (req.method === "OPTIONS") {
+    console.debug("Sending OPTIONS response");
     res.set("Access-Control-Allow-Methods", allowedMethods.join(", "));
     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.set("Access-Control-Max-Age", "3600");
@@ -11,7 +12,7 @@ export const corsMiddleware = (allowedMethods) => async (req, res, next) => {
   }
 
   if (!allowedMethods.includes(req.method)) {
-    console.error("Method not allowed: " + req.method);
+    console.error("Method not allowed: %s", req.method);
     res.set("Allow", allowedMethods.join(", "));
     res.status(405).send({ message: "Method not allowed" });
     return;
