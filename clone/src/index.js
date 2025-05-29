@@ -19,10 +19,17 @@ async function cloneTimetable(req, res) {
   res.set("Access-Control-Allow-Origin", "*");
 
   if (req.method === "OPTIONS") {
-    res.set("Access-Control-Allow-Methods", "GET");
+    res.set("Access-Control-Allow-Methods", "POST");
     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.set("Access-Control-Max-Age", "3600");
     res.status(204).send("");
+    return;
+  }
+
+  if (req.method !== "POST") {
+    console.error(`Method not allowed: ` + req.method);
+    res.set("Allow", "POST, OPTIONS");
+    res.status(405).send({ message: "Method not allowed" });
     return;
   }
 
