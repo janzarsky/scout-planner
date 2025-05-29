@@ -18,13 +18,6 @@ const db = getFirestore();
 db.settings({ ignoreUndefinedProperties: true });
 
 async function cloneTimetable(req, res) {
-  if (req.method !== "POST") {
-    console.error(`Method not allowed: ` + req.method);
-    res.set("Allow", "POST, OPTIONS");
-    res.status(405).send({ message: "Method not allowed" });
-    return;
-  }
-
   let email = null;
   try {
     email = await getIdentity(req);

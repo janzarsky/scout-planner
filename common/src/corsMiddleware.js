@@ -10,5 +10,12 @@ export const corsMiddleware = (allowedMethods) => async (req, res, next) => {
     return;
   }
 
+  if (!allowedMethods.includes(req.method)) {
+    console.error("Method not allowed: " + req.method);
+    res.set("Allow", allowedMethods.join(", "));
+    res.status(405).send({ message: "Method not allowed" });
+    return;
+  }
+
   await next();
 };

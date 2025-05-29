@@ -6,7 +6,7 @@ describe("CORS middleware", () => {
     const res = { set: vi.fn() };
     const next = vi.fn();
 
-    await corsMiddleware(["POST"])({ method: "GET" }, res, next);
+    await corsMiddleware(["POST"])({ method: "POST" }, res, next);
 
     expect(res.set).toBeCalledWith("Access-Control-Allow-Origin", "*");
     expect(next).toBeCalled();
@@ -33,7 +33,7 @@ describe("CORS middleware", () => {
     expect(next).not.toBeCalled();
   });
 
-  it("allows specific methods", async () => {
+  it("allows specific methods in CORS headers", async () => {
     const res = {
       set: vi.fn(),
       status: vi.fn().mockReturnValue({ send: vi.fn() }),
@@ -43,5 +43,20 @@ describe("CORS middleware", () => {
     await corsMiddleware(["GET", "POST"])({ method: "OPTIONS" }, res, next);
 
     expect(res.set).toBeCalledWith("Access-Control-Allow-Methods", "GET, POST");
+  });
+
+  it("returns 405 when method not allowed", async () => {
+    const send = vi.fn();
+    const res = {
+      set: vi.fn(),
+      status: vi.fn().mockReturnValue({ send }),
+    };
+    const next = vi.fn();
+
+    await corsMiddleware(["GET", "POST"])({ method: "PUT" }, res, next);
+
+    expect(res.set).toBeCalledWith("Allow", "GET, POST");
+    expect(res.status).toBeCalledWith(405);
+    expect(send).toBeCalled();
   });
 });
