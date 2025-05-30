@@ -67,7 +67,7 @@ export default function Settings() {
         )}
         {userLevel >= level.EDIT && <GroupLock />}
         {cloneFeature && <Clone />}
-        {shiftFeature && <Shift />}
+        {userLevel >= level.EDIT && shiftFeature && <Shift />}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
