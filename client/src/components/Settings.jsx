@@ -31,12 +31,14 @@ import {
 } from "../store/timetableApi";
 import { useConfig } from "../store/configSlice";
 import Clone from "./Clone";
+import Shift from "./Shift";
 
 export default function Settings() {
   const timetableLayoutVersionSwitchingEnabled = useConfig(
     "timetableLayoutVersionSwitchingEnabled",
   );
   const cloneFeature = useConfig("cloneFeature");
+  const shiftFeature = useConfig("shiftFeature");
   const userLevel = useSelector((state) => state.auth.userLevel);
   const { table } = useSelector((state) => state.auth);
   const { data: timetableData, isSuccess: layoutVersionLoaded } =
@@ -65,6 +67,7 @@ export default function Settings() {
         )}
         {userLevel >= level.EDIT && <GroupLock />}
         {cloneFeature && <Clone />}
+        {shiftFeature && <Shift />}
         <h2 className="mt-5 text-danger">
           <i className="fa fa-exclamation-triangle"></i> Pokročilé
         </h2>
