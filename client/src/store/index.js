@@ -14,6 +14,7 @@ import { timetableApi } from "./timetableApi";
 import { settingsApi } from "./settingsApi";
 import { programsApi } from "./programsApi";
 import { cloneApi } from "./cloneApi";
+import { shiftApi } from "./shiftApi";
 import { errorLogger } from "./errorLogger";
 
 export function getStore() {
@@ -34,6 +35,7 @@ export function getStore() {
       [settingsApi.reducerPath]: settingsApi.reducer,
       [programsApi.reducerPath]: programsApi.reducer,
       [cloneApi.reducerPath]: cloneApi.reducer,
+      [shiftApi.reducerPath]: shiftApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
@@ -48,6 +50,7 @@ export function getStore() {
         .concat(settingsApi.middleware)
         .concat(programsApi.middleware)
         .concat(cloneApi.middleware)
+        .concat(shiftApi.middleware)
         .concat(errorLogger),
   });
 }

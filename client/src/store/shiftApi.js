@@ -7,9 +7,9 @@ export const shiftApi = createApi({
   reducerPath: "shiftApi",
   endpoints: (builder) => ({
     shift: builder.mutation({
-      query: ({ source, offset, token }) => ({
+      query: ({ table, offset, token }) => ({
         url: `/shift-timetable`,
-        params: { source, offset },
+        params: { table, offset },
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       }),
