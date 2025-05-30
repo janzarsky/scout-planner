@@ -87,14 +87,20 @@ function useTimetableBeginning() {
     useGetProgramsQuery(table);
 
   useEffect(() => {
-    if (programsLoaded) {
-      const min = Math.min(
-        ...programs.flatMap((p) => (Number.isFinite(p.begin) ? [p.begin] : [])),
-      );
-
-      if (Number.isFinite(min)) setBeginning(min);
-    }
+    if (programsLoaded) setBeginning(getTimetableBeginning(programs));
   }, [programs, programsLoaded]);
 
   return beginning;
 }
+
+function getTimetableBeginning(programs) {
+  const min = Math.min(
+    ...programs.flatMap((p) => (Number.isFinite(p.begin) ? [p.begin] : [])),
+  );
+
+  return Number.isFinite(min) ? min : null;
+}
+
+export const testing = {
+  getTimetableBeginning,
+};
