@@ -45,7 +45,7 @@ export default function Clone() {
 
   return (
     <>
-      <h3>Vytvořit kopii</h3>
+      <h3 className="mt-3">Vytvořit kopii</h3>
       {!user && (
         <p className="text-danger">
           <i className="fa fa-exclamation-triangle" />

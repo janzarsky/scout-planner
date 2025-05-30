@@ -38,7 +38,7 @@ export default function Shift() {
 
   return (
     <>
-      <h3>Posunout datum</h3>
+      <h3 className="mt-3">Posunout datum</h3>
       {!user && (
         <p className="text-danger">
           <i className="fa fa-exclamation-triangle" />
