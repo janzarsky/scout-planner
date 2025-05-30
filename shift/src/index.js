@@ -9,7 +9,7 @@ import { authMiddleware } from "@scout-planner/common/authMiddleware";
 
 http("shift-timetable", async (req, res) =>
   corsMiddleware(["POST"])(req, res, async () =>
-    authMiddleware(req, res, async (req, res) => shiftTimetable(req, res)),
+    authMiddleware(req, res, async () => shiftTimetable(req, res)),
   ),
 );
 
