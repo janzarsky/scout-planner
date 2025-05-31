@@ -3,22 +3,28 @@ import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { firestoreClientFactory } from "../FirestoreClient";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { importData } from "@scout-planner/common/importer";
+import { addError } from "../store/errorsSlice";
 
 export default function Import() {
   const [dataToImport, setDataToImport] = useState();
 
   const { table } = useSelector((state) => state.auth);
   const client = firestoreClientFactory.getClient(table);
+  const dispatch = useDispatch();
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const data = JSON.parse(dataToImport);
-    await importData(data, client);
+    try {
+      const data = JSON.parse(dataToImport);
+      await importData(data, client);
 
-    window.location.reload();
+      window.location.reload();
+    } catch {
+      dispatch(addError("Během importu nastala chyba"));
+    }
   }
 
   return (
