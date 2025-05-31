@@ -29,6 +29,10 @@ export async function importData(data, client) {
 function getDataFixes(data) {
   return {
     ...data,
+    programs: data.programs ?? [],
+    pkgs: data.pkgs ?? [],
+    groups: data.groups ?? [],
+    rules: data.rules ?? [],
     ranges: data.ranges ?? [],
     users: data.users ?? [],
     people: data.people ?? [],
