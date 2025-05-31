@@ -19,8 +19,8 @@ describe("Timetable ID validator", () => {
 });
 
 describe("Timetable ID generator", () => {
-  it("produces string at least 8 characters long", () =>
-    expect(generateTimetableId().length).toBeGreaterThanOrEqual(8));
+  it("produces string at least 6 characters long", () =>
+    expect(generateTimetableId().length).toBeGreaterThanOrEqual(6));
 
   it("produces alphanumeric string", () =>
     expect(generateTimetableId()).toMatch(/[a-zA-Z0-9]+/));

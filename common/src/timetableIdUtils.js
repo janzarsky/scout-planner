@@ -7,5 +7,5 @@ export function isValidTimetableId(id) {
 }
 
 export function generateTimetableId() {
-  return uuidv4().substring(0, 8);
+  return uuidv4().substring(0, 6);
 }
