@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 const idRegex = /^[a-zA-Z0-9_-]+$/;
 
 export function isValidTimetableId(id) {
@@ -5,5 +7,5 @@ export function isValidTimetableId(id) {
 }
 
 export function generateTimetableId() {
-  return Math.floor(Math.random() * 10e13).toString(16);
+  return uuidv4().substring(0, 6);
 }
