@@ -62,7 +62,7 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
                   id={dayOption.toString()}
                   value={dayOption.toString()}
                   className="form-check-input"
-                  checked={day?.equals(dayOption)}
+                  checked={!!day?.equals(dayOption)}
                   onChange={() => {
                     setOptions((prevOptions) => ({
                       ...prevOptions,
