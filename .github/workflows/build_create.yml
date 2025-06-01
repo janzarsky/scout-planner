@@ -1,0 +1,32 @@
+on:
+  pull_request:
+    paths:
+      - "create/**"
+      - "common/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/build_create.yml"
+
+jobs:
+  build_create:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build app
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci -w common -w create
+      - run: npm run test -w common -w create
+      - run: npm run format -w common -w create
+      - run: npm run lint -w common -w create
+      - run: npm run build
+        working-directory: common
+      - run: npm run build
+        working-directory: create

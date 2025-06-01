@@ -1,0 +1,51 @@
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "create/**"
+      - "common/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy_create.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy_create:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    concurrency:
+      group: create
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci -ws
+      - run: npm run build
+        working-directory: common
+      - run: npm run build
+        working-directory: create
+
+      - name: Auth
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Deploy
+        uses: "google-github-actions/deploy-cloud-functions@v3"
+        with:
+          name: create-timetable
+          runtime: nodejs22
+          region: europe-central2
+          source_dir: create/dist
+          entry_point: create-timetable
