@@ -266,7 +266,8 @@ const PrintDay: React.FC<
                   time.equals(end),
                 );
 
-                const isBold = boldPkgs.includes(program.pkg);
+                const pkg = program.pkg === "žádný" ? null : program.pkg;
+                const isBold = boldPkgs.includes(pkg);
 
                 return (
                   <div
