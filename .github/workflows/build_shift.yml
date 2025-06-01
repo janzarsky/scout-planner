@@ -5,7 +5,7 @@ on:
       - "common/**"
       - "package.json"
       - "package-lock.json"
-      - ".github/workflows/build_clone.yml"
+      - ".github/workflows/build_shift.yml"
 
 jobs:
   build_shift:
