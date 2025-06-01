@@ -39,7 +39,6 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
                 type="radio"
                 name="day"
                 id="allDays"
-                value="allDays"
                 className="form-check-input"
                 checked={!day}
                 onChange={() => {
