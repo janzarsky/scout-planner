@@ -16,11 +16,8 @@ const compat = new FlatCompat({
 });
 
 export default [
-  ...compat.extends(
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:cypress/recommended",
-  ),
+  ...compat.extends("eslint:recommended", "plugin:react/recommended"),
+  cypress.configs.recommended,
   ...tseslint.configs.recommended,
   {
     rules: {
