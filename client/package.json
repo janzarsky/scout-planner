@@ -10,7 +10,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.6",
     "firebase": "^11.6.0",
     "jquery": "^3.7.1",
     "popper.js": "^1.16.1",
