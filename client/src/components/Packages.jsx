@@ -64,44 +64,47 @@ export default function Packages() {
   );
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Table bordered hover responsive>
-        <PackagesHeader />
-        <tbody>
-          {packagesLoaded &&
-            [...packages]
-              .sort(byName)
-              .map((pkg, index) =>
-                pkg._id === editKey ? (
-                  <EditedPackage
-                    key={pkg._id}
-                    name={editedName}
-                    color={editedColor}
-                    cnt={index + 1}
-                    setName={setEditedName}
-                    setColor={setEditedColor}
-                  />
-                ) : (
-                  <Package
-                    key={pkg._id}
-                    id={pkg._id}
-                    name={pkg.name}
-                    color={pkg.color}
-                    cnt={index + 1}
-                    deletePkg={deletePackageCallback}
-                    editPkg={editPackageCallback}
-                  />
-                ),
-              )}
-          <NewPackage
-            name={newName}
-            color={newColor}
-            setName={setNewName}
-            setColor={setNewColor}
-          />
-        </tbody>
-      </Table>
-    </Form>
+    <>
+      <Form onSubmit={handleSubmit}>
+        <Table bordered hover responsive>
+          <PackagesHeader />
+          <tbody>
+            {packagesLoaded &&
+              [...packages]
+                .sort(byName)
+                .map((pkg, index) =>
+                  pkg._id === editKey ? (
+                    <EditedPackage
+                      key={pkg._id}
+                      name={editedName}
+                      color={editedColor}
+                      cnt={index + 1}
+                      setName={setEditedName}
+                      setColor={setEditedColor}
+                    />
+                  ) : (
+                    <Package
+                      key={pkg._id}
+                      id={pkg._id}
+                      name={pkg.name}
+                      color={pkg.color}
+                      cnt={index + 1}
+                      deletePkg={deletePackageCallback}
+                      editPkg={editPackageCallback}
+                    />
+                  ),
+                )}
+            <NewPackage
+              name={newName}
+              color={newColor}
+              setName={setNewName}
+              setColor={setNewColor}
+            />
+          </tbody>
+        </Table>
+      </Form>
+      <PackageInfo />
+    </>
   );
 }
 
@@ -245,5 +248,17 @@ function ColorPicker({ color, setColor }) {
         />
       )}
     </>
+  );
+}
+
+function PackageInfo() {
+  return (
+    <div className="container-fluid mt-3">
+      <i className="fa fa-info-circle" aria-hidden="true"></i> &nbsp; Pokud je
+      název balíčku v závorkách, třeba <code>(Jídlo)</code>, tak se v programech
+      nebude zobrazovat označení balíčku &nbsp;
+      <i className="fa fa-folder-o" aria-hidden="true" /> Jídlo. Můžeš tím
+      ušetřit místo v harmonogramu.
+    </div>
   );
 }
