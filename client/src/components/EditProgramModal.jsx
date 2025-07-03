@@ -241,7 +241,8 @@ function ProgramTitle({ title, setTitle, disabled = false }) {
   return (
     <Form.Group as={Row} className="mb-3">
       <Form.Label column sm="2">
-        Název
+        Název{" "}
+        <InfoIcon text="Pro úsporu místa můžeš použít místo názvu emoji nebo dát název do závorek, bude pak v harmonogramu skrytý" />
       </Form.Label>
       <Col>
         <Form.Control
