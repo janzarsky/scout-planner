@@ -273,13 +273,13 @@ export const ComposeSchedule = ({
         const endOnDay =
           dateIndex === dates.length - 1 ? end.toPlainTime() : null;
 
-        const dateStart = (
-          startOnDay ?? Temporal.PlainTime.from("00:00")
-        ).toPlainDateTime(date);
-        const dateEnd = (
+        const dateStart = date.toPlainDateTime(
+          startOnDay ?? Temporal.PlainTime.from("00:00"),
+        );
+        const dateEnd = date.toPlainDateTime(
           endOnDay ??
-          Temporal.PlainTime.from("00:00").subtract({ nanoseconds: 1 })
-        ).toPlainDateTime(date);
+            Temporal.PlainTime.from("00:00").subtract({ nanoseconds: 1 }),
+        );
 
         // Span over block order (concurrent blocks)
         const mapForDate =
