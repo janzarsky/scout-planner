@@ -68,6 +68,6 @@ export type Segment = {
 
 export type NewProgram = Omit<Program, "_id"> & { _id: any };
 
-export const LOCAL_TIMEZONE = Temporal.TimeZone.from("UTC");
+export const LOCAL_TIMEZONE = "UTC";
 export const MIME_TYPE = "application/prs.plannable";
 export const DEFAULT_PROGRAM_COLOR = "#81d4fa";
