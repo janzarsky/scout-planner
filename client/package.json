@@ -7,7 +7,7 @@
     "@js-temporal/polyfill": "^0.5.1",
     "@reduxjs/toolkit": "^2.8.2",
     "@scout-planner/common": "^0.1.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "bootstrap": "^5.3.7",
