@@ -34,10 +34,11 @@ async function cloneTimetable(req, res) {
     return;
   }
 
+  let sourceAccessLevel = level.NONE;
   try {
-    const accessLevel = await getAccessLevel(db, options.source, req.email);
-    console.debug("Got access level to source table: %d", accessLevel);
-    if (accessLevel < level.VIEW) {
+    sourceAccessLevel = await getAccessLevel(db, options.source, req.email);
+    console.debug("Got access level to source table: %d", sourceAccessLevel);
+    if (sourceAccessLevel < level.VIEW) {
       res.status(403).send({ message: "Access to source table forbidden" });
       return;
     }
@@ -67,7 +68,13 @@ async function cloneTimetable(req, res) {
   }
 
   try {
-    await cloneData(db, options.source, options.destination);
+    await cloneData(
+      db,
+      options.source,
+      options.destination,
+      sourceAccessLevel,
+      req.email,
+    );
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Internal server error" });
@@ -101,22 +108,42 @@ async function getAccessLevel(db, table, user) {
   return await client.getAccessLevel(user);
 }
 
-async function cloneData(db, source, destination) {
+async function cloneData(db, source, destination, sourceAccessLevel, email) {
   const sourceClient = new Client(source, db);
-  const data = await loadData(sourceClient);
+  // only load users when user has admin access to the source table
+  const copyUsers = sourceAccessLevel >= level.ADMIN;
+  const data = await loadData(sourceClient, copyUsers);
+
+  const dataWithUsers = copyUsers ? data : addNewUser(data, email);
 
   const destinationClient = new Client(destination, db);
-  await importData(data, destinationClient);
+  await importData(dataWithUsers, destinationClient);
 }
 
-async function loadData(client) {
+function addNewUser(data, email) {
+  return {
+    ...data,
+    users: [
+      {
+        email: email,
+        level: level.ADMIN,
+      },
+    ],
+    timetable: {
+      ...data.timetable,
+      publicLevel: level.VIEW,
+    },
+  };
+}
+
+async function loadData(client, copyUsers) {
   const [groups, ranges, pkgs, rules, users, people, programs, timetable] =
     await Promise.all([
       client.getGroups(),
       client.getRanges(),
       client.getPackages(),
       client.getRules(),
-      client.getUsers(),
+      copyUsers ? client.getUsers() : Promise.resolve([]),
       client.getPeople(),
       client.getPrograms(),
       client.getTimetable(),
