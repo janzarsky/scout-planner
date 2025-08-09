@@ -102,7 +102,7 @@ export default function Program({ program, rect, violations }) {
           narrow={narrow}
         />
       )}
-      <ProgramDragOver programId={program._id} />
+      {userLevel >= level.EDIT && <ProgramDragOver programId={program._id} />}
     </div>
   );
 }

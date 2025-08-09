@@ -6,9 +6,10 @@ import { getRect, groupProgramsToBlocks } from "../helpers/TimetableUtils";
 import { useMemo } from "react";
 import { DEFAULT_WIDTH, useGetSettingsQuery } from "../store/settingsApi";
 import { useGetProgramsQuery } from "../store/programsApi";
+import { level } from "@scout-planner/common/level";
 
 export function Blocks({ settings, violations }) {
-  const { table } = useSelector((state) => state.auth);
+  const { table, userLevel } = useSelector((state) => state.auth);
   const { data: programs, isSuccess: programsLoaded } =
     useGetProgramsQuery(table);
 
@@ -27,7 +28,9 @@ export function Blocks({ settings, violations }) {
           violations={violations}
         />
       ))}
-      <BlockDroppables data={block.droppablesData} />
+      {userLevel >= level.EDIT && (
+        <BlockDroppables data={block.droppablesData} />
+      )}
     </Block>
   ));
 }
