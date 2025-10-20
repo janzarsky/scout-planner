@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.3.0",
-    "@eslint/js": "^9.33.0",
+    "@eslint/js": "^9.38.0",
     "@types/eslint__js": "^9.14.0",
     "@vitejs/plugin-react": "^4.6.0",
     "cypress": "^15.4.0",
