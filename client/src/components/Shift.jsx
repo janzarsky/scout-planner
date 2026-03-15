@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { formatDate, parseDate } from "../helpers/DateUtils";
+import { formatDate, getOnlyDate, parseDate } from "../helpers/DateUtils";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import cs from "date-fns/locale/cs";
 import { useAuth } from "./AuthProvider";
@@ -27,7 +27,8 @@ export default function Shift() {
 
     const token = await getIdToken();
 
-    const offset = newDate != null ? parseDate(newDate) - currDate : 0;
+    const offset =
+      newDate != null ? parseDate(newDate) - getOnlyDate(currDate) : 0;
 
     shift({ table, offset, token })
       .unwrap()
