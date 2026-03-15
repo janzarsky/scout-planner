@@ -12,8 +12,6 @@
     "@testing-library/user-event": "^14.6.1",
     "bootstrap": "^5.3.8",
     "firebase": "^11.9.1",
-    "jquery": "^3.7.1",
-    "popper.js": "^1.16.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-datepicker": "^8.4.0",
