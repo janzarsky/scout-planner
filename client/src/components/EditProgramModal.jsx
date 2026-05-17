@@ -391,11 +391,11 @@ function ProgramPackage({ pkg, setPkg, disabled = false }) {
       </Form.Label>
       <Col>
         <Form.Select
-          value={pkg ? pkg : undefined}
-          onChange={(e) => setPkg(e.target.value)}
+          value={pkg ? pkg : ""}
+          onChange={(e) => setPkg(e.target.value || null)}
           disabled={disabled}
         >
-          <option>žádný</option>
+          <option value="">žádný</option>
           {packagesLoaded &&
             [...packages].sort(byName).map((p) => (
               <option key={p._id} value={p._id}>
