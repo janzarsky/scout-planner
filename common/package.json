@@ -42,7 +42,7 @@
     "globals": "^17.6.0",
     "prettier": "^3.8.4",
     "rimraf": "^6.0.1",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   },
   "dependencies": {
     "firebase-admin": "^13.10.0",
