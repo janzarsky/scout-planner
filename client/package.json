@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",
-    "@reduxjs/toolkit": "^2.9.0",
+    "@reduxjs/toolkit": "^2.12.0",
     "@scout-planner/common": "^0.1.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
