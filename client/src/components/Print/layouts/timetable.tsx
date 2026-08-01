@@ -7,7 +7,7 @@ const timetable: PrintLayout<null> = {
   label: "Klasické",
   initialOptions: null,
   OptionsComponent: () => null,
-  validateOptions: (opt): opt is null => true,
+  validateOptions: (opt): opt is null => true, // eslint-disable-line @typescript-eslint/no-unused-vars
   PrintComponent: ({ violationsPerProgram }) => (
     <TimetableWrapper
       dataLoaded={true}

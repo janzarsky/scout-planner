@@ -139,7 +139,7 @@ const timetable: PrintLayout<SingleDayOptions, SingleDayValidOptions> = {
     );
   },
   validateOptions: (
-    options: SingleDayOptions,
+    options: SingleDayOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
   ): options is SingleDayValidOptions => true,
   PrintComponent: ({ options: { date, boldPkgs } }) => {
     const allDays = useProgramDates();
