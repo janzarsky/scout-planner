@@ -14,7 +14,7 @@
     "@google-cloud/functions-framework": "^5.0.2",
     "@scout-planner/common": "^0.1.0",
     "firebase-admin": "^14.2.0",
-    "firebase-functions": "^7.2.5"
+    "firebase-functions": "^7.3.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
