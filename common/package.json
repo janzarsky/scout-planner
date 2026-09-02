@@ -45,7 +45,7 @@
     "vitest": "^4.1.11"
   },
   "dependencies": {
-    "firebase-admin": "^13.10.0",
+    "firebase-admin": "^14.2.0",
     "uuid": "^14.0.0"
   }
 }
