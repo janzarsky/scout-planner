@@ -1,10 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
-import { authMiddleware, testing } from "./authMiddleware";
+import { createAuthMiddleware, testing } from "./authMiddleware";
 
 const { getIdentity } = testing;
+const mockAuth = { verifyIdToken: async () => ({ token: "testtoken" }) };
 
 describe("auth middleware", () => {
   it("send 401 when not authenticated", async () => {
+    const authMiddleware = createAuthMiddleware(mockAuth);
+
     const send = vi.fn();
     const res = {
       status: vi.fn().mockReturnValue({ send }),
@@ -21,7 +24,7 @@ describe("auth middleware", () => {
 
 describe("get identity", () => {
   it("throws error when called without auth header", async () => {
-    await expect(getIdentity({ headers: {} })).rejects.toThrowError(
+    await expect(getIdentity(mockAuth, { headers: {} })).rejects.toThrowError(
       "Unauthorized",
     );
   });
@@ -32,7 +35,9 @@ describe("get identity", () => {
         authorization: "invalid_value",
       },
     };
-    await expect(getIdentity(req)).rejects.toThrowError("Unauthorized");
+    await expect(getIdentity(mockAuth, req)).rejects.toThrowError(
+      "Unauthorized",
+    );
   });
 
   // TODO: use stub for validating token
@@ -42,6 +47,6 @@ describe("get identity", () => {
         authorization: "Bearer abc",
       },
     };
-    await expect(getIdentity(req)).rejects.toThrowError();
+    await expect(getIdentity(mockAuth, req)).rejects.toThrowError();
   });
 });

@@ -1,23 +1,27 @@
 import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { importData } from "@scout-planner/common/importer";
 import { Client } from "./client";
 import { level } from "@scout-planner/common/level";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
-import { authMiddleware } from "@scout-planner/common/authMiddleware";
+import { createAuthMiddleware } from "@scout-planner/common/authMiddleware";
+
+const app = initializeApp();
+const auth = getAuth(app);
+
+const db = getFirestore();
+db.settings({ ignoreUndefinedProperties: true });
+
+const authMiddleware = createAuthMiddleware(auth);
 
 http("clone-timetable", async (req, res) =>
   corsMiddleware(["POST"])(req, res, async () =>
     authMiddleware(req, res, async () => cloneTimetable(req, res)),
   ),
 );
-
-initializeApp();
-
-const db = getFirestore();
-db.settings({ ignoreUndefinedProperties: true });
 
 async function cloneTimetable(req, res) {
   let options = null;

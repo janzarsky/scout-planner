@@ -1,22 +1,26 @@
 import { http } from "@google-cloud/functions-framework";
 import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { isValidTimetableId } from "@scout-planner/common/timetableIdUtils";
 import { level } from "@scout-planner/common/level";
 import { Client } from "./client";
 import { corsMiddleware } from "@scout-planner/common/corsMiddleware";
-import { authMiddleware } from "@scout-planner/common/authMiddleware";
+import { createAuthMiddleware } from "@scout-planner/common/authMiddleware";
+
+const app = initializeApp();
+const auth = getAuth(app);
+
+const db = getFirestore();
+db.settings({ ignoreUndefinedProperties: true });
+
+const authMiddleware = createAuthMiddleware(auth);
 
 http("shift-timetable", async (req, res) =>
   corsMiddleware(["POST"])(req, res, async () =>
     authMiddleware(req, res, async () => shiftTimetable(req, res)),
   ),
 );
-
-initializeApp();
-
-const db = getFirestore();
-db.settings({ ignoreUndefinedProperties: true });
 
 async function shiftTimetable(req, res) {
   let options = null;
