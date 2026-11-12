@@ -8,7 +8,7 @@
     "@reduxjs/toolkit": "^2.13.0",
     "@scout-planner/common": "^0.1.0",
     "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.3",
     "bootstrap": "^5.3.8",
     "firebase": "^12.18.0",
